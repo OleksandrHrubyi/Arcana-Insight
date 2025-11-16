@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2732" height="2732" viewBox="0 0 2732 2732">
+    <defs>
+        <radialGradient id="bg" cx="0" cy="0" r="1.2">
+            <stop offset="0%" stop-color="#1F2230"/>
+            <stop offset="55%" stop-color="#111320"/>
+            <stop offset="100%" stop-color="#0B0D16"/>
+        </radialGradient>
+        <linearGradient id="star" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#A8DFF0"/>
+            <stop offset=".55" stop-color="#CBBEF9"/>
+            <stop offset="1" stop-color="#F9BDE6"/>
+        </linearGradient>
+    </defs>
+
+    <rect width="2732" height="2732" fill="url(#bg)"/>
+
+    <g transform="translate(1366,1366)">
+        <circle r="460" fill="url(#star)" opacity=".05"/>
+        <path d="M0 -560 L30 -120 L0 -96 L-30 -120 Z" fill="url(#star)"/>
+        <path d="M0 560 L30 120 L0 96 L-30 120 Z" fill="url(#star)"/>
+        <path d="M-560 0 L-120 -30 L-96 0 L-120 30 Z" fill="url(#star)"/>
+        <path d="M560 0 L120 -30 L96 0 L120 30 Z" fill="url(#star)"/>
+        <path d="M-390 -390 L-150 -60 L-120 -30 L-60 -150 Z" fill="url(#star)"/>
+        <path d="M390 390 L150 60 L120 30 L60 150 Z" fill="url(#star)"/>
+        <path d="M390 -390 L60 -150 L30 -120 L150 -60 Z" fill="url(#star)"/>
+        <path d="M-390 390 L-60 150 L-30 120 L-150 60 Z" fill="url(#star)"/>
+        <circle r="28" fill="#EDEFF6"/>
+    </g>
+</svg>

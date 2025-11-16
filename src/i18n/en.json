@@ -1,0 +1,2345 @@
+{
+  "ui": {},
+  "tarot": {
+    "the-fool": {
+      "title": "The Fool",
+      "keywords": {
+        "upright": [
+          "new beginnings",
+          "spontaneity",
+          "faith"
+        ],
+        "reversed": [
+          "recklessness",
+          "hesitation"
+        ]
+      },
+      "meanings": {
+        "upright": "The Fool upright: new beginnings, spontaneity, and faith. Lean into this energy today; stay present and intentional.",
+        "reversed": "The Fool reversed: recklessness and hesitation. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the fool favors new beginnings and spontaneity. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for recklessness and hesitation. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: new beginnings, spontaneity, and faith. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): recklessness and hesitation may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: new beginnings and spontaneity. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): recklessness and hesitation. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-magician": {
+      "title": "The Magician",
+      "keywords": {
+        "upright": [
+          "willpower",
+          "skill",
+          "focus"
+        ],
+        "reversed": [
+          "manipulation",
+          "scattered energy"
+        ]
+      },
+      "meanings": {
+        "upright": "The Magician upright: willpower, skill, and focus. Lean into this energy today; stay present and intentional.",
+        "reversed": "The Magician reversed: manipulation and scattered energy. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the magician favors willpower and skill. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for manipulation and scattered energy. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: willpower, skill, and focus. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): manipulation and scattered energy may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: willpower and skill. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): manipulation and scattered energy. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-high-priestess": {
+      "title": "The High Priestess",
+      "keywords": {
+        "upright": [
+          "intuition",
+          "mystery",
+          "inner voice"
+        ],
+        "reversed": [
+          "secrets",
+          "disconnection"
+        ]
+      },
+      "meanings": {
+        "upright": "The High Priestess upright: intuition, mystery, and inner voice. Lean into this energy today; stay present and intentional.",
+        "reversed": "The High Priestess reversed: secrets and disconnection. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the high priestess favors intuition and mystery. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for secrets and disconnection. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: intuition, mystery, and inner voice. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): secrets and disconnection may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: intuition and mystery. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): secrets and disconnection. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-empress": {
+      "title": "The Empress",
+      "keywords": {
+        "upright": [
+          "nurture",
+          "abundance",
+          "beauty"
+        ],
+        "reversed": [
+          "smothering",
+          "inertia"
+        ]
+      },
+      "meanings": {
+        "upright": "The Empress upright: nurture, abundance, and beauty. Lean into this energy today; stay present and intentional.",
+        "reversed": "The Empress reversed: smothering and inertia. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the empress favors nurture and abundance. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for smothering and inertia. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: nurture, abundance, and beauty. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): smothering and inertia may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: nurture and abundance. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): smothering and inertia. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-emperor": {
+      "title": "The Emperor",
+      "keywords": {
+        "upright": [
+          "structure",
+          "authority",
+          "responsibility"
+        ],
+        "reversed": [
+          "rigidity",
+          "control"
+        ]
+      },
+      "meanings": {
+        "upright": "The Emperor upright: structure, authority, and responsibility. Lean into this energy today; stay present and intentional.",
+        "reversed": "The Emperor reversed: rigidity and control. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the emperor favors structure and authority. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for rigidity and control. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: structure, authority, and responsibility. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): rigidity and control may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: structure and authority. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): rigidity and control. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-hierophant": {
+      "title": "The Hierophant",
+      "keywords": {
+        "upright": [
+          "tradition",
+          "teaching",
+          "mentor"
+        ],
+        "reversed": [
+          "dogma",
+          "rebellion"
+        ]
+      },
+      "meanings": {
+        "upright": "The Hierophant upright: tradition, teaching, and mentor. Lean into this energy today; stay present and intentional.",
+        "reversed": "The Hierophant reversed: dogma and rebellion. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the hierophant favors tradition and teaching. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for dogma and rebellion. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: tradition, teaching, and mentor. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): dogma and rebellion may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: tradition and teaching. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): dogma and rebellion. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-lovers": {
+      "title": "The Lovers",
+      "keywords": {
+        "upright": [
+          "choice",
+          "union",
+          "values"
+        ],
+        "reversed": [
+          "indecision",
+          "imbalance"
+        ]
+      },
+      "meanings": {
+        "upright": "The Lovers upright: choice, union, and values. Lean into this energy today; stay present and intentional.",
+        "reversed": "The Lovers reversed: indecision and imbalance. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the lovers favors choice and union. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for indecision and imbalance. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: choice, union, and values. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): indecision and imbalance may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: choice and union. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): indecision and imbalance. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-chariot": {
+      "title": "The Chariot",
+      "keywords": {
+        "upright": [
+          "will",
+          "progress",
+          "determination"
+        ],
+        "reversed": [
+          "lack of control",
+          "stalling"
+        ]
+      },
+      "meanings": {
+        "upright": "The Chariot upright: will, progress, and determination. Lean into this energy today; stay present and intentional.",
+        "reversed": "The Chariot reversed: lack of control and stalling. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the chariot favors will and progress. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for lack of control and stalling. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: will, progress, and determination. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): lack of control and stalling may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: will and progress. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): lack of control and stalling. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "strength": {
+      "title": "Strength",
+      "keywords": {
+        "upright": [
+          "inner strength",
+          "patience",
+          "compassion"
+        ],
+        "reversed": [
+          "doubt",
+          "self-criticism"
+        ]
+      },
+      "meanings": {
+        "upright": "Strength upright: inner strength, patience, and compassion. Lean into this energy today; stay present and intentional.",
+        "reversed": "Strength reversed: doubt and self-criticism. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, strength favors inner strength and patience. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for doubt and self-criticism. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: inner strength, patience, and compassion. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): doubt and self-criticism may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: inner strength and patience. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): doubt and self-criticism. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-hermit": {
+      "title": "The Hermit",
+      "keywords": {
+        "upright": [
+          "introspection",
+          "guidance",
+          "search"
+        ],
+        "reversed": [
+          "isolation",
+          "withdrawal"
+        ]
+      },
+      "meanings": {
+        "upright": "The Hermit upright: introspection, guidance, and search. Lean into this energy today; stay present and intentional.",
+        "reversed": "The Hermit reversed: isolation and withdrawal. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the hermit favors introspection and guidance. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for isolation and withdrawal. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: introspection, guidance, and search. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): isolation and withdrawal may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: introspection and guidance. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): isolation and withdrawal. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "wheel-of-fortune": {
+      "title": "Wheel of Fortune",
+      "keywords": {
+        "upright": [
+          "cycles",
+          "luck",
+          "turning point"
+        ],
+        "reversed": [
+          "resistance to change",
+          "downturn"
+        ]
+      },
+      "meanings": {
+        "upright": "Wheel of Fortune upright: cycles, luck, and turning point. Lean into this energy today; stay present and intentional.",
+        "reversed": "Wheel of Fortune reversed: resistance to change and downturn. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, wheel of fortune favors cycles and luck. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for resistance to change and downturn. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: cycles, luck, and turning point. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): resistance to change and downturn may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: cycles and luck. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): resistance to change and downturn. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "justice": {
+      "title": "Justice",
+      "keywords": {
+        "upright": [
+          "truth",
+          "fairness",
+          "cause and effect"
+        ],
+        "reversed": [
+          "bias",
+          "dishonesty"
+        ]
+      },
+      "meanings": {
+        "upright": "Justice upright: truth, fairness, and cause and effect. Lean into this energy today; stay present and intentional.",
+        "reversed": "Justice reversed: bias and dishonesty. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, justice favors truth and fairness. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for bias and dishonesty. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: truth, fairness, and cause and effect. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): bias and dishonesty may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: truth and fairness. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): bias and dishonesty. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-hanged-man": {
+      "title": "The Hanged Man",
+      "keywords": {
+        "upright": [
+          "surrender",
+          "new perspective",
+          "pause"
+        ],
+        "reversed": [
+          "stalling",
+          "martyrdom"
+        ]
+      },
+      "meanings": {
+        "upright": "The Hanged Man upright: surrender, new perspective, and pause. Lean into this energy today; stay present and intentional.",
+        "reversed": "The Hanged Man reversed: stalling and martyrdom. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the hanged man favors surrender and new perspective. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for stalling and martyrdom. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: surrender, new perspective, and pause. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): stalling and martyrdom may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: surrender and new perspective. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): stalling and martyrdom. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "death": {
+      "title": "Death",
+      "keywords": {
+        "upright": [
+          "transformation",
+          "ending",
+          "release"
+        ],
+        "reversed": [
+          "resistance",
+          "stagnation"
+        ]
+      },
+      "meanings": {
+        "upright": "Death upright: transformation, ending, and release. Lean into this energy today; stay present and intentional.",
+        "reversed": "Death reversed: resistance and stagnation. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, death favors transformation and ending. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for resistance and stagnation. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: transformation, ending, and release. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): resistance and stagnation may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: transformation and ending. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): resistance and stagnation. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "temperance": {
+      "title": "Temperance",
+      "keywords": {
+        "upright": [
+          "balance",
+          "moderation",
+          "alchemy"
+        ],
+        "reversed": [
+          "excess",
+          "imbalance"
+        ]
+      },
+      "meanings": {
+        "upright": "Temperance upright: balance, moderation, and alchemy. Lean into this energy today; stay present and intentional.",
+        "reversed": "Temperance reversed: excess and imbalance. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, temperance favors balance and moderation. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for excess and imbalance. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: balance, moderation, and alchemy. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): excess and imbalance may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: balance and moderation. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): excess and imbalance. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-devil": {
+      "title": "The Devil",
+      "keywords": {
+        "upright": [
+          "attachment",
+          "shadow",
+          "temptation"
+        ],
+        "reversed": [
+          "freedom",
+          "awareness"
+        ]
+      },
+      "meanings": {
+        "upright": "The Devil upright: attachment, shadow, and temptation. Lean into this energy today; stay present and intentional.",
+        "reversed": "The Devil reversed: freedom and awareness. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the devil favors attachment and shadow. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for freedom and awareness. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: attachment, shadow, and temptation. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): freedom and awareness may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: attachment and shadow. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): freedom and awareness. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-tower": {
+      "title": "The Tower",
+      "keywords": {
+        "upright": [
+          "upheaval",
+          "revelation",
+          "breakthrough"
+        ],
+        "reversed": [
+          "fear of change",
+          "denial"
+        ]
+      },
+      "meanings": {
+        "upright": "The Tower upright: upheaval, revelation, and breakthrough. Lean into this energy today; stay present and intentional.",
+        "reversed": "The Tower reversed: fear of change and denial. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the tower favors upheaval and revelation. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for fear of change and denial. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: upheaval, revelation, and breakthrough. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): fear of change and denial may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: upheaval and revelation. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): fear of change and denial. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-star": {
+      "title": "The Star",
+      "keywords": {
+        "upright": [
+          "hope",
+          "healing",
+          "guidance"
+        ],
+        "reversed": [
+          "pessimism",
+          "disconnection"
+        ]
+      },
+      "meanings": {
+        "upright": "The Star upright: hope, healing, and guidance. Lean into this energy today; stay present and intentional.",
+        "reversed": "The Star reversed: pessimism and disconnection. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the star favors hope and healing. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for pessimism and disconnection. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: hope, healing, and guidance. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): pessimism and disconnection may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: hope and healing. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): pessimism and disconnection. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-moon": {
+      "title": "The Moon",
+      "keywords": {
+        "upright": [
+          "uncertainty",
+          "dreams",
+          "intuition"
+        ],
+        "reversed": [
+          "clarity",
+          "deception revealed"
+        ]
+      },
+      "meanings": {
+        "upright": "The Moon upright: uncertainty, dreams, and intuition. Lean into this energy today; stay present and intentional.",
+        "reversed": "The Moon reversed: clarity and deception revealed. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the moon favors uncertainty and dreams. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for clarity and deception revealed. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: uncertainty, dreams, and intuition. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): clarity and deception revealed may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: uncertainty and dreams. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): clarity and deception revealed. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-sun": {
+      "title": "The Sun",
+      "keywords": {
+        "upright": [
+          "vitality",
+          "success",
+          "joy"
+        ],
+        "reversed": [
+          "overexposure",
+          "ego"
+        ]
+      },
+      "meanings": {
+        "upright": "The Sun upright: vitality, success, and joy. Lean into this energy today; stay present and intentional.",
+        "reversed": "The Sun reversed: overexposure and ego. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the sun favors vitality and success. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for overexposure and ego. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: vitality, success, and joy. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): overexposure and ego may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: vitality and success. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): overexposure and ego. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "judgement": {
+      "title": "Judgement",
+      "keywords": {
+        "upright": [
+          "awakening",
+          "reckoning",
+          "calling"
+        ],
+        "reversed": [
+          "self-doubt",
+          "avoidance"
+        ]
+      },
+      "meanings": {
+        "upright": "Judgement upright: awakening, reckoning, and calling. Lean into this energy today; stay present and intentional.",
+        "reversed": "Judgement reversed: self-doubt and avoidance. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, judgement favors awakening and reckoning. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for self-doubt and avoidance. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: awakening, reckoning, and calling. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): self-doubt and avoidance may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: awakening and reckoning. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): self-doubt and avoidance. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "the-world": {
+      "title": "The World",
+      "keywords": {
+        "upright": [
+          "completion",
+          "wholeness",
+          "integration"
+        ],
+        "reversed": [
+          "closure delayed",
+          "shortcuts"
+        ]
+      },
+      "meanings": {
+        "upright": "The World upright: completion, wholeness, and integration. Lean into this energy today; stay present and intentional.",
+        "reversed": "The World reversed: closure delayed and shortcuts. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, the world favors completion and wholeness. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for closure delayed and shortcuts. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: completion, wholeness, and integration. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): closure delayed and shortcuts may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: completion and wholeness. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): closure delayed and shortcuts. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "ace-of-wands": {
+      "title": "Ace of Wands",
+      "keywords": {
+        "upright": [
+          "inspiration",
+          "spark",
+          "potential"
+        ],
+        "reversed": [
+          "false starts",
+          "lack of direction"
+        ]
+      },
+      "meanings": {
+        "upright": "Ace of Wands upright: inspiration, spark, and potential. Lean into this energy today; stay present and intentional.",
+        "reversed": "Ace of Wands reversed: false starts and lack of direction. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, ace of wands favors inspiration and spark. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for false starts and lack of direction. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: inspiration, spark, and potential. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): false starts and lack of direction may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: inspiration and spark. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): false starts and lack of direction. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "two-of-wands": {
+      "title": "Two of Wands",
+      "keywords": {
+        "upright": [
+          "planning",
+          "choices",
+          "vision"
+        ],
+        "reversed": [
+          "fear of unknown",
+          "playing safe"
+        ]
+      },
+      "meanings": {
+        "upright": "Two of Wands upright: planning, choices, and vision. Lean into this energy today; stay present and intentional.",
+        "reversed": "Two of Wands reversed: fear of unknown and playing safe. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, two of wands favors planning and choices. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for fear of unknown and playing safe. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: planning, choices, and vision. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): fear of unknown and playing safe may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: planning and choices. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): fear of unknown and playing safe. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "three-of-wands": {
+      "title": "Three of Wands",
+      "keywords": {
+        "upright": [
+          "expansion",
+          "foresight",
+          "progress"
+        ],
+        "reversed": [
+          "delays",
+          "setbacks"
+        ]
+      },
+      "meanings": {
+        "upright": "Three of Wands upright: expansion, foresight, and progress. Lean into this energy today; stay present and intentional.",
+        "reversed": "Three of Wands reversed: delays and setbacks. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, three of wands favors expansion and foresight. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for delays and setbacks. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: expansion, foresight, and progress. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): delays and setbacks may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: expansion and foresight. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): delays and setbacks. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "four-of-wands": {
+      "title": "Four of Wands",
+      "keywords": {
+        "upright": [
+          "homecoming",
+          "celebration",
+          "stability"
+        ],
+        "reversed": [
+          "fragility",
+          "tension at home"
+        ]
+      },
+      "meanings": {
+        "upright": "Four of Wands upright: homecoming, celebration, and stability. Lean into this energy today; stay present and intentional.",
+        "reversed": "Four of Wands reversed: fragility and tension at home. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, four of wands favors homecoming and celebration. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for fragility and tension at home. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: homecoming, celebration, and stability. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): fragility and tension at home may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: homecoming and celebration. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): fragility and tension at home. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "five-of-wands": {
+      "title": "Five of Wands",
+      "keywords": {
+        "upright": [
+          "competition",
+          "conflict",
+          "testing"
+        ],
+        "reversed": [
+          "avoidance",
+          "inner conflict"
+        ]
+      },
+      "meanings": {
+        "upright": "Five of Wands upright: competition, conflict, and testing. Lean into this energy today; stay present and intentional.",
+        "reversed": "Five of Wands reversed: avoidance and inner conflict. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, five of wands favors competition and conflict. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for avoidance and inner conflict. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: competition, conflict, and testing. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): avoidance and inner conflict may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: competition and conflict. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): avoidance and inner conflict. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "six-of-wands": {
+      "title": "Six of Wands",
+      "keywords": {
+        "upright": [
+          "recognition",
+          "victory",
+          "confidence"
+        ],
+        "reversed": [
+          "ego",
+          "fall from grace"
+        ]
+      },
+      "meanings": {
+        "upright": "Six of Wands upright: recognition, victory, and confidence. Lean into this energy today; stay present and intentional.",
+        "reversed": "Six of Wands reversed: ego and fall from grace. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, six of wands favors recognition and victory. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for ego and fall from grace. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: recognition, victory, and confidence. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): ego and fall from grace may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: recognition and victory. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): ego and fall from grace. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "seven-of-wands": {
+      "title": "Seven of Wands",
+      "keywords": {
+        "upright": [
+          "defense",
+          "standing ground",
+          "courage"
+        ],
+        "reversed": [
+          "giving up",
+          "overwhelm"
+        ]
+      },
+      "meanings": {
+        "upright": "Seven of Wands upright: defense, standing ground, and courage. Lean into this energy today; stay present and intentional.",
+        "reversed": "Seven of Wands reversed: giving up and overwhelm. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, seven of wands favors defense and standing ground. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for giving up and overwhelm. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: defense, standing ground, and courage. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): giving up and overwhelm may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: defense and standing ground. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): giving up and overwhelm. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "eight-of-wands": {
+      "title": "Eight of Wands",
+      "keywords": {
+        "upright": [
+          "speed",
+          "momentum",
+          "messages"
+        ],
+        "reversed": [
+          "delays",
+          "frustration"
+        ]
+      },
+      "meanings": {
+        "upright": "Eight of Wands upright: speed, momentum, and messages. Lean into this energy today; stay present and intentional.",
+        "reversed": "Eight of Wands reversed: delays and frustration. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, eight of wands favors speed and momentum. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for delays and frustration. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: speed, momentum, and messages. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): delays and frustration may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: speed and momentum. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): delays and frustration. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "nine-of-wands": {
+      "title": "Nine of Wands",
+      "keywords": {
+        "upright": [
+          "resilience",
+          "last stretch",
+          "boundaries"
+        ],
+        "reversed": [
+          "fatigue",
+          "paranoia"
+        ]
+      },
+      "meanings": {
+        "upright": "Nine of Wands upright: resilience, last stretch, and boundaries. Lean into this energy today; stay present and intentional.",
+        "reversed": "Nine of Wands reversed: fatigue and paranoia. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, nine of wands favors resilience and last stretch. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for fatigue and paranoia. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: resilience, last stretch, and boundaries. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): fatigue and paranoia may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: resilience and last stretch. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): fatigue and paranoia. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "ten-of-wands": {
+      "title": "Ten of Wands",
+      "keywords": {
+        "upright": [
+          "burden",
+          "responsibility",
+          "overload"
+        ],
+        "reversed": [
+          "delegation",
+          "release"
+        ]
+      },
+      "meanings": {
+        "upright": "Ten of Wands upright: burden, responsibility, and overload. Lean into this energy today; stay present and intentional.",
+        "reversed": "Ten of Wands reversed: delegation and release. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, ten of wands favors burden and responsibility. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for delegation and release. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: burden, responsibility, and overload. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): delegation and release may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: burden and responsibility. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): delegation and release. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "page-of-wands": {
+      "title": "Page of Wands",
+      "keywords": {
+        "upright": [
+          "enthusiasm",
+          "ideas",
+          "news"
+        ],
+        "reversed": [
+          "impulsiveness",
+          "setbacks"
+        ]
+      },
+      "meanings": {
+        "upright": "Page of Wands upright: enthusiasm, ideas, and news. Lean into this energy today; stay present and intentional.",
+        "reversed": "Page of Wands reversed: impulsiveness and setbacks. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, page of wands favors enthusiasm and ideas. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for impulsiveness and setbacks. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: enthusiasm, ideas, and news. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): impulsiveness and setbacks may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: enthusiasm and ideas. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): impulsiveness and setbacks. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "knight-of-wands": {
+      "title": "Knight of Wands",
+      "keywords": {
+        "upright": [
+          "action",
+          "adventure",
+          "passion"
+        ],
+        "reversed": [
+          "reckless",
+          "scattered"
+        ]
+      },
+      "meanings": {
+        "upright": "Knight of Wands upright: action, adventure, and passion. Lean into this energy today; stay present and intentional.",
+        "reversed": "Knight of Wands reversed: reckless and scattered. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, knight of wands favors action and adventure. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for reckless and scattered. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: action, adventure, and passion. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): reckless and scattered may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: action and adventure. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): reckless and scattered. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "queen-of-wands": {
+      "title": "Queen of Wands",
+      "keywords": {
+        "upright": [
+          "vibrancy",
+          "confidence",
+          "warmth"
+        ],
+        "reversed": [
+          "jealousy",
+          "demanding"
+        ]
+      },
+      "meanings": {
+        "upright": "Queen of Wands upright: vibrancy, confidence, and warmth. Lean into this energy today; stay present and intentional.",
+        "reversed": "Queen of Wands reversed: jealousy and demanding. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, queen of wands favors vibrancy and confidence. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for jealousy and demanding. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: vibrancy, confidence, and warmth. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): jealousy and demanding may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: vibrancy and confidence. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): jealousy and demanding. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "king-of-wands": {
+      "title": "King of Wands",
+      "keywords": {
+        "upright": [
+          "leadership",
+          "vision",
+          "influence"
+        ],
+        "reversed": [
+          "ruthless",
+          "impulsive"
+        ]
+      },
+      "meanings": {
+        "upright": "King of Wands upright: leadership, vision, and influence. Lean into this energy today; stay present and intentional.",
+        "reversed": "King of Wands reversed: ruthless and impulsive. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, king of wands favors leadership and vision. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for ruthless and impulsive. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: leadership, vision, and influence. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): ruthless and impulsive may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: leadership and vision. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): ruthless and impulsive. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "ace-of-cups": {
+      "title": "Ace of Cups",
+      "keywords": {
+        "upright": [
+          "new feelings",
+          "love",
+          "creativity"
+        ],
+        "reversed": [
+          "blocked emotions",
+          "emptiness"
+        ]
+      },
+      "meanings": {
+        "upright": "Ace of Cups upright: new feelings, love, and creativity. Lean into this energy today; stay present and intentional.",
+        "reversed": "Ace of Cups reversed: blocked emotions and emptiness. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, ace of cups favors new feelings and love. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for blocked emotions and emptiness. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: new feelings, love, and creativity. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): blocked emotions and emptiness may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: new feelings and love. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): blocked emotions and emptiness. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "two-of-cups": {
+      "title": "Two of Cups",
+      "keywords": {
+        "upright": [
+          "partnership",
+          "attraction",
+          "harmony"
+        ],
+        "reversed": [
+          "imbalance",
+          "break in trust"
+        ]
+      },
+      "meanings": {
+        "upright": "Two of Cups upright: partnership, attraction, and harmony. Lean into this energy today; stay present and intentional.",
+        "reversed": "Two of Cups reversed: imbalance and break in trust. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, two of cups favors partnership and attraction. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for imbalance and break in trust. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: partnership, attraction, and harmony. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): imbalance and break in trust may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: partnership and attraction. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): imbalance and break in trust. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "three-of-cups": {
+      "title": "Three of Cups",
+      "keywords": {
+        "upright": [
+          "friendship",
+          "community",
+          "joy"
+        ],
+        "reversed": [
+          "overindulgence",
+          "gossip"
+        ]
+      },
+      "meanings": {
+        "upright": "Three of Cups upright: friendship, community, and joy. Lean into this energy today; stay present and intentional.",
+        "reversed": "Three of Cups reversed: overindulgence and gossip. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, three of cups favors friendship and community. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for overindulgence and gossip. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: friendship, community, and joy. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): overindulgence and gossip may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: friendship and community. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): overindulgence and gossip. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "four-of-cups": {
+      "title": "Four of Cups",
+      "keywords": {
+        "upright": [
+          "apathy",
+          "contemplation",
+          "reevaluation"
+        ],
+        "reversed": [
+          "new outlook",
+          "seizing chance"
+        ]
+      },
+      "meanings": {
+        "upright": "Four of Cups upright: apathy, contemplation, and reevaluation. Lean into this energy today; stay present and intentional.",
+        "reversed": "Four of Cups reversed: new outlook and seizing chance. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, four of cups favors apathy and contemplation. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for new outlook and seizing chance. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: apathy, contemplation, and reevaluation. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): new outlook and seizing chance may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: apathy and contemplation. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): new outlook and seizing chance. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "five-of-cups": {
+      "title": "Five of Cups",
+      "keywords": {
+        "upright": [
+          "loss",
+          "regret",
+          "disappointment"
+        ],
+        "reversed": [
+          "forgiveness",
+          "moving on"
+        ]
+      },
+      "meanings": {
+        "upright": "Five of Cups upright: loss, regret, and disappointment. Lean into this energy today; stay present and intentional.",
+        "reversed": "Five of Cups reversed: forgiveness and moving on. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, five of cups favors loss and regret. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for forgiveness and moving on. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: loss, regret, and disappointment. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): forgiveness and moving on may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: loss and regret. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): forgiveness and moving on. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "six-of-cups": {
+      "title": "Six of Cups",
+      "keywords": {
+        "upright": [
+          "nostalgia",
+          "kindness",
+          "memories"
+        ],
+        "reversed": [
+          "living in past",
+          "stuck"
+        ]
+      },
+      "meanings": {
+        "upright": "Six of Cups upright: nostalgia, kindness, and memories. Lean into this energy today; stay present and intentional.",
+        "reversed": "Six of Cups reversed: living in past and stuck. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, six of cups favors nostalgia and kindness. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for living in past and stuck. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: nostalgia, kindness, and memories. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): living in past and stuck may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: nostalgia and kindness. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): living in past and stuck. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "seven-of-cups": {
+      "title": "Seven of Cups",
+      "keywords": {
+        "upright": [
+          "choices",
+          "fantasy",
+          "wishful"
+        ],
+        "reversed": [
+          "clarity",
+          "priorities"
+        ]
+      },
+      "meanings": {
+        "upright": "Seven of Cups upright: choices, fantasy, and wishful. Lean into this energy today; stay present and intentional.",
+        "reversed": "Seven of Cups reversed: clarity and priorities. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, seven of cups favors choices and fantasy. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for clarity and priorities. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: choices, fantasy, and wishful. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): clarity and priorities may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: choices and fantasy. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): clarity and priorities. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "eight-of-cups": {
+      "title": "Eight of Cups",
+      "keywords": {
+        "upright": [
+          "walking away",
+          "seeking",
+          "transition"
+        ],
+        "reversed": [
+          "fear of change",
+          "stagnation"
+        ]
+      },
+      "meanings": {
+        "upright": "Eight of Cups upright: walking away, seeking, and transition. Lean into this energy today; stay present and intentional.",
+        "reversed": "Eight of Cups reversed: fear of change and stagnation. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, eight of cups favors walking away and seeking. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for fear of change and stagnation. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: walking away, seeking, and transition. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): fear of change and stagnation may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: walking away and seeking. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): fear of change and stagnation. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "nine-of-cups": {
+      "title": "Nine of Cups",
+      "keywords": {
+        "upright": [
+          "contentment",
+          "gratitude",
+          "wish"
+        ],
+        "reversed": [
+          "complacency",
+          "overindulgence"
+        ]
+      },
+      "meanings": {
+        "upright": "Nine of Cups upright: contentment, gratitude, and wish. Lean into this energy today; stay present and intentional.",
+        "reversed": "Nine of Cups reversed: complacency and overindulgence. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, nine of cups favors contentment and gratitude. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for complacency and overindulgence. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: contentment, gratitude, and wish. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): complacency and overindulgence may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: contentment and gratitude. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): complacency and overindulgence. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "ten-of-cups": {
+      "title": "Ten of Cups",
+      "keywords": {
+        "upright": [
+          "harmony",
+          "family",
+          "bliss"
+        ],
+        "reversed": [
+          "disharmony",
+          "misaligned values"
+        ]
+      },
+      "meanings": {
+        "upright": "Ten of Cups upright: harmony, family, and bliss. Lean into this energy today; stay present and intentional.",
+        "reversed": "Ten of Cups reversed: disharmony and misaligned values. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, ten of cups favors harmony and family. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for disharmony and misaligned values. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: harmony, family, and bliss. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): disharmony and misaligned values may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: harmony and family. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): disharmony and misaligned values. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "page-of-cups": {
+      "title": "Page of Cups",
+      "keywords": {
+        "upright": [
+          "curiosity",
+          "messages",
+          "sensitivity"
+        ],
+        "reversed": [
+          "emotional immaturity",
+          "insecurity"
+        ]
+      },
+      "meanings": {
+        "upright": "Page of Cups upright: curiosity, messages, and sensitivity. Lean into this energy today; stay present and intentional.",
+        "reversed": "Page of Cups reversed: emotional immaturity and insecurity. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, page of cups favors curiosity and messages. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for emotional immaturity and insecurity. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: curiosity, messages, and sensitivity. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): emotional immaturity and insecurity may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: curiosity and messages. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): emotional immaturity and insecurity. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "knight-of-cups": {
+      "title": "Knight of Cups",
+      "keywords": {
+        "upright": [
+          "romance",
+          "idealism",
+          "invitation"
+        ],
+        "reversed": [
+          "moodiness",
+          "disappointment"
+        ]
+      },
+      "meanings": {
+        "upright": "Knight of Cups upright: romance, idealism, and invitation. Lean into this energy today; stay present and intentional.",
+        "reversed": "Knight of Cups reversed: moodiness and disappointment. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, knight of cups favors romance and idealism. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for moodiness and disappointment. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: romance, idealism, and invitation. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): moodiness and disappointment may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: romance and idealism. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): moodiness and disappointment. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "queen-of-cups": {
+      "title": "Queen of Cups",
+      "keywords": {
+        "upright": [
+          "compassion",
+          "calm",
+          "intuition"
+        ],
+        "reversed": [
+          "martyrdom",
+          "over-sensitivity"
+        ]
+      },
+      "meanings": {
+        "upright": "Queen of Cups upright: compassion, calm, and intuition. Lean into this energy today; stay present and intentional.",
+        "reversed": "Queen of Cups reversed: martyrdom and over-sensitivity. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, queen of cups favors compassion and calm. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for martyrdom and over-sensitivity. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: compassion, calm, and intuition. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): martyrdom and over-sensitivity may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: compassion and calm. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): martyrdom and over-sensitivity. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "king-of-cups": {
+      "title": "King of Cups",
+      "keywords": {
+        "upright": [
+          "emotional balance",
+          "support",
+          "wisdom"
+        ],
+        "reversed": [
+          "coldness",
+          "manipulation"
+        ]
+      },
+      "meanings": {
+        "upright": "King of Cups upright: emotional balance, support, and wisdom. Lean into this energy today; stay present and intentional.",
+        "reversed": "King of Cups reversed: coldness and manipulation. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, king of cups favors emotional balance and support. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for coldness and manipulation. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: emotional balance, support, and wisdom. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): coldness and manipulation may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: emotional balance and support. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): coldness and manipulation. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "ace-of-swords": {
+      "title": "Ace of Swords",
+      "keywords": {
+        "upright": [
+          "clarity",
+          "truth",
+          "breakthrough"
+        ],
+        "reversed": [
+          "confusion",
+          "misuse of power"
+        ]
+      },
+      "meanings": {
+        "upright": "Ace of Swords upright: clarity, truth, and breakthrough. Lean into this energy today; stay present and intentional.",
+        "reversed": "Ace of Swords reversed: confusion and misuse of power. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, ace of swords favors clarity and truth. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for confusion and misuse of power. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: clarity, truth, and breakthrough. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): confusion and misuse of power may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: clarity and truth. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): confusion and misuse of power. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "two-of-swords": {
+      "title": "Two of Swords",
+      "keywords": {
+        "upright": [
+          "stalemate",
+          "decision",
+          "balance"
+        ],
+        "reversed": [
+          "indecision",
+          "overthinking"
+        ]
+      },
+      "meanings": {
+        "upright": "Two of Swords upright: stalemate, decision, and balance. Lean into this energy today; stay present and intentional.",
+        "reversed": "Two of Swords reversed: indecision and overthinking. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, two of swords favors stalemate and decision. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for indecision and overthinking. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: stalemate, decision, and balance. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): indecision and overthinking may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: stalemate and decision. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): indecision and overthinking. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "three-of-swords": {
+      "title": "Three of Swords",
+      "keywords": {
+        "upright": [
+          "heartbreak",
+          "sorrow",
+          "release"
+        ],
+        "reversed": [
+          "recovery",
+          "forgiveness"
+        ]
+      },
+      "meanings": {
+        "upright": "Three of Swords upright: heartbreak, sorrow, and release. Lean into this energy today; stay present and intentional.",
+        "reversed": "Three of Swords reversed: recovery and forgiveness. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, three of swords favors heartbreak and sorrow. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for recovery and forgiveness. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: heartbreak, sorrow, and release. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): recovery and forgiveness may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: heartbreak and sorrow. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): recovery and forgiveness. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "four-of-swords": {
+      "title": "Four of Swords",
+      "keywords": {
+        "upright": [
+          "rest",
+          "recovery",
+          "contemplation"
+        ],
+        "reversed": [
+          "restlessness",
+          "burnout"
+        ]
+      },
+      "meanings": {
+        "upright": "Four of Swords upright: rest, recovery, and contemplation. Lean into this energy today; stay present and intentional.",
+        "reversed": "Four of Swords reversed: restlessness and burnout. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, four of swords favors rest and recovery. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for restlessness and burnout. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: rest, recovery, and contemplation. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): restlessness and burnout may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: rest and recovery. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): restlessness and burnout. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "five-of-swords": {
+      "title": "Five of Swords",
+      "keywords": {
+        "upright": [
+          "conflict",
+          "win at all costs",
+          "ego"
+        ],
+        "reversed": [
+          "reconciliation",
+          "learning"
+        ]
+      },
+      "meanings": {
+        "upright": "Five of Swords upright: conflict, win at all costs, and ego. Lean into this energy today; stay present and intentional.",
+        "reversed": "Five of Swords reversed: reconciliation and learning. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, five of swords favors conflict and win at all costs. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for reconciliation and learning. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: conflict, win at all costs, and ego. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): reconciliation and learning may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: conflict and win at all costs. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): reconciliation and learning. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "six-of-swords": {
+      "title": "Six of Swords",
+      "keywords": {
+        "upright": [
+          "transition",
+          "moving on",
+          "healing"
+        ],
+        "reversed": [
+          "unfinished business",
+          "delays"
+        ]
+      },
+      "meanings": {
+        "upright": "Six of Swords upright: transition, moving on, and healing. Lean into this energy today; stay present and intentional.",
+        "reversed": "Six of Swords reversed: unfinished business and delays. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, six of swords favors transition and moving on. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for unfinished business and delays. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: transition, moving on, and healing. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): unfinished business and delays may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: transition and moving on. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): unfinished business and delays. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "seven-of-swords": {
+      "title": "Seven of Swords",
+      "keywords": {
+        "upright": [
+          "strategy",
+          "privacy",
+          "cunning"
+        ],
+        "reversed": [
+          "getting caught",
+          "conscience"
+        ]
+      },
+      "meanings": {
+        "upright": "Seven of Swords upright: strategy, privacy, and cunning. Lean into this energy today; stay present and intentional.",
+        "reversed": "Seven of Swords reversed: getting caught and conscience. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, seven of swords favors strategy and privacy. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for getting caught and conscience. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: strategy, privacy, and cunning. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): getting caught and conscience may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: strategy and privacy. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): getting caught and conscience. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "eight-of-swords": {
+      "title": "Eight of Swords",
+      "keywords": {
+        "upright": [
+          "restriction",
+          "fear",
+          "self-imposed"
+        ],
+        "reversed": [
+          "liberation",
+          "new perspective"
+        ]
+      },
+      "meanings": {
+        "upright": "Eight of Swords upright: restriction, fear, and self-imposed. Lean into this energy today; stay present and intentional.",
+        "reversed": "Eight of Swords reversed: liberation and new perspective. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, eight of swords favors restriction and fear. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for liberation and new perspective. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: restriction, fear, and self-imposed. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): liberation and new perspective may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: restriction and fear. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): liberation and new perspective. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "nine-of-swords": {
+      "title": "Nine of Swords",
+      "keywords": {
+        "upright": [
+          "anxiety",
+          "nightmares",
+          "worry"
+        ],
+        "reversed": [
+          "perspective",
+          "release"
+        ]
+      },
+      "meanings": {
+        "upright": "Nine of Swords upright: anxiety, nightmares, and worry. Lean into this energy today; stay present and intentional.",
+        "reversed": "Nine of Swords reversed: perspective and release. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, nine of swords favors anxiety and nightmares. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for perspective and release. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: anxiety, nightmares, and worry. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): perspective and release may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: anxiety and nightmares. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): perspective and release. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "ten-of-swords": {
+      "title": "Ten of Swords",
+      "keywords": {
+        "upright": [
+          "endings",
+          "rock bottom",
+          "surrender"
+        ],
+        "reversed": [
+          "recovery",
+          "resilience"
+        ]
+      },
+      "meanings": {
+        "upright": "Ten of Swords upright: endings, rock bottom, and surrender. Lean into this energy today; stay present and intentional.",
+        "reversed": "Ten of Swords reversed: recovery and resilience. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, ten of swords favors endings and rock bottom. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for recovery and resilience. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: endings, rock bottom, and surrender. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): recovery and resilience may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: endings and rock bottom. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): recovery and resilience. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "page-of-swords": {
+      "title": "Page of Swords",
+      "keywords": {
+        "upright": [
+          "curiosity",
+          "ideas",
+          "vigilance"
+        ],
+        "reversed": [
+          "gossip",
+          "haste"
+        ]
+      },
+      "meanings": {
+        "upright": "Page of Swords upright: curiosity, ideas, and vigilance. Lean into this energy today; stay present and intentional.",
+        "reversed": "Page of Swords reversed: gossip and haste. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, page of swords favors curiosity and ideas. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for gossip and haste. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: curiosity, ideas, and vigilance. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): gossip and haste may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: curiosity and ideas. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): gossip and haste. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "knight-of-swords": {
+      "title": "Knight of Swords",
+      "keywords": {
+        "upright": [
+          "action",
+          "ambition",
+          "drive"
+        ],
+        "reversed": [
+          "impulsive",
+          "aggressive"
+        ]
+      },
+      "meanings": {
+        "upright": "Knight of Swords upright: action, ambition, and drive. Lean into this energy today; stay present and intentional.",
+        "reversed": "Knight of Swords reversed: impulsive and aggressive. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, knight of swords favors action and ambition. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for impulsive and aggressive. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: action, ambition, and drive. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): impulsive and aggressive may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: action and ambition. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): impulsive and aggressive. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "queen-of-swords": {
+      "title": "Queen of Swords",
+      "keywords": {
+        "upright": [
+          "perceptive",
+          "honest",
+          "independent"
+        ],
+        "reversed": [
+          "cold",
+          "critical"
+        ]
+      },
+      "meanings": {
+        "upright": "Queen of Swords upright: perceptive, honest, and independent. Lean into this energy today; stay present and intentional.",
+        "reversed": "Queen of Swords reversed: cold and critical. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, queen of swords favors perceptive and honest. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for cold and critical. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: perceptive, honest, and independent. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): cold and critical may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: perceptive and honest. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): cold and critical. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "king-of-swords": {
+      "title": "King of Swords",
+      "keywords": {
+        "upright": [
+          "logic",
+          "truth",
+          "authority"
+        ],
+        "reversed": [
+          "tyranny",
+          "rigidity"
+        ]
+      },
+      "meanings": {
+        "upright": "King of Swords upright: logic, truth, and authority. Lean into this energy today; stay present and intentional.",
+        "reversed": "King of Swords reversed: tyranny and rigidity. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, king of swords favors logic and truth. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for tyranny and rigidity. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: logic, truth, and authority. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): tyranny and rigidity may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: logic and truth. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): tyranny and rigidity. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "ace-of-pentacles": {
+      "title": "Ace of Pentacles",
+      "keywords": {
+        "upright": [
+          "manifestation",
+          "opportunity",
+          "resources"
+        ],
+        "reversed": [
+          "missed chance",
+          "scarcity"
+        ]
+      },
+      "meanings": {
+        "upright": "Ace of Pentacles upright: manifestation, opportunity, and resources. Lean into this energy today; stay present and intentional.",
+        "reversed": "Ace of Pentacles reversed: missed chance and scarcity. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, ace of pentacles favors manifestation and opportunity. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for missed chance and scarcity. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: manifestation, opportunity, and resources. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): missed chance and scarcity may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: manifestation and opportunity. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): missed chance and scarcity. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "two-of-pentacles": {
+      "title": "Two of Pentacles",
+      "keywords": {
+        "upright": [
+          "balance",
+          "priorities",
+          "adaptability"
+        ],
+        "reversed": [
+          "overcommitted",
+          "disorganized"
+        ]
+      },
+      "meanings": {
+        "upright": "Two of Pentacles upright: balance, priorities, and adaptability. Lean into this energy today; stay present and intentional.",
+        "reversed": "Two of Pentacles reversed: overcommitted and disorganized. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, two of pentacles favors balance and priorities. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for overcommitted and disorganized. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: balance, priorities, and adaptability. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): overcommitted and disorganized may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: balance and priorities. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): overcommitted and disorganized. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "three-of-pentacles": {
+      "title": "Three of Pentacles",
+      "keywords": {
+        "upright": [
+          "teamwork",
+          "skill",
+          "planning"
+        ],
+        "reversed": [
+          "misalignment",
+          "poor quality"
+        ]
+      },
+      "meanings": {
+        "upright": "Three of Pentacles upright: teamwork, skill, and planning. Lean into this energy today; stay present and intentional.",
+        "reversed": "Three of Pentacles reversed: misalignment and poor quality. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, three of pentacles favors teamwork and skill. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for misalignment and poor quality. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: teamwork, skill, and planning. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): misalignment and poor quality may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: teamwork and skill. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): misalignment and poor quality. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "four-of-pentacles": {
+      "title": "Four of Pentacles",
+      "keywords": {
+        "upright": [
+          "security",
+          "saving",
+          "control"
+        ],
+        "reversed": [
+          "greed",
+          "fear of loss"
+        ]
+      },
+      "meanings": {
+        "upright": "Four of Pentacles upright: security, saving, and control. Lean into this energy today; stay present and intentional.",
+        "reversed": "Four of Pentacles reversed: greed and fear of loss. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, four of pentacles favors security and saving. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for greed and fear of loss. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: security, saving, and control. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): greed and fear of loss may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: security and saving. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): greed and fear of loss. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "five-of-pentacles": {
+      "title": "Five of Pentacles",
+      "keywords": {
+        "upright": [
+          "hardship",
+          "isolation",
+          "lack"
+        ],
+        "reversed": [
+          "help available",
+          "recovery"
+        ]
+      },
+      "meanings": {
+        "upright": "Five of Pentacles upright: hardship, isolation, and lack. Lean into this energy today; stay present and intentional.",
+        "reversed": "Five of Pentacles reversed: help available and recovery. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, five of pentacles favors hardship and isolation. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for help available and recovery. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: hardship, isolation, and lack. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): help available and recovery may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: hardship and isolation. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): help available and recovery. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "six-of-pentacles": {
+      "title": "Six of Pentacles",
+      "keywords": {
+        "upright": [
+          "giving",
+          "support",
+          "fairness"
+        ],
+        "reversed": [
+          "strings attached",
+          "inequality"
+        ]
+      },
+      "meanings": {
+        "upright": "Six of Pentacles upright: giving, support, and fairness. Lean into this energy today; stay present and intentional.",
+        "reversed": "Six of Pentacles reversed: strings attached and inequality. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, six of pentacles favors giving and support. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for strings attached and inequality. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: giving, support, and fairness. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): strings attached and inequality may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: giving and support. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): strings attached and inequality. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "seven-of-pentacles": {
+      "title": "Seven of Pentacles",
+      "keywords": {
+        "upright": [
+          "patience",
+          "assessment",
+          "growth"
+        ],
+        "reversed": [
+          "impatience",
+          "limited reward"
+        ]
+      },
+      "meanings": {
+        "upright": "Seven of Pentacles upright: patience, assessment, and growth. Lean into this energy today; stay present and intentional.",
+        "reversed": "Seven of Pentacles reversed: impatience and limited reward. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, seven of pentacles favors patience and assessment. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for impatience and limited reward. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: patience, assessment, and growth. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): impatience and limited reward may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: patience and assessment. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): impatience and limited reward. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "eight-of-pentacles": {
+      "title": "Eight of Pentacles",
+      "keywords": {
+        "upright": [
+          "mastery",
+          "craft",
+          "focus"
+        ],
+        "reversed": [
+          "perfectionism",
+          "monotony"
+        ]
+      },
+      "meanings": {
+        "upright": "Eight of Pentacles upright: mastery, craft, and focus. Lean into this energy today; stay present and intentional.",
+        "reversed": "Eight of Pentacles reversed: perfectionism and monotony. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, eight of pentacles favors mastery and craft. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for perfectionism and monotony. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: mastery, craft, and focus. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): perfectionism and monotony may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: mastery and craft. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): perfectionism and monotony. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "nine-of-pentacles": {
+      "title": "Nine of Pentacles",
+      "keywords": {
+        "upright": [
+          "independence",
+          "comfort",
+          "self-reliance"
+        ],
+        "reversed": [
+          "overdependence",
+          "setback"
+        ]
+      },
+      "meanings": {
+        "upright": "Nine of Pentacles upright: independence, comfort, and self-reliance. Lean into this energy today; stay present and intentional.",
+        "reversed": "Nine of Pentacles reversed: overdependence and setback. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, nine of pentacles favors independence and comfort. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for overdependence and setback. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: independence, comfort, and self-reliance. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): overdependence and setback may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: independence and comfort. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): overdependence and setback. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "ten-of-pentacles": {
+      "title": "Ten of Pentacles",
+      "keywords": {
+        "upright": [
+          "legacy",
+          "family",
+          "wealth"
+        ],
+        "reversed": [
+          "instability",
+          "short-term"
+        ]
+      },
+      "meanings": {
+        "upright": "Ten of Pentacles upright: legacy, family, and wealth. Lean into this energy today; stay present and intentional.",
+        "reversed": "Ten of Pentacles reversed: instability and short-term. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, ten of pentacles favors legacy and family. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for instability and short-term. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: legacy, family, and wealth. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): instability and short-term may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: legacy and family. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): instability and short-term. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "page-of-pentacles": {
+      "title": "Page of Pentacles",
+      "keywords": {
+        "upright": [
+          "study",
+          "offer",
+          "practicality"
+        ],
+        "reversed": [
+          "procrastination",
+          "boredom"
+        ]
+      },
+      "meanings": {
+        "upright": "Page of Pentacles upright: study, offer, and practicality. Lean into this energy today; stay present and intentional.",
+        "reversed": "Page of Pentacles reversed: procrastination and boredom. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, page of pentacles favors study and offer. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for procrastination and boredom. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: study, offer, and practicality. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): procrastination and boredom may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: study and offer. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): procrastination and boredom. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "knight-of-pentacles": {
+      "title": "Knight of Pentacles",
+      "keywords": {
+        "upright": [
+          "routine",
+          "reliability",
+          "hard work"
+        ],
+        "reversed": [
+          "stagnation",
+          "stubborn"
+        ]
+      },
+      "meanings": {
+        "upright": "Knight of Pentacles upright: routine, reliability, and hard work. Lean into this energy today; stay present and intentional.",
+        "reversed": "Knight of Pentacles reversed: stagnation and stubborn. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, knight of pentacles favors routine and reliability. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for stagnation and stubborn. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: routine, reliability, and hard work. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): stagnation and stubborn may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: routine and reliability. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): stagnation and stubborn. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "queen-of-pentacles": {
+      "title": "Queen of Pentacles",
+      "keywords": {
+        "upright": [
+          "nurture",
+          "practical",
+          "comfort"
+        ],
+        "reversed": [
+          "smothering",
+          "materialism"
+        ]
+      },
+      "meanings": {
+        "upright": "Queen of Pentacles upright: nurture, practical, and comfort. Lean into this energy today; stay present and intentional.",
+        "reversed": "Queen of Pentacles reversed: smothering and materialism. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, queen of pentacles favors nurture and practical. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for smothering and materialism. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: nurture, practical, and comfort. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): smothering and materialism may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: nurture and practical. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): smothering and materialism. Rest, breathe, and simplify your schedule."
+        }
+      }
+    },
+    "king-of-pentacles": {
+      "title": "King of Pentacles",
+      "keywords": {
+        "upright": [
+          "stability",
+          "prosperity",
+          "discipline"
+        ],
+        "reversed": [
+          "possessive",
+          "rigid"
+        ]
+      },
+      "meanings": {
+        "upright": "King of Pentacles upright: stability, prosperity, and discipline. Lean into this energy today; stay present and intentional.",
+        "reversed": "King of Pentacles reversed: possessive and rigid. Notice the pattern and adjust gently; small steps restore balance.",
+        "love": {
+          "upright": "In love, king of pentacles favors stability and prosperity. Share feelings clearly and set kind boundaries.",
+          "reversed": "In love (reversed), watch for possessive and rigid. Slow down, clarify needs, and avoid assumptions."
+        },
+        "career": {
+          "upright": "Work & career: stability, prosperity, and discipline. Prioritize one task, keep scope clear, and act decisively.",
+          "reversed": "Work (reversed): possessive and rigid may appear. Re-align goals, cut noise, and ask for help if needed."
+        },
+        "wellbeing": {
+          "upright": "Wellbeing: stability and prosperity. Choose simple routines—sleep, movement, nourishing food.",
+          "reversed": "Wellbeing (reversed): possessive and rigid. Rest, breathe, and simplify your schedule."
+        }
+      }
+    }
+  }
+}

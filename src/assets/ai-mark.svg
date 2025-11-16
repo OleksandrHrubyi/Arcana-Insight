@@ -1,0 +1,7 @@
+<svg width="28" height="28" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" aria-label="Arcana Insight mark (outline)">
+    <g fill="none" stroke="#A7B0BB" stroke-opacity=".85" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="48" cy="48" r="33" stroke-width="1.6"/>
+        <path d="M48 13 L52 44 L83 48 L52 52 L48 83 L44 52 L13 48 L44 44 Z" stroke-width="1.6"/>
+        <circle cx="48" cy="48" r="3.2" fill="#A7B0BB" stroke="none"/>
+    </g>
+</svg>
