@@ -1,0 +1,6 @@
+{
+  "name": "horoscope",
+  "entrypoint": "index.ts",
+  "env": ["URL", "ANON_KEY"],
+  "verify_jwt": false
+}
