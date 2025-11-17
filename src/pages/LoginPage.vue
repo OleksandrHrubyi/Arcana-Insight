@@ -1,12 +1,12 @@
 <script>
-import LoginComponent from 'components/LoginComponent.vue';
+import LoginView from '../components/auth/LoginView.vue'
 
 export default {
   name: 'LoginPage',
-  components: { LoginComponent },
+  components: { LoginView },
 };
 </script>
 
 <template>
-  <LoginComponent/>
+  <LoginView/>
 </template>

@@ -1,5 +1,5 @@
 {
-  "name": "arcana-quasar",
+  "name": "arcana",
   "version": "0.0.1",
   "description": "tarot horoscope",
   "productName": "Arcana Insight",
@@ -17,7 +17,11 @@
     "ioscopy": "npx cap copy ios",
     "iosopen": "open ios/App/App.xcworkspace",
     "iosprep": "npm run iosbuild && npm run ioscopy && npm run iosopen",
-    "iossync": "npx cap sync ios && npm run iosopen"
+    "iossync": "npx cap sync ios && npm run iosopen",
+    "ios:assets": "capacitor-assets generate --ios",
+    "ios:sync": "npx cap sync ios",
+    "ios:open": "npx cap open ios",
+    "party": "npm run build && npm run iosbuild && npm run ioscopy && npm run iossync"
   },
   "dependencies": {
     "@capacitor/core": "^5.7.8",

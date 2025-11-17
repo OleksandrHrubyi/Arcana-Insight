@@ -43,6 +43,7 @@
 
         <div class="auth-btn-wrap">
           <q-btn
+            @click="pushTo('/login')"
             label="Login"
             flat
             class="auth-btn mono-text"
@@ -50,6 +51,7 @@
           />
           <span class="auth-separator">|</span>
           <q-btn
+            @click="pushTo('/signup')"
             label="Sign up"
             flat
             class="auth-btn mono-text"
@@ -181,6 +183,10 @@ export default {
         }, stepInterval)
       }, delayBeforeHide)
     },
+
+    pushTo(path){
+      this.$router.push(path)
+    }
   }
 
 }
