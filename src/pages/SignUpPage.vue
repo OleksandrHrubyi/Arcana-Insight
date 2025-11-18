@@ -1,5 +1,5 @@
 <script>
-import SignUpComponent from '@/components/SignUpComponent.vue';
+import SignUpComponent from '../components/auth/SignUpScene.vue';
 
 export default {
   name: 'SignUpPage',

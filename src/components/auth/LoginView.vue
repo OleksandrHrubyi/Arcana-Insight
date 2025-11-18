@@ -22,7 +22,7 @@ export default {
       console.log('Login with Telegram');
     },
     goBack() {
-      this.$router.back();
+      this.$router.push('/');
     },
   },
 };
@@ -156,7 +156,6 @@ export default {
           no-caps
           flat
           @click="goBack"
-          label="Back"
           dense
         />
       </div>
@@ -187,8 +186,8 @@ export default {
   width: 100%;
   max-width: 440px;
   margin: 0 auto;
-  padding: 84px 16px 24px;
-  background: rgba(8, 12, 19, 0.82);
+  padding: 74px 16px 24px;
+  //background: rgba(8, 12, 19, 0.82);
   display: flex;
   flex-direction: column;
 }
@@ -198,22 +197,22 @@ export default {
   font-size: 18px;
   line-height: 26px;
   color: #ffffff;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
 .field {
-  padding: 14px 0 10px;
+  padding-bottom: 4px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   border-bottom: 1px solid rgba(126, 138, 165, 0.65);
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .field-label {
   font-size: 13px;
   line-height: 18px;
-  color: #9aa4be;
+  color: #D9D9D9;
 }
 
 .field-input {
@@ -259,7 +258,7 @@ export default {
 .bottom-text {
   font-size: 13px;
   color: #8891aa;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .link {
@@ -274,7 +273,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 12px 0 16px;
+  margin-bottom: 24px;
 }
 
 .divider-line {
@@ -295,7 +294,6 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin: 28px 0 24px;
 }
 
 .social-btn {
