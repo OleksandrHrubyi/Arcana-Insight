@@ -31,13 +31,13 @@
         Between the stars and silence…
         <div>your path is forming</div>
       </div>
-
-      <div class="bottom-btn">
+      <div v-if="!isLoggedIn" class="bottom-btn">
         <q-btn
           label="Start my reading"
           class="no-auth-btn mono-text"
           no-caps
           flat
+          @click="pushTo('/horoscope')"
         />
 
         <div class="auth-btn-wrap">
@@ -51,7 +51,9 @@
 </template>
 
 <script>
-import logo from 'src/assets/images/logo.svg'
+import logo from 'src/assets/images/logo.svg';
+import { useAuthStore } from 'src/stores/authStore.js';
+import { supabase } from 'src/boot/supabase';
 
 export default {
   name: 'LandingScene',
@@ -63,108 +65,157 @@ export default {
       revealedIndices: [],
       lettersTimer: null,
       hideTimer: null,
-      isPreloaded: false
-    }
+      isPreloaded: false,
+      authStore: null,
+    };
+  },
+
+  created() {
+    this.authStore = useAuthStore()
+    this.authStore.initAuth()
   },
 
   computed: {
     fullTextArray() {
-      return this.fullText.split('')
-    }
+      return this.fullText.split('');
+    },
+    auth() {
+      return useAuthStore();
+    },
+    user() {
+      console.log(this.auth);
+      return this.auth.state.user;
+    },
+    isLoggedIn() {
+      return this.authStore.isLoggedIn;
+    },
   },
 
   mounted() {
     this.$nextTick(() => {
       this.preloadAllImages().then(() => {
-        this.isPreloaded = true
-        this.startRandomLetterReveal()
-      })
-    })
+        this.isPreloaded = true;
+        this.startRandomLetterReveal();
+      });
+    });
   },
 
   beforeUnmount() {
-    if (this.lettersTimer) clearInterval(this.lettersTimer)
-    if (this.hideTimer) clearInterval(this.hideTimer)
+    if (this.lettersTimer) clearInterval(this.lettersTimer);
+    if (this.hideTimer) clearInterval(this.hideTimer);
   },
 
   methods: {
     // Прелоад всіх фонів (1x + потрібний @2x/@3x)
     preloadAllImages() {
-      const dpr = window.devicePixelRatio || 1
-      const high = dpr >= 2.5 ? '@3x.png' : dpr >= 1.5 ? '@2x.png' : '@1x.png'
+      const dpr = window.devicePixelRatio || 1;
+      const high = dpr >= 2.5 ? '@3x.png' : dpr >= 1.5 ? '@2x.png' : '@1x.png';
 
       const images = ['bg1', 'bg2', 'bg3', 'bg4', 'bg5'].flatMap(name => [
         `assets/images/${name}@1x.png`,
-        `assets/images/${name}${high}`
-      ])
+        `assets/images/${name}${high}`,
+      ]);
 
       const promises = images.map(src => {
         return new Promise(resolve => {
-          const img = new Image()
-          img.onload = img.onerror = resolve
-          img.src = src
-        })
-      })
+          const img = new Image();
+          img.onload = img.onerror = resolve;
+          img.src = src;
+        });
+      });
 
-      return Promise.all(promises)
+      return Promise.all(promises);
     },
 
     startRandomLetterReveal() {
-      const indices = []
+      const indices = [];
       for (let i = 0; i < this.fullText.length; i++) {
-        if (this.fullText[i] !== ' ') indices.push(i)
+        if (this.fullText[i] !== ' ') indices.push(i);
       }
 
       // Fisher–Yates shuffle
       for (let i = indices.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
-        ;[indices[i], indices[j]] = [indices[j], indices[i]]
+        ;[indices[i], indices[j]] = [indices[j], indices[i]];
       }
 
-      this.revealedIndices = []
+      this.revealedIndices = [];
 
       setTimeout(() => {
-        let current = 0
-        const totalDuration = 4000
-        const minInterval = 90
-        const step = Math.max(minInterval, Math.floor(totalDuration / indices.length))
+        let current = 0;
+        const totalDuration = 4000;
+        const minInterval = 90;
+        const step = Math.max(minInterval, Math.floor(totalDuration / indices.length));
 
         this.lettersTimer = setInterval(() => {
           if (current >= indices.length) {
-            clearInterval(this.lettersTimer)
-            this.startRandomLetterHide(indices)
-            return
+            clearInterval(this.lettersTimer);
+            this.startRandomLetterHide(indices);
+            return;
           }
-          this.revealedIndices = [...this.revealedIndices, indices[current]]
-          current++
-        }, step)
-      }, 800)
+          this.revealedIndices = [...this.revealedIndices, indices[current]];
+          current++;
+        }, step);
+      }, 800);
     },
 
     startRandomLetterHide(indices) {
-      const shuffled = [...indices]
-      let current = 0
-      const totalDuration = 3500
-      const minInterval = 90
-      const step = Math.max(minInterval, Math.floor(totalDuration / shuffled.length))
+      const shuffled = [...indices];
+      let current = 0;
+      const totalDuration = 3500;
+      const minInterval = 90;
+      const step = Math.max(minInterval, Math.floor(totalDuration / shuffled.length));
 
       setTimeout(() => {
         this.hideTimer = setInterval(() => {
           if (current >= shuffled.length) {
-            clearInterval(this.hideTimer)
-            return
+            clearInterval(this.hideTimer);
+            return;
           }
-          this.revealedIndices = this.revealedIndices.filter(i => i !== shuffled[current])
-          current++
-        }, step)
-      }, 4000)
+          this.revealedIndices = this.revealedIndices.filter(i => i !== shuffled[current]);
+          current++;
+        }, step);
+      }, 4000);
     },
 
     pushTo(path) {
-      this.$router.push(path)
-    }
-  }
-}
+      this.$router.push(path);
+    },
+
+    async onLogout() {
+      const auth = useAuthStore();
+
+      try {
+        // спочатку подивимось, чи є взагалі активна сесія
+        const { data } = await supabase.auth.getSession();
+        const session = data.session;
+
+        if (!session) {
+          // сесії немає – значить юзер і так не залогінений
+          auth.state.user = null;
+          this.$router.push('/login');
+          return;
+        }
+
+        const { error } = await supabase.auth.signOut();
+
+        if (error && error.name !== 'AuthSessionMissingError') {
+          // інші помилки покажемо в консолі
+          console.error('Logout error:', error);
+          return;
+        }
+
+        // локально чистимо стейт
+        auth.state.user = null;
+        this.$router.push('/login');
+      } catch (e) {
+        console.error('Logout error:', e);
+        // навіть якщо щось пішло не так – все одно ведемо на логін
+        this.$router.push('/login');
+      }
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -179,7 +230,9 @@ export default {
   opacity: 1;
 }
 
-.wrapper { height: 100dvh; }
+.wrapper {
+  height: 100dvh;
+}
 
 .container {
   position: relative;
@@ -221,11 +274,22 @@ export default {
   );
 }
 
-.content-left   { background-image: image-set('assets/images/bg3@1x.png' 1x, 'assets/images/bg3@2x.png' 2x, 'assets/images/bg3@3x.png' 3x); }
-.content-write  { background-image: image-set('assets/images/bg4@1x.png' 1x, 'assets/images/bg4@2x.png' 2x, 'assets/images/bg4@3x.png' 3x); }
-.content-bottom { background-image: image-set('assets/images/bg5@1x.png' 1x, 'assets/images/bg5@2x.png' 2x, 'assets/images/bg5@3x.png' 3x); }
+.content-left {
+  background-image: image-set('assets/images/bg3@1x.png' 1x, 'assets/images/bg3@2x.png' 2x, 'assets/images/bg3@3x.png' 3x);
+}
 
-.mono-text { font-style: normal; font-weight: 400; }
+.content-write {
+  background-image: image-set('assets/images/bg4@1x.png' 1x, 'assets/images/bg4@2x.png' 2x, 'assets/images/bg4@3x.png' 3x);
+}
+
+.content-bottom {
+  background-image: image-set('assets/images/bg5@1x.png' 1x, 'assets/images/bg5@2x.png' 2x, 'assets/images/bg5@3x.png' 3x);
+}
+
+.mono-text {
+  font-style: normal;
+  font-weight: 400;
+}
 
 .logo-wrap {
   margin-top: 80px;
@@ -270,7 +334,8 @@ export default {
 .bottom-btn {
   position: absolute;
   bottom: calc(50px + env(safe-area-inset-bottom));
-  left: 0; right: 0;
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -298,7 +363,9 @@ export default {
   box-shadow: 0 0 0 rgba(159, 216, 246, 0);
   transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.3s ease;
 
-  &:active { opacity: 0.9; }
+  &:active {
+    opacity: 0.9;
+  }
 }
 
 .auth-btn-wrap {
@@ -337,8 +404,14 @@ export default {
 }
 
 @keyframes bottom-fade-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .appear-content span {
@@ -346,7 +419,9 @@ export default {
   transition: opacity 0.5s ease;
 }
 
-.char-hidden { opacity: 0; }
+.char-hidden {
+  opacity: 0;
+}
 
 .decor-layer {
   position: absolute;
@@ -371,9 +446,20 @@ export default {
 }
 
 @keyframes shooting {
-  0%   { opacity: 0; transform: translate3d(0, 0, 0); }
-  10%  { opacity: 1; }
-  40%  { opacity: 1; transform: translate3d(-60vw, 40vh, 0); }
-  70%, 100% { opacity: 0; transform: translate3d(-75vw, 55vh, 0); }
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+  }
+  10% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 1;
+    transform: translate3d(-60vw, 40vh, 0);
+  }
+  70%, 100% {
+    opacity: 0;
+    transform: translate3d(-75vw, 55vh, 0);
+  }
 }
 </style>

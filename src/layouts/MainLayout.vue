@@ -1,6 +1,9 @@
 <script>
+import BottomNavigation from 'components/ui/BottomNavigation.vue';
+
 export default {
   name: 'MainLayout',
+  components: { BottomNavigation },
 };
 </script>
 
@@ -12,6 +15,7 @@ export default {
     <q-page-container>
       <router-view />
     </q-page-container>
+    <BottomNavigation/>
   </q-layout>
 </template>
 

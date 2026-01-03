@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+    <defs>
+        <!-- Base deep sky -->
+        <radialGradient id="g0" cx="50%" cy="45%" r="70%">
+            <stop offset="0%" stop-color="#0b2a3a"/>
+            <stop offset="45%" stop-color="#061d2b"/>
+            <stop offset="100%" stop-color="#021018"/>
+        </radialGradient>
+
+        <!-- Soft nebula glow -->
+        <radialGradient id="g1" cx="35%" cy="30%" r="55%">
+            <stop offset="0%" stop-color="#4fc3ff" stop-opacity="0.25"/>
+            <stop offset="40%" stop-color="#2aa6c8" stop-opacity="0.10"/>
+            <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+        </radialGradient>
+
+        <radialGradient id="g2" cx="70%" cy="60%" r="60%">
+            <stop offset="0%" stop-color="#7bffd8" stop-opacity="0.14"/>
+            <stop offset="45%" stop-color="#2aa6c8" stop-opacity="0.06"/>
+            <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- Vignette -->
+        <radialGradient id="vig" cx="50%" cy="50%" r="60%">
+            <stop offset="55%" stop-color="#000" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#000" stop-opacity="0.55"/>
+        </radialGradient>
+
+        <!-- Star glow -->
+        <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="1.2" result="b"/>
+            <feMerge>
+                <feMergeNode in="b"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+
+        <!-- Clip to perfect circle -->
+        <clipPath id="clip">
+            <circle cx="500" cy="500" r="500"/>
+        </clipPath>
+    </defs>
+
+    <g clip-path="url(#clip)">
+        <!-- Background -->
+        <rect width="1000" height="1000" fill="url(#g0)"/>
+        <rect width="1000" height="1000" fill="url(#g1)"/>
+        <rect width="1000" height="1000" fill="url(#g2)"/>
+        <rect width="1000" height="1000" fill="url(#vig)"/>
+
+        <!-- Stars (vector dots, no grain) -->
+        <g fill="#e8fbff" opacity="0.9" filter="url(#glow)">
+            <!-- big stars -->
+            <circle cx="210" cy="180" r="2.2"/>
+            <circle cx="780" cy="240" r="2.0"/>
+            <circle cx="640" cy="760" r="2.3"/>
+            <circle cx="320" cy="690" r="2.1"/>
+            <circle cx="520" cy="420" r="2.0"/>
+            <circle cx="470" cy="820" r="2.2"/>
+            <circle cx="120" cy="520" r="2.0"/>
+            <circle cx="900" cy="560" r="2.1"/>
+
+            <!-- medium stars -->
+            <circle cx="150" cy="260" r="1.3"/>
+            <circle cx="260" cy="120" r="1.2"/>
+            <circle cx="410" cy="210" r="1.1"/>
+            <circle cx="610" cy="160" r="1.2"/>
+            <circle cx="860" cy="330" r="1.1"/>
+            <circle cx="740" cy="520" r="1.2"/>
+            <circle cx="820" cy="690" r="1.1"/>
+            <circle cx="540" cy="650" r="1.2"/>
+            <circle cx="420" cy="560" r="1.1"/>
+            <circle cx="260" cy="560" r="1.2"/>
+            <circle cx="170" cy="740" r="1.1"/>
+            <circle cx="390" cy="860" r="1.2"/>
+
+            <!-- lots of small stars -->
+            <g opacity="0.75">
+                <circle cx="78" cy="128" r="0.9"/><circle cx="110" cy="180" r="0.8"/><circle cx="140" cy="90" r="0.7"/>
+                <circle cx="200" cy="320" r="0.7"/><circle cx="240" cy="260" r="0.8"/><circle cx="300" cy="300" r="0.7"/>
+                <circle cx="360" cy="140" r="0.8"/><circle cx="420" cy="120" r="0.7"/><circle cx="480" cy="160" r="0.8"/>
+                <circle cx="560" cy="110" r="0.7"/><circle cx="620" cy="240" r="0.8"/><circle cx="690" cy="310" r="0.7"/>
+                <circle cx="910" cy="180" r="0.8"/><circle cx="940" cy="260" r="0.7"/><circle cx="880" cy="420" r="0.8"/>
+                <circle cx="760" cy="380" r="0.7"/><circle cx="700" cy="610" r="0.8"/><circle cx="640" cy="540" r="0.7"/>
+                <circle cx="580" cy="780" r="0.8"/><circle cx="520" cy="740" r="0.7"/><circle cx="460" cy="710" r="0.8"/>
+                <circle cx="340" cy="610" r="0.7"/><circle cx="280" cy="760" r="0.8"/><circle cx="220" cy="860" r="0.7"/>
+                <circle cx="120" cy="640" r="0.8"/><circle cx="90" cy="820" r="0.7"/><circle cx="860" cy="840" r="0.8"/>
+                <circle cx="920" cy="760" r="0.7"/><circle cx="820" cy="920" r="0.8"/><circle cx="690" cy="880" r="0.7"/>
+            </g>
+        </g>
+    </g>
+</svg>

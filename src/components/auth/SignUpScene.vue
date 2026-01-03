@@ -1,4 +1,7 @@
 <script>
+import { supabase } from 'src/boot/supabase';
+import { SignInWithApple } from '@capacitor-community/apple-sign-in';
+
 export default {
   name: 'SignUpScene',
 
@@ -9,6 +12,8 @@ export default {
       dateOfBirth: '',
       cityOfBirth: '',
       country: '',
+      loading: false,
+      errorMessage: '',
     };
   },
 
@@ -35,7 +40,6 @@ export default {
       return emailPattern.test(this.trimmedEmail);
     },
 
-    // за потреби можеш посилити умови
     isFormValid() {
       return (
         !!this.trimmedName &&
@@ -48,33 +52,157 @@ export default {
     },
   },
 
+  mounted() {
+    this.fillForm();
+  },
+
   methods: {
-    onSignUp() {
-      console.log('33333');
-      // TODO: додай тут логіку реєстрації / API-запит
+    async onSignUp() {
+      // базова валідація перед запитом
+      if (!this.isFormValid) {
+        this.errorMessage = 'Please fill all fields correctly.';
+        return;
+      }
+
+      this.loading = true;
+      this.errorMessage = '';
+
+      try {
+        const { error } = await supabase.auth.signInWithOtp({
+          email: this.trimmedEmail,
+          options: {
+            shouldCreateUser: true,
+            emailRedirectTo: null, // важливо для OTP-коду, а не magic link
+            data: {
+              name: this.trimmedName,
+              dateOfBirth: this.trimmedDateOfBirth,
+              cityOfBirth: this.trimmedCityOfBirth,
+              country: this.trimmedCountry,
+            },
+          },
+        });
+
+        if (error) throw error;
+
+        // переходимо на екран вводу коду
+        this.$router.push({
+          path: '/confirm-code',
+          query: {
+            email: this.trimmedEmail,
+            name: this.trimmedName,
+            dateOfBirth: this.trimmedDateOfBirth,
+            cityOfBirth: this.trimmedCityOfBirth,
+            country: this.trimmedCountry,
+          },
+        });
+      } catch (e) {
+        console.error(e);
+        this.errorMessage = e.message || 'Something went wrong. Please try again.';
+      } finally {
+        this.loading = false;
+      }
     },
-    loginWithApple() {
-      // TODO: логін через Apple
+
+    async loginWithApple() {
+      console.log('-------333333333333');
+      try {
+        // 1. Запит до Apple
+        const result = await SignInWithApple.authorize({
+          clientId: 'com.hrubyi.arcana.supabase', // твій Services ID
+          redirectURI: 'https://rgqfkdhzllhmagrcasav.supabase.co/auth/v1/callback',
+          scopes: 'email name',
+          // state / nonce можна додати пізніше, поки залишимо мінімальний варіант
+        });
+
+
+        const idToken = result?.response?.identityToken;
+
+        if (!idToken) {
+          console.error('No identity token from Apple', result);
+          return;
+        }
+
+        // 2. Логін через Supabase по idToken
+        const { data, error } = await supabase.auth.signInWithIdToken({
+          provider: 'apple',
+          token: idToken,
+        });
+        console.log(data, 'result-------');
+        console.log(idToken, 'idToken-------');
+
+        if (error) {
+          console.error('Supabase Apple login error', error, error.message, error.status, error.error_description);
+          return;
+        }
+
+        console.log('Logged in with Apple:', data);
+
+        // 3. Переходимо в апці куди треба (поки що умовно /)
+        this.$router.push('/');
+      } catch (err) {
+        console.error('Apple login failed', err);
+      }
     },
-    loginWithGoogle() {
-      // TODO: логін через Google
+
+    async loginWithGoogle() {
+      try {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin + '/', // головна сторінка
+          },
+        });
+
+        console.log(data, 'data');
+
+        if (error) {
+          console.error('Google login error', error);
+          return;
+        }
+
+        // Сюди код майже не доходить, бо браузер піде на Google.
+      } catch (err) {
+        console.error('Google OAuth error', err);
+      }
     },
+
+
     loginWithTelegram() {
       // TODO: логін через Telegram
     },
     goBack() {
-      this.$router.push('/')
+      this.$router.push('/');
+    },
+
+    fillForm() {
+      if (this.$route?.query?.name) {
+        this.name = (this.$route.query.name || '').toString();
+      }
+      if (this.$route?.query?.email) {
+        this.email = (this.$route.query.email || '').toString();
+      }
+      if (this.$route?.query?.dateOfBirth) {
+        this.dateOfBirth = (this.$route.query.dateOfBirth || '').toString();
+      }
+      if (this.$route?.query?.cityOfBirth) {
+        this.cityOfBirth = (this.$route.query.cityOfBirth || '').toString();
+      }
+      if (this.$route?.query?.country) {
+        this.country = (this.$route.query.country || '').toString();
+      }
     },
   },
 };
+
 </script>
+
 
 <template>
   <div class="login-wrap">
     <div class="login-container">
       <p class="subtitle">Welcome to Arcana</p>
 
-      <form @submit.prevent="onSignUp" novalidate>
+      <form novalidate>
         <div class="field">
           <label class="field-label q-mb-xs" for="signup-name">Name</label> <input
           id="signup-name"
@@ -135,7 +263,6 @@ export default {
 
         <div class="q-mb-md">
           <q-btn
-            type="submit"
             label="Sign up"
             class="no-auth-btn mono-text"
             no-caps
@@ -248,6 +375,7 @@ export default {
           flat
           @click="goBack"
           dense
+          :loading="loading"
         />
       </div>
     </div>

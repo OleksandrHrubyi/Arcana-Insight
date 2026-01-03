@@ -1,28 +1,116 @@
 <script>
+import { SignInWithApple } from '@capacitor-community/apple-sign-in';
+import { supabase } from 'boot/supabase.js';
+
 export default {
   name: 'LoginView',
 
   data() {
     return {
       email: '',
+      loading: false,
+      errorMessage: ''
     };
   },
 
   methods: {
-    onLogin() {
-      console.log('Login with email:', this.email);
+    async loginWithApple() {
+      console.log('-------333333333333');
+      try {
+        // 1. Запит до Apple
+        const result = await SignInWithApple.authorize({
+          clientId: 'com.hrubyi.arcana.supabase', // твій Services ID
+          redirectURI: 'https://rgqfkdhzllhmagrcasav.supabase.co/auth/v1/callback',
+          scopes: 'email name',
+          // state / nonce можна додати пізніше, поки залишимо мінімальний варіант
+        });
+
+
+        const idToken = result?.response?.identityToken;
+
+        if (!idToken) {
+          console.error('No identity token from Apple', result);
+          return;
+        }
+
+        // 2. Логін через Supabase по idToken
+        const { data, error } = await supabase.auth.signInWithIdToken({
+          provider: 'apple',
+          token: idToken,
+        });
+        console.log(data, 'result-------');
+        console.log(idToken, 'idToken-------');
+
+        if (error) {
+          console.error('Supabase Apple login error', error, error.message, error.status, error.error_description);
+          return;
+        }
+
+        console.log('Logged in with Apple:', data);
+
+        // 3. Переходимо в апці куди треба (поки що умовно /)
+        this.$router.push('/');
+      } catch (err) {
+        console.error('Apple login failed', err);
+      }
     },
-    loginWithApple() {
-      console.log('Login with Apple');
+
+    async loginWithGoogle() {
+      try {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin + '/', // головна сторінка
+          },
+        });
+
+        console.log(data, 'data');
+
+        if (error) {
+          console.error('Google login error', error);
+        }
+
+        // Сюди код майже не доходить, бо браузер піде на Google.
+      } catch (err) {
+        console.error('Google OAuth error', err);
+      }
     },
-    loginWithGoogle() {
-      console.log('Login with Google');
-    },
+
     loginWithTelegram() {
       console.log('Login with Telegram');
     },
     goBack() {
       this.$router.push('/');
+    },
+    async onLogin() {
+
+      this.loading = true;
+      this.errorMessage = '';
+
+      try {
+        const { error } = await supabase.auth.signInWithOtp({
+          email: this.email,
+          options: {
+            shouldCreateUser: true,
+            emailRedirectTo: null, // важливо для OTP-коду, а не magic link
+          },
+        });
+
+        if (error) throw error;
+
+        // переходимо на екран вводу коду
+        this.$router.push({
+          path: '/confirm-code',
+          query: {
+            email: this.email,
+          },
+        });
+      } catch (e) {
+        console.error(e);
+        this.errorMessage = e.message || 'Something went wrong. Please try again.';
+      } finally {
+        this.loading = false;
+      }
     },
   },
 };
@@ -50,6 +138,7 @@ export default {
           no-caps
           flat
           @click="onLogin"
+          :loading="loading"
         />
       </div>
 
@@ -197,7 +286,7 @@ export default {
   font-size: 18px;
   line-height: 26px;
   color: #ffffff;
-  margin-bottom: 24px;
+  margin-bottom: 40px;
 }
 
 .field {
