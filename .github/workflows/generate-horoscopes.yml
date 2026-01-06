@@ -2,18 +2,62 @@ name: Generate horoscopes daily
 
 on:
   schedule:
-    - cron: "55 9 * * *" # 09:55 UTC щодня
+    - cron: "0 0 * * *" # щодня 00:00 UTC
   workflow_dispatch: {}
-
 
 jobs:
   run:
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      matrix:
+        locale: [uk, en]
+        offset: [1, 2]
+
     steps:
-      - name: Call Supabase Edge Function
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
         run: |
-          curl -sS -L -X POST "${{ secrets.SUPABASE_FUNCTION_URL }}" \
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Generate astro context (+1, +2 days)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/astro-context.mjs
+
+      - name: Call Supabase Edge Function (generate-horoscopes)
+        shell: bash
+        run: |
+          set -e
+          DATE=$(date -u -d "+${{ matrix.offset }} day" +%F)
+          echo "Generate for date=$DATE locale=${{ matrix.locale }}"
+
+          HTTP_CODE=$(curl --retry 5 --retry-delay 3 --retry-all-errors \
+            -sS -L -X POST "${{ secrets.SUPABASE_FUNCTION_URL }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json" \
-            -d "{}"
+            -d "{\"date\":\"$DATE\",\"locale\":\"${{ matrix.locale }}\"}" \
+            -o response.json \
+            -w "%{http_code}")
+
+          echo "HTTP $HTTP_CODE"
+          echo "Response:"
+          cat response.json || true
+          echo ""
+
+          if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+            exit 1
+          fi
