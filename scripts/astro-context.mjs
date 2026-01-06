@@ -71,9 +71,7 @@ function signFromLongitude(lonDeg) {
 
 // ✅ astronomy-engine часто очікує AstroTime (де є .tt)
 function toAstroTime(date) {
-  // у більшості версій є MakeTime
   if (typeof Astronomy.MakeTime === "function") return Astronomy.MakeTime(date);
-  // fallback
   return new Astronomy.AstroTime(date);
 }
 
@@ -110,8 +108,9 @@ function buildContext(dateISO) {
   if (mercuryRetrograde) keywords.push("rethink", "revisit");
   keywords.push("clarity");
 
+  // ✅ compact context: тільки те, що дозволяєш згадувати в тексті
   return {
-    version: "v1",
+    context_version: "v1",
     date: dateISO,
     sun: { sign: signFromLongitude(sunLon0) },
     moon: { sign: signFromLongitude(moonLon0), phase },
@@ -133,6 +132,8 @@ async function upsertContext(dateISO) {
 
 async function main() {
   const todayUTC = isoTodayUTC();
+
+  // ✅ генеримо контекст на завтра і післязавтра
   const dates = [addDaysISO(todayUTC, 1), addDaysISO(todayUTC, 2)];
 
   for (const d of dates) {
