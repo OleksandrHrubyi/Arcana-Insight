@@ -2,7 +2,7 @@ import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 import * as Astronomy from "astronomy-engine";
 
-
+// ---------- env ----------
 const supabaseUrl = process.env.SUPABASE_URL;
 const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -10,22 +10,27 @@ if (!supabaseUrl || !serviceRole) {
   throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
 }
 
-const supabase = createClient(supabaseUrl, serviceRole, { auth: { persistSession: false } });
+const supabase = createClient(supabaseUrl, serviceRole, {
+  auth: { persistSession: false },
+});
 
-const GEO = new Astronomy.Observer(0, 0, 0);
-
+// ---------- helpers ----------
 function iso(d) {
   return d.toISOString().slice(0, 10);
 }
 
-function atNoonUTC(dateISO) {
-  return new Date(dateISO + "T12:00:00Z");
+function isoTodayUTC() {
+  return iso(new Date());
 }
 
-function addDays(dateISO, days) {
+function addDaysISO(dateISO, days) {
   const d = new Date(dateISO + "T00:00:00Z");
   d.setUTCDate(d.getUTCDate() + days);
   return iso(d);
+}
+
+function atNoonUTC(dateISO) {
+  return new Date(dateISO + "T12:00:00Z");
 }
 
 function absAngleDiff(a, b) {
@@ -41,19 +46,6 @@ function signedDeltaDeg(next, prev) {
   return d;
 }
 
-function eclipticLon(body, date) {
-  const eq = Astronomy.Equator(body, date, GEO, true, true);
-  const ecl = Astronomy.Ecliptic(eq);
-  return ecl.elon;
-}
-
-function signFromLongitude(lonDeg) {
-  const SIGNS = ["aries","taurus","gemini","cancer","leo","virgo","libra","scorpio","sagittarius","capricorn","aquarius","pisces"];
-  const lon = ((lonDeg % 360) + 360) % 360;
-  const idx = Math.floor(lon / 30) % 12;
-  return SIGNS[idx];
-}
-
 function moonPhaseName(elongDeg) {
   const x = ((elongDeg % 360) + 360) % 360;
   if (x < 22.5 || x >= 337.5) return "New Moon";
@@ -66,6 +58,34 @@ function moonPhaseName(elongDeg) {
   return "Waning Crescent";
 }
 
+const SIGNS = [
+  "aries","taurus","gemini","cancer","leo","virgo",
+  "libra","scorpio","sagittarius","capricorn","aquarius","pisces",
+];
+
+function signFromLongitude(lonDeg) {
+  const lon = ((lonDeg % 360) + 360) % 360;
+  const idx = Math.floor(lon / 30) % 12;
+  return SIGNS[idx];
+}
+
+// ✅ astronomy-engine часто очікує AstroTime (де є .tt)
+function toAstroTime(date) {
+  // у більшості версій є MakeTime
+  if (typeof Astronomy.MakeTime === "function") return Astronomy.MakeTime(date);
+  // fallback
+  return new Astronomy.AstroTime(date);
+}
+
+// ✅ стабільний шлях: GeoVector -> Ecliptic
+function eclipticLon(body, date) {
+  const time = toAstroTime(date);
+  const vec = Astronomy.GeoVector(body, time, false);
+  const ecl = Astronomy.Ecliptic(vec);
+  return ecl.elon;
+}
+
+// ---------- main context builder ----------
 function buildContext(dateISO) {
   const t0 = atNoonUTC(dateISO);
   const t1 = new Date(t0);
@@ -86,6 +106,7 @@ function buildContext(dateISO) {
   else if (phase.includes("Waxing")) keywords.push("build");
   else if (phase.includes("Full")) keywords.push("highlight");
   else keywords.push("release");
+
   if (mercuryRetrograde) keywords.push("rethink", "revisit");
   keywords.push("clarity");
 
@@ -103,17 +124,16 @@ async function upsertContext(dateISO) {
   const ctx = buildContext(dateISO);
 
   const { error } = await supabase
-  .from("astro_context")
-  .upsert([{ date: dateISO, context: ctx, version: "v1" }], { onConflict: "date" });
+    .from("astro_context")
+    .upsert([{ date: dateISO, context: ctx, version: "v1" }], { onConflict: "date" });
 
   if (error) throw error;
   console.log("upsert astro_context:", dateISO);
 }
 
 async function main() {
-  // генеруємо контекст на +1 і +2 дні (як і твої гороскопи)
-  const todayUTC = iso(new Date());
-  const dates = [addDays(todayUTC, 1), addDays(todayUTC, 2)];
+  const todayUTC = isoTodayUTC();
+  const dates = [addDaysISO(todayUTC, 1), addDaysISO(todayUTC, 2)];
 
   for (const d of dates) {
     await upsertContext(d);
