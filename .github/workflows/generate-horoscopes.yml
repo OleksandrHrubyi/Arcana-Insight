@@ -2,9 +2,8 @@ name: Generate horoscopes daily
 
 on:
   schedule:
-    - cron: "55 9 * * *" # 09:55 UTC щодня
-  workflow_dispatch: {}
-
+    - cron: "0 0 * * *" # щодня о 00:00 UTC
+  workflow_dispatch: {} # щоб можна було запускати вручну
 
 jobs:
   run:
@@ -12,7 +11,7 @@ jobs:
     steps:
       - name: Call Supabase Edge Function
         run: |
-          curl -sS -L -X POST "${{ secrets.SUPABASE_FUNCTION_URL }}" \
+          curl -f -sS -L -X POST "${{ secrets.SUPABASE_FUNCTION_URL }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json" \
