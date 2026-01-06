@@ -15,7 +15,29 @@ jobs:
         offset: [1, 2]
 
     steps:
-      - name: Call Supabase Edge Function
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Generate astro context (+1, +2 days)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/astro-context.mjs
+
+      - name: Call Supabase Edge Function (generate-horoscopes)
         shell: bash
         run: |
           set -e
