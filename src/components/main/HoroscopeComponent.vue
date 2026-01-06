@@ -1,8 +1,8 @@
 <template>
   <div ref="container" class="container">
     <div class="date-info">
-      <div class="date-info-label date-top">DAILY HOROSCOPE</div>
-      <div class="date-info-label date-bottom">{{monthDayLabel}}</div>
+      <div class="date-info-label date-top">{{ tt('dailyHoroscope') }}</div>
+      <div class="date-info-label date-bottom">{{ monthDayLabel }}</div>
     </div>
 
     <!-- ✅ SVG MASK + CLIP + BACKGROUND IMAGE -->
@@ -57,7 +57,7 @@
       <div ref="wheel" class="wheel" :class="{ gpu: gpuOn }" aria-hidden="true"></div>
 
       <div class="active-zodiac" aria-hidden="false">
-        <div class="active-zodiac-name">{{ activeZodiac.name }}</div>
+        <div class="active-zodiac-name">{{ tt(`zodiac.${activeZodiac.key}`) }}</div>
         <div class="active-zodiac-dates">{{ activeZodiac.dates }}</div>
       </div>
 
@@ -76,13 +76,6 @@
     <div ref="centerRound" class="center-round" aria-hidden="true">
       <div class="bottom-wrapper">
         <div class="q-px-sm q-pt-md horoscope-info">
-<!--          <div class="horoscope-info-title"> Love</div>-->
-<!--          <div class="horoscope-info-style">-->
-<!--            {{ horoscope[activeZodiac.key]?.love?.detailed }}-->
-<!--          </div>-->
-
-          <!--                        energy: {{horoscope[activeZodiac.key]?.energy?.summary}}-->
-          <!--                        career: {{horoscope[activeZodiac.key]?.career?.summary}}-->
           <q-tab-panels
             v-model="themeTab"
             animated
@@ -90,19 +83,19 @@
             class="bg-transparent"
           >
             <q-tab-panel name="love" class="q-pa-none">
-              <div class="horoscope-info-title"> Love</div>
+              <div class="horoscope-info-title"> {{ tt('love') }}</div>
               <div class="horoscope-info-style">
                 {{ horoscope[activeZodiac.key]?.love?.detailed }}
               </div>
             </q-tab-panel>
 
             <q-tab-panel name="career" class="q-pa-none">
-              <div class="horoscope-info-title"> Career</div>
+              <div class="horoscope-info-title"> {{tt('career')}}</div>
               <div class="horoscope-info-style">{{ horoscope[activeZodiac.key]?.career?.summary || '' }}</div>
             </q-tab-panel>
 
             <q-tab-panel name="energy" class="q-pa-none">
-              <div class="horoscope-info-title"> Energy</div>
+              <div class="horoscope-info-title"> {{tt('energy')}}</div>
               <div class="horoscope-info-style">{{ horoscope[activeZodiac.key]?.energy?.summary || '' }}</div>
             </q-tab-panel>
           </q-tab-panels>
@@ -124,9 +117,10 @@
 
 <script>
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from '@supabase/supabase-js';
 import { localISODate } from 'src/helpers/date.js';
 import { saveLocal, loadLocal } from 'src/helpers/localStorageSaver.js';
+import { t } from 'src/i18n';
 
 const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
 
@@ -219,7 +213,7 @@ export default {
       horoscope: {},
 
       midnightTimer: null,
-      themeTab: 'love'
+      themeTab: 'love',
     };
   },
 
@@ -235,9 +229,16 @@ export default {
 
     monthDayLabel() {
       const now = new Date();
-      const label = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric' }).format(now);
-      return label.toUpperCase();
+      const locale = this.selectedLocale === 'uk' ? 'uk-UA' : 'en-US';
+
+      const label = new Intl.DateTimeFormat(locale, {
+        day: 'numeric',
+        month: 'long',
+      }).format(now);
+
+      return label.toLocaleUpperCase(locale);
     },
+
 
     // ✅ доступ в розмітці:
     // horoscope[activeZodiac.key]?.love?.summary ...
@@ -252,6 +253,9 @@ export default {
     energyHoroscope() {
       const key = this.activeZodiac?.key;
       return this.horoscope?.[key]?.energy?.summary ?? '';
+    },
+    tt() {
+      return (key) => t(this.selectedLocale, key);
     },
   },
 
@@ -290,7 +294,11 @@ export default {
 
     const drag = this.$refs.dragLayer;
     if (this.activePointerId != null && drag?.releasePointerCapture) {
-      try { drag.releasePointerCapture(this.activePointerId); } catch (e) { console.log(e); }
+      try {
+        drag.releasePointerCapture(this.activePointerId);
+      } catch (e) {
+        console.log(e);
+      }
     }
     clearTimeout(this.midnightTimer);
   },
@@ -351,11 +359,10 @@ export default {
       }
 
       const fetchByDate = async (date) => {
-        const { data, error } = await supabase
-        .from("horoscopes")
-        .select("sign, theme, summary, detailed")
-        .eq("date", date)
-        .eq("locale", locale);
+        const {
+          data,
+          error,
+        } = await supabase.from('horoscopes').select('sign, theme, summary, detailed').eq('date', date).eq('locale', locale);
 
         if (error) throw error;
         return data ?? [];
@@ -368,8 +375,8 @@ export default {
         const d = new Date();
         d.setDate(d.getDate() + 1);
         const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, "0");
-        const day = String(d.getDate()).padStart(2, "0");
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
         const tomorrow = `${y}-${m}-${day}`;
         rows = await fetchByDate(tomorrow);
       }
@@ -559,7 +566,11 @@ export default {
       this.lastHapticTs = now;
       this.lastHapticSnapIndex = snapIndex;
 
-      try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { console.log(e); }
+      try {
+        await Haptics.impact({ style: ImpactStyle.Light });
+      } catch (e) {
+        console.log(e);
+      }
     },
 
     updateSnapState(withHaptic = true) {
@@ -604,7 +615,9 @@ export default {
       this.rafId = null;
       this.isAnimating = false;
       this.mode = 'idle';
-      window.setTimeout(() => { this.gpuOn = false; }, 220);
+      window.setTimeout(() => {
+        this.gpuOn = false;
+      }, 220);
     },
 
     tick(now) {
@@ -682,7 +695,11 @@ export default {
       this.lastMoveAngle = this.startAngle;
 
       if (this.activePointerId != null && drag.setPointerCapture) {
-        try { drag.setPointerCapture(this.activePointerId); } catch (e) { console.log(e); }
+        try {
+          drag.setPointerCapture(this.activePointerId);
+        } catch (e) {
+          console.log(e);
+        }
       }
 
       this.startLoop('drag');
@@ -716,7 +733,11 @@ export default {
 
       const drag = this.$refs.dragLayer;
       if (this.activePointerId != null && drag?.releasePointerCapture) {
-        try { drag.releasePointerCapture(this.activePointerId); } catch (e) { console.log(e); }
+        try {
+          drag.releasePointerCapture(this.activePointerId);
+        } catch (e) {
+          console.log(e);
+        }
       }
       this.activePointerId = null;
 
@@ -938,7 +959,7 @@ export default {
   font-size: 18px;
   line-height: 24px;
   text-align: center;
-margin-bottom: 12px;
+  margin-bottom: 12px;
   color: #FFFFFF;
 }
 
@@ -971,11 +992,11 @@ margin-bottom: 12px;
   height: 7px;
   border-radius: 999px;
   border: none;
-  background: rgba(255,255,255,0.25);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .dot.active {
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .bottom-bg-wrap {

@@ -17,7 +17,7 @@
 
         <!-- Daily push notifications -->
         <div class="settings-row settings-row--static">
-          <span class="settings-row-label">Daily push notifications</span>
+          <span class="settings-row-label">{{tt('dailyPush')}}</span>
           <q-toggle
             v-model="dailyPush"
             color="cyan-4"
@@ -104,6 +104,8 @@
 <script>
 import { supabase } from 'boot/supabase.js';
 import { useAuthStore } from 'stores/authStore.js';
+import { enablePush } from 'boot/push';
+import { t } from 'src/i18n';
 
 export default {
   name: 'SettingsComponent',
@@ -117,12 +119,31 @@ export default {
       // UI
       langSheet: false,
 
-      dailyPush: true,
+      dailyPush: false,
       optimalTime: '8.00 AM',
       authStore: useAuthStore(),
-      loading: false
+      loading: false,
+      currentToken: localStorage.getItem('push_token') || null,
     };
   },
+  watch: {
+    async dailyPush(enabled) {
+      if (enabled) {
+        await enablePush();
+      } else {
+        const token = localStorage.getItem('push_token');
+        if (token) {
+          await supabase
+          .from('push_devices')
+          .update({ enabled: false })
+          .eq('token', token);
+        }
+      }
+    }
+  },
+
+
+
 
   computed: {
     isLoggedIn() {
@@ -136,12 +157,18 @@ export default {
     languageLabel() {
       return this.locale === 'uk' ? 'Українська' : 'English';
     },
+
+    tt() {
+        return (key) => t(this.locale, key);
+      },
   },
 
   mounted() {
-    // підтягуємо з localStorage
     const saved = localStorage.getItem('locale');
     if (saved === 'uk' || saved === 'en') this.locale = saved;
+
+    this.currentToken = localStorage.getItem('push_token') || null;
+    this.dailyPush = localStorage.getItem('push_enabled') === '1';
   },
 
   methods: {
@@ -158,7 +185,15 @@ export default {
 
       this.locale = next;
       localStorage.setItem('locale', next);
-
+      if (this.dailyPush) {
+        const token = this.currentToken || localStorage.getItem('push_token');
+        if (token) {
+          supabase
+          .from('push_devices')
+          .update({ locale: next, enabled: true })
+          .eq('token', token);
+        }
+      }
       this.langSheet = false;
 
       // повідомляємо інші екрани (гороскоп) що мова змінилась

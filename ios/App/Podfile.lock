@@ -4,9 +4,13 @@ PODS:
   - CapacitorCommunityAppleSignIn (5.0.0):
     - Capacitor
   - CapacitorCordova (5.7.8)
+  - CapacitorDevice (5.0.8):
+    - Capacitor
   - CapacitorHaptics (5.0.8):
     - Capacitor
   - CapacitorPreferences (5.0.8):
+    - Capacitor
+  - CapacitorPushNotifications (5.1.2):
     - Capacitor
   - CapacitorStatusBar (5.0.8):
     - Capacitor
@@ -15,8 +19,10 @@ DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorCommunityAppleSignIn (from `../../node_modules/@capacitor-community/apple-sign-in`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
+  - "CapacitorPushNotifications (from `../../node_modules/@capacitor/push-notifications`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
 
 EXTERNAL SOURCES:
@@ -26,10 +32,14 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor-community/apple-sign-in"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
+  CapacitorDevice:
+    :path: "../../node_modules/@capacitor/device"
   CapacitorHaptics:
     :path: "../../node_modules/@capacitor/haptics"
   CapacitorPreferences:
     :path: "../../node_modules/@capacitor/preferences"
+  CapacitorPushNotifications:
+    :path: "../../node_modules/@capacitor/push-notifications"
   CapacitorStatusBar:
     :path: "../../node_modules/@capacitor/status-bar"
 
@@ -37,10 +47,12 @@ SPEC CHECKSUMS:
   Capacitor: 9686e5711b48a1aa84671ede795d0175848abcba
   CapacitorCommunityAppleSignIn: 72676596c6ff57fce8f687365dfc5d8395bb45ac
   CapacitorCordova: 31ab98dca2ddcee051027a1afe7e8c85c82f7297
+  CapacitorDevice: 4aceb502ce1142ea45a2aece603169d7479cd271
   CapacitorHaptics: acd823c6ed0ec2cd968a09316768144b0495a1e7
   CapacitorPreferences: 5331d7a33044d252dcb2f7fee712f0322c04bae7
+  CapacitorPushNotifications: 95dc889e9f3540e3c4f118f7ed53fd61db82100b
   CapacitorStatusBar: 8e0a8f213504695505dc8c4f808dffbe03aa0e0f
 
-PODFILE CHECKSUM: d067aeb52cbbf5a1970fcfa64d77863f959817d4
+PODFILE CHECKSUM: edf9ef1ace1decf772b933f18af8a1af1f5cf71e
 
 COCOAPODS: 1.16.2

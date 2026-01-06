@@ -1,0 +1,150 @@
+// src/i18n/index.js
+
+export const messages = {
+  en: {
+    appName: 'Arcana Insight',
+
+    // Horoscope
+    dailyHoroscope: 'DAILY HOROSCOPE',
+    horoscopeFor: 'HOROSCOPE FOR',
+
+    love: 'Love',
+    career: 'Career',
+    energy: 'Energy',
+
+    zodiac: {
+      aries: 'Aries',
+      taurus: 'Taurus',
+      gemini: 'Gemini',
+      cancer: 'Cancer',
+      leo: 'Leo',
+      virgo: 'Virgo',
+      libra: 'Libra',
+      scorpio: 'Scorpio',
+      sagittarius: 'Sagittarius',
+      capricorn: 'Capricorn',
+      aquarius: 'Aquarius',
+      pisces: 'Pisces',
+    },
+
+    astro: {
+      moonIn: 'Moon in',
+      mercuryRetrograde: 'Mercury retrograde',
+      phases: {
+        new: 'New Moon',
+        waxingCrescent: 'Waxing Crescent',
+        firstQuarter: 'First Quarter',
+        waxingGibbous: 'Waxing Gibbous',
+        full: 'Full Moon',
+        waningGibbous: 'Waning Gibbous',
+        lastQuarter: 'Last Quarter',
+        waningCrescent: 'Waning Crescent',
+      },
+    },
+
+    // Settings
+    settings: 'Settings',
+    tarot: 'Tarot',
+    arcana: 'Arcana',
+    horoscope: 'Horoscope',
+    language: 'Language',
+    dailyPush: 'Daily push notifications',
+    optimalTime: 'Optimal time',
+    account: 'Account',
+    logout: 'Log Out',
+
+    languages: {
+      en: 'English',
+      uk: 'Ukrainian',
+    },
+
+    common: {
+      cancel: 'Cancel',
+      save: 'Save',
+    },
+  },
+
+  uk: {
+    appName: 'Arcana Insight',
+
+    dailyHoroscope: 'ГОРОСКОП НА СЬОГОДНІ',
+    horoscopeFor: 'ГОРОСКОП НА',
+
+    love: 'Кохання',
+    career: 'Карʼєра',
+    energy: 'Енергія',
+
+    zodiac: {
+      aries: 'Овен',
+      taurus: 'Телець',
+      gemini: 'Близнюки',
+      cancer: 'Рак',
+      leo: 'Лев',
+      virgo: 'Діва',
+      libra: 'Терези',
+      scorpio: 'Скорпіон',
+      sagittarius: 'Стрілець',
+      capricorn: 'Козоріг',
+      aquarius: 'Водолій',
+      pisces: 'Риби',
+    },
+
+    astro: {
+      moonIn: 'Місяць у',
+      mercuryRetrograde: 'Ретроградний Меркурій',
+      phases: {
+        new: 'Молодик',
+        waxingCrescent: 'Зростаючий серп',
+        firstQuarter: 'Перша чверть',
+        waxingGibbous: 'Зростаючий місяць',
+        full: 'Повня',
+        waningGibbous: 'Спадаючий місяць',
+        lastQuarter: 'Остання чверть',
+        waningCrescent: 'Спадний серп',
+      },
+    },
+
+    settings: 'Налаштування',
+    tarot: 'Таро',
+    arcana: 'Аркана',
+    horoscope: 'Гороскоп',
+    language: 'Мова',
+    dailyPush: 'Щоденні push-сповіщення',
+    optimalTime: 'Оптимальний час',
+    account: 'Акаунт',
+    logout: 'Вийти',
+
+    languages: {
+      en: 'English',
+      uk: 'Українська',
+    },
+
+    common: {
+      cancel: 'Скасувати',
+      save: 'Зберегти',
+    },
+  },
+};
+
+export function t(locale, key) {
+  if (!key) return '';
+
+  const parts = key.split('.');
+  let value = messages?.[locale];
+
+  for (const p of parts) {
+    value = value?.[p];
+    if (value == null) break;
+  }
+
+  if (value == null && locale !== 'en') {
+    let fallback = messages.en;
+    for (const p of parts) {
+      fallback = fallback?.[p];
+      if (fallback == null) break;
+    }
+    return fallback ?? key;
+  }
+
+  return value ?? key;
+}

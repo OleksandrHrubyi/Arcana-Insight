@@ -10,7 +10,7 @@
       >
         <img :src="item.icon" class="telegram-icon" alt="" />
         <span class="telegram-label">
-          {{ item.label }}
+          {{ tt(item.name) }}
         </span>
       </div>
     </div>
@@ -19,6 +19,7 @@
 
 <script>
 import { useAuthStore } from 'stores/authStore.js';
+import { t } from 'src/i18n';
 
 export default {
   name: 'BottomNavigation',
@@ -28,9 +29,17 @@ export default {
     initAuth();
   },
 
+  mounted() {
+    const saved = localStorage.getItem('locale');
+    if (saved === 'uk' || saved === 'en') {
+      this.selectedLocale = saved;
+    }
+  },
+
   data () {
     return {
       current: 'arcana',
+      selectedLocale: 'uk',
       items: [
         { name: 'arcana',    label: 'Arcana',    icon: '/images/arcana.svg', route: '/' },
         { name: 'horoscope', label: 'Horoscope', icon: '/images/horoscope.svg', route: '/horoscope'  },
@@ -38,6 +47,12 @@ export default {
         { name: 'settings',  label: 'Settings',  icon: '/images/settings.svg', route: '/settings'  }
       ]
     }
+  },
+
+  computed:{
+    tt() {
+      return (key) => t(this.selectedLocale, key);
+    },
   },
 
   methods: {
