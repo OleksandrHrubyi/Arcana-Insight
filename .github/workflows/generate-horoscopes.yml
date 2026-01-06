@@ -2,17 +2,28 @@ name: Generate horoscopes daily
 
 on:
   schedule:
-    - cron: "0 0 * * *" # щодня о 00:00 UTC
-  workflow_dispatch: {} # щоб можна було запускати вручну
+    - cron: "0 0 * * *" # щодня 00:00 UTC
+  workflow_dispatch: {}
 
 jobs:
   run:
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      matrix:
+        locale: [uk, en]
+        offset: [1, 2]
+
     steps:
       - name: Call Supabase Edge Function
         run: |
-          curl -f -sS -L -X POST "${{ secrets.SUPABASE_FUNCTION_URL }}" \
+          set -e
+          DATE=$(date -u -d "+${{ matrix.offset }} day" +%F)
+          echo "Generate for date=$DATE locale=${{ matrix.locale }}"
+
+          curl --retry 5 --retry-delay 3 --retry-all-errors \
+            -f -sS -L -X POST "${{ secrets.SUPABASE_FUNCTION_URL }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json" \
-            -d "{}"
+            -d "{\"date\":\"$DATE\",\"locale\":\"${{ matrix.locale }}\"}"
