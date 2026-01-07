@@ -126,7 +126,7 @@ const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env
 
 const DESIGN_W = 440;
 const DESIGN_TOP_INSET = 30;
-const DESIGN_GAP = 144;
+const DESIGN_GAP = 136;
 const JOIN_OFFSET = 10;
 const ACTIVE_OFFSET = 0;
 
@@ -966,7 +966,7 @@ export default {
 .horoscope-info-style {
   font-style: normal;
   font-weight: 400;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 160%;
   text-align: center;
   color: #7E8AA5;
