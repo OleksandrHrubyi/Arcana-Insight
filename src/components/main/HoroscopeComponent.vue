@@ -44,7 +44,12 @@
         <rect :width="svgW" :height="svgH" fill="url(#fadeGrad)" />
       </g>
     </svg>
+    <!-- ✅ ховаємо боки (без масок) -->
+    <div class="side-cover side-cover--left" aria-hidden="true"></div>
+    <div class="side-cover side-cover--right" aria-hidden="true"></div>
 
+    <!-- ✅ перемальована дуга (щоб вона була видна на боках) -->
+    <div class="arc-overlay" aria-hidden="true"></div>
     <!-- ЛІНІЇ -->
     <div ref="lineLeft" class="line" aria-hidden="true"></div>
     <div ref="lineRight" class="line" aria-hidden="true"></div>
@@ -897,10 +902,11 @@ export default {
   top: calc(54px * var(--s));
   left: 50%;
   transform: translateX(-50%);
-  z-index: 70;
+  z-index: 200;
   border: 1px solid rgba(159, 216, 246, 0.25);
   border-radius: 50%;
   pointer-events: none;
+  opacity: 0.5;
 }
 
 .bottom-info {
@@ -1036,4 +1042,98 @@ export default {
   }
 
 }
+
+/* базові розміри з твого дизайну */
+.container {
+  --inset: calc(30px * var(--s));     /* DESIGN_TOP_INSET */
+  --halfGap: calc(98px * var(--s));   /* DESIGN_GAP / 2 */
+  --yJoin: calc(380px * var(--s));    /* centerRound top 480 + JOIN_OFFSET 10 */
+  --arcBand: calc(18px * var(--s));   /* ширина “смуги”, де видно дугу */
+  --arcStroke: calc(1.2px * var(--s));
+  --coverSlope: calc(42px * var(--s)); /* наскільки нижче на краях */
+  --coverBleed: calc(3px * var(--s)); /* 2..5px */
+
+}
+
+@media screen and (max-height: 670px) {
+  .container {
+    --yJoin: calc(390px * var(--s));  /* 380 + 10 */
+  }
+}
+
+/* top-bg НЕ має перекривати наші cover/дугу */
+.top-bg { z-index: 90; } /* було 300 */
+
+/* 1) бокові “заливки” — тільки до yJoin */
+.side-cover {
+  position: absolute;
+  top: 0;
+  left: calc(-1 * var(--coverBleed));
+  width: calc(100% + (2 * var(--coverBleed)));
+  height: var(--yJoin);
+  background: #031018;
+  z-index: 140;           /* вище wheel(80), нижче center-round(250) */
+  pointer-events: none;
+}
+.side-cover { height: calc(var(--yJoin) + var(--coverSlope)); }
+
+.side-cover--left {
+  clip-path: polygon(
+      0 0,
+      calc(var(--inset) + var(--coverBleed)) 0,
+      calc(50% - var(--halfGap)) var(--yJoin),
+      0 calc(var(--yJoin) + var(--coverSlope))
+  );
+}
+
+
+.side-cover--right {
+  clip-path: polygon(
+      calc(100% - (var(--inset) + var(--coverBleed))) 0,
+      100% 0,
+      100% calc(var(--yJoin) + var(--coverSlope)),
+      calc(50% + var(--halfGap)) var(--yJoin)
+  );
+}
+
+
+
+/* 2) перемальована дуга поверх заливок, але тільки “смуга” біля yJoin */
+.arc-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 150;           /* поверх заливок */
+  pointer-events: none;
+
+  /* показуємо тільки вузьку смугу навколо дуги */
+  clip-path: inset(
+      calc(var(--yJoin) - var(--arcBand)) 0
+      calc(100% - (var(--yJoin) + var(--arcBand))) 0
+  );
+}
+
+/* саме коло (та ж геометрія, що wheel) */
+.arc-overlay::before,
+.arc-overlay::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(740px * var(--s));             /* як у .wheel */
+  width: calc(1800px * var(--s));
+  height: calc(1800px * var(--s));
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: var(--arcStroke) solid rgba(159, 216, 246, 0.85);
+  box-sizing: border-box;
+}
+
+/* друга слабша дуга (як в арті подвійна) */
+.arc-overlay::after {
+  border-color: rgba(159, 216, 246, 0.35);
+  transform: translate(-50%, -50%) scale(1.006); /* легкий зсув, щоб було “дві” */
+}
+
+/* center-round завжди поверх */
+.center-round { z-index: 250; }
+
 </style>
