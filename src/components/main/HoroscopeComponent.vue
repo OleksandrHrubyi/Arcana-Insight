@@ -95,21 +95,24 @@
             </q-tab-panel>
 
             <q-tab-panel name="career" class="q-pa-none">
-              <div class="horoscope-info-title"> {{tt('career')}}</div>
-              <div class="horoscope-info-style">{{ horoscope[activeZodiac.key]?.career?.summary || '' }}</div>
+              <div class="horoscope-info-title"> {{ tt('career') }}</div>
+              <div class="horoscope-info-style">{{ horoscope[activeZodiac.key]?.career?.detailed || '' }}</div>
             </q-tab-panel>
 
             <q-tab-panel name="energy" class="q-pa-none">
-              <div class="horoscope-info-title"> {{tt('energy')}}</div>
-              <div class="horoscope-info-style">{{ horoscope[activeZodiac.key]?.energy?.summary || '' }}</div>
+              <div class="horoscope-info-title"> {{ tt('energy') }}</div>
+              <div class="horoscope-info-style">{{ horoscope[activeZodiac.key]?.energy?.detailed || '' }}</div>
             </q-tab-panel>
           </q-tab-panels>
 
           <!-- dots -->
-          <div class="dots">
-            <button class="dot" :class="{ active: themeTab === 'love' }" @click="themeTab = 'love'"></button>
-            <button class="dot" :class="{ active: themeTab === 'career' }" @click="themeTab = 'career'"></button>
-            <button class="dot" :class="{ active: themeTab === 'energy' }" @click="themeTab = 'energy'"></button>
+          <div class="relative-position">
+            <div class="dots">
+              <button class="dot" :class="{ active: themeTab === 'love' }" @click="themeTab = 'love'"></button>
+              <button class="dot" :class="{ active: themeTab === 'career' }" @click="themeTab = 'career'"></button>
+              <button class="dot" :class="{ active: themeTab === 'energy' }" @click="themeTab = 'energy'"></button>
+            </div>
+            <q-btn size="14px" round class="share-wrap" icon="share" @click="handleShare" />
           </div>
         </div>
       </div>
@@ -126,6 +129,7 @@ import { createClient } from '@supabase/supabase-js';
 import { localISODate } from 'src/helpers/date.js';
 import { saveLocal, loadLocal } from 'src/helpers/localStorageSaver.js';
 import { t } from 'src/i18n';
+import { Share } from '@capacitor/share';
 
 const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
 
@@ -143,6 +147,18 @@ const FLING_THRESHOLD_DEG_PER_SEC = 80;
 const INERTIA_FRICTION_PER_SEC = 15.2;
 const SNAP_STIFFNESS = 90;
 const SNAP_DAMPING = 18;
+const ZODIAC_EMOJI = {
+  capricorn: '♑️', aquarius: '♒️', pisces: '♓️',
+  aries: '♈️', taurus: '♉️', gemini: '♊️',
+  cancer: '♋️', leo: '♌️', virgo: '♍️',
+  libra: '♎️', scorpio: '♏️', sagittarius: '♐️',
+};
+
+const THEME_META = {
+  love: { emoji: '💖', label: 'Кохання' },
+  career: { emoji: '💼', label: 'Кар’єра' },
+  energy: { emoji: '⚡️', label: 'Енергія' },
+};
 
 export default {
   name: 'HoroscopeComponent',
@@ -190,7 +206,7 @@ export default {
       maskRTop: 0,
       clipPoints: '',
 
-      bgHref: '/images/test333.svg',
+      bgHref: '/images/test.svg',
       bgX: 0,
       bgY: 0,
       bgSize: 1024,
@@ -754,6 +770,60 @@ export default {
 
       this.mode = 'inertia';
     },
+
+    normalizeText(s = '') {
+      return String(s).replace(/\r/g, '').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+    },
+
+
+    buildShareTextCard({ title, date, zodiacEmoji, zodiacName, datesRange, themeEmoji, themeLabel, text }) {
+      const clean = this.normalizeText(text)
+      return [
+        `✨ ${title}`,
+        `🗓️ ${date}`, // замість 📅
+        `${zodiacEmoji} ${zodiacName} ${datesRange}`.trim(),
+        `${themeEmoji} ${this.tt('theme')}: ${themeLabel}`,
+        '━━━━━━━━━━━━',
+        clean,
+        '',
+        `💛 ${this.tt('shareSubInfo')}`
+      ].join('\n')
+    },
+
+    async handleShare() {
+      const rawText = this.horoscope?.[this.activeZodiac.key]?.[this.themeTab]?.detailed || ''
+      if (!rawText) {
+        this.$q.notify({ type: 'negative', message: 'Немає тексту для поширення' })
+        return
+      }
+
+      const title = this.tt('dailyHoroscope')
+      const date = this.monthDayLabel
+
+      const zodiacKey = this.activeZodiac.key
+      const zodiacName = this.tt(`zodiac.${zodiacKey}`)
+      const zodiacEmoji = ZODIAC_EMOJI[zodiacKey] || '✨'
+      const datesRange = this.activeZodiac?.dates || ''
+
+      const themeMeta = THEME_META[this.themeTab] || { emoji: '✨', label: this.themeTab }
+      const themeLabel = this.tt?.(`${this.themeTab}`)
+      const themeEmoji = themeMeta.emoji
+
+      const payload = {
+        title, date,
+        zodiacEmoji, zodiacName, datesRange,
+        themeEmoji, themeLabel,
+        text: rawText
+      }
+      try {
+        await Share.share({
+          text: this.buildShareTextCard(payload)
+        })
+      } catch (e) {
+        console.warn('Share cancelled/failed', e)
+      }
+    }
+
   },
 };
 </script>
@@ -794,8 +864,9 @@ export default {
   height: 1px;
   background: #9fd8f6;
   transform-origin: 0 0;
-  z-index: 111;
+  z-index: 160;
   pointer-events: none;
+  opacity: 0.7;
 }
 
 .wheel-stage {
@@ -812,7 +883,7 @@ export default {
   width: calc(1800px * var(--s));
   height: calc(1800px * var(--s));
   border-radius: 50%;
-  background: url('/images/final.svg') center/contain no-repeat;
+  background: url('/images/final7.svg') center/contain no-repeat;
   transform-origin: 50% 50%;
   z-index: 80;
   will-change: auto;
@@ -976,7 +1047,7 @@ export default {
   line-height: 160%;
   text-align: center;
   color: #7E8AA5;
-  height: 180px;
+  height: 162px;
   overflow: auto;
 }
 
@@ -985,12 +1056,13 @@ export default {
 }
 
 .dots {
-  margin-top: 12px;
+  margin-top: 8px;
   display: flex;
   gap: 8px;
   justify-content: center;
   align-items: center;
   pointer-events: auto;
+  height: 30px;
 }
 
 .dot {
@@ -1045,10 +1117,10 @@ export default {
 
 /* базові розміри з твого дизайну */
 .container {
-  --inset: calc(30px * var(--s));     /* DESIGN_TOP_INSET */
-  --halfGap: calc(98px * var(--s));   /* DESIGN_GAP / 2 */
-  --yJoin: calc(380px * var(--s));    /* centerRound top 480 + JOIN_OFFSET 10 */
-  --arcBand: calc(18px * var(--s));   /* ширина “смуги”, де видно дугу */
+  --inset: calc(30px * var(--s)); /* DESIGN_TOP_INSET */
+  --halfGap: calc(98px * var(--s)); /* DESIGN_GAP / 2 */
+  --yJoin: calc(380px * var(--s)); /* centerRound top 480 + JOIN_OFFSET 10 */
+  --arcBand: calc(18px * var(--s)); /* ширина “смуги”, де видно дугу */
   --arcStroke: calc(1.2px * var(--s));
   --coverSlope: calc(42px * var(--s)); /* наскільки нижче на краях */
   --coverBleed: calc(3px * var(--s)); /* 2..5px */
@@ -1057,12 +1129,16 @@ export default {
 
 @media screen and (max-height: 670px) {
   .container {
-    --yJoin: calc(390px * var(--s));  /* 380 + 10 */
+    --yJoin: calc(390px * var(--s)); /* 380 + 10 */
   }
 }
 
 /* top-bg НЕ має перекривати наші cover/дугу */
-.top-bg { z-index: 90; } /* було 300 */
+.top-bg {
+  z-index: 90;
+}
+
+/* було 300 */
 
 /* 1) бокові “заливки” — тільки до yJoin */
 .side-cover {
@@ -1072,10 +1148,13 @@ export default {
   width: calc(100% + (2 * var(--coverBleed)));
   height: var(--yJoin);
   background: #031018;
-  z-index: 140;           /* вище wheel(80), нижче center-round(250) */
+  z-index: 140; /* вище wheel(80), нижче center-round(250) */
   pointer-events: none;
 }
-.side-cover { height: calc(var(--yJoin) + var(--coverSlope)); }
+
+.side-cover {
+  height: calc(var(--yJoin) + var(--coverSlope));
+}
 
 .side-cover--left {
   clip-path: polygon(
@@ -1097,18 +1176,16 @@ export default {
 }
 
 
-
 /* 2) перемальована дуга поверх заливок, але тільки “смуга” біля yJoin */
 .arc-overlay {
   position: absolute;
   inset: 0;
-  z-index: 150;           /* поверх заливок */
+  z-index: 150; /* поверх заливок */
   pointer-events: none;
 
   /* показуємо тільки вузьку смугу навколо дуги */
   clip-path: inset(
-      calc(var(--yJoin) - var(--arcBand)) 0
-      calc(100% - (var(--yJoin) + var(--arcBand))) 0
+      calc(var(--yJoin) - var(--arcBand)) 0 calc(100% - (var(--yJoin) + var(--arcBand))) 0
   );
 }
 
@@ -1118,7 +1195,7 @@ export default {
   content: "";
   position: absolute;
   left: 50%;
-  top: calc(740px * var(--s));             /* як у .wheel */
+  top: calc(740px * var(--s)); /* як у .wheel */
   width: calc(1800px * var(--s));
   height: calc(1800px * var(--s));
   transform: translate(-50%, -50%);
@@ -1134,6 +1211,19 @@ export default {
 }
 
 /* center-round завжди поверх */
-.center-round { z-index: 250; }
+.center-round {
+  z-index: 250;
+}
 
+.share-wrap {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #0D1321;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #617C97;
+}
 </style>

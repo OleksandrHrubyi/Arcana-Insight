@@ -11,6 +11,8 @@ export const messages = {
     love: 'Love',
     career: 'Career',
     energy: 'Energy',
+    theme: 'Theme',
+    shareSubInfo: 'If it resonates — forward it to someone who needs it.',
 
     zodiac: {
       aries: 'Aries',
@@ -73,6 +75,8 @@ export const messages = {
     love: 'Кохання',
     career: 'Карʼєра',
     energy: 'Енергія',
+    theme: 'Тема',
+    shareSubInfo: 'Якщо відгукнулося — перешли тому, кому це потрібно',
 
     zodiac: {
       aries: 'Овен',
