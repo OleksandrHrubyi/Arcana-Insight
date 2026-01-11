@@ -11,6 +11,23 @@ const routes = [
       { path: 'tarot', name: 'tarot', component: () => import('src/pages/TarotPage.vue') },
       { path: 'settings', name: 'settings', component: () => import('src/pages/SettingsPage.vue') },
       { path: 'reset-password', component: () => import('src/pages/ResetPasswordPage.vue') },
+      {
+        path: '/settings/language',
+        component: () => import('src/pages/SettingsLanguage.vue')
+      },
+      {
+        path: '/settings/time',
+        component: () => import('src/pages/SettingsTime.vue')
+      },
+      {
+        path: '/account',
+        component: () => import('src/pages/AccountPage.vue')
+      },
+      {
+        path: '/account/edit',
+        component: () => import('src/pages/AccountEdit.vue')
+      }
+
     ]
   },
 

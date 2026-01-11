@@ -71,7 +71,7 @@ export default {
 <style scoped>
 /* прозорий фон футера, нічого зайвого */
 .telegram-footer {
-  background: transparent !important;
+  background: #0B131B;
   box-shadow: none !important;
   border: 0;
   padding-bottom: env(safe-area-inset-bottom);

@@ -1,379 +1,227 @@
 <template>
-  <div class="settings-wrap">
-    <div class="settings-container">
-      <p class="settings-title">Settings</p>
+  <q-page class="settings-page">
 
-      <div class="settings-list">
-        <!-- Language -->
-        <button class="settings-row" type="button" @click="openLanguage">
-          <span class="settings-row-label">Language</span>
-          <span class="settings-row-right">
-            <span class="settings-row-value">{{ languageLabel }}</span>
-            <q-icon name="chevron_right" size="16px" />
-          </span>
-        </button>
+    <div class="settings-title">Settings</div>
 
-        <div class="settings-divider"></div>
+    <q-list class="settings-list">
 
-        <!-- Daily push notifications -->
-        <div class="settings-row settings-row--static">
-          <span class="settings-row-label">{{tt('dailyPush')}}</span>
-          <q-toggle
-            v-model="dailyPush"
-            color="cyan-4"
-            keep-color
-            class="settings-toggle"
-          />
-        </div>
+      <!-- Language -->
+      <q-item clickable v-ripple class="settings-item" @click="go('/settings/language')">
+        <q-item-section  class="section-1">
+          <q-item-label>Language</q-item-label>
+        </q-item-section>
 
-        <div class="settings-divider"></div>
+        <q-item-section side class="row items-center no-wrap items-settings-custom ">
+          <div class="settings-value">{{ languageLabel }}</div>
+          <q-icon name="chevron_right" size="18px" />
+        </q-item-section>
+      </q-item>
+      <!-- Daily push notifications -->
+      <q-item class="settings-item">
+        <q-item-section>
+          <q-item-label>Daily push notifications</q-item-label>
+        </q-item-section>
 
-        <!-- Optimal time -->
-        <button class="settings-row" type="button" @click="openOptimalTime">
-          <span class="settings-row-label">Optimal time</span>
-          <span class="settings-row-right">
-            <span class="settings-row-value">{{ optimalTime }}</span>
-            <q-icon name="chevron_right" size="16px" />
-          </span>
-        </button>
+        <q-item-section side>
+          <q-toggle v-model="dailyPush" color="grey" keep-color class="arcana-toggle" />
+        </q-item-section>
+      </q-item>
 
-        <div class="settings-divider"></div>
+      <!-- Optimal time (тільки коли ON) -->
+      <q-item
+        v-if="dailyPush"
+        clickable
+        v-ripple
+        class="settings-item"
+        @click="go('/settings/time')"
+      >
+        <q-item-section>
+          <q-item-label>Optimal time</q-item-label>
+        </q-item-section>
 
-        <!-- account -->
-        <button class="settings-row" type="button" @click="openAccount">
-          <span class="settings-row-label">Account</span>
-          <span class="settings-row-right">
-            <span class="settings-row-value">{{ email }}</span>
-            <q-icon name="chevron_right" size="16px" />
-          </span>
-        </button>
+        <q-item-section side class="row items-center items-settings-custom">
+          <div class="settings-value">{{ optimalTimeLabel }}</div>
+          <q-icon name="chevron_right" size="18px" />
+        </q-item-section>
+      </q-item>
 
-        <div class="settings-divider"></div>
+      <!-- Account -->
+      <q-item clickable v-ripple class="settings-item" @click="onAccountClick">
+        <q-item-section>
+          <q-item-label>Account</q-item-label>
+        </q-item-section>
 
-        <!-- logout -->
-        <q-btn
-          no-caps
-          class="settings-row"
-          @click="onLogout"
-          v-if="isLoggedIn"
-          :loading="loading"
-        >
-          <span class="settings-row-label">Log Out</span>
-        </q-btn>
-      </div>
-    </div>
+        <q-item-section side class="row items-center items-settings-custom">
+          <div v-if="!isLoggedIn" class="settings-value">Login</div>
+          <q-icon name="chevron_right" size="18px" />
+        </q-item-section>
+      </q-item>
 
-    <!-- Language bottom sheet -->
-    <q-dialog v-model="langSheet" position="bottom">
-      <div class="sheet">
-        <div class="sheet-handle" />
+    </q-list>
 
-        <div class="sheet-title">Language</div>
-
-        <button
-          class="sheet-option"
-          type="button"
-          @click="selectLocale('en')"
-        >
-          <span>English</span>
-          <q-icon v-if="locale === 'en'" name="check" size="18px" />
-        </button>
-
-        <button
-          class="sheet-option"
-          type="button"
-          @click="selectLocale('uk')"
-        >
-          <span>Українська</span>
-          <q-icon v-if="locale === 'uk'" name="check" size="18px" />
-        </button>
-
-        <q-btn
-          flat
-          no-caps
-          class="sheet-cancel"
-          @click="langSheet = false"
-        >
-          Cancel
-        </q-btn>
-      </div>
-    </q-dialog>
-  </div>
+  </q-page>
 </template>
 
 <script>
-import { supabase } from 'boot/supabase.js';
-import { useAuthStore } from 'stores/authStore.js';
-import { enablePush } from 'boot/push';
-import { t } from 'src/i18n';
+import { defineComponent } from 'vue'
+import { supabase } from 'boot/supabase'
+import { ensureToken, syncRegisterDevice, getSavedTime } from 'src/helpers/pushBackend'
 
-export default {
-  name: 'SettingsComponent',
-  emits: ['language-changed'],
+const LS_DAILY_PUSH = 'daily_push_enabled'
+const LS_LOCALE = 'locale'
 
-  data() {
+export default defineComponent({
+  name: 'SettingsPage',
+
+  data () {
     return {
-      // locale реальне значення яке треба для бекенду
-      locale: 'en', // 'en' | 'uk'
-
-      // UI
-      langSheet: false,
-
-      dailyPush: false,
-      optimalTime: '8.00 AM',
-      authStore: useAuthStore(),
-      loading: false,
-      currentToken: localStorage.getItem('push_token') || null,
-    };
+      isLoggedIn: false,
+      dailyPush: JSON.parse(localStorage.getItem(LS_DAILY_PUSH) || 'false'),
+      locale: localStorage.getItem(LS_LOCALE) || 'en',
+      busy: false
+    }
   },
+
+  computed: {
+    languageLabel () {
+      // простий маппінг під твій Figma список
+      const map = {
+        en: 'English',
+        uk: 'Ukrainian',
+        pl: 'Polish',
+        nl: 'Dutch',
+        de: 'German',
+        hu: 'Hungarian'
+      }
+      return map[this.locale] || 'English'
+    },
+
+    optimalTimeLabel () {
+      const hhmm = getSavedTime()
+      if (!hhmm) return 'Default (08:00 UTC)'
+      return this.formatTime(hhmm)
+    }
+  },
+
   watch: {
-    async dailyPush(enabled) {
-      if (enabled) {
-        await enablePush();
-      } else {
-        const token = localStorage.getItem('push_token');
-        if (token) {
-          await supabase
-          .from('push_devices')
-          .update({ enabled: false })
-          .eq('token', token);
+    async dailyPush (val) {
+      if (this.busy) return
+      this.busy = true
+      try {
+        localStorage.setItem(LS_DAILY_PUSH, JSON.stringify(val))
+
+        if (val) {
+          const token = await ensureToken()
+          if (!token) {
+            this.$q.notify({ type: 'negative', message: 'No permission / no token' })
+            this.dailyPush = false
+            return
+          }
+
+          // sync ON (час може бути пустий -> дефолт 08:00 UTC)
+          const res = await syncRegisterDevice({
+            enabled: true,
+            timeHHMM: getSavedTime(),
+            locale: this.locale
+          })
+          if (!res.ok) {
+            console.log(res.error)
+            this.$q.notify({ type: 'negative', message: 'Push sync failed' })
+          }
+        } else {
+          // sync OFF
+          const res = await syncRegisterDevice({ enabled: false, timeHHMM: '', locale: this.locale })
+          if (!res.ok) console.log(res.error)
         }
+      } finally {
+        this.busy = false
       }
     }
   },
 
-
-
-
-  computed: {
-    isLoggedIn() {
-      return this.authStore.isLoggedIn;
-    },
-
-    email() {
-      return this.authStore?.userState?.email || 'No Email';
-    },
-
-    languageLabel() {
-      return this.locale === 'uk' ? 'Українська' : 'English';
-    },
-
-    tt() {
-        return (key) => t(this.locale, key);
-      },
+  async mounted () {
+    const { data } = await supabase.auth.getSession()
+    this.isLoggedIn = !!data?.session
+    supabase.auth.onAuthStateChange((_event, session) => {
+      this.isLoggedIn = !!session
+    })
   },
 
-  mounted() {
-    const saved = localStorage.getItem('locale');
-    if (saved === 'uk' || saved === 'en') this.locale = saved;
-
-    this.currentToken = localStorage.getItem('push_token') || null;
-    this.dailyPush = localStorage.getItem('push_enabled') === '1';
+  activated () {
+    // якщо повернувся зі сторінки language/time — підхопити значення
+    this.locale = localStorage.getItem(LS_LOCALE) || 'en'
   },
 
   methods: {
-    goBack() {
-      this.$router.push('/');
+    go (path) {
+      this.$router.push(path)
     },
 
-    openLanguage() {
-      this.langSheet = true;
+    onAccountClick () {
+      if (this.isLoggedIn) this.go('/account')
+      else this.go('/login') // <-- заміни на свій роут логіну
     },
 
-    selectLocale(next) {
-      if (next !== 'uk' && next !== 'en') return;
+    formatTime (hhmm) {
+      // відображення як у Figma: 8.00 AM (крапка)
+      const [h, m] = hhmm.split(':').map(Number)
+      const d = new Date()
+      d.setHours(h, m, 0, 0)
 
-      this.locale = next;
-      localStorage.setItem('locale', next);
-      if (this.dailyPush) {
-        const token = this.currentToken || localStorage.getItem('push_token');
-        if (token) {
-          supabase
-          .from('push_devices')
-          .update({ locale: next, enabled: true })
-          .eq('token', token);
-        }
-      }
-      this.langSheet = false;
+      const is12h = (this.locale || 'en').toLowerCase() === 'en'
+      const fmt = new Intl.DateTimeFormat(is12h ? 'en-US' : 'uk-UA', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: is12h
+      }).format(d)
 
-      // повідомляємо інші екрани (гороскоп) що мова змінилась
-      this.$emit('language-changed', next);
-    },
-
-    openOptimalTime() {
-      console.log('open optimal time');
-    },
-
-    openAccount() {
-      console.log('open account');
-    },
-
-    async onLogout() {
-      try {
-        this.loading = true;
-
-        const { data } = await supabase.auth.getSession();
-        const session = data.session;
-
-        if (!session) {
-          this.authStore.state.user = null;
-          this.$router.push('/login');
-          return;
-        }
-
-        const { error } = await supabase.auth.signOut();
-
-        if (error && error.name !== 'AuthSessionMissingError') {
-          console.error('Logout error:', error);
-          return;
-        }
-
-        this.authStore.state.user = null;
-        this.$router.push('/login');
-      } catch (e) {
-        console.error('Logout error:', e);
-        this.$router.push('/login');
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
-};
+      // робимо 8:00 AM -> 8.00 AM
+      return fmt.replace(':', '.')
+    }
+  }
+})
 </script>
 
-<style scoped lang="scss">
-.settings-wrap {
-  height: 100dvh;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  background: linear-gradient(
-      180deg,
-      #101721 0%,
-      #12202b 16.7%,
-      #142632 35.58%,
-      #12212b 57.35%,
-      #080c0f 96.63%
-  );
-}
+<style scoped>
+.settings-page {
+  min-height: 100%;
+  background: #0B131B;
+  padding: 72px 16px 30px;
 
-.settings-container {
-  position: relative;
-  height: 100dvh;
-  width: 100%;
-  max-width: 440px;
-  margin: 0 auto;
-  padding: 74px 16px 24px;
-  display: flex;
-  flex-direction: column;
 }
 
 .settings-title {
+  font-style: normal;
   font-weight: 400;
-  font-size: 18px;
-  line-height: 26px;
-  color: #ffffff;
-  margin-bottom: 32px;
+  font-size: 16px;
+  line-height: 21px;
+margin-bottom: 24px;
+  color: #FFFFFF;
 }
 
 .settings-list {
-  border-radius: 18px;
-  background: rgba(5, 7, 10, 0.9);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85),
-  0 0 0 1px rgba(255, 255, 255, 0.02);
-  padding: 8px 0;
+  overflow: hidden;
 }
 
-.settings-row {
-  width: 100%;
-  padding: 12px 16px;
-  display: flex;
+.settings-item {
+  min-height: 54px;
+  border-bottom: 1px solid #142632;
+}
+
+
+.settings-value {
+  color: rgba(255,255,255,.6);
+  margin-right: 6px;
+}
+
+.items-settings-custom {
+  flex-direction: row !important;
+  justify-content: center !important;
   align-items: center;
-  justify-content: space-between;
-  background: transparent;
-  border: none;
-  outline: none;
-  text-align: left;
-  cursor: pointer;
+
 }
 
-.settings-row--static {
-  cursor: default;
-}
-
-.settings-row-label {
-  font-size: 14px;
-  line-height: 20px;
-  color: #D9D9D9;
-}
-
-.settings-row-right {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.settings-row-value {
-  font-size: 13px;
-  color: #7E8AA5;
-}
-
-.settings-divider {
-  height: 1px;
-  margin: 0 16px;
-  background: rgba(60, 70, 92, 0.65);
-}
-
-/* Bottom sheet */
-.sheet {
-  width: 100%;
-  max-width: 440px;
-  margin: 0 auto;
-  background: rgba(5, 7, 10, 0.98);
-  border-radius: 18px 18px 0 0;
-  padding: 10px 14px 14px;
-  box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.65);
-}
-
-.sheet-handle {
-  width: 38px;
-  height: 4px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
-  margin: 6px auto 10px;
-}
-
-.sheet-title {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.85);
-  letter-spacing: 0.02em;
-  margin: 6px 4px 10px;
-}
-
-.sheet-option {
-  width: 100%;
-  padding: 14px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid rgba(60, 70, 92, 0.55);
-  background: rgba(10, 14, 20, 0.85);
-  border-radius: 14px;
-  color: #D9D9D9;
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
-.sheet-option:active {
-  transform: translateY(1px);
-}
-
-.sheet-cancel {
-  width: 100%;
-  margin-top: 6px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.9);
+.section-1 {
+  justify-content: center;
 }
 </style>

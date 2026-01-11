@@ -10,7 +10,6 @@
       class="sector-svg"
       :viewBox="`0 0 ${svgW} ${svgH}`"
       preserveAspectRatio="none"
-      aria-hidden="true"
     >
       <defs>
         <mask id="ringMask" maskUnits="userSpaceOnUse">
@@ -45,21 +44,21 @@
       </g>
     </svg>
     <!-- ✅ ховаємо боки (без масок) -->
-    <div class="side-cover side-cover--left" aria-hidden="true"></div>
-    <div class="side-cover side-cover--right" aria-hidden="true"></div>
+    <div class="side-cover side-cover--left"></div>
+    <div class="side-cover side-cover--right"></div>
 
     <!-- ✅ перемальована дуга (щоб вона була видна на боках) -->
-    <div class="arc-overlay" aria-hidden="true"></div>
+    <div class="arc-overlay"></div>
     <!-- ЛІНІЇ -->
-    <div ref="lineLeft" class="line" aria-hidden="true"></div>
-    <div ref="lineRight" class="line" aria-hidden="true"></div>
+    <div ref="lineLeft" class="line"></div>
+    <div ref="lineRight" class="line"></div>
 
-    <div class="top-round" aria-hidden="true"></div>
-    <div ref="topBg" class="top-bg" aria-hidden="true"></div>
+    <div class="top-round"></div>
+    <div ref="topBg" class="top-bg"></div>
 
     <div ref="stage" class="wheel-stage">
       <!-- ✅ колесо: тепер БЕЗ :style — крутиться імперативно -->
-      <div ref="wheel" class="wheel" :class="{ gpu: gpuOn }" aria-hidden="true"></div>
+      <div ref="wheel" class="wheel" :class="{ gpu: gpuOn }"></div>
 
       <div class="active-zodiac" aria-hidden="false">
         <div class="active-zodiac-name">{{ tt(`zodiac.${activeZodiac.key}`) }}</div>
@@ -78,7 +77,7 @@
       />
     </div>
 
-    <div ref="centerRound" class="center-round" aria-hidden="true">
+    <div ref="centerRound" class="center-round">
       <div class="bottom-wrapper">
         <div class="q-px-sm q-pt-md horoscope-info">
           <q-tab-panels
@@ -118,20 +117,19 @@
       </div>
     </div>
 
-    <div class="bottom-info" aria-hidden="true"></div>
+    <div class="bottom-info"></div>
     <div class="bottom-bg-wrap"></div>
   </div>
 </template>
 
 <script>
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { createClient } from '@supabase/supabase-js';
 import { localISODate } from 'src/helpers/date.js';
 import { saveLocal, loadLocal } from 'src/helpers/localStorageSaver.js';
 import { t } from 'src/i18n';
 import { Share } from '@capacitor/share';
+import { supabase } from 'boot/supabase';
 
-const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
 
 const DESIGN_W = 440;
 const DESIGN_TOP_INSET = 30;
@@ -594,7 +592,7 @@ export default {
       }
     },
 
-    updateSnapState(withHaptic = true) {
+    updateSnapState() {
       const step = this.stepDeg;
       const snapIndex = Math.floor((-this.rotation) / step + 0.5);
 
@@ -602,7 +600,6 @@ export default {
         this.lastSnapIndex = snapIndex;
         this.currentSector = this.mod(snapIndex, this.sectorCount);
       }
-      console.log(withHaptic, 'withHaptic');
     },
 
     recalcCenter() {
@@ -777,7 +774,7 @@ export default {
 
 
     buildShareTextCard({ title, date, zodiacEmoji, zodiacName, datesRange, themeEmoji, themeLabel, text }) {
-      const clean = this.normalizeText(text)
+      const clean = this.normalizeText(text);
       return [
         `✨ ${title}`,
         `🗓️ ${date}`, // замість 📅
@@ -786,43 +783,46 @@ export default {
         '━━━━━━━━━━━━',
         clean,
         '',
-        `💛 ${this.tt('shareSubInfo')}`
-      ].join('\n')
+        `💛 ${this.tt('shareSubInfo')}`,
+      ].join('\n');
     },
 
     async handleShare() {
-      const rawText = this.horoscope?.[this.activeZodiac.key]?.[this.themeTab]?.detailed || ''
+      const rawText = this.horoscope?.[this.activeZodiac.key]?.[this.themeTab]?.detailed || '';
       if (!rawText) {
-        this.$q.notify({ type: 'negative', message: 'Немає тексту для поширення' })
-        return
+        this.$q.notify({ type: 'negative', message: 'Немає тексту для поширення' });
+        return;
       }
 
-      const title = this.tt('dailyHoroscope')
-      const date = this.monthDayLabel
+      const title = this.tt('dailyHoroscope');
+      const date = this.monthDayLabel;
 
-      const zodiacKey = this.activeZodiac.key
-      const zodiacName = this.tt(`zodiac.${zodiacKey}`)
-      const zodiacEmoji = ZODIAC_EMOJI[zodiacKey] || '✨'
-      const datesRange = this.activeZodiac?.dates || ''
+      const zodiacKey = this.activeZodiac.key;
+      const zodiacName = this.tt(`zodiac.${zodiacKey}`);
+      const zodiacEmoji = ZODIAC_EMOJI[zodiacKey] || '✨';
+      const datesRange = this.activeZodiac?.dates || '';
 
-      const themeMeta = THEME_META[this.themeTab] || { emoji: '✨', label: this.themeTab }
-      const themeLabel = this.tt?.(`${this.themeTab}`)
-      const themeEmoji = themeMeta.emoji
+      const themeMeta = THEME_META[this.themeTab] || { emoji: '✨', label: this.themeTab };
+      const themeLabel = this.tt(this.themeTab);
+      const themeEmoji = themeMeta.emoji;
 
       const payload = {
         title, date,
         zodiacEmoji, zodiacName, datesRange,
         themeEmoji, themeLabel,
-        text: rawText
-      }
+        text: rawText,
+      };
+      requestAnimationFrame(() => {
+        document.activeElement?.blur?.()
+      })
       try {
         await Share.share({
-          text: this.buildShareTextCard(payload)
-        })
+          text: this.buildShareTextCard(payload),
+        });
       } catch (e) {
-        console.warn('Share cancelled/failed', e)
+        console.warn('Share cancelled/failed', e);
       }
-    }
+    },
 
   },
 };
