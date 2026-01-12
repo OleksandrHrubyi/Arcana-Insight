@@ -1,0 +1,1022 @@
+[
+  {
+    "id": "minor_cups_01",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 1,
+    "name": {
+      "en": "Ace of Cups",
+      "uk": "Туз Кубків"
+    },
+    "slug": "ace-of-cups",
+    "file": "cups/AceOfCups.png",
+    "keywords": {
+      "en": [
+        "new",
+        "potential",
+        "spark",
+        "feelings",
+        "love",
+        "intuition"
+      ],
+      "uk": [
+        "нове",
+        "потенціал",
+        "іскра",
+        "почуття",
+        "кохання",
+        "інтуїція"
+      ]
+    },
+    "synopsis": {
+      "en": "New feelings, love, emotional renewal.",
+      "uk": "Нові почуття, любов, емоційне оновлення."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A fresh start and pure potential in emotions, relationships, intuition.",
+        "uk": "Новий старт і чистий потенціал у сфері: емоції, стосунки, інтуїція."
+      },
+      "reversed": {
+        "en": "Blocked potential, delays, or missed chances in emotions, relationships, intuition.",
+        "uk": "Потенціал заблокований, затримки або втрачені шанси у сфері: емоції, стосунки, інтуїція."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A fresh start and pure potential in emotions, relationships, intuition.",
+          "uk": "Новий старт і чистий потенціал у сфері: емоції, стосунки, інтуїція."
+        },
+        "reversed": {
+          "en": "Blocked potential, delays, or missed chances in emotions, relationships, intuition.",
+          "uk": "Потенціал заблокований, затримки або втрачені шанси у сфері: емоції, стосунки, інтуїція."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. An Ace is a seed—pure potential. It asks you to notice the first spark and give it space to grow.\n\nIn your situation, this can look like: A fresh start and pure potential in emotions, relationships, intuition. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Туз — це насінина, чистий потенціал. Помічай перший імпульс і дай йому простір вирости.\n\nУ твоїй ситуації це може виглядати так: A fresh start and pure potential in emotions, relationships, intuition. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Reversed, the seed is blocked: hesitation, distraction, or energy leaking into the wrong place.\n\nThis may show up as: Blocked potential, delays, or missed chances in emotions, relationships, intuition. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. У перевернутому положенні насінина заблокована: вагання, відволікання або витік енергії не туди.\n\nЦе може проявитися як: Blocked potential, delays, or missed chances in emotions, relationships, intuition. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_cups_02",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 2,
+    "name": {
+      "en": "Two of Cups",
+      "uk": "Двійка Кубків"
+    },
+    "slug": "two-of-cups",
+    "file": "cups/TwoOfCups.png",
+    "keywords": {
+      "en": [
+        "partnership",
+        "mutuality",
+        "connection"
+      ],
+      "uk": [
+        "партнерство",
+        "взаємність",
+        "зв’язок"
+      ]
+    },
+    "synopsis": {
+      "en": "Partnership, mutual attraction, emotional balance.",
+      "uk": "Партнерство, взаємність, емоційний баланс."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Mutual attraction, partnership, and emotional harmony.",
+        "uk": "Взаємне тяжіння, партнерство та емоційна гармонія."
+      },
+      "reversed": {
+        "en": "Imbalance, miscommunication, or a bond needing repair.",
+        "uk": "Дисбаланс, непорозуміння або стосунки, які потребують зцілення."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Mutual attraction, partnership, and emotional harmony.",
+          "uk": "Взаємне тяжіння, партнерство та емоційна гармонія."
+        },
+        "reversed": {
+          "en": "Imbalance, miscommunication, or a bond needing repair.",
+          "uk": "Дисбаланс, непорозуміння або стосунки, які потребують зцілення."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Two is choice and balance. It’s about holding two options and deciding what you’re willing to commit to.\n\nIn your situation, this can look like: Mutual attraction, partnership, and emotional harmony. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Двійка — це вибір і баланс. Ти тримаєш два варіанти й вирішуєш, у що готовий вкладатися.\n\nУ твоїй ситуації це може виглядати так: Mutual attraction, partnership, and emotional harmony. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Reversed, the balance wobbles: indecision, mixed signals, or avoiding a necessary choice.\n\nThis may show up as: Imbalance, miscommunication, or a bond needing repair. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Перевернуто — баланс хитається: нерішучість, двозначність або уникання потрібного вибору.\n\nЦе може проявитися як: Imbalance, miscommunication, or a bond needing repair. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_cups_03",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 3,
+    "name": {
+      "en": "Three of Cups",
+      "uk": "Трійка Кубків"
+    },
+    "slug": "three-of-cups",
+    "file": "cups/ThreeOfCups.png",
+    "keywords": {
+      "en": [
+        "celebration",
+        "friends",
+        "support"
+      ],
+      "uk": [
+        "святкування",
+        "друзі",
+        "підтримка"
+      ]
+    },
+    "synopsis": {
+      "en": "Friendship, celebration, shared joy.",
+      "uk": "Дружба, святкування, спільна радість."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Celebration, friendship, and shared joy.",
+        "uk": "Святкування, дружба та радість у колі своїх."
+      },
+      "reversed": {
+        "en": "Overindulgence, gossip, or feeling left out.",
+        "uk": "Надмірності, плітки або відчуття, що тебе «не запросили»."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Celebration, friendship, and shared joy.",
+          "uk": "Святкування, дружба та радість у колі своїх."
+        },
+        "reversed": {
+          "en": "Overindulgence, gossip, or feeling left out.",
+          "uk": "Надмірності, плітки або відчуття, що тебе «не запросили»."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Three is growth through connection—support, collaboration, and the first visible results.\n\nIn your situation, this can look like: Celebration, friendship, and shared joy. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Трійка — це зростання через взаємодію: підтримка, співпраця й перші видимі результати.\n\nУ твоїй ситуації це може виглядати так: Celebration, friendship, and shared joy. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Reversed, collaboration strains: miscommunication, comparison, or delays that need a new approach.\n\nThis may show up as: Overindulgence, gossip, or feeling left out. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Перевернуто — напруга у взаємодії: непорозуміння, порівняння або затримки, що потребують іншого підходу.\n\nЦе може проявитися як: Overindulgence, gossip, or feeling left out. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_cups_04",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 4,
+    "name": {
+      "en": "Four of Cups",
+      "uk": "Четвірка Кубків"
+    },
+    "slug": "four-of-cups",
+    "file": "cups/FourOfCups.png",
+    "keywords": {
+      "en": [
+        "apathy",
+        "reflection",
+        "choice"
+      ],
+      "uk": [
+        "апатія",
+        "рефлексія",
+        "вибір"
+      ]
+    },
+    "synopsis": {
+      "en": "Apathy or boredom; re-evaluate what you truly want.",
+      "uk": "Апатія; переоцінка того, чого ти справді хочеш."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Apathy or boredom—look inward before choosing.",
+        "uk": "Апатія або нудьга — заглянь усередину перед вибором."
+      },
+      "reversed": {
+        "en": "New interest, motivation, and opening to offers.",
+        "uk": "Новий інтерес, мотивація і відкритість до шансів."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Apathy or boredom—look inward before choosing.",
+          "uk": "Апатія або нудьга — заглянь усередину перед вибором."
+        },
+        "reversed": {
+          "en": "New interest, motivation, and opening to offers.",
+          "uk": "Новий інтерес, мотивація і відкритість до шансів."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Four is structure and stability. It helps you create a base: rest, boundaries, and a reliable plan.\n\nIn your situation, this can look like: Apathy or boredom—look inward before choosing. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Четвірка — це структура й опора. Вона допомагає створити базу: відпочинок, межі, надійний план.\n\nУ твоїй ситуації це може виглядати так: Apathy or boredom—look inward before choosing. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Reversed, stability becomes rigidity or the base is missing: rest is ignored, boundaries collapse, or plans are chaotic.\n\nThis may show up as: New interest, motivation, and opening to offers. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Перевернуто — або жорсткість, або відсутність опори: відпочинок ігнорується, межі руйнуються, плани хаотичні.\n\nЦе може проявитися як: New interest, motivation, and opening to offers. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_cups_05",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 5,
+    "name": {
+      "en": "Five of Cups",
+      "uk": "Пʼятірка Кубків"
+    },
+    "slug": "five-of-cups",
+    "file": "cups/FiveOfCups.png",
+    "keywords": {
+      "en": [
+        "grief",
+        "regret",
+        "acceptance"
+      ],
+      "uk": [
+        "смуток",
+        "жаль",
+        "прийняття"
+      ]
+    },
+    "synopsis": {
+      "en": "Loss and grief; focus on what still remains.",
+      "uk": "Втрата й смуток; згадай, що ще залишилось."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Grief or regret—honor the loss, then notice what remains.",
+        "uk": "Смуток або жаль — проживи втрату, але помічай, що лишилось."
+      },
+      "reversed": {
+        "en": "Acceptance, emotional recovery, and moving forward.",
+        "uk": "Прийняття, емоційне відновлення і рух уперед."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Grief or regret—honor the loss, then notice what remains.",
+          "uk": "Смуток або жаль — проживи втрату, але помічай, що лишилось."
+        },
+        "reversed": {
+          "en": "Acceptance, emotional recovery, and moving forward.",
+          "uk": "Прийняття, емоційне відновлення і рух уперед."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Five brings tension and change that push growth. It’s a challenge that reveals what matters most.\n\nIn your situation, this can look like: Grief or regret—honor the loss, then notice what remains. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. П’ятірка приносить напругу й зміни, які штовхають до росту. Це виклик, що показує найважливіше.\n\nУ твоїй ситуації це може виглядати так: Grief or regret—honor the loss, then notice what remains. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Reversed, the lesson is avoided: conflict repeats, resistance grows, or the change is postponed.\n\nThis may show up as: Acceptance, emotional recovery, and moving forward. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Перевернуто — урок уникається: конфлікт повторюється, опір зростає або зміни відкладаються.\n\nЦе може проявитися як: Acceptance, emotional recovery, and moving forward. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_cups_06",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 6,
+    "name": {
+      "en": "Six of Cups",
+      "uk": "Шістка Кубків"
+    },
+    "slug": "six-of-cups",
+    "file": "cups/SixOfCups.png",
+    "keywords": {
+      "en": [
+        "nostalgia",
+        "kindness",
+        "past"
+      ],
+      "uk": [
+        "nostalgia",
+        "доброта",
+        "минуле"
+      ]
+    },
+    "synopsis": {
+      "en": "Nostalgia, innocence, revisiting the past.",
+      "uk": "Ностальгія, дитинство, повернення до минулого."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Nostalgia, kindness, and sweet memories.",
+        "uk": "Ностальгія, доброта і теплі спогади."
+      },
+      "reversed": {
+        "en": "Living in the past or needing to grow up.",
+        "uk": "Життя минулим або потреба подорослішати."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Nostalgia, kindness, and sweet memories.",
+          "uk": "Ностальгія, доброта і теплі спогади."
+        },
+        "reversed": {
+          "en": "Living in the past or needing to grow up.",
+          "uk": "Життя минулим або потреба подорослішати."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Six restores harmony—support, progress, and learning from what you’ve been through.\n\nIn your situation, this can look like: Nostalgia, kindness, and sweet memories. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Шістка повертає гармонію: підтримка, прогрес і користь з пережитого досвіду.\n\nУ твоїй ситуації це може виглядати так: Nostalgia, kindness, and sweet memories. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Reversed, the past pulls you back or the path feels uneven: nostalgia, doubt, or slow progress.\n\nThis may show up as: Living in the past or needing to grow up. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Перевернуто — минуле тягне назад або шлях нерівний: ностальгія, сумніви чи повільний рух.\n\nЦе може проявитися як: Living in the past or needing to grow up. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_cups_07",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 7,
+    "name": {
+      "en": "Seven of Cups",
+      "uk": "Сімка Кубків"
+    },
+    "slug": "seven-of-cups",
+    "file": "cups/SevenOfCups.png",
+    "keywords": {
+      "en": [
+        "strategy",
+        "faith",
+        "tests",
+        "feelings",
+        "love",
+        "intuition"
+      ],
+      "uk": [
+        "стратегія",
+        "віра",
+        "випробування",
+        "почуття",
+        "кохання",
+        "інтуїція"
+      ]
+    },
+    "synopsis": {
+      "en": "Choices and fantasies; beware illusion and overload.",
+      "uk": "Вибір і фантазії; обережно з ілюзіями."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A challenge to your plan—stay strategic and trust yourself in emotions, relationships, intuition.",
+        "uk": "Виклик твоєму плану — тримай стратегію й вір у себе у сфері: емоції, стосунки, інтуїція."
+      },
+      "reversed": {
+        "en": "Giving up too soon or losing focus in emotions, relationships, intuition.",
+        "uk": "Здатися занадто рано або втратити фокус у сфері: емоції, стосунки, інтуїція."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A challenge to your plan—stay strategic and trust yourself in emotions, relationships, intuition.",
+          "uk": "Виклик твоєму плану — тримай стратегію й вір у себе у сфері: емоції, стосунки, інтуїція."
+        },
+        "reversed": {
+          "en": "Giving up too soon or losing focus in emotions, relationships, intuition.",
+          "uk": "Здатися занадто рано або втратити фокус у сфері: емоції, стосунки, інтуїція."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Seven tests focus and integrity. It asks for discernment: what is real, what is noise, and what is worth it.\n\nIn your situation, this can look like: A challenge to your plan—stay strategic and trust yourself in emotions, relationships, intuition. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Сімка перевіряє фокус і цілісність. Потрібна розбірливість: що реальне, що шум і що справді варте зусиль.\n\nУ твоїй ситуації це може виглядати так: A challenge to your plan—stay strategic and trust yourself in emotions, relationships, intuition. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Reversed, you may feel scattered: too many options, weak boundaries, or giving up too soon.\n\nThis may show up as: Giving up too soon or losing focus in emotions, relationships, intuition. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Перевернуто — розпорошення: забагато варіантів, слабкі межі або передчасна здача.\n\nЦе може проявитися як: Giving up too soon or losing focus in emotions, relationships, intuition. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_cups_08",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 8,
+    "name": {
+      "en": "Eight of Cups",
+      "uk": "Вісімка Кубків"
+    },
+    "slug": "eight-of-cups",
+    "file": "cups/EightOfCups.png",
+    "keywords": {
+      "en": [
+        "movement",
+        "practice",
+        "momentum",
+        "feelings",
+        "love",
+        "intuition"
+      ],
+      "uk": [
+        "рух",
+        "практика",
+        "імпульс",
+        "почуття",
+        "кохання",
+        "інтуїція"
+      ]
+    },
+    "synopsis": {
+      "en": "Walking away to seek deeper meaning.",
+      "uk": "Відхід заради глибшого сенсу."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Momentum and mastery grow through action in emotions, relationships, intuition.",
+        "uk": "Імпульс і майстерність ростуть через дію у сфері: емоції, стосунки, інтуїція."
+      },
+      "reversed": {
+        "en": "Scattered effort, impatience, or burnout in emotions, relationships, intuition.",
+        "uk": "Розсіяні зусилля, нетерплячість або вигорання у сфері: емоції, стосунки, інтуїція."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Momentum and mastery grow through action in emotions, relationships, intuition.",
+          "uk": "Імпульс і майстерність ростуть через дію у сфері: емоції, стосунки, інтуїція."
+        },
+        "reversed": {
+          "en": "Scattered effort, impatience, or burnout in emotions, relationships, intuition.",
+          "uk": "Розсіяні зусилля, нетерплячість або вигорання у сфері: емоції, стосунки, інтуїція."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Eight is movement and mastery—practice, momentum, and small steps that compound.\n\nIn your situation, this can look like: Momentum and mastery grow through action in emotions, relationships, intuition. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Вісімка — це рух і майстерність: практика, темп і маленькі кроки, що накопичуються.\n\nУ твоїй ситуації це може виглядати так: Momentum and mastery grow through action in emotions, relationships, intuition. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Reversed, energy stalls: procrastination, scattered effort, or pushing without a plan.\n\nThis may show up as: Scattered effort, impatience, or burnout in emotions, relationships, intuition. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Перевернуто — застій: прокрастинація, розпорошені зусилля або тиск без плану.\n\nЦе може проявитися як: Scattered effort, impatience, or burnout in emotions, relationships, intuition. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_cups_09",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 9,
+    "name": {
+      "en": "Nine of Cups",
+      "uk": "Девʼятка Кубків"
+    },
+    "slug": "nine-of-cups",
+    "file": "cups/NineOfCups.png",
+    "keywords": {
+      "en": [
+        "satisfaction",
+        "wish",
+        "comfort"
+      ],
+      "uk": [
+        "задоволення",
+        "бажання",
+        "комфорт"
+      ]
+    },
+    "synopsis": {
+      "en": "Contentment, a wish fulfilled, enjoying what you earned.",
+      "uk": "Задоволення, здійснення бажання, насолода результатом."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Contentment and wishes fulfilled; enjoy the moment.",
+        "uk": "Задоволення і виконання бажань; насолоджуйся моментом."
+      },
+      "reversed": {
+        "en": "Overindulgence or chasing happiness in the wrong place.",
+        "uk": "Надмірності або пошук щастя не там, де воно є."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Contentment and wishes fulfilled; enjoy the moment.",
+          "uk": "Задоволення і виконання бажань; насолоджуйся моментом."
+        },
+        "reversed": {
+          "en": "Overindulgence or chasing happiness in the wrong place.",
+          "uk": "Надмірності або пошук щастя не там, де воно є."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Nine is near completion—resilience, self-reliance, and protecting what you’ve built.\n\nIn your situation, this can look like: Contentment and wishes fulfilled; enjoy the moment. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Дев’ятка — майже фініш: витривалість, самодостатність і захист того, що ти збудував.\n\nУ твоїй ситуації це може виглядати так: Contentment and wishes fulfilled; enjoy the moment. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Reversed, fatigue shows up: defensiveness, discouragement, or forgetting to ask for help.\n\nThis may show up as: Overindulgence or chasing happiness in the wrong place. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Перевернуто — ознаки втоми: захисна позиція, зневіра або небажання просити підтримку.\n\nЦе може проявитися як: Overindulgence or chasing happiness in the wrong place. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_cups_10",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 10,
+    "name": {
+      "en": "Ten of Cups",
+      "uk": "Десятка Кубків"
+    },
+    "slug": "ten-of-cups",
+    "file": "cups/TenOfCups.png",
+    "keywords": {
+      "en": [
+        "harmony",
+        "family",
+        "fulfillment"
+      ],
+      "uk": [
+        "гармонія",
+        "родина",
+        "задоволення"
+      ]
+    },
+    "synopsis": {
+      "en": "Harmony, family, lasting emotional fulfillment.",
+      "uk": "Гармонія, сім’я, тривале щастя."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Emotional fulfillment, harmony, and home happiness.",
+        "uk": "Емоційне наповнення, гармонія та щастя вдома."
+      },
+      "reversed": {
+        "en": "Tension at home or unrealistic expectations.",
+        "uk": "Напруга в родині або завищені очікування."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Emotional fulfillment, harmony, and home happiness.",
+          "uk": "Емоційне наповнення, гармонія та щастя вдома."
+        },
+        "reversed": {
+          "en": "Tension at home or unrealistic expectations.",
+          "uk": "Напруга в родині або завищені очікування."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Ten is culmination: outcomes, legacy, and the full weight (or joy) of what you created.\n\nIn your situation, this can look like: Emotional fulfillment, harmony, and home happiness. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Десятка — завершення: результат, «вага» зробленого й підсумок циклу.\n\nУ твоїй ситуації це може виглядати так: Emotional fulfillment, harmony, and home happiness. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Reversed, the load is too heavy or the ending is messy: simplify, share responsibility, and close the cycle cleanly.\n\nThis may show up as: Tension at home or unrealistic expectations. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Перевернуто — надмірне навантаження або хаотичне завершення: спрощуй, діли відповідальність і закривай цикл чисто.\n\nЦе може проявитися як: Tension at home or unrealistic expectations. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_cups_11",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": "page",
+    "name": {
+      "en": "Page of Cups",
+      "uk": "Паж Кубків"
+    },
+    "slug": "page-of-cups",
+    "file": "cups/PageOfCups.png",
+    "keywords": {
+      "en": [
+        "curiosity",
+        "message",
+        "learning",
+        "feelings",
+        "love",
+        "intuition"
+      ],
+      "uk": [
+        "цікавість",
+        "звістка",
+        "навчання",
+        "почуття",
+        "кохання",
+        "інтуїція"
+      ]
+    },
+    "synopsis": {
+      "en": "Curiosity, learning, messages; a fresh approach to emotions, relationships, intuition.",
+      "uk": "Допитливість, навчання, новини; свіжий підхід до: емоції, стосунки, інтуїція."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A message or new curiosity; learn and explore in emotions, relationships, intuition.",
+        "uk": "Звістка або нова цікавість; вчись і досліджуй у сфері: емоції, стосунки, інтуїція."
+      },
+      "reversed": {
+        "en": "Immaturity, mixed signals, or lack of follow-through in emotions, relationships, intuition.",
+        "uk": "Незрілість, змішані сигнали або брак наполегливості у сфері: емоції, стосунки, інтуїція."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A message or new curiosity; learn and explore in emotions, relationships, intuition.",
+          "uk": "Звістка або нова цікавість; вчись і досліджуй у сфері: емоції, стосунки, інтуїція."
+        },
+        "reversed": {
+          "en": "Immaturity, mixed signals, or lack of follow-through in emotions, relationships, intuition.",
+          "uk": "Незрілість, змішані сигнали або брак наполегливості у сфері: емоції, стосунки, інтуїція."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. The Page is curiosity and learning—new messages, new skills, and beginner’s mind.\n\nIn your situation, this can look like: A message or new curiosity; learn and explore in emotions, relationships, intuition. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Паж — це цікавість і навчання: новини, нові навички й стан «початківця».\n\nУ твоїй ситуації це може виглядати так: A message or new curiosity; learn and explore in emotions, relationships, intuition. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Reversed, the lesson is resisted: immaturity, inconsistency, or not taking the message seriously.\n\nThis may show up as: Immaturity, mixed signals, or lack of follow-through in emotions, relationships, intuition. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Перевернуто — опір уроку: незрілість, непослідовність або знецінення важливого сигналу.\n\nЦе може проявитися як: Immaturity, mixed signals, or lack of follow-through in emotions, relationships, intuition. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_cups_12",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": "knight",
+    "name": {
+      "en": "Knight of Cups",
+      "uk": "Лицар Кубків"
+    },
+    "slug": "knight-of-cups",
+    "file": "cups/KnightOfCups.png",
+    "keywords": {
+      "en": [
+        "action",
+        "pursuit",
+        "movement",
+        "feelings",
+        "love",
+        "intuition"
+      ],
+      "uk": [
+        "дія",
+        "прагнення",
+        "рух",
+        "почуття",
+        "кохання",
+        "інтуїція"
+      ]
+    },
+    "synopsis": {
+      "en": "Action and pursuit; moving boldly within emotions, relationships, intuition.",
+      "uk": "Дія й рух уперед; сміливо діяти в темі: емоції, стосунки, інтуїція."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Active pursuit—move decisively in emotions, relationships, intuition.",
+        "uk": "Активна дія — рухайся рішуче у сфері: емоції, стосунки, інтуїція."
+      },
+      "reversed": {
+        "en": "Haste, recklessness, or stalled action in emotions, relationships, intuition.",
+        "uk": "Поспіх, необачність або застій дій у сфері: емоції, стосунки, інтуїція."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Active pursuit—move decisively in emotions, relationships, intuition.",
+          "uk": "Активна дія — рухайся рішуче у сфері: емоції, стосунки, інтуїція."
+        },
+        "reversed": {
+          "en": "Haste, recklessness, or stalled action in emotions, relationships, intuition.",
+          "uk": "Поспіх, необачність або застій дій у сфері: емоції, стосунки, інтуїція."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. The Knight is movement and commitment—taking action, pursuing a goal, and staying on course.\n\nIn your situation, this can look like: Active pursuit—move decisively in emotions, relationships, intuition. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Лицар — це рух і відданість: дія, переслідування цілі та здатність тримати курс.\n\nУ твоїй ситуації це може виглядати так: Active pursuit—move decisively in emotions, relationships, intuition. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Reversed, momentum turns reckless or stuck: impulsivity, frustration, or acting without listening.\n\nThis may show up as: Haste, recklessness, or stalled action in emotions, relationships, intuition. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Перевернуто — або надто різко, або застрягло: імпульсивність, фрустрація чи дія без слухання.\n\nЦе може проявитися як: Haste, recklessness, or stalled action in emotions, relationships, intuition. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_cups_13",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": "queen",
+    "name": {
+      "en": "Queen of Cups",
+      "uk": "Королева Кубків"
+    },
+    "slug": "queen-of-cups",
+    "file": "cups/QueenOfCups.png",
+    "keywords": {
+      "en": [
+        "mastery",
+        "care",
+        "intuition",
+        "feelings",
+        "love"
+      ],
+      "uk": [
+        "майстерність",
+        "турбота",
+        "інтуїція",
+        "почуття",
+        "кохання"
+      ]
+    },
+    "synopsis": {
+      "en": "Mature, receptive mastery; embodying the best of emotions, relationships, intuition.",
+      "uk": "Зріла, м’яка сила; втілення найкращого в: емоції, стосунки, інтуїція."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Mature, steady influence; embody wisdom in emotions, relationships, intuition.",
+        "uk": "Зріла, стабільна сила; втілюй мудрість у сфері: емоції, стосунки, інтуїція."
+      },
+      "reversed": {
+        "en": "Insecurity, imbalance, or emotional extremes in emotions, relationships, intuition.",
+        "uk": "Невпевненість, дисбаланс або емоційні крайнощі у сфері: емоції, стосунки, інтуїція."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Mature, steady influence; embody wisdom in emotions, relationships, intuition.",
+          "uk": "Зріла, стабільна сила; втілюй мудрість у сфері: емоції, стосунки, інтуїція."
+        },
+        "reversed": {
+          "en": "Insecurity, imbalance, or emotional extremes in emotions, relationships, intuition.",
+          "uk": "Невпевненість, дисбаланс або емоційні крайнощі у сфері: емоції, стосунки, інтуїція."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. The Queen embodies mature mastery—inner authority, care, and wise boundaries.\n\nIn your situation, this can look like: Mature, steady influence; embody wisdom in emotions, relationships, intuition. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Королева — зріла майстерність: внутрішня опора, турбота й мудрі межі.\n\nУ твоїй ситуації це може виглядати так: Mature, steady influence; embody wisdom in emotions, relationships, intuition. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Reversed, the energy turns inward poorly: insecurity, control, or neglecting your own needs.\n\nThis may show up as: Insecurity, imbalance, or emotional extremes in emotions, relationships, intuition. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Перевернуто — дисбаланс: невпевненість, контроль або ігнорування власних потреб.\n\nЦе може проявитися як: Insecurity, imbalance, or emotional extremes in emotions, relationships, intuition. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_cups_14",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": "king",
+    "name": {
+      "en": "King of Cups",
+      "uk": "Король Кубків"
+    },
+    "slug": "king-of-cups",
+    "file": "cups/KingOfCups.png",
+    "keywords": {
+      "en": [
+        "leadership",
+        "control",
+        "responsibility",
+        "feelings",
+        "love",
+        "intuition"
+      ],
+      "uk": [
+        "лідерство",
+        "контроль",
+        "відповідальність",
+        "почуття",
+        "кохання",
+        "інтуїція"
+      ]
+    },
+    "synopsis": {
+      "en": "Leadership and control; directing emotions, relationships, intuition with confidence.",
+      "uk": "Лідерство й контроль; керувати темою: емоції, стосунки, інтуїція впевнено."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Leadership and responsibility; direct emotions, relationships, intuition with maturity.",
+        "uk": "Лідерство й відповідальність; керуй сферою зріло: емоції, стосунки, інтуїція."
+      },
+      "reversed": {
+        "en": "Dominating, rigid control, or misusing authority in emotions, relationships, intuition.",
+        "uk": "Домінування, жорсткий контроль або зловживання владою у сфері: емоції, стосунки, інтуїція."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Leadership and responsibility; direct emotions, relationships, intuition with maturity.",
+          "uk": "Лідерство й відповідальність; керуй сферою зріло: емоції, стосунки, інтуїція."
+        },
+        "reversed": {
+          "en": "Dominating, rigid control, or misusing authority in emotions, relationships, intuition.",
+          "uk": "Домінування, жорсткий контроль або зловживання владою у сфері: емоції, стосунки, інтуїція."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. The King is leadership and steadiness—responsibility, strategy, and grounded influence.\n\nIn your situation, this can look like: Leadership and responsibility; direct emotions, relationships, intuition with maturity. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Король — це лідерство й стійкість: відповідальність, стратегія й вплив із опорою.\n\nУ твоїй ситуації це може виглядати так: Leadership and responsibility; direct emotions, relationships, intuition with maturity. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Cups speak of water—feelings, relationships, intuition, and emotional truth. Reversed, leadership becomes rigid or inconsistent: ego, avoidance, or misuse of power.\n\nThis may show up as: Dominating, rigid control, or misusing authority in emotions, relationships, intuition. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen water is clear, it brings connection and empathy; when it overflows, it blurs boundaries or creates mood swings. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Кубки — це вода: почуття, стосунки, інтуїція й емоційна правда. Перевернуто — жорсткість або непослідовність: его, уникання або зловживання силою.\n\nЦе може проявитися як: Dominating, rigid control, or misusing authority in emotions, relationships, intuition. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли вода чиста — вона дає близькість і співчуття; коли переливається — розмиває межі й робить емоції нестабільними. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  }
+]

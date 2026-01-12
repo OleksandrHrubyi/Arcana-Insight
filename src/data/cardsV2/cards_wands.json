@@ -1,0 +1,1053 @@
+[
+  {
+    "id": "minor_wands_01",
+    "arcana": "minor",
+    "suit": "wands",
+    "rank": 1,
+    "name": {
+      "en": "Ace of Wands",
+      "uk": "Туз Жезлів"
+    },
+    "slug": "ace-of-wands",
+    "file": "wands/AceOfWands.png",
+    "keywords": {
+      "en": [
+        "new",
+        "potential",
+        "spark",
+        "passion",
+        "creativity",
+        "drive"
+      ],
+      "uk": [
+        "нове",
+        "потенціал",
+        "іскра",
+        "пристрасть",
+        "творчість",
+        "рух"
+      ]
+    },
+    "synopsis": {
+      "en": "A spark of inspiration; new creative drive.",
+      "uk": "Іскра натхнення; новий творчий імпульс."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A fresh start and pure potential in energy, creativity, ambition.",
+        "uk": "Новий старт і чистий потенціал у сфері: енергія, творчість, амбіції."
+      },
+      "reversed": {
+        "en": "Blocked potential, delays, or missed chances in energy, creativity, ambition.",
+        "uk": "Потенціал заблокований, затримки або втрачені шанси у сфері: енергія, творчість, амбіції."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "A spark of inspiration; new creative drive.\n\nA fresh start and pure potential in energy, creativity, ambition.\n\nKey themes: new, potential, spark, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Іскра натхнення; новий творчий імпульс.\n\nНовий старт і чистий потенціал у сфері: енергія, творчість, амбіції.\n\nКлючові теми: нове, потенціал, іскра, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "A spark of inspiration; new creative drive.\n\nBlocked potential, delays, or missed chances in energy, creativity, ambition.\n\nKey themes: new, potential, spark, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Іскра натхнення; новий творчий імпульс.\n\nПотенціал заблокований, затримки або втрачені шанси у сфері: енергія, творчість, амбіції.\n\nКлючові теми: нове, потенціал, іскра, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A fresh start and pure potential in energy, creativity, ambition.",
+          "uk": "Новий старт і чистий потенціал у сфері: енергія, творчість, амбіції."
+        },
+        "reversed": {
+          "en": "Blocked potential, delays, or missed chances in energy, creativity, ambition.",
+          "uk": "Потенціал заблокований, затримки або втрачені шанси у сфері: енергія, творчість, амбіції."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_wands_02",
+    "arcana": "minor",
+    "suit": "wands",
+    "rank": 2,
+    "name": {
+      "en": "Two of Wands",
+      "uk": "Двійка Жезлів"
+    },
+    "slug": "two-of-wands",
+    "file": "wands/TwoOfWands.png",
+    "keywords": {
+      "en": [
+        "choice",
+        "balance",
+        "planning",
+        "passion",
+        "creativity",
+        "drive"
+      ],
+      "uk": [
+        "вибір",
+        "баланс",
+        "планування",
+        "пристрасть",
+        "творчість",
+        "рух"
+      ]
+    },
+    "synopsis": {
+      "en": "Planning and deciding your next move; personal power.",
+      "uk": "Планування і вибір наступного кроку; особиста сила."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Choices and balance; plan your next step in energy, creativity, ambition.",
+        "uk": "Вибір і баланс; сплануй наступний крок у сфері: енергія, творчість, амбіції."
+      },
+      "reversed": {
+        "en": "Indecision, imbalance, or juggling too much in energy, creativity, ambition.",
+        "uk": "Нерішучість, дисбаланс або «жонглювання» надто багатьом у сфері: енергія, творчість, амбіції."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Planning and deciding your next move; personal power.\n\nChoices and balance; plan your next step in energy, creativity, ambition.\n\nKey themes: choice, balance, planning, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Планування і вибір наступного кроку; особиста сила.\n\nВибір і баланс; сплануй наступний крок у сфері: енергія, творчість, амбіції.\n\nКлючові теми: вибір, баланс, планування, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Planning and deciding your next move; personal power.\n\nIndecision, imbalance, or juggling too much in energy, creativity, ambition.\n\nKey themes: choice, balance, planning, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Планування і вибір наступного кроку; особиста сила.\n\nНерішучість, дисбаланс або «жонглювання» надто багатьом у сфері: енергія, творчість, амбіції.\n\nКлючові теми: вибір, баланс, планування, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Choices and balance; plan your next step in energy, creativity, ambition.",
+          "uk": "Вибір і баланс; сплануй наступний крок у сфері: енергія, творчість, амбіції."
+        },
+        "reversed": {
+          "en": "Indecision, imbalance, or juggling too much in energy, creativity, ambition.",
+          "uk": "Нерішучість, дисбаланс або «жонглювання» надто багатьом у сфері: енергія, творчість, амбіції."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_wands_03",
+    "arcana": "minor",
+    "suit": "wands",
+    "rank": 3,
+    "name": {
+      "en": "Three of Wands",
+      "uk": "Трійка Жезлів"
+    },
+    "slug": "three-of-wands",
+    "file": "wands/ThreeOfWands.png",
+    "keywords": {
+      "en": [
+        "growth",
+        "teamwork",
+        "expansion",
+        "passion",
+        "creativity",
+        "drive"
+      ],
+      "uk": [
+        "зростання",
+        "командність",
+        "розширення",
+        "пристрасть",
+        "творчість",
+        "рух"
+      ]
+    },
+    "synopsis": {
+      "en": "Expansion and progress; results starting to show.",
+      "uk": "Розширення й прогрес; результати вже з’являються."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Expansion and progress; collaborate or widen horizons in energy, creativity, ambition.",
+        "uk": "Розширення й прогрес; співпраця або ширші горизонти у сфері: енергія, творчість, амбіції."
+      },
+      "reversed": {
+        "en": "Slow growth, misalignment, or lack of support in energy, creativity, ambition.",
+        "uk": "Повільне зростання, неузгодженість або брак підтримки у сфері: енергія, творчість, амбіції."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Expansion and progress; results starting to show.\n\nExpansion and progress; collaborate or widen horizons in energy, creativity, ambition.\n\nKey themes: growth, teamwork, expansion, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Розширення й прогрес; результати вже з’являються.\n\nРозширення й прогрес; співпраця або ширші горизонти у сфері: енергія, творчість, амбіції.\n\nКлючові теми: зростання, командність, розширення, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Expansion and progress; results starting to show.\n\nSlow growth, misalignment, or lack of support in energy, creativity, ambition.\n\nKey themes: growth, teamwork, expansion, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Розширення й прогрес; результати вже з’являються.\n\nПовільне зростання, неузгодженість або брак підтримки у сфері: енергія, творчість, амбіції.\n\nКлючові теми: зростання, командність, розширення, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Expansion and progress; collaborate or widen horizons in energy, creativity, ambition.",
+          "uk": "Розширення й прогрес; співпраця або ширші горизонти у сфері: енергія, творчість, амбіції."
+        },
+        "reversed": {
+          "en": "Slow growth, misalignment, or lack of support in energy, creativity, ambition.",
+          "uk": "Повільне зростання, неузгодженість або брак підтримки у сфері: енергія, творчість, амбіції."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_wands_04",
+    "arcana": "minor",
+    "suit": "wands",
+    "rank": 4,
+    "name": {
+      "en": "Four of Wands",
+      "uk": "Четвірка Жезлів"
+    },
+    "slug": "four-of-wands",
+    "file": "wands/FourOfWands.png",
+    "keywords": {
+      "en": [
+        "stability",
+        "rest",
+        "boundaries",
+        "passion",
+        "creativity",
+        "drive"
+      ],
+      "uk": [
+        "стабільність",
+        "відпочинок",
+        "межі",
+        "пристрасть",
+        "творчість",
+        "рух"
+      ]
+    },
+    "synopsis": {
+      "en": "Celebration, homecoming, a supportive community.",
+      "uk": "Святкування, дім, підтримка спільноти."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Stability and regrouping; protect what matters in energy, creativity, ambition.",
+        "uk": "Стабільність і перепочинок; бережи важливе у сфері: енергія, творчість, амбіції."
+      },
+      "reversed": {
+        "en": "Stagnation, clinginess, or restlessness in energy, creativity, ambition.",
+        "uk": "Застій, надмірне тримання або неспокій у сфері: енергія, творчість, амбіції."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Celebration, homecoming, a supportive community.\n\nStability and regrouping; protect what matters in energy, creativity, ambition.\n\nKey themes: stability, rest, boundaries, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Святкування, дім, підтримка спільноти.\n\nСтабільність і перепочинок; бережи важливе у сфері: енергія, творчість, амбіції.\n\nКлючові теми: стабільність, відпочинок, межі, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Celebration, homecoming, a supportive community.\n\nStagnation, clinginess, or restlessness in energy, creativity, ambition.\n\nKey themes: stability, rest, boundaries, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Святкування, дім, підтримка спільноти.\n\nЗастій, надмірне тримання або неспокій у сфері: енергія, творчість, амбіції.\n\nКлючові теми: стабільність, відпочинок, межі, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Stability and regrouping; protect what matters in energy, creativity, ambition.",
+          "uk": "Стабільність і перепочинок; бережи важливе у сфері: енергія, творчість, амбіції."
+        },
+        "reversed": {
+          "en": "Stagnation, clinginess, or restlessness in energy, creativity, ambition.",
+          "uk": "Застій, надмірне тримання або неспокій у сфері: енергія, творчість, амбіції."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_wands_05",
+    "arcana": "minor",
+    "suit": "wands",
+    "rank": 5,
+    "name": {
+      "en": "Five of Wands",
+      "uk": "Пʼятірка Жезлів"
+    },
+    "slug": "five-of-wands",
+    "file": "wands/FiveOfWands.png",
+    "keywords": {
+      "en": [
+        "challenge",
+        "loss",
+        "conflict",
+        "passion",
+        "creativity",
+        "drive"
+      ],
+      "uk": [
+        "виклик",
+        "втрата",
+        "конфлікт",
+        "пристрасть",
+        "творчість",
+        "рух"
+      ]
+    },
+    "synopsis": {
+      "en": "Competition, friction, testing your resolve.",
+      "uk": "Суперництво, тертя, перевірка витримки."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A test—conflict or disappointment reveals what must change in energy, creativity, ambition.",
+        "uk": "Випробування — конфлікт або розчарування показують, що треба змінити у сфері: енергія, творчість, амбіції."
+      },
+      "reversed": {
+        "en": "Moving past conflict, acceptance, or repairing in energy, creativity, ambition.",
+        "uk": "Вихід із конфлікту, прийняття або відновлення у сфері: енергія, творчість, амбіції."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Competition, friction, testing your resolve.\n\nA test—conflict or disappointment reveals what must change in energy, creativity, ambition.\n\nKey themes: challenge, loss, conflict, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Суперництво, тертя, перевірка витримки.\n\nВипробування — конфлікт або розчарування показують, що треба змінити у сфері: енергія, творчість, амбіції.\n\nКлючові теми: виклик, втрата, конфлікт, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Competition, friction, testing your resolve.\n\nMoving past conflict, acceptance, or repairing in energy, creativity, ambition.\n\nKey themes: challenge, loss, conflict, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Суперництво, тертя, перевірка витримки.\n\nВихід із конфлікту, прийняття або відновлення у сфері: енергія, творчість, амбіції.\n\nКлючові теми: виклик, втрата, конфлікт, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A test—conflict or disappointment reveals what must change in energy, creativity, ambition.",
+          "uk": "Випробування — конфлікт або розчарування показують, що треба змінити у сфері: енергія, творчість, амбіції."
+        },
+        "reversed": {
+          "en": "Moving past conflict, acceptance, or repairing in energy, creativity, ambition.",
+          "uk": "Вихід із конфлікту, прийняття або відновлення у сфері: енергія, творчість, амбіції."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_wands_06",
+    "arcana": "minor",
+    "suit": "wands",
+    "rank": 6,
+    "name": {
+      "en": "Six of Wands",
+      "uk": "Шістка Жезлів"
+    },
+    "slug": "six-of-wands",
+    "file": "wands/SixOfWands.png",
+    "keywords": {
+      "en": [
+        "harmony",
+        "progress",
+        "support",
+        "passion",
+        "creativity",
+        "drive"
+      ],
+      "uk": [
+        "гармонія",
+        "прогрес",
+        "підтримка",
+        "пристрасть",
+        "творчість",
+        "рух"
+      ]
+    },
+    "synopsis": {
+      "en": "Victory, recognition, being seen for your effort.",
+      "uk": "Перемога, визнання, помітний результат."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Support and forward movement; things improve in energy, creativity, ambition.",
+        "uk": "Підтримка й рух уперед; стає краще у сфері: енергія, творчість, амбіції."
+      },
+      "reversed": {
+        "en": "Delayed progress or needing help to move on in energy, creativity, ambition.",
+        "uk": "Затримка прогресу або потреба в допомозі, щоб рушити далі у сфері: енергія, творчість, амбіції."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Victory, recognition, being seen for your effort.\n\nSupport and forward movement; things improve in energy, creativity, ambition.\n\nKey themes: harmony, progress, support, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Перемога, визнання, помітний результат.\n\nПідтримка й рух уперед; стає краще у сфері: енергія, творчість, амбіції.\n\nКлючові теми: гармонія, прогрес, підтримка, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Victory, recognition, being seen for your effort.\n\nDelayed progress or needing help to move on in energy, creativity, ambition.\n\nKey themes: harmony, progress, support, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Перемога, визнання, помітний результат.\n\nЗатримка прогресу або потреба в допомозі, щоб рушити далі у сфері: енергія, творчість, амбіції.\n\nКлючові теми: гармонія, прогрес, підтримка, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Support and forward movement; things improve in energy, creativity, ambition.",
+          "uk": "Підтримка й рух уперед; стає краще у сфері: енергія, творчість, амбіції."
+        },
+        "reversed": {
+          "en": "Delayed progress or needing help to move on in energy, creativity, ambition.",
+          "uk": "Затримка прогресу або потреба в допомозі, щоб рушити далі у сфері: енергія, творчість, амбіції."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_wands_07",
+    "arcana": "minor",
+    "suit": "wands",
+    "rank": 7,
+    "name": {
+      "en": "Seven of Wands",
+      "uk": "Сімка Жезлів"
+    },
+    "slug": "seven-of-wands",
+    "file": "wands/SevenOfWands.png",
+    "keywords": {
+      "en": [
+        "strategy",
+        "faith",
+        "tests",
+        "passion",
+        "creativity",
+        "drive"
+      ],
+      "uk": [
+        "стратегія",
+        "віра",
+        "випробування",
+        "пристрасть",
+        "творчість",
+        "рух"
+      ]
+    },
+    "synopsis": {
+      "en": "Defending your position; standing your ground.",
+      "uk": "Захист позиції; стояти на своєму."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A challenge to your plan—stay strategic and trust yourself in energy, creativity, ambition.",
+        "uk": "Виклик твоєму плану — тримай стратегію й вір у себе у сфері: енергія, творчість, амбіції."
+      },
+      "reversed": {
+        "en": "Giving up too soon or losing focus in energy, creativity, ambition.",
+        "uk": "Здатися занадто рано або втратити фокус у сфері: енергія, творчість, амбіції."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Defending your position; standing your ground.\n\nA challenge to your plan—stay strategic and trust yourself in energy, creativity, ambition.\n\nKey themes: strategy, faith, tests, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Захист позиції; стояти на своєму.\n\nВиклик твоєму плану — тримай стратегію й вір у себе у сфері: енергія, творчість, амбіції.\n\nКлючові теми: стратегія, віра, випробування, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Defending your position; standing your ground.\n\nGiving up too soon or losing focus in energy, creativity, ambition.\n\nKey themes: strategy, faith, tests, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Захист позиції; стояти на своєму.\n\nЗдатися занадто рано або втратити фокус у сфері: енергія, творчість, амбіції.\n\nКлючові теми: стратегія, віра, випробування, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A challenge to your plan—stay strategic and trust yourself in energy, creativity, ambition.",
+          "uk": "Виклик твоєму плану — тримай стратегію й вір у себе у сфері: енергія, творчість, амбіції."
+        },
+        "reversed": {
+          "en": "Giving up too soon or losing focus in energy, creativity, ambition.",
+          "uk": "Здатися занадто рано або втратити фокус у сфері: енергія, творчість, амбіції."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_wands_08",
+    "arcana": "minor",
+    "suit": "wands",
+    "rank": 8,
+    "name": {
+      "en": "Eight of Wands",
+      "uk": "Вісімка Жезлів"
+    },
+    "slug": "eight-of-wands",
+    "file": "wands/EightOfWands.png",
+    "keywords": {
+      "en": [
+        "speed",
+        "news",
+        "momentum"
+      ],
+      "uk": [
+        "швидкість",
+        "новини",
+        "імпульс"
+      ]
+    },
+    "synopsis": {
+      "en": "Swift movement, messages, momentum accelerating.",
+      "uk": "Швидкі події, новини, прискорення."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Fast movement, quick news, things taking off.",
+        "uk": "Швидкий рух, новини, події набирають обертів."
+      },
+      "reversed": {
+        "en": "Delays, mixed messages, or scattered momentum.",
+        "uk": "Затримки, плутанина в повідомленнях або розсіяний імпульс."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Swift movement, messages, momentum accelerating.\n\nFast movement, quick news, things taking off.\n\nKey themes: speed, news, momentum.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Швидкі події, новини, прискорення.\n\nШвидкий рух, новини, події набирають обертів.\n\nКлючові теми: швидкість, новини, імпульс.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Swift movement, messages, momentum accelerating.\n\nDelays, mixed messages, or scattered momentum.\n\nKey themes: speed, news, momentum.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Швидкі події, новини, прискорення.\n\nЗатримки, плутанина в повідомленнях або розсіяний імпульс.\n\nКлючові теми: швидкість, новини, імпульс.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Fast movement, quick news, things taking off.",
+          "uk": "Швидкий рух, новини, події набирають обертів."
+        },
+        "reversed": {
+          "en": "Delays, mixed messages, or scattered momentum.",
+          "uk": "Затримки, плутанина в повідомленнях або розсіяний імпульс."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_wands_09",
+    "arcana": "minor",
+    "suit": "wands",
+    "rank": 9,
+    "name": {
+      "en": "Nine of Wands",
+      "uk": "Девʼятка Жезлів"
+    },
+    "slug": "nine-of-wands",
+    "file": "wands/NineOfWands.png",
+    "keywords": {
+      "en": [
+        "fruition",
+        "resilience",
+        "inner-state",
+        "passion",
+        "creativity",
+        "drive"
+      ],
+      "uk": [
+        "результат",
+        "стійкість",
+        "внутрішній стан",
+        "пристрасть",
+        "творчість",
+        "рух"
+      ]
+    },
+    "synopsis": {
+      "en": "Resilience, boundaries, last push before the finish.",
+      "uk": "Стійкість, кордони, останній ривок."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Near completion; inner state shapes outcomes in energy, creativity, ambition.",
+        "uk": "Майже фініш; внутрішній стан впливає на результат у сфері: енергія, творчість, амбіції."
+      },
+      "reversed": {
+        "en": "Exhaustion, doubt, or overthinking in energy, creativity, ambition.",
+        "uk": "Виснаження, сумніви або надмірні думки у сфері: енергія, творчість, амбіції."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Resilience, boundaries, last push before the finish.\n\nNear completion; inner state shapes outcomes in energy, creativity, ambition.\n\nKey themes: fruition, resilience, inner-state, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Стійкість, кордони, останній ривок.\n\nМайже фініш; внутрішній стан впливає на результат у сфері: енергія, творчість, амбіції.\n\nКлючові теми: результат, стійкість, внутрішній стан, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Resilience, boundaries, last push before the finish.\n\nExhaustion, doubt, or overthinking in energy, creativity, ambition.\n\nKey themes: fruition, resilience, inner-state, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Стійкість, кордони, останній ривок.\n\nВиснаження, сумніви або надмірні думки у сфері: енергія, творчість, амбіції.\n\nКлючові теми: результат, стійкість, внутрішній стан, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Near completion; inner state shapes outcomes in energy, creativity, ambition.",
+          "uk": "Майже фініш; внутрішній стан впливає на результат у сфері: енергія, творчість, амбіції."
+        },
+        "reversed": {
+          "en": "Exhaustion, doubt, or overthinking in energy, creativity, ambition.",
+          "uk": "Виснаження, сумніви або надмірні думки у сфері: енергія, творчість, амбіції."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_wands_10",
+    "arcana": "minor",
+    "suit": "wands",
+    "rank": 10,
+    "name": {
+      "en": "Ten of Wands",
+      "uk": "Десятка Жезлів"
+    },
+    "slug": "ten-of-wands",
+    "file": "wands/TenOfWands.png",
+    "keywords": {
+      "en": [
+        "burden",
+        "responsibility",
+        "overwork"
+      ],
+      "uk": [
+        "тягар",
+        "відповідальність",
+        "перевтома"
+      ]
+    },
+    "synopsis": {
+      "en": "Burden and responsibility; learn to delegate.",
+      "uk": "Тягар і відповідальність; важливо делегувати."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Heavy load—responsibility, overwork, needing help.",
+        "uk": "Великий тягар — відповідальність, перевтома, потреба в допомозі."
+      },
+      "reversed": {
+        "en": "Delegating, releasing pressure, and simplifying.",
+        "uk": "Делегування, зменшення тиску і спрощення."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Burden and responsibility; learn to delegate.\n\nHeavy load—responsibility, overwork, needing help.\n\nKey themes: burden, responsibility, overwork.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Тягар і відповідальність; важливо делегувати.\n\nВеликий тягар — відповідальність, перевтома, потреба в допомозі.\n\nКлючові теми: тягар, відповідальність, перевтома.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Burden and responsibility; learn to delegate.\n\nDelegating, releasing pressure, and simplifying.\n\nKey themes: burden, responsibility, overwork.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Тягар і відповідальність; важливо делегувати.\n\nДелегування, зменшення тиску і спрощення.\n\nКлючові теми: тягар, відповідальність, перевтома.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Heavy load—responsibility, overwork, needing help.",
+          "uk": "Великий тягар — відповідальність, перевтома, потреба в допомозі."
+        },
+        "reversed": {
+          "en": "Delegating, releasing pressure, and simplifying.",
+          "uk": "Делегування, зменшення тиску і спрощення."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_wands_11",
+    "arcana": "minor",
+    "suit": "wands",
+    "rank": "page",
+    "name": {
+      "en": "Page of Wands",
+      "uk": "Паж Жезлів"
+    },
+    "slug": "page-of-wands",
+    "file": "wands/PageOfWands.png",
+    "keywords": {
+      "en": [
+        "curiosity",
+        "message",
+        "learning",
+        "passion",
+        "creativity",
+        "drive"
+      ],
+      "uk": [
+        "цікавість",
+        "звістка",
+        "навчання",
+        "пристрасть",
+        "творчість",
+        "рух"
+      ]
+    },
+    "synopsis": {
+      "en": "Curiosity, learning, messages; a fresh approach to passion, creativity, drive.",
+      "uk": "Допитливість, навчання, новини; свіжий підхід до: пристрасть, творчість, імпульс."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A message or new curiosity; learn and explore in energy, creativity, ambition.",
+        "uk": "Звістка або нова цікавість; вчись і досліджуй у сфері: енергія, творчість, амбіції."
+      },
+      "reversed": {
+        "en": "Immaturity, mixed signals, or lack of follow-through in energy, creativity, ambition.",
+        "uk": "Незрілість, змішані сигнали або брак наполегливості у сфері: енергія, творчість, амбіції."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Curiosity, learning, messages; a fresh approach to passion, creativity, drive.\n\nA message or new curiosity; learn and explore in energy, creativity, ambition.\n\nKey themes: curiosity, message, learning, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Допитливість, навчання, новини; свіжий підхід до: пристрасть, творчість, імпульс.\n\nЗвістка або нова цікавість; вчись і досліджуй у сфері: енергія, творчість, амбіції.\n\nКлючові теми: цікавість, звістка, навчання, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Curiosity, learning, messages; a fresh approach to passion, creativity, drive.\n\nImmaturity, mixed signals, or lack of follow-through in energy, creativity, ambition.\n\nKey themes: curiosity, message, learning, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Допитливість, навчання, новини; свіжий підхід до: пристрасть, творчість, імпульс.\n\nНезрілість, змішані сигнали або брак наполегливості у сфері: енергія, творчість, амбіції.\n\nКлючові теми: цікавість, звістка, навчання, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A message or new curiosity; learn and explore in energy, creativity, ambition.",
+          "uk": "Звістка або нова цікавість; вчись і досліджуй у сфері: енергія, творчість, амбіції."
+        },
+        "reversed": {
+          "en": "Immaturity, mixed signals, or lack of follow-through in energy, creativity, ambition.",
+          "uk": "Незрілість, змішані сигнали або брак наполегливості у сфері: енергія, творчість, амбіції."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_wands_12",
+    "arcana": "minor",
+    "suit": "wands",
+    "rank": "knight",
+    "name": {
+      "en": "Knight of Wands",
+      "uk": "Лицар Жезлів"
+    },
+    "slug": "knight-of-wands",
+    "file": "wands/KnightOfWands.png",
+    "keywords": {
+      "en": [
+        "action",
+        "pursuit",
+        "movement",
+        "passion",
+        "creativity",
+        "drive"
+      ],
+      "uk": [
+        "дія",
+        "прагнення",
+        "рух",
+        "пристрасть",
+        "творчість"
+      ]
+    },
+    "synopsis": {
+      "en": "Action and pursuit; moving boldly within passion, creativity, drive.",
+      "uk": "Дія й рух уперед; сміливо діяти в темі: пристрасть, творчість, імпульс."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Active pursuit—move decisively in energy, creativity, ambition.",
+        "uk": "Активна дія — рухайся рішуче у сфері: енергія, творчість, амбіції."
+      },
+      "reversed": {
+        "en": "Haste, recklessness, or stalled action in energy, creativity, ambition.",
+        "uk": "Поспіх, необачність або застій дій у сфері: енергія, творчість, амбіції."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Action and pursuit; moving boldly within passion, creativity, drive.\n\nActive pursuit—move decisively in energy, creativity, ambition.\n\nKey themes: action, pursuit, movement, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Дія й рух уперед; сміливо діяти в темі: пристрасть, творчість, імпульс.\n\nАктивна дія — рухайся рішуче у сфері: енергія, творчість, амбіції.\n\nКлючові теми: дія, прагнення, рух, пристрасть, творчість.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Action and pursuit; moving boldly within passion, creativity, drive.\n\nHaste, recklessness, or stalled action in energy, creativity, ambition.\n\nKey themes: action, pursuit, movement, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Дія й рух уперед; сміливо діяти в темі: пристрасть, творчість, імпульс.\n\nПоспіх, необачність або застій дій у сфері: енергія, творчість, амбіції.\n\nКлючові теми: дія, прагнення, рух, пристрасть, творчість.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Active pursuit—move decisively in energy, creativity, ambition.",
+          "uk": "Активна дія — рухайся рішуче у сфері: енергія, творчість, амбіції."
+        },
+        "reversed": {
+          "en": "Haste, recklessness, or stalled action in energy, creativity, ambition.",
+          "uk": "Поспіх, необачність або застій дій у сфері: енергія, творчість, амбіції."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_wands_13",
+    "arcana": "minor",
+    "suit": "wands",
+    "rank": "queen",
+    "name": {
+      "en": "Queen of Wands",
+      "uk": "Королева Жезлів"
+    },
+    "slug": "queen-of-wands",
+    "file": "wands/QueenOfWands.png",
+    "keywords": {
+      "en": [
+        "mastery",
+        "care",
+        "intuition",
+        "passion",
+        "creativity",
+        "drive"
+      ],
+      "uk": [
+        "майстерність",
+        "турбота",
+        "інтуїція",
+        "пристрасть",
+        "творчість",
+        "рух"
+      ]
+    },
+    "synopsis": {
+      "en": "Mature, receptive mastery; embodying the best of passion, creativity, drive.",
+      "uk": "Зріла, м’яка сила; втілення найкращого в: пристрасть, творчість, імпульс."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Mature, steady influence; embody wisdom in energy, creativity, ambition.",
+        "uk": "Зріла, стабільна сила; втілюй мудрість у сфері: енергія, творчість, амбіції."
+      },
+      "reversed": {
+        "en": "Insecurity, imbalance, or emotional extremes in energy, creativity, ambition.",
+        "uk": "Невпевненість, дисбаланс або емоційні крайнощі у сфері: енергія, творчість, амбіції."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Mature, receptive mastery; embodying the best of passion, creativity, drive.\n\nMature, steady influence; embody wisdom in energy, creativity, ambition.\n\nKey themes: mastery, care, intuition, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Зріла, м’яка сила; втілення найкращого в: пристрасть, творчість, імпульс.\n\nЗріла, стабільна сила; втілюй мудрість у сфері: енергія, творчість, амбіції.\n\nКлючові теми: майстерність, турбота, інтуїція, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Mature, receptive mastery; embodying the best of passion, creativity, drive.\n\nInsecurity, imbalance, or emotional extremes in energy, creativity, ambition.\n\nKey themes: mastery, care, intuition, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Зріла, м’яка сила; втілення найкращого в: пристрасть, творчість, імпульс.\n\nНевпевненість, дисбаланс або емоційні крайнощі у сфері: енергія, творчість, амбіції.\n\nКлючові теми: майстерність, турбота, інтуїція, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Mature, steady influence; embody wisdom in energy, creativity, ambition.",
+          "uk": "Зріла, стабільна сила; втілюй мудрість у сфері: енергія, творчість, амбіції."
+        },
+        "reversed": {
+          "en": "Insecurity, imbalance, or emotional extremes in energy, creativity, ambition.",
+          "uk": "Невпевненість, дисбаланс або емоційні крайнощі у сфері: енергія, творчість, амбіції."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_wands_14",
+    "arcana": "minor",
+    "suit": "wands",
+    "rank": "king",
+    "name": {
+      "en": "King of Wands",
+      "uk": "Король Жезлів"
+    },
+    "slug": "king-of-wands",
+    "file": "wands/KingOfWands.png",
+    "keywords": {
+      "en": [
+        "leadership",
+        "control",
+        "responsibility",
+        "passion",
+        "creativity",
+        "drive"
+      ],
+      "uk": [
+        "лідерство",
+        "контроль",
+        "відповідальність",
+        "пристрасть",
+        "творчість",
+        "рух"
+      ]
+    },
+    "synopsis": {
+      "en": "Leadership and control; directing passion, creativity, drive with confidence.",
+      "uk": "Лідерство й контроль; керувати темою: пристрасть, творчість, імпульс впевнено."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Leadership and responsibility; direct energy, creativity, ambition with maturity.",
+        "uk": "Лідерство й відповідальність; керуй сферою зріло: енергія, творчість, амбіції."
+      },
+      "reversed": {
+        "en": "Dominating, rigid control, or misusing authority in energy, creativity, ambition.",
+        "uk": "Домінування, жорсткий контроль або зловживання владою у сфері: енергія, творчість, амбіції."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Leadership and control; directing passion, creativity, drive with confidence.\n\nLeadership and responsibility; direct energy, creativity, ambition with maturity.\n\nKey themes: leadership, control, responsibility, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Лідерство й контроль; керувати темою: пристрасть, творчість, імпульс впевнено.\n\nЛідерство й відповідальність; керуй сферою зріло: енергія, творчість, амбіції.\n\nКлючові теми: лідерство, контроль, відповідальність, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Leadership and control; directing passion, creativity, drive with confidence.\n\nDominating, rigid control, or misusing authority in energy, creativity, ambition.\n\nKey themes: leadership, control, responsibility, passion, creativity, drive.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Лідерство й контроль; керувати темою: пристрасть, творчість, імпульс впевнено.\n\nДомінування, жорсткий контроль або зловживання владою у сфері: енергія, творчість, амбіції.\n\nКлючові теми: лідерство, контроль, відповідальність, пристрасть, творчість, рух.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Leadership and responsibility; direct energy, creativity, ambition with maturity.",
+          "uk": "Лідерство й відповідальність; керуй сферою зріло: енергія, творчість, амбіції."
+        },
+        "reversed": {
+          "en": "Dominating, rigid control, or misusing authority in energy, creativity, ambition.",
+          "uk": "Домінування, жорсткий контроль або зловживання владою у сфері: енергія, творчість, амбіції."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  }
+]

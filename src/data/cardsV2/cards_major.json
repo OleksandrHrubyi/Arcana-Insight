@@ -1,0 +1,1564 @@
+[
+  {
+    "id": "major_00",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 0,
+    "name": {
+      "en": "The Fool",
+      "uk": "Блазень"
+    },
+    "slug": "the-fool",
+    "file": "majorArcana/TheFool.png",
+    "keywords": {
+      "en": [
+        "beginnings",
+        "freedom",
+        "trust"
+      ],
+      "uk": [
+        "початок",
+        "свобода",
+        "довіра"
+      ]
+    },
+    "synopsis": {
+      "en": "New beginnings, spontaneity, a leap of faith.",
+      "uk": "Новий початок, спонтанність, стрибок віри."
+    },
+    "meaning": {
+      "upright": {
+        "en": "New start, curiosity, take the leap with an open heart.",
+        "uk": "Новий старт, цікавість; зроби крок у невідоме з відкритим серцем."
+      },
+      "reversed": {
+        "en": "Recklessness, naivety, or fear of stepping forward.",
+        "uk": "Безрозсудність, наївність або страх рухатися вперед."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "New beginnings, spontaneity, a leap of faith.\n\nNew start, curiosity, take the leap with an open heart.\n\nKey themes: beginnings, freedom, trust.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Новий початок, спонтанність, стрибок віри.\n\nНовий старт, цікавість; зроби крок у невідоме з відкритим серцем.\n\nКлючові теми: початок, свобода, довіра.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "New beginnings, spontaneity, a leap of faith.\n\nRecklessness, naivety, or fear of stepping forward.\n\nKey themes: beginnings, freedom, trust.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Новий початок, спонтанність, стрибок віри.\n\nБезрозсудність, наївність або страх рухатися вперед.\n\nКлючові теми: початок, свобода, довіра.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "New start, curiosity, take the leap with an open heart.",
+          "uk": "Новий старт, цікавість; зроби крок у невідоме з відкритим серцем."
+        },
+        "reversed": {
+          "en": "Recklessness, naivety, or fear of stepping forward.",
+          "uk": "Безрозсудність, наївність або страх рухатися вперед."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "0"
+  },
+  {
+    "id": "major_01",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 1,
+    "name": {
+      "en": "The Magician",
+      "uk": "Маг"
+    },
+    "slug": "the-magician",
+    "file": "majorArcana/TheMagician.png",
+    "keywords": {
+      "en": [
+        "willpower",
+        "skill",
+        "manifestation"
+      ],
+      "uk": [
+        "воля",
+        "майстерність",
+        "втілення"
+      ]
+    },
+    "synopsis": {
+      "en": "Manifestation, skill, willpower, taking action.",
+      "uk": "Втілення задумів, майстерність, воля, дія."
+    },
+    "meaning": {
+      "upright": {
+        "en": "You have the tools—focus, act, and make things real.",
+        "uk": "У тебе є інструменти — зосередься, дій і втілюй задумане."
+      },
+      "reversed": {
+        "en": "Trickery, scattered energy, or using talents the wrong way.",
+        "uk": "Маніпуляції, розсіяність або використання талантів не за призначенням."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Manifestation, skill, willpower, taking action.\n\nYou have the tools—focus, act, and make things real.\n\nKey themes: willpower, skill, manifestation.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Втілення задумів, майстерність, воля, дія.\n\nУ тебе є інструменти — зосередься, дій і втілюй задумане.\n\nКлючові теми: воля, майстерність, втілення.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Manifestation, skill, willpower, taking action.\n\nTrickery, scattered energy, or using talents the wrong way.\n\nKey themes: willpower, skill, manifestation.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Втілення задумів, майстерність, воля, дія.\n\nМаніпуляції, розсіяність або використання талантів не за призначенням.\n\nКлючові теми: воля, майстерність, втілення.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "You have the tools—focus, act, and make things real.",
+          "uk": "У тебе є інструменти — зосередься, дій і втілюй задумане."
+        },
+        "reversed": {
+          "en": "Trickery, scattered energy, or using talents the wrong way.",
+          "uk": "Маніпуляції, розсіяність або використання талантів не за призначенням."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "I"
+  },
+  {
+    "id": "major_02",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 2,
+    "name": {
+      "en": "The High Priestess",
+      "uk": "Верховна Жриця"
+    },
+    "slug": "the-high-priestess",
+    "file": "majorArcana/TheHighPriestess.png",
+    "keywords": {
+      "en": [
+        "intuition",
+        "mystery",
+        "inner-voice"
+      ],
+      "uk": [
+        "інтуїція",
+        "таємниця",
+        "внутрішній голос"
+      ]
+    },
+    "synopsis": {
+      "en": "Intuition, inner knowing, hidden truths.",
+      "uk": "Інтуїція, внутрішнє знання, приховані істини."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Listen inward; hidden truths reveal themselves in silence.",
+        "uk": "Слухай себе; прихована правда відкривається в тиші."
+      },
+      "reversed": {
+        "en": "Ignoring intuition, secrets, or confusion clouding judgment.",
+        "uk": "Ігнорування інтуїції, таємниці або плутанина в рішеннях."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Intuition, inner knowing, hidden truths.\n\nListen inward; hidden truths reveal themselves in silence.\n\nKey themes: intuition, mystery, inner-voice.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Інтуїція, внутрішнє знання, приховані істини.\n\nСлухай себе; прихована правда відкривається в тиші.\n\nКлючові теми: інтуїція, таємниця, внутрішній голос.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Intuition, inner knowing, hidden truths.\n\nIgnoring intuition, secrets, or confusion clouding judgment.\n\nKey themes: intuition, mystery, inner-voice.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Інтуїція, внутрішнє знання, приховані істини.\n\nІгнорування інтуїції, таємниці або плутанина в рішеннях.\n\nКлючові теми: інтуїція, таємниця, внутрішній голос.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Listen inward; hidden truths reveal themselves in silence.",
+          "uk": "Слухай себе; прихована правда відкривається в тиші."
+        },
+        "reversed": {
+          "en": "Ignoring intuition, secrets, or confusion clouding judgment.",
+          "uk": "Ігнорування інтуїції, таємниці або плутанина в рішеннях."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "II"
+  },
+  {
+    "id": "major_03",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 3,
+    "name": {
+      "en": "The Empress",
+      "uk": "Імператриця"
+    },
+    "slug": "the-empress",
+    "file": "majorArcana/TheEmpress.png",
+    "keywords": {
+      "en": [
+        "nurture",
+        "abundance",
+        "creativity"
+      ],
+      "uk": [
+        "турбота",
+        "достаток",
+        "творчість"
+      ]
+    },
+    "synopsis": {
+      "en": "Abundance, nurturing, creativity, growth.",
+      "uk": "Достаток, турбота, творчість, ріст."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Growth and care—create, receive, and let things bloom.",
+        "uk": "Ріст і турбота — твори, приймай і дай справам розквітнути."
+      },
+      "reversed": {
+        "en": "Overgiving, stagnation, or neglect of self-care.",
+        "uk": "Виснаження через «надто багато для інших», застій або нестача турботи про себе."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Abundance, nurturing, creativity, growth.\n\nGrowth and care—create, receive, and let things bloom.\n\nKey themes: nurture, abundance, creativity.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Достаток, турбота, творчість, ріст.\n\nРіст і турбота — твори, приймай і дай справам розквітнути.\n\nКлючові теми: турбота, достаток, творчість.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Abundance, nurturing, creativity, growth.\n\nOvergiving, stagnation, or neglect of self-care.\n\nKey themes: nurture, abundance, creativity.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Достаток, турбота, творчість, ріст.\n\nВиснаження через «надто багато для інших», застій або нестача турботи про себе.\n\nКлючові теми: турбота, достаток, творчість.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Growth and care—create, receive, and let things bloom.",
+          "uk": "Ріст і турбота — твори, приймай і дай справам розквітнути."
+        },
+        "reversed": {
+          "en": "Overgiving, stagnation, or neglect of self-care.",
+          "uk": "Виснаження через «надто багато для інших», застій або нестача турботи про себе."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "III"
+  },
+  {
+    "id": "major_04",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 4,
+    "name": {
+      "en": "The Emperor",
+      "uk": "Імператор"
+    },
+    "slug": "the-emperor",
+    "file": "majorArcana/TheEmperor.png",
+    "keywords": {
+      "en": [
+        "structure",
+        "authority",
+        "stability"
+      ],
+      "uk": [
+        "структура",
+        "авторитет",
+        "стабільність"
+      ]
+    },
+    "synopsis": {
+      "en": "Structure, authority, stability, leadership.",
+      "uk": "Структура, авторитет, стабільність, лідерство."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Order and leadership—set boundaries and build solid foundations.",
+        "uk": "Порядок і лідерство — встанови межі та збудуй міцну основу."
+      },
+      "reversed": {
+        "en": "Control issues, rigidity, or weak boundaries.",
+        "uk": "Надмірний контроль, жорсткість або слабкі межі."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Structure, authority, stability, leadership.\n\nOrder and leadership—set boundaries and build solid foundations.\n\nKey themes: structure, authority, stability.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Структура, авторитет, стабільність, лідерство.\n\nПорядок і лідерство — встанови межі та збудуй міцну основу.\n\nКлючові теми: структура, авторитет, стабільність.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Structure, authority, stability, leadership.\n\nControl issues, rigidity, or weak boundaries.\n\nKey themes: structure, authority, stability.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Структура, авторитет, стабільність, лідерство.\n\nНадмірний контроль, жорсткість або слабкі межі.\n\nКлючові теми: структура, авторитет, стабільність.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Order and leadership—set boundaries and build solid foundations.",
+          "uk": "Порядок і лідерство — встанови межі та збудуй міцну основу."
+        },
+        "reversed": {
+          "en": "Control issues, rigidity, or weak boundaries.",
+          "uk": "Надмірний контроль, жорсткість або слабкі межі."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "IV"
+  },
+  {
+    "id": "major_05",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 5,
+    "name": {
+      "en": "The Hierophant",
+      "uk": "Ієрофант"
+    },
+    "slug": "the-hierophant",
+    "file": "majorArcana/TheHierophant.png",
+    "keywords": {
+      "en": [
+        "tradition",
+        "learning",
+        "guidance"
+      ],
+      "uk": [
+        "традиція",
+        "навчання",
+        "наставництво"
+      ]
+    },
+    "synopsis": {
+      "en": "Tradition, learning, guidance, institutions.",
+      "uk": "Традиції, навчання, наставництво, система."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Wisdom through tradition, mentors, and shared values.",
+        "uk": "Мудрість через традиції, наставників і спільні цінності."
+      },
+      "reversed": {
+        "en": "Rebellion, outdated rules, or empty rituals.",
+        "uk": "Бунт, застарілі правила або порожні ритуали."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Tradition, learning, guidance, institutions.\n\nWisdom through tradition, mentors, and shared values.\n\nKey themes: tradition, learning, guidance.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Традиції, навчання, наставництво, система.\n\nМудрість через традиції, наставників і спільні цінності.\n\nКлючові теми: традиція, навчання, наставництво.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Tradition, learning, guidance, institutions.\n\nRebellion, outdated rules, or empty rituals.\n\nKey themes: tradition, learning, guidance.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Традиції, навчання, наставництво, система.\n\nБунт, застарілі правила або порожні ритуали.\n\nКлючові теми: традиція, навчання, наставництво.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Wisdom through tradition, mentors, and shared values.",
+          "uk": "Мудрість через традиції, наставників і спільні цінності."
+        },
+        "reversed": {
+          "en": "Rebellion, outdated rules, or empty rituals.",
+          "uk": "Бунт, застарілі правила або порожні ритуали."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "V"
+  },
+  {
+    "id": "major_06",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 6,
+    "name": {
+      "en": "The Lovers",
+      "uk": "Закохані"
+    },
+    "slug": "the-lovers",
+    "file": "majorArcana/TheLovers.png",
+    "keywords": {
+      "en": [
+        "union",
+        "choice",
+        "values"
+      ],
+      "uk": [
+        "єдність",
+        "вибір",
+        "цінності"
+      ]
+    },
+    "synopsis": {
+      "en": "Union, alignment of values, an important choice.",
+      "uk": "Союз, узгодження цінностей, важливий вибір."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Alignment in love or partnership; a choice guided by values.",
+        "uk": "Єдність у коханні/партнерстві; вибір, що спирається на цінності."
+      },
+      "reversed": {
+        "en": "Misalignment, temptation, or avoiding an important decision.",
+        "uk": "Невідповідність, спокуси або уникання важливого рішення."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Union, alignment of values, an important choice.\n\nAlignment in love or partnership; a choice guided by values.\n\nKey themes: union, choice, values.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Союз, узгодження цінностей, важливий вибір.\n\nЄдність у коханні/партнерстві; вибір, що спирається на цінності.\n\nКлючові теми: єдність, вибір, цінності.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Union, alignment of values, an important choice.\n\nMisalignment, temptation, or avoiding an important decision.\n\nKey themes: union, choice, values.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Союз, узгодження цінностей, важливий вибір.\n\nНевідповідність, спокуси або уникання важливого рішення.\n\nКлючові теми: єдність, вибір, цінності.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Alignment in love or partnership; a choice guided by values.",
+          "uk": "Єдність у коханні/партнерстві; вибір, що спирається на цінності."
+        },
+        "reversed": {
+          "en": "Misalignment, temptation, or avoiding an important decision.",
+          "uk": "Невідповідність, спокуси або уникання важливого рішення."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "VI"
+  },
+  {
+    "id": "major_07",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 7,
+    "name": {
+      "en": "The Chariot",
+      "uk": "Колісниця"
+    },
+    "slug": "the-chariot",
+    "file": "majorArcana/TheChariot.png",
+    "keywords": {
+      "en": [
+        "drive",
+        "victory",
+        "self-control"
+      ],
+      "uk": [
+        "рух",
+        "перемога",
+        "самоконтроль"
+      ]
+    },
+    "synopsis": {
+      "en": "Determination, control, momentum, victory.",
+      "uk": "Рішучість, контроль, рух уперед, перемога."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Forward motion—discipline and confidence bring success.",
+        "uk": "Рух уперед — дисципліна й упевненість ведуть до перемоги."
+      },
+      "reversed": {
+        "en": "Loss of direction, impulsiveness, or inner conflict.",
+        "uk": "Втрата курсу, імпульсивність або внутрішній конфлікт."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Determination, control, momentum, victory.\n\nForward motion—discipline and confidence bring success.\n\nKey themes: drive, victory, self-control.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Рішучість, контроль, рух уперед, перемога.\n\nРух уперед — дисципліна й упевненість ведуть до перемоги.\n\nКлючові теми: рух, перемога, самоконтроль.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Determination, control, momentum, victory.\n\nLoss of direction, impulsiveness, or inner conflict.\n\nKey themes: drive, victory, self-control.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Рішучість, контроль, рух уперед, перемога.\n\nВтрата курсу, імпульсивність або внутрішній конфлікт.\n\nКлючові теми: рух, перемога, самоконтроль.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Forward motion—discipline and confidence bring success.",
+          "uk": "Рух уперед — дисципліна й упевненість ведуть до перемоги."
+        },
+        "reversed": {
+          "en": "Loss of direction, impulsiveness, or inner conflict.",
+          "uk": "Втрата курсу, імпульсивність або внутрішній конфлікт."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "VII"
+  },
+  {
+    "id": "major_08",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 8,
+    "name": {
+      "en": "Strength",
+      "uk": "Сила"
+    },
+    "slug": "strength",
+    "file": "majorArcana/Strength.png",
+    "keywords": {
+      "en": [
+        "courage",
+        "patience",
+        "compassion"
+      ],
+      "uk": [
+        "сміливість",
+        "терпіння",
+        "співчуття"
+      ]
+    },
+    "synopsis": {
+      "en": "Courage, compassion, inner power, patience.",
+      "uk": "Сміливість, співчуття, внутрішня сила, терпіння."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Gentle power—bravery, calm, and kindness tame the wild.",
+        "uk": "М’яка сила — сміливість, спокій і доброта приборкують емоції."
+      },
+      "reversed": {
+        "en": "Self-doubt, impatience, or feeling emotionally overwhelmed.",
+        "uk": "Невпевненість, нетерплячість або емоційне перевантаження."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Courage, compassion, inner power, patience.\n\nGentle power—bravery, calm, and kindness tame the wild.\n\nKey themes: courage, patience, compassion.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Сміливість, співчуття, внутрішня сила, терпіння.\n\nМ’яка сила — сміливість, спокій і доброта приборкують емоції.\n\nКлючові теми: сміливість, терпіння, співчуття.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Courage, compassion, inner power, patience.\n\nSelf-doubt, impatience, or feeling emotionally overwhelmed.\n\nKey themes: courage, patience, compassion.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Сміливість, співчуття, внутрішня сила, терпіння.\n\nНевпевненість, нетерплячість або емоційне перевантаження.\n\nКлючові теми: сміливість, терпіння, співчуття.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Gentle power—bravery, calm, and kindness tame the wild.",
+          "uk": "М’яка сила — сміливість, спокій і доброта приборкують емоції."
+        },
+        "reversed": {
+          "en": "Self-doubt, impatience, or feeling emotionally overwhelmed.",
+          "uk": "Невпевненість, нетерплячість або емоційне перевантаження."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "VIII"
+  },
+  {
+    "id": "major_09",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 9,
+    "name": {
+      "en": "The Hermit",
+      "uk": "Відлюдник"
+    },
+    "slug": "the-hermit",
+    "file": "majorArcana/TheHermit.png",
+    "keywords": {
+      "en": [
+        "reflection",
+        "solitude",
+        "wisdom"
+      ],
+      "uk": [
+        "рефлексія",
+        "самітність",
+        "мудрість"
+      ]
+    },
+    "synopsis": {
+      "en": "Introspection, solitude, seeking guidance.",
+      "uk": "Самоаналіз, усамітнення, пошук поради."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Step back to gain clarity; answers come with reflection.",
+        "uk": "Відійди вбік, щоб прояснити думки; відповіді приходять у тиші."
+      },
+      "reversed": {
+        "en": "Isolation, withdrawal, or refusing guidance.",
+        "uk": "Ізоляція, відсторонення або відмова прийняти допомогу."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Introspection, solitude, seeking guidance.\n\nStep back to gain clarity; answers come with reflection.\n\nKey themes: reflection, solitude, wisdom.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Самоаналіз, усамітнення, пошук поради.\n\nВідійди вбік, щоб прояснити думки; відповіді приходять у тиші.\n\nКлючові теми: рефлексія, самітність, мудрість.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Introspection, solitude, seeking guidance.\n\nIsolation, withdrawal, or refusing guidance.\n\nKey themes: reflection, solitude, wisdom.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Самоаналіз, усамітнення, пошук поради.\n\nІзоляція, відсторонення або відмова прийняти допомогу.\n\nКлючові теми: рефлексія, самітність, мудрість.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Step back to gain clarity; answers come with reflection.",
+          "uk": "Відійди вбік, щоб прояснити думки; відповіді приходять у тиші."
+        },
+        "reversed": {
+          "en": "Isolation, withdrawal, or refusing guidance.",
+          "uk": "Ізоляція, відсторонення або відмова прийняти допомогу."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "IX"
+  },
+  {
+    "id": "major_10",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 10,
+    "name": {
+      "en": "Wheel of Fortune",
+      "uk": "Колесо Фортуни"
+    },
+    "slug": "wheel-of-fortune",
+    "file": "majorArcana/WheelOfFortune.png",
+    "keywords": {
+      "en": [
+        "change",
+        "cycles",
+        "fate"
+      ],
+      "uk": [
+        "зміни",
+        "цикли",
+        "доля"
+      ]
+    },
+    "synopsis": {
+      "en": "Change, cycles, turning point, fate.",
+      "uk": "Зміни, цикли, поворотний момент, доля."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A turning point—luck shifts and cycles move you forward.",
+        "uk": "Переломний момент — удача змінюється, цикл веде далі."
+      },
+      "reversed": {
+        "en": "Resistance to change or repeating patterns.",
+        "uk": "Опір змінам або повторення одних і тих самих сценаріїв."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Change, cycles, turning point, fate.\n\nA turning point—luck shifts and cycles move you forward.\n\nKey themes: change, cycles, fate.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Зміни, цикли, поворотний момент, доля.\n\nПереломний момент — удача змінюється, цикл веде далі.\n\nКлючові теми: зміни, цикли, доля.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Change, cycles, turning point, fate.\n\nResistance to change or repeating patterns.\n\nKey themes: change, cycles, fate.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Зміни, цикли, поворотний момент, доля.\n\nОпір змінам або повторення одних і тих самих сценаріїв.\n\nКлючові теми: зміни, цикли, доля.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A turning point—luck shifts and cycles move you forward.",
+          "uk": "Переломний момент — удача змінюється, цикл веде далі."
+        },
+        "reversed": {
+          "en": "Resistance to change or repeating patterns.",
+          "uk": "Опір змінам або повторення одних і тих самих сценаріїв."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "X"
+  },
+  {
+    "id": "major_11",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 11,
+    "name": {
+      "en": "Justice",
+      "uk": "Справедливість"
+    },
+    "slug": "justice",
+    "file": "majorArcana/Justice.png",
+    "keywords": {
+      "en": [
+        "truth",
+        "fairness",
+        "accountability"
+      ],
+      "uk": [
+        "правда",
+        "справедливість",
+        "відповідальність"
+      ]
+    },
+    "synopsis": {
+      "en": "Fairness, truth, accountability, cause and effect.",
+      "uk": "Справедливість, правда, відповідальність, причина-наслідок."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Balance and truth—own choices and seek fairness.",
+        "uk": "Баланс і правда — бери відповідальність і шукай справедливість."
+      },
+      "reversed": {
+        "en": "Dishonesty, bias, or avoiding consequences.",
+        "uk": "Нечесність, упередженість або уникання наслідків."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Fairness, truth, accountability, cause and effect.\n\nBalance and truth—own choices and seek fairness.\n\nKey themes: truth, fairness, accountability.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Справедливість, правда, відповідальність, причина-наслідок.\n\nБаланс і правда — бери відповідальність і шукай справедливість.\n\nКлючові теми: правда, справедливість, відповідальність.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Fairness, truth, accountability, cause and effect.\n\nDishonesty, bias, or avoiding consequences.\n\nKey themes: truth, fairness, accountability.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Справедливість, правда, відповідальність, причина-наслідок.\n\nНечесність, упередженість або уникання наслідків.\n\nКлючові теми: правда, справедливість, відповідальність.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Balance and truth—own choices and seek fairness.",
+          "uk": "Баланс і правда — бери відповідальність і шукай справедливість."
+        },
+        "reversed": {
+          "en": "Dishonesty, bias, or avoiding consequences.",
+          "uk": "Нечесність, упередженість або уникання наслідків."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XI"
+  },
+  {
+    "id": "major_12",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 12,
+    "name": {
+      "en": "The Hanged Man",
+      "uk": "Повішений"
+    },
+    "slug": "the-hanged-man",
+    "file": "majorArcana/TheHangedMan.png",
+    "keywords": {
+      "en": [
+        "pause",
+        "surrender",
+        "new-view"
+      ],
+      "uk": [
+        "пауза",
+        "прийняття",
+        "новий погляд"
+      ]
+    },
+    "synopsis": {
+      "en": "Pause, surrender, new perspective.",
+      "uk": "Пауза, прийняття, новий погляд."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Pause and reframe; surrender brings a new perspective.",
+        "uk": "Пауза й переосмислення; прийняття дає новий погляд."
+      },
+      "reversed": {
+        "en": "Stalling, martyrdom, or refusing to let go.",
+        "uk": "Застрягання, «жертвенність» або небажання відпустити."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pause, surrender, new perspective.\n\nPause and reframe; surrender brings a new perspective.\n\nKey themes: pause, surrender, new-view.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Пауза, прийняття, новий погляд.\n\nПауза й переосмислення; прийняття дає новий погляд.\n\nКлючові теми: пауза, прийняття, новий погляд.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Pause, surrender, new perspective.\n\nStalling, martyrdom, or refusing to let go.\n\nKey themes: pause, surrender, new-view.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Пауза, прийняття, новий погляд.\n\nЗастрягання, «жертвенність» або небажання відпустити.\n\nКлючові теми: пауза, прийняття, новий погляд.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Pause and reframe; surrender brings a new perspective.",
+          "uk": "Пауза й переосмислення; прийняття дає новий погляд."
+        },
+        "reversed": {
+          "en": "Stalling, martyrdom, or refusing to let go.",
+          "uk": "Застрягання, «жертвенність» або небажання відпустити."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XII"
+  },
+  {
+    "id": "major_13",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 13,
+    "name": {
+      "en": "Death",
+      "uk": "Смерть"
+    },
+    "slug": "death",
+    "file": "majorArcana/Death.png",
+    "keywords": {
+      "en": [
+        "ending",
+        "transformation",
+        "renewal"
+      ],
+      "uk": [
+        "завершення",
+        "трансформація",
+        "оновлення"
+      ]
+    },
+    "synopsis": {
+      "en": "Endings, transformation, release, renewal.",
+      "uk": "Завершення, трансформація, відпускання, оновлення."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A clean ending makes room for rebirth and transformation.",
+        "uk": "Завершення, що очищає; звільнення місця для оновлення."
+      },
+      "reversed": {
+        "en": "Clinging to the past or fearing necessary change.",
+        "uk": "Чіпляння за минуле або страх необхідних змін."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Endings, transformation, release, renewal.\n\nA clean ending makes room for rebirth and transformation.\n\nKey themes: ending, transformation, renewal.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Завершення, трансформація, відпускання, оновлення.\n\nЗавершення, що очищає; звільнення місця для оновлення.\n\nКлючові теми: завершення, трансформація, оновлення.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Endings, transformation, release, renewal.\n\nClinging to the past or fearing necessary change.\n\nKey themes: ending, transformation, renewal.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Завершення, трансформація, відпускання, оновлення.\n\nЧіпляння за минуле або страх необхідних змін.\n\nКлючові теми: завершення, трансформація, оновлення.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A clean ending makes room for rebirth and transformation.",
+          "uk": "Завершення, що очищає; звільнення місця для оновлення."
+        },
+        "reversed": {
+          "en": "Clinging to the past or fearing necessary change.",
+          "uk": "Чіпляння за минуле або страх необхідних змін."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XIII"
+  },
+  {
+    "id": "major_14",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 14,
+    "name": {
+      "en": "Temperance",
+      "uk": "Помірність"
+    },
+    "slug": "temperance",
+    "file": "majorArcana/Temperance.png",
+    "keywords": {
+      "en": [
+        "balance",
+        "healing",
+        "moderation"
+      ],
+      "uk": [
+        "баланс",
+        "зцілення",
+        "помірність"
+      ]
+    },
+    "synopsis": {
+      "en": "Balance, moderation, harmony, healing.",
+      "uk": "Баланс, помірність, гармонія, зцілення."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Mix and harmonize—patience brings healing and flow.",
+        "uk": "Гармонія й міра — терпіння приносить зцілення та потік."
+      },
+      "reversed": {
+        "en": "Extremes, imbalance, or lack of long-term harmony.",
+        "uk": "Крайнощі, дисбаланс або відсутність узгодженості."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Balance, moderation, harmony, healing.\n\nMix and harmonize—patience brings healing and flow.\n\nKey themes: balance, healing, moderation.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Баланс, помірність, гармонія, зцілення.\n\nГармонія й міра — терпіння приносить зцілення та потік.\n\nКлючові теми: баланс, зцілення, помірність.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Balance, moderation, harmony, healing.\n\nExtremes, imbalance, or lack of long-term harmony.\n\nKey themes: balance, healing, moderation.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Баланс, помірність, гармонія, зцілення.\n\nКрайнощі, дисбаланс або відсутність узгодженості.\n\nКлючові теми: баланс, зцілення, помірність.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Mix and harmonize—patience brings healing and flow.",
+          "uk": "Гармонія й міра — терпіння приносить зцілення та потік."
+        },
+        "reversed": {
+          "en": "Extremes, imbalance, or lack of long-term harmony.",
+          "uk": "Крайнощі, дисбаланс або відсутність узгодженості."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XIV"
+  },
+  {
+    "id": "major_15",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 15,
+    "name": {
+      "en": "The Devil",
+      "uk": "Диявол"
+    },
+    "slug": "the-devil",
+    "file": "majorArcana/TheDevil.png",
+    "keywords": {
+      "en": [
+        "attachment",
+        "temptation",
+        "shadow"
+      ],
+      "uk": [
+        "залежність",
+        "спокуса",
+        "тінь"
+      ]
+    },
+    "synopsis": {
+      "en": "Attachment, temptation, unhealthy patterns.",
+      "uk": "Прив’язаності, спокуси, нездорові патерни."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Notice what binds you—habits, fear, or unhealthy attachments.",
+        "uk": "Побач, що тебе тримає — звички, страхи чи залежності."
+      },
+      "reversed": {
+        "en": "Breaking chains, reclaiming power, or facing the shadow.",
+        "uk": "Розрив кайданів, повернення сили або робота з «тінню»."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Attachment, temptation, unhealthy patterns.\n\nNotice what binds you—habits, fear, or unhealthy attachments.\n\nKey themes: attachment, temptation, shadow.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Прив’язаності, спокуси, нездорові патерни.\n\nПобач, що тебе тримає — звички, страхи чи залежності.\n\nКлючові теми: залежність, спокуса, тінь.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Attachment, temptation, unhealthy patterns.\n\nBreaking chains, reclaiming power, or facing the shadow.\n\nKey themes: attachment, temptation, shadow.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Прив’язаності, спокуси, нездорові патерни.\n\nРозрив кайданів, повернення сили або робота з «тінню».\n\nКлючові теми: залежність, спокуса, тінь.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Notice what binds you—habits, fear, or unhealthy attachments.",
+          "uk": "Побач, що тебе тримає — звички, страхи чи залежності."
+        },
+        "reversed": {
+          "en": "Breaking chains, reclaiming power, or facing the shadow.",
+          "uk": "Розрив кайданів, повернення сили або робота з «тінню»."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XV"
+  },
+  {
+    "id": "major_16",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 16,
+    "name": {
+      "en": "The Tower",
+      "uk": "Вежа"
+    },
+    "slug": "the-tower",
+    "file": "majorArcana/TheTower.png",
+    "keywords": {
+      "en": [
+        "upheaval",
+        "truth",
+        "breakthrough"
+      ],
+      "uk": [
+        "переворот",
+        "правда",
+        "прорив"
+      ]
+    },
+    "synopsis": {
+      "en": "Sudden change, upheaval, revelation, liberation.",
+      "uk": "Раптова зміна, потрясіння, прозріння, звільнення."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Sudden change clears illusions—painful but liberating truth.",
+        "uk": "Раптові зміни руйнують ілюзії — боляче, але звільняє."
+      },
+      "reversed": {
+        "en": "Avoiding the inevitable or rebuilding after disruption.",
+        "uk": "Спроба уникнути неминучого або відбудова після потрясіння."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Sudden change, upheaval, revelation, liberation.\n\nSudden change clears illusions—painful but liberating truth.\n\nKey themes: upheaval, truth, breakthrough.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Раптова зміна, потрясіння, прозріння, звільнення.\n\nРаптові зміни руйнують ілюзії — боляче, але звільняє.\n\nКлючові теми: переворот, правда, прорив.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Sudden change, upheaval, revelation, liberation.\n\nAvoiding the inevitable or rebuilding after disruption.\n\nKey themes: upheaval, truth, breakthrough.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Раптова зміна, потрясіння, прозріння, звільнення.\n\nСпроба уникнути неминучого або відбудова після потрясіння.\n\nКлючові теми: переворот, правда, прорив.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Sudden change clears illusions—painful but liberating truth.",
+          "uk": "Раптові зміни руйнують ілюзії — боляче, але звільняє."
+        },
+        "reversed": {
+          "en": "Avoiding the inevitable or rebuilding after disruption.",
+          "uk": "Спроба уникнути неминучого або відбудова після потрясіння."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XVI"
+  },
+  {
+    "id": "major_17",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 17,
+    "name": {
+      "en": "The Star",
+      "uk": "Зірка"
+    },
+    "slug": "the-star",
+    "file": "majorArcana/TheStar.png",
+    "keywords": {
+      "en": [
+        "hope",
+        "renewal",
+        "inspiration"
+      ],
+      "uk": [
+        "надія",
+        "оновлення",
+        "натхнення"
+      ]
+    },
+    "synopsis": {
+      "en": "Hope, inspiration, calm, healing.",
+      "uk": "Надія, натхнення, спокій, зцілення."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Hope returns—healing, guidance, and renewed faith.",
+        "uk": "Повертається надія — зцілення, натхнення і віра."
+      },
+      "reversed": {
+        "en": "Doubt, burnout, or losing sight of the bigger picture.",
+        "uk": "Сумніви, вигорання або втрата орієнтира."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Hope, inspiration, calm, healing.\n\nHope returns—healing, guidance, and renewed faith.\n\nKey themes: hope, renewal, inspiration.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Надія, натхнення, спокій, зцілення.\n\nПовертається надія — зцілення, натхнення і віра.\n\nКлючові теми: надія, оновлення, натхнення.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Hope, inspiration, calm, healing.\n\nDoubt, burnout, or losing sight of the bigger picture.\n\nKey themes: hope, renewal, inspiration.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Надія, натхнення, спокій, зцілення.\n\nСумніви, вигорання або втрата орієнтира.\n\nКлючові теми: надія, оновлення, натхнення.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Hope returns—healing, guidance, and renewed faith.",
+          "uk": "Повертається надія — зцілення, натхнення і віра."
+        },
+        "reversed": {
+          "en": "Doubt, burnout, or losing sight of the bigger picture.",
+          "uk": "Сумніви, вигорання або втрата орієнтира."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XVII"
+  },
+  {
+    "id": "major_18",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 18,
+    "name": {
+      "en": "The Moon",
+      "uk": "Місяць"
+    },
+    "slug": "the-moon",
+    "file": "majorArcana/TheMoon.png",
+    "keywords": {
+      "en": [
+        "uncertainty",
+        "dreams",
+        "illusion"
+      ],
+      "uk": [
+        "невизначеність",
+        "сни",
+        "ілюзія"
+      ]
+    },
+    "synopsis": {
+      "en": "Illusions, uncertainty, subconscious, fears.",
+      "uk": "Ілюзії, невизначеність, підсвідоме, страхи."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Trust the journey through fog; intuition guides in uncertainty.",
+        "uk": "Туман і невизначеність; іди інтуїцією крізь невідоме."
+      },
+      "reversed": {
+        "en": "Fear, deception, or clarity emerging after confusion.",
+        "uk": "Страхи, самообман або прояснення після плутанини."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Illusions, uncertainty, subconscious, fears.\n\nTrust the journey through fog; intuition guides in uncertainty.\n\nKey themes: uncertainty, dreams, illusion.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Ілюзії, невизначеність, підсвідоме, страхи.\n\nТуман і невизначеність; іди інтуїцією крізь невідоме.\n\nКлючові теми: невизначеність, сни, ілюзія.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Illusions, uncertainty, subconscious, fears.\n\nFear, deception, or clarity emerging after confusion.\n\nKey themes: uncertainty, dreams, illusion.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Ілюзії, невизначеність, підсвідоме, страхи.\n\nСтрахи, самообман або прояснення після плутанини.\n\nКлючові теми: невизначеність, сни, ілюзія.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Trust the journey through fog; intuition guides in uncertainty.",
+          "uk": "Туман і невизначеність; іди інтуїцією крізь невідоме."
+        },
+        "reversed": {
+          "en": "Fear, deception, or clarity emerging after confusion.",
+          "uk": "Страхи, самообман або прояснення після плутанини."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XVIII"
+  },
+  {
+    "id": "major_19",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 19,
+    "name": {
+      "en": "The Sun",
+      "uk": "Сонце"
+    },
+    "slug": "the-sun",
+    "file": "majorArcana/TheSun.png",
+    "keywords": {
+      "en": [
+        "joy",
+        "success",
+        "vitality"
+      ],
+      "uk": [
+        "радість",
+        "успіх",
+        "життєва сила"
+      ]
+    },
+    "synopsis": {
+      "en": "Joy, clarity, success, vitality.",
+      "uk": "Радість, ясність, успіх, життєва сила."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Warmth and success—clarity, confidence, and happiness.",
+        "uk": "Радість і успіх — ясність, впевненість, тепло."
+      },
+      "reversed": {
+        "en": "Delayed joy, pessimism, or needing to recharge.",
+        "uk": "Затримка радості, песимізм або потреба відновитись."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Joy, clarity, success, vitality.\n\nWarmth and success—clarity, confidence, and happiness.\n\nKey themes: joy, success, vitality.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Радість, ясність, успіх, життєва сила.\n\nРадість і успіх — ясність, впевненість, тепло.\n\nКлючові теми: радість, успіх, життєва сила.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Joy, clarity, success, vitality.\n\nDelayed joy, pessimism, or needing to recharge.\n\nKey themes: joy, success, vitality.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Радість, ясність, успіх, життєва сила.\n\nЗатримка радості, песимізм або потреба відновитись.\n\nКлючові теми: радість, успіх, життєва сила.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Warmth and success—clarity, confidence, and happiness.",
+          "uk": "Радість і успіх — ясність, впевненість, тепло."
+        },
+        "reversed": {
+          "en": "Delayed joy, pessimism, or needing to recharge.",
+          "uk": "Затримка радості, песимізм або потреба відновитись."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XIX"
+  },
+  {
+    "id": "major_20",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 20,
+    "name": {
+      "en": "Judgement",
+      "uk": "Суд"
+    },
+    "slug": "judgement",
+    "file": "majorArcana/Judgement.png",
+    "keywords": {
+      "en": [
+        "awakening",
+        "forgiveness",
+        "calling"
+      ],
+      "uk": [
+        "пробудження",
+        "прощення",
+        "поклик"
+      ]
+    },
+    "synopsis": {
+      "en": "Awakening, calling, reflection, rebirth.",
+      "uk": "Пробудження, поклик, переосмислення, відродження."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A wake-up call—review, forgive, and step into your purpose.",
+        "uk": "Пробудження — переоцінка, прощення і крок у покликання."
+      },
+      "reversed": {
+        "en": "Harsh self-judgment or refusing to answer the call.",
+        "uk": "Жорстка самокритика або відмова почути «поклик»."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Awakening, calling, reflection, rebirth.\n\nA wake-up call—review, forgive, and step into your purpose.\n\nKey themes: awakening, forgiveness, calling.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Пробудження, поклик, переосмислення, відродження.\n\nПробудження — переоцінка, прощення і крок у покликання.\n\nКлючові теми: пробудження, прощення, поклик.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Awakening, calling, reflection, rebirth.\n\nHarsh self-judgment or refusing to answer the call.\n\nKey themes: awakening, forgiveness, calling.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Пробудження, поклик, переосмислення, відродження.\n\nЖорстка самокритика або відмова почути «поклик».\n\nКлючові теми: пробудження, прощення, поклик.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A wake-up call—review, forgive, and step into your purpose.",
+          "uk": "Пробудження — переоцінка, прощення і крок у покликання."
+        },
+        "reversed": {
+          "en": "Harsh self-judgment or refusing to answer the call.",
+          "uk": "Жорстка самокритика або відмова почути «поклик»."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XX"
+  },
+  {
+    "id": "major_21",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 21,
+    "name": {
+      "en": "The World",
+      "uk": "Світ"
+    },
+    "slug": "the-world",
+    "file": "majorArcana/TheWorld.png",
+    "keywords": {
+      "en": [
+        "completion",
+        "integration",
+        "milestone"
+      ],
+      "uk": [
+        "завершення",
+        "цілісність",
+        "етап"
+      ]
+    },
+    "synopsis": {
+      "en": "Completion, integration, achievement, travel.",
+      "uk": "Завершення циклу, цілісність, досягнення, подорожі."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Completion and wholeness—celebrate a milestone and level up.",
+        "uk": "Завершення й цілісність — святкуй етап і переходь на новий рівень."
+      },
+      "reversed": {
+        "en": "Loose ends, delays, or not recognizing progress.",
+        "uk": "Незавершені справи, затримки або недооцінка прогресу."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Completion, integration, achievement, travel.\n\nCompletion and wholeness—celebrate a milestone and level up.\n\nKey themes: completion, integration, milestone.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Завершення циклу, цілісність, досягнення, подорожі.\n\nЗавершення й цілісність — святкуй етап і переходь на новий рівень.\n\nКлючові теми: завершення, цілісність, етап.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Completion, integration, achievement, travel.\n\nLoose ends, delays, or not recognizing progress.\n\nKey themes: completion, integration, milestone.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Завершення циклу, цілісність, досягнення, подорожі.\n\nНезавершені справи, затримки або недооцінка прогресу.\n\nКлючові теми: завершення, цілісність, етап.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Completion and wholeness—celebrate a milestone and level up.",
+          "uk": "Завершення й цілісність — святкуй етап і переходь на новий рівень."
+        },
+        "reversed": {
+          "en": "Loose ends, delays, or not recognizing progress.",
+          "uk": "Незавершені справи, затримки або недооцінка прогресу."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XXI"
+  }
+]

@@ -1,0 +1,1030 @@
+[
+  {
+    "id": "minor_swords_01",
+    "arcana": "minor",
+    "suit": "swords",
+    "rank": 1,
+    "name": {
+      "en": "Ace of Swords",
+      "uk": "Туз Мечів"
+    },
+    "slug": "ace-of-swords",
+    "file": "swords/AceOfSwords.png",
+    "keywords": {
+      "en": [
+        "new",
+        "potential",
+        "spark",
+        "clarity",
+        "truth",
+        "mind"
+      ],
+      "uk": [
+        "нове",
+        "потенціал",
+        "іскра",
+        "ясність",
+        "правда",
+        "розум"
+      ]
+    },
+    "synopsis": {
+      "en": "Clarity and truth; a decisive breakthrough.",
+      "uk": "Ясність і правда; рішучий прорив."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A fresh start and pure potential in thoughts, truth, conflict.",
+        "uk": "Новий старт і чистий потенціал у сфері: думки, правда, конфлікти."
+      },
+      "reversed": {
+        "en": "Blocked potential, delays, or missed chances in thoughts, truth, conflict.",
+        "uk": "Потенціал заблокований, затримки або втрачені шанси у сфері: думки, правда, конфлікти."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Clarity and truth; a decisive breakthrough.\n\nA fresh start and pure potential in thoughts, truth, conflict.\n\nKey themes: new, potential, spark, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Ясність і правда; рішучий прорив.\n\nНовий старт і чистий потенціал у сфері: думки, правда, конфлікти.\n\nКлючові теми: нове, потенціал, іскра, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Clarity and truth; a decisive breakthrough.\n\nBlocked potential, delays, or missed chances in thoughts, truth, conflict.\n\nKey themes: new, potential, spark, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Ясність і правда; рішучий прорив.\n\nПотенціал заблокований, затримки або втрачені шанси у сфері: думки, правда, конфлікти.\n\nКлючові теми: нове, потенціал, іскра, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A fresh start and pure potential in thoughts, truth, conflict.",
+          "uk": "Новий старт і чистий потенціал у сфері: думки, правда, конфлікти."
+        },
+        "reversed": {
+          "en": "Blocked potential, delays, or missed chances in thoughts, truth, conflict.",
+          "uk": "Потенціал заблокований, затримки або втрачені шанси у сфері: думки, правда, конфлікти."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_swords_02",
+    "arcana": "minor",
+    "suit": "swords",
+    "rank": 2,
+    "name": {
+      "en": "Two of Swords",
+      "uk": "Двійка Мечів"
+    },
+    "slug": "two-of-swords",
+    "file": "swords/TwoOfSwords.png",
+    "keywords": {
+      "en": [
+        "choice",
+        "balance",
+        "planning",
+        "clarity",
+        "truth",
+        "mind"
+      ],
+      "uk": [
+        "вибір",
+        "баланс",
+        "планування",
+        "ясність",
+        "правда",
+        "розум"
+      ]
+    },
+    "synopsis": {
+      "en": "Stalemate, tough choice, blocked emotions.",
+      "uk": "Глухий кут, складний вибір, блок емоцій."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Choices and balance; plan your next step in thoughts, truth, conflict.",
+        "uk": "Вибір і баланс; сплануй наступний крок у сфері: думки, правда, конфлікти."
+      },
+      "reversed": {
+        "en": "Indecision, imbalance, or juggling too much in thoughts, truth, conflict.",
+        "uk": "Нерішучість, дисбаланс або «жонглювання» надто багатьом у сфері: думки, правда, конфлікти."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Stalemate, tough choice, blocked emotions.\n\nChoices and balance; plan your next step in thoughts, truth, conflict.\n\nKey themes: choice, balance, planning, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Глухий кут, складний вибір, блок емоцій.\n\nВибір і баланс; сплануй наступний крок у сфері: думки, правда, конфлікти.\n\nКлючові теми: вибір, баланс, планування, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Stalemate, tough choice, blocked emotions.\n\nIndecision, imbalance, or juggling too much in thoughts, truth, conflict.\n\nKey themes: choice, balance, planning, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Глухий кут, складний вибір, блок емоцій.\n\nНерішучість, дисбаланс або «жонглювання» надто багатьом у сфері: думки, правда, конфлікти.\n\nКлючові теми: вибір, баланс, планування, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Choices and balance; plan your next step in thoughts, truth, conflict.",
+          "uk": "Вибір і баланс; сплануй наступний крок у сфері: думки, правда, конфлікти."
+        },
+        "reversed": {
+          "en": "Indecision, imbalance, or juggling too much in thoughts, truth, conflict.",
+          "uk": "Нерішучість, дисбаланс або «жонглювання» надто багатьом у сфері: думки, правда, конфлікти."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_swords_03",
+    "arcana": "minor",
+    "suit": "swords",
+    "rank": 3,
+    "name": {
+      "en": "Three of Swords",
+      "uk": "Трійка Мечів"
+    },
+    "slug": "three-of-swords",
+    "file": "swords/ThreeOfSwords.png",
+    "keywords": {
+      "en": [
+        "heartbreak",
+        "truth",
+        "release"
+      ],
+      "uk": [
+        "розбите серце",
+        "правда",
+        "звільнення"
+      ]
+    },
+    "synopsis": {
+      "en": "Heartbreak, sorrow, necessary truth.",
+      "uk": "Серцевий біль; правда, яку треба прийняти."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Heartbreak or disappointment—truth cuts but frees.",
+        "uk": "Розчарування чи біль — правда ранить, але звільняє."
+      },
+      "reversed": {
+        "en": "Healing, forgiveness, and letting pain pass.",
+        "uk": "Зцілення, прощення і полегшення."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Heartbreak, sorrow, necessary truth.\n\nHeartbreak or disappointment—truth cuts but frees.\n\nKey themes: heartbreak, truth, release.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Серцевий біль; правда, яку треба прийняти.\n\nРозчарування чи біль — правда ранить, але звільняє.\n\nКлючові теми: розбите серце, правда, звільнення.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Heartbreak, sorrow, necessary truth.\n\nHealing, forgiveness, and letting pain pass.\n\nKey themes: heartbreak, truth, release.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Серцевий біль; правда, яку треба прийняти.\n\nЗцілення, прощення і полегшення.\n\nКлючові теми: розбите серце, правда, звільнення.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Heartbreak or disappointment—truth cuts but frees.",
+          "uk": "Розчарування чи біль — правда ранить, але звільняє."
+        },
+        "reversed": {
+          "en": "Healing, forgiveness, and letting pain pass.",
+          "uk": "Зцілення, прощення і полегшення."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_swords_04",
+    "arcana": "minor",
+    "suit": "swords",
+    "rank": 4,
+    "name": {
+      "en": "Four of Swords",
+      "uk": "Четвірка Мечів"
+    },
+    "slug": "four-of-swords",
+    "file": "swords/FourOfSwords.png",
+    "keywords": {
+      "en": [
+        "rest",
+        "recovery",
+        "pause"
+      ],
+      "uk": [
+        "відпочинок",
+        "відновлення",
+        "пауза"
+      ]
+    },
+    "synopsis": {
+      "en": "Rest, recovery, mental reset.",
+      "uk": "Відпочинок, відновлення, перезавантаження."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Rest and recovery; pause to heal and reset.",
+        "uk": "Відпочинок і відновлення; зроби паузу, щоб перезавантажитись."
+      },
+      "reversed": {
+        "en": "Burnout, restlessness, or returning too soon.",
+        "uk": "Вигорання, неспокій або повернення до справ занадто рано."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Rest, recovery, mental reset.\n\nRest and recovery; pause to heal and reset.\n\nKey themes: rest, recovery, pause.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Відпочинок, відновлення, перезавантаження.\n\nВідпочинок і відновлення; зроби паузу, щоб перезавантажитись.\n\nКлючові теми: відпочинок, відновлення, пауза.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Rest, recovery, mental reset.\n\nBurnout, restlessness, or returning too soon.\n\nKey themes: rest, recovery, pause.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Відпочинок, відновлення, перезавантаження.\n\nВигорання, неспокій або повернення до справ занадто рано.\n\nКлючові теми: відпочинок, відновлення, пауза.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Rest and recovery; pause to heal and reset.",
+          "uk": "Відпочинок і відновлення; зроби паузу, щоб перезавантажитись."
+        },
+        "reversed": {
+          "en": "Burnout, restlessness, or returning too soon.",
+          "uk": "Вигорання, неспокій або повернення до справ занадто рано."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_swords_05",
+    "arcana": "minor",
+    "suit": "swords",
+    "rank": 5,
+    "name": {
+      "en": "Five of Swords",
+      "uk": "Пʼятірка Мечів"
+    },
+    "slug": "five-of-swords",
+    "file": "swords/FiveOfSwords.png",
+    "keywords": {
+      "en": [
+        "challenge",
+        "loss",
+        "conflict",
+        "clarity",
+        "truth",
+        "mind"
+      ],
+      "uk": [
+        "виклик",
+        "втрата",
+        "конфлікт",
+        "ясність",
+        "правда",
+        "розум"
+      ]
+    },
+    "synopsis": {
+      "en": "Tension, hollow victory, conflict aftermath.",
+      "uk": "Напруга, «порожня перемога», наслідки конфлікту."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A test—conflict or disappointment reveals what must change in thoughts, truth, conflict.",
+        "uk": "Випробування — конфлікт або розчарування показують, що треба змінити у сфері: думки, правда, конфлікти."
+      },
+      "reversed": {
+        "en": "Moving past conflict, acceptance, or repairing in thoughts, truth, conflict.",
+        "uk": "Вихід із конфлікту, прийняття або відновлення у сфері: думки, правда, конфлікти."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Tension, hollow victory, conflict aftermath.\n\nA test—conflict or disappointment reveals what must change in thoughts, truth, conflict.\n\nKey themes: challenge, loss, conflict, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Напруга, «порожня перемога», наслідки конфлікту.\n\nВипробування — конфлікт або розчарування показують, що треба змінити у сфері: думки, правда, конфлікти.\n\nКлючові теми: виклик, втрата, конфлікт, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Tension, hollow victory, conflict aftermath.\n\nMoving past conflict, acceptance, or repairing in thoughts, truth, conflict.\n\nKey themes: challenge, loss, conflict, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Напруга, «порожня перемога», наслідки конфлікту.\n\nВихід із конфлікту, прийняття або відновлення у сфері: думки, правда, конфлікти.\n\nКлючові теми: виклик, втрата, конфлікт, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A test—conflict or disappointment reveals what must change in thoughts, truth, conflict.",
+          "uk": "Випробування — конфлікт або розчарування показують, що треба змінити у сфері: думки, правда, конфлікти."
+        },
+        "reversed": {
+          "en": "Moving past conflict, acceptance, or repairing in thoughts, truth, conflict.",
+          "uk": "Вихід із конфлікту, прийняття або відновлення у сфері: думки, правда, конфлікти."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_swords_06",
+    "arcana": "minor",
+    "suit": "swords",
+    "rank": 6,
+    "name": {
+      "en": "Six of Swords",
+      "uk": "Шістка Мечів"
+    },
+    "slug": "six-of-swords",
+    "file": "swords/SixOfSwords.png",
+    "keywords": {
+      "en": [
+        "transition",
+        "healing",
+        "moving-on"
+      ],
+      "uk": [
+        "перехід",
+        "healing",
+        "рух далі"
+      ]
+    },
+    "synopsis": {
+      "en": "Transition, leaving trouble behind, calmer waters.",
+      "uk": "Перехід; залишити проблеми позаду."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A transition to calmer waters; moving on and healing.",
+        "uk": "Перехід до спокійніших вод; відпускання й зцілення."
+      },
+      "reversed": {
+        "en": "Resistance to change or feeling stuck in the past.",
+        "uk": "Опір змінам або відчуття «застрягання» у минулому."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Transition, leaving trouble behind, calmer waters.\n\nA transition to calmer waters; moving on and healing.\n\nKey themes: transition, healing, moving-on.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Перехід; залишити проблеми позаду.\n\nПерехід до спокійніших вод; відпускання й зцілення.\n\nКлючові теми: перехід, healing, рух далі.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Transition, leaving trouble behind, calmer waters.\n\nResistance to change or feeling stuck in the past.\n\nKey themes: transition, healing, moving-on.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Перехід; залишити проблеми позаду.\n\nОпір змінам або відчуття «застрягання» у минулому.\n\nКлючові теми: перехід, healing, рух далі.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A transition to calmer waters; moving on and healing.",
+          "uk": "Перехід до спокійніших вод; відпускання й зцілення."
+        },
+        "reversed": {
+          "en": "Resistance to change or feeling stuck in the past.",
+          "uk": "Опір змінам або відчуття «застрягання» у минулому."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_swords_07",
+    "arcana": "minor",
+    "suit": "swords",
+    "rank": 7,
+    "name": {
+      "en": "Seven of Swords",
+      "uk": "Сімка Мечів"
+    },
+    "slug": "seven-of-swords",
+    "file": "swords/SevenOfSwords.png",
+    "keywords": {
+      "en": [
+        "strategy",
+        "secrecy",
+        "caution"
+      ],
+      "uk": [
+        "стратегія",
+        "таємність",
+        "обережність"
+      ]
+    },
+    "synopsis": {
+      "en": "Strategy, secrecy, acting cleverly.",
+      "uk": "Стратегія, хитрість, діяти розумно й тихо."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Act strategically; beware half-truths or hidden motives.",
+        "uk": "Дій стратегічно; остерігайся напівправди або прихованих мотивів."
+      },
+      "reversed": {
+        "en": "Coming clean, being caught, or choosing honesty.",
+        "uk": "Щирість, «викриття» або рішення діяти чесно."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Strategy, secrecy, acting cleverly.\n\nAct strategically; beware half-truths or hidden motives.\n\nKey themes: strategy, secrecy, caution.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Стратегія, хитрість, діяти розумно й тихо.\n\nДій стратегічно; остерігайся напівправди або прихованих мотивів.\n\nКлючові теми: стратегія, таємність, обережність.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Strategy, secrecy, acting cleverly.\n\nComing clean, being caught, or choosing honesty.\n\nKey themes: strategy, secrecy, caution.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Стратегія, хитрість, діяти розумно й тихо.\n\nЩирість, «викриття» або рішення діяти чесно.\n\nКлючові теми: стратегія, таємність, обережність.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Act strategically; beware half-truths or hidden motives.",
+          "uk": "Дій стратегічно; остерігайся напівправди або прихованих мотивів."
+        },
+        "reversed": {
+          "en": "Coming clean, being caught, or choosing honesty.",
+          "uk": "Щирість, «викриття» або рішення діяти чесно."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_swords_08",
+    "arcana": "minor",
+    "suit": "swords",
+    "rank": 8,
+    "name": {
+      "en": "Eight of Swords",
+      "uk": "Вісімка Мечів"
+    },
+    "slug": "eight-of-swords",
+    "file": "swords/EightOfSwords.png",
+    "keywords": {
+      "en": [
+        "movement",
+        "practice",
+        "momentum",
+        "clarity",
+        "truth",
+        "mind"
+      ],
+      "uk": [
+        "рух",
+        "практика",
+        "імпульс",
+        "ясність",
+        "правда",
+        "розум"
+      ]
+    },
+    "synopsis": {
+      "en": "Feeling trapped; self-limiting beliefs.",
+      "uk": "Відчуття пастки; самообмеження в голові."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Momentum and mastery grow through action in thoughts, truth, conflict.",
+        "uk": "Імпульс і майстерність ростуть через дію у сфері: думки, правда, конфлікти."
+      },
+      "reversed": {
+        "en": "Scattered effort, impatience, or burnout in thoughts, truth, conflict.",
+        "uk": "Розсіяні зусилля, нетерплячість або вигорання у сфері: думки, правда, конфлікти."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Feeling trapped; self-limiting beliefs.\n\nMomentum and mastery grow through action in thoughts, truth, conflict.\n\nKey themes: movement, practice, momentum, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Відчуття пастки; самообмеження в голові.\n\nІмпульс і майстерність ростуть через дію у сфері: думки, правда, конфлікти.\n\nКлючові теми: рух, практика, імпульс, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Feeling trapped; self-limiting beliefs.\n\nScattered effort, impatience, or burnout in thoughts, truth, conflict.\n\nKey themes: movement, practice, momentum, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Відчуття пастки; самообмеження в голові.\n\nРозсіяні зусилля, нетерплячість або вигорання у сфері: думки, правда, конфлікти.\n\nКлючові теми: рух, практика, імпульс, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Momentum and mastery grow through action in thoughts, truth, conflict.",
+          "uk": "Імпульс і майстерність ростуть через дію у сфері: думки, правда, конфлікти."
+        },
+        "reversed": {
+          "en": "Scattered effort, impatience, or burnout in thoughts, truth, conflict.",
+          "uk": "Розсіяні зусилля, нетерплячість або вигорання у сфері: думки, правда, конфлікти."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_swords_09",
+    "arcana": "minor",
+    "suit": "swords",
+    "rank": 9,
+    "name": {
+      "en": "Nine of Swords",
+      "uk": "Девʼятка Мечів"
+    },
+    "slug": "nine-of-swords",
+    "file": "swords/NineOfSwords.png",
+    "keywords": {
+      "en": [
+        "anxiety",
+        "worry",
+        "night-thoughts"
+      ],
+      "uk": [
+        "тривога",
+        "хвилювання",
+        "нічні думки"
+      ]
+    },
+    "synopsis": {
+      "en": "Anxiety, worry, sleepless nights.",
+      "uk": "Тривога, переживання, безсоння."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Anxiety and rumination; fears grow in the dark.",
+        "uk": "Тривога й накручування; страхи ростуть у темряві думок."
+      },
+      "reversed": {
+        "en": "Relief, support, and a path out of worry.",
+        "uk": "Полегшення, підтримка і шлях виходу з тривог."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Anxiety, worry, sleepless nights.\n\nAnxiety and rumination; fears grow in the dark.\n\nKey themes: anxiety, worry, night-thoughts.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Тривога, переживання, безсоння.\n\nТривога й накручування; страхи ростуть у темряві думок.\n\nКлючові теми: тривога, хвилювання, нічні думки.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Anxiety, worry, sleepless nights.\n\nRelief, support, and a path out of worry.\n\nKey themes: anxiety, worry, night-thoughts.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Тривога, переживання, безсоння.\n\nПолегшення, підтримка і шлях виходу з тривог.\n\nКлючові теми: тривога, хвилювання, нічні думки.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Anxiety and rumination; fears grow in the dark.",
+          "uk": "Тривога й накручування; страхи ростуть у темряві думок."
+        },
+        "reversed": {
+          "en": "Relief, support, and a path out of worry.",
+          "uk": "Полегшення, підтримка і шлях виходу з тривог."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_swords_10",
+    "arcana": "minor",
+    "suit": "swords",
+    "rank": 10,
+    "name": {
+      "en": "Ten of Swords",
+      "uk": "Десятка Мечів"
+    },
+    "slug": "ten-of-swords",
+    "file": "swords/TenOfSwords.png",
+    "keywords": {
+      "en": [
+        "ending",
+        "release",
+        "rock-bottom"
+      ],
+      "uk": [
+        "завершення",
+        "звільнення",
+        "дно"
+      ]
+    },
+    "synopsis": {
+      "en": "Painful ending; release and begin anew.",
+      "uk": "Болюче завершення; відпусти й почни заново."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A painful ending—accept closure and start rebuilding.",
+        "uk": "Болюче завершення — прийми крапку й починай відновлюватись."
+      },
+      "reversed": {
+        "en": "Recovery, resilience, and the worst is passing.",
+        "uk": "Одужання, стійкість; найгірше минає."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Painful ending; release and begin anew.\n\nA painful ending—accept closure and start rebuilding.\n\nKey themes: ending, release, rock-bottom.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Болюче завершення; відпусти й почни заново.\n\nБолюче завершення — прийми крапку й починай відновлюватись.\n\nКлючові теми: завершення, звільнення, дно.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Painful ending; release and begin anew.\n\nRecovery, resilience, and the worst is passing.\n\nKey themes: ending, release, rock-bottom.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Болюче завершення; відпусти й почни заново.\n\nОдужання, стійкість; найгірше минає.\n\nКлючові теми: завершення, звільнення, дно.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A painful ending—accept closure and start rebuilding.",
+          "uk": "Болюче завершення — прийми крапку й починай відновлюватись."
+        },
+        "reversed": {
+          "en": "Recovery, resilience, and the worst is passing.",
+          "uk": "Одужання, стійкість; найгірше минає."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_swords_11",
+    "arcana": "minor",
+    "suit": "swords",
+    "rank": "page",
+    "name": {
+      "en": "Page of Swords",
+      "uk": "Паж Мечів"
+    },
+    "slug": "page-of-swords",
+    "file": "swords/PageOfSwords.png",
+    "keywords": {
+      "en": [
+        "curiosity",
+        "message",
+        "learning",
+        "clarity",
+        "truth",
+        "mind"
+      ],
+      "uk": [
+        "цікавість",
+        "звістка",
+        "навчання",
+        "ясність",
+        "правда",
+        "розум"
+      ]
+    },
+    "synopsis": {
+      "en": "Curiosity, learning, messages; a fresh approach to thought, truth, communication.",
+      "uk": "Допитливість, навчання, новини; свіжий підхід до: думка, правда, спілкування."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A message or new curiosity; learn and explore in thoughts, truth, conflict.",
+        "uk": "Звістка або нова цікавість; вчись і досліджуй у сфері: думки, правда, конфлікти."
+      },
+      "reversed": {
+        "en": "Immaturity, mixed signals, or lack of follow-through in thoughts, truth, conflict.",
+        "uk": "Незрілість, змішані сигнали або брак наполегливості у сфері: думки, правда, конфлікти."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Curiosity, learning, messages; a fresh approach to thought, truth, communication.\n\nA message or new curiosity; learn and explore in thoughts, truth, conflict.\n\nKey themes: curiosity, message, learning, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Допитливість, навчання, новини; свіжий підхід до: думка, правда, спілкування.\n\nЗвістка або нова цікавість; вчись і досліджуй у сфері: думки, правда, конфлікти.\n\nКлючові теми: цікавість, звістка, навчання, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Curiosity, learning, messages; a fresh approach to thought, truth, communication.\n\nImmaturity, mixed signals, or lack of follow-through in thoughts, truth, conflict.\n\nKey themes: curiosity, message, learning, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Допитливість, навчання, новини; свіжий підхід до: думка, правда, спілкування.\n\nНезрілість, змішані сигнали або брак наполегливості у сфері: думки, правда, конфлікти.\n\nКлючові теми: цікавість, звістка, навчання, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A message or new curiosity; learn and explore in thoughts, truth, conflict.",
+          "uk": "Звістка або нова цікавість; вчись і досліджуй у сфері: думки, правда, конфлікти."
+        },
+        "reversed": {
+          "en": "Immaturity, mixed signals, or lack of follow-through in thoughts, truth, conflict.",
+          "uk": "Незрілість, змішані сигнали або брак наполегливості у сфері: думки, правда, конфлікти."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_swords_12",
+    "arcana": "minor",
+    "suit": "swords",
+    "rank": "knight",
+    "name": {
+      "en": "Knight of Swords",
+      "uk": "Лицар Мечів"
+    },
+    "slug": "knight-of-swords",
+    "file": "swords/KnightOfSwords.png",
+    "keywords": {
+      "en": [
+        "action",
+        "pursuit",
+        "movement",
+        "clarity",
+        "truth",
+        "mind"
+      ],
+      "uk": [
+        "дія",
+        "прагнення",
+        "рух",
+        "ясність",
+        "правда",
+        "розум"
+      ]
+    },
+    "synopsis": {
+      "en": "Action and pursuit; moving boldly within thought, truth, communication.",
+      "uk": "Дія й рух уперед; сміливо діяти в темі: думка, правда, спілкування."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Active pursuit—move decisively in thoughts, truth, conflict.",
+        "uk": "Активна дія — рухайся рішуче у сфері: думки, правда, конфлікти."
+      },
+      "reversed": {
+        "en": "Haste, recklessness, or stalled action in thoughts, truth, conflict.",
+        "uk": "Поспіх, необачність або застій дій у сфері: думки, правда, конфлікти."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Action and pursuit; moving boldly within thought, truth, communication.\n\nActive pursuit—move decisively in thoughts, truth, conflict.\n\nKey themes: action, pursuit, movement, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Дія й рух уперед; сміливо діяти в темі: думка, правда, спілкування.\n\nАктивна дія — рухайся рішуче у сфері: думки, правда, конфлікти.\n\nКлючові теми: дія, прагнення, рух, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Action and pursuit; moving boldly within thought, truth, communication.\n\nHaste, recklessness, or stalled action in thoughts, truth, conflict.\n\nKey themes: action, pursuit, movement, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Дія й рух уперед; сміливо діяти в темі: думка, правда, спілкування.\n\nПоспіх, необачність або застій дій у сфері: думки, правда, конфлікти.\n\nКлючові теми: дія, прагнення, рух, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Active pursuit—move decisively in thoughts, truth, conflict.",
+          "uk": "Активна дія — рухайся рішуче у сфері: думки, правда, конфлікти."
+        },
+        "reversed": {
+          "en": "Haste, recklessness, or stalled action in thoughts, truth, conflict.",
+          "uk": "Поспіх, необачність або застій дій у сфері: думки, правда, конфлікти."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_swords_13",
+    "arcana": "minor",
+    "suit": "swords",
+    "rank": "queen",
+    "name": {
+      "en": "Queen of Swords",
+      "uk": "Королева Мечів"
+    },
+    "slug": "queen-of-swords",
+    "file": "swords/QueenOfSwords.png",
+    "keywords": {
+      "en": [
+        "mastery",
+        "care",
+        "intuition",
+        "clarity",
+        "truth",
+        "mind"
+      ],
+      "uk": [
+        "майстерність",
+        "турбота",
+        "інтуїція",
+        "ясність",
+        "правда",
+        "розум"
+      ]
+    },
+    "synopsis": {
+      "en": "Mature, receptive mastery; embodying the best of thought, truth, communication.",
+      "uk": "Зріла, м’яка сила; втілення найкращого в: думка, правда, спілкування."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Mature, steady influence; embody wisdom in thoughts, truth, conflict.",
+        "uk": "Зріла, стабільна сила; втілюй мудрість у сфері: думки, правда, конфлікти."
+      },
+      "reversed": {
+        "en": "Insecurity, imbalance, or emotional extremes in thoughts, truth, conflict.",
+        "uk": "Невпевненість, дисбаланс або емоційні крайнощі у сфері: думки, правда, конфлікти."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Mature, receptive mastery; embodying the best of thought, truth, communication.\n\nMature, steady influence; embody wisdom in thoughts, truth, conflict.\n\nKey themes: mastery, care, intuition, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Зріла, м’яка сила; втілення найкращого в: думка, правда, спілкування.\n\nЗріла, стабільна сила; втілюй мудрість у сфері: думки, правда, конфлікти.\n\nКлючові теми: майстерність, турбота, інтуїція, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Mature, receptive mastery; embodying the best of thought, truth, communication.\n\nInsecurity, imbalance, or emotional extremes in thoughts, truth, conflict.\n\nKey themes: mastery, care, intuition, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Зріла, м’яка сила; втілення найкращого в: думка, правда, спілкування.\n\nНевпевненість, дисбаланс або емоційні крайнощі у сфері: думки, правда, конфлікти.\n\nКлючові теми: майстерність, турбота, інтуїція, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Mature, steady influence; embody wisdom in thoughts, truth, conflict.",
+          "uk": "Зріла, стабільна сила; втілюй мудрість у сфері: думки, правда, конфлікти."
+        },
+        "reversed": {
+          "en": "Insecurity, imbalance, or emotional extremes in thoughts, truth, conflict.",
+          "uk": "Невпевненість, дисбаланс або емоційні крайнощі у сфері: думки, правда, конфлікти."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_swords_14",
+    "arcana": "minor",
+    "suit": "swords",
+    "rank": "king",
+    "name": {
+      "en": "King of Swords",
+      "uk": "Король Мечів"
+    },
+    "slug": "king-of-swords",
+    "file": "swords/KingOfSwords.png",
+    "keywords": {
+      "en": [
+        "leadership",
+        "control",
+        "responsibility",
+        "clarity",
+        "truth",
+        "mind"
+      ],
+      "uk": [
+        "лідерство",
+        "контроль",
+        "відповідальність",
+        "ясність",
+        "правда",
+        "розум"
+      ]
+    },
+    "synopsis": {
+      "en": "Leadership and control; directing thought, truth, communication with confidence.",
+      "uk": "Лідерство й контроль; керувати темою: думка, правда, спілкування впевнено."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Leadership and responsibility; direct thoughts, truth, conflict with maturity.",
+        "uk": "Лідерство й відповідальність; керуй сферою зріло: думки, правда, конфлікти."
+      },
+      "reversed": {
+        "en": "Dominating, rigid control, or misusing authority in thoughts, truth, conflict.",
+        "uk": "Домінування, жорсткий контроль або зловживання владою у сфері: думки, правда, конфлікти."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Leadership and control; directing thought, truth, communication with confidence.\n\nLeadership and responsibility; direct thoughts, truth, conflict with maturity.\n\nKey themes: leadership, control, responsibility, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Лідерство й контроль; керувати темою: думка, правда, спілкування впевнено.\n\nЛідерство й відповідальність; керуй сферою зріло: думки, правда, конфлікти.\n\nКлючові теми: лідерство, контроль, відповідальність, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Leadership and control; directing thought, truth, communication with confidence.\n\nDominating, rigid control, or misusing authority in thoughts, truth, conflict.\n\nKey themes: leadership, control, responsibility, clarity, truth, mind.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Лідерство й контроль; керувати темою: думка, правда, спілкування впевнено.\n\nДомінування, жорсткий контроль або зловживання владою у сфері: думки, правда, конфлікти.\n\nКлючові теми: лідерство, контроль, відповідальність, ясність, правда, розум.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Leadership and responsibility; direct thoughts, truth, conflict with maturity.",
+          "uk": "Лідерство й відповідальність; керуй сферою зріло: думки, правда, конфлікти."
+        },
+        "reversed": {
+          "en": "Dominating, rigid control, or misusing authority in thoughts, truth, conflict.",
+          "uk": "Домінування, жорсткий контроль або зловживання владою у сфері: думки, правда, конфлікти."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  }
+]

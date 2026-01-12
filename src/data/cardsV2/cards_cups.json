@@ -1,0 +1,1022 @@
+[
+  {
+    "id": "minor_cups_01",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 1,
+    "name": {
+      "en": "Ace of Cups",
+      "uk": "Туз Кубків"
+    },
+    "slug": "ace-of-cups",
+    "file": "cups/AceOfCups.png",
+    "keywords": {
+      "en": [
+        "new",
+        "potential",
+        "spark",
+        "feelings",
+        "love",
+        "intuition"
+      ],
+      "uk": [
+        "нове",
+        "потенціал",
+        "іскра",
+        "почуття",
+        "кохання",
+        "інтуїція"
+      ]
+    },
+    "synopsis": {
+      "en": "New feelings, love, emotional renewal.",
+      "uk": "Нові почуття, любов, емоційне оновлення."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A fresh start and pure potential in emotions, relationships, intuition.",
+        "uk": "Новий старт і чистий потенціал у сфері: емоції, стосунки, інтуїція."
+      },
+      "reversed": {
+        "en": "Blocked potential, delays, or missed chances in emotions, relationships, intuition.",
+        "uk": "Потенціал заблокований, затримки або втрачені шанси у сфері: емоції, стосунки, інтуїція."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "New feelings, love, emotional renewal.\n\nA fresh start and pure potential in emotions, relationships, intuition.\n\nKey themes: new, potential, spark, feelings, love, intuition.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Нові почуття, любов, емоційне оновлення.\n\nНовий старт і чистий потенціал у сфері: емоції, стосунки, інтуїція.\n\nКлючові теми: нове, потенціал, іскра, почуття, кохання, інтуїція.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "New feelings, love, emotional renewal.\n\nBlocked potential, delays, or missed chances in emotions, relationships, intuition.\n\nKey themes: new, potential, spark, feelings, love, intuition.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Нові почуття, любов, емоційне оновлення.\n\nПотенціал заблокований, затримки або втрачені шанси у сфері: емоції, стосунки, інтуїція.\n\nКлючові теми: нове, потенціал, іскра, почуття, кохання, інтуїція.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A fresh start and pure potential in emotions, relationships, intuition.",
+          "uk": "Новий старт і чистий потенціал у сфері: емоції, стосунки, інтуїція."
+        },
+        "reversed": {
+          "en": "Blocked potential, delays, or missed chances in emotions, relationships, intuition.",
+          "uk": "Потенціал заблокований, затримки або втрачені шанси у сфері: емоції, стосунки, інтуїція."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_cups_02",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 2,
+    "name": {
+      "en": "Two of Cups",
+      "uk": "Двійка Кубків"
+    },
+    "slug": "two-of-cups",
+    "file": "cups/TwoOfCups.png",
+    "keywords": {
+      "en": [
+        "partnership",
+        "mutuality",
+        "connection"
+      ],
+      "uk": [
+        "партнерство",
+        "взаємність",
+        "зв’язок"
+      ]
+    },
+    "synopsis": {
+      "en": "Partnership, mutual attraction, emotional balance.",
+      "uk": "Партнерство, взаємність, емоційний баланс."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Mutual attraction, partnership, and emotional harmony.",
+        "uk": "Взаємне тяжіння, партнерство та емоційна гармонія."
+      },
+      "reversed": {
+        "en": "Imbalance, miscommunication, or a bond needing repair.",
+        "uk": "Дисбаланс, непорозуміння або стосунки, які потребують зцілення."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Partnership, mutual attraction, emotional balance.\n\nMutual attraction, partnership, and emotional harmony.\n\nKey themes: partnership, mutuality, connection.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Партнерство, взаємність, емоційний баланс.\n\nВзаємне тяжіння, партнерство та емоційна гармонія.\n\nКлючові теми: партнерство, взаємність, зв’язок.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Partnership, mutual attraction, emotional balance.\n\nImbalance, miscommunication, or a bond needing repair.\n\nKey themes: partnership, mutuality, connection.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Партнерство, взаємність, емоційний баланс.\n\nДисбаланс, непорозуміння або стосунки, які потребують зцілення.\n\nКлючові теми: партнерство, взаємність, зв’язок.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Mutual attraction, partnership, and emotional harmony.",
+          "uk": "Взаємне тяжіння, партнерство та емоційна гармонія."
+        },
+        "reversed": {
+          "en": "Imbalance, miscommunication, or a bond needing repair.",
+          "uk": "Дисбаланс, непорозуміння або стосунки, які потребують зцілення."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_cups_03",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 3,
+    "name": {
+      "en": "Three of Cups",
+      "uk": "Трійка Кубків"
+    },
+    "slug": "three-of-cups",
+    "file": "cups/ThreeOfCups.png",
+    "keywords": {
+      "en": [
+        "celebration",
+        "friends",
+        "support"
+      ],
+      "uk": [
+        "святкування",
+        "друзі",
+        "підтримка"
+      ]
+    },
+    "synopsis": {
+      "en": "Friendship, celebration, shared joy.",
+      "uk": "Дружба, святкування, спільна радість."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Celebration, friendship, and shared joy.",
+        "uk": "Святкування, дружба та радість у колі своїх."
+      },
+      "reversed": {
+        "en": "Overindulgence, gossip, or feeling left out.",
+        "uk": "Надмірності, плітки або відчуття, що тебе «не запросили»."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Friendship, celebration, shared joy.\n\nCelebration, friendship, and shared joy.\n\nKey themes: celebration, friends, support.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Дружба, святкування, спільна радість.\n\nСвяткування, дружба та радість у колі своїх.\n\nКлючові теми: святкування, друзі, підтримка.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Friendship, celebration, shared joy.\n\nOverindulgence, gossip, or feeling left out.\n\nKey themes: celebration, friends, support.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Дружба, святкування, спільна радість.\n\nНадмірності, плітки або відчуття, що тебе «не запросили».\n\nКлючові теми: святкування, друзі, підтримка.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Celebration, friendship, and shared joy.",
+          "uk": "Святкування, дружба та радість у колі своїх."
+        },
+        "reversed": {
+          "en": "Overindulgence, gossip, or feeling left out.",
+          "uk": "Надмірності, плітки або відчуття, що тебе «не запросили»."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_cups_04",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 4,
+    "name": {
+      "en": "Four of Cups",
+      "uk": "Четвірка Кубків"
+    },
+    "slug": "four-of-cups",
+    "file": "cups/FourOfCups.png",
+    "keywords": {
+      "en": [
+        "apathy",
+        "reflection",
+        "choice"
+      ],
+      "uk": [
+        "апатія",
+        "рефлексія",
+        "вибір"
+      ]
+    },
+    "synopsis": {
+      "en": "Apathy or boredom; re-evaluate what you truly want.",
+      "uk": "Апатія; переоцінка того, чого ти справді хочеш."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Apathy or boredom—look inward before choosing.",
+        "uk": "Апатія або нудьга — заглянь усередину перед вибором."
+      },
+      "reversed": {
+        "en": "New interest, motivation, and opening to offers.",
+        "uk": "Новий інтерес, мотивація і відкритість до шансів."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Apathy or boredom; re-evaluate what you truly want.\n\nApathy or boredom—look inward before choosing.\n\nKey themes: apathy, reflection, choice.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Апатія; переоцінка того, чого ти справді хочеш.\n\nАпатія або нудьга — заглянь усередину перед вибором.\n\nКлючові теми: апатія, рефлексія, вибір.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Apathy or boredom; re-evaluate what you truly want.\n\nNew interest, motivation, and opening to offers.\n\nKey themes: apathy, reflection, choice.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Апатія; переоцінка того, чого ти справді хочеш.\n\nНовий інтерес, мотивація і відкритість до шансів.\n\nКлючові теми: апатія, рефлексія, вибір.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Apathy or boredom—look inward before choosing.",
+          "uk": "Апатія або нудьга — заглянь усередину перед вибором."
+        },
+        "reversed": {
+          "en": "New interest, motivation, and opening to offers.",
+          "uk": "Новий інтерес, мотивація і відкритість до шансів."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_cups_05",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 5,
+    "name": {
+      "en": "Five of Cups",
+      "uk": "Пʼятірка Кубків"
+    },
+    "slug": "five-of-cups",
+    "file": "cups/FiveOfCups.png",
+    "keywords": {
+      "en": [
+        "grief",
+        "regret",
+        "acceptance"
+      ],
+      "uk": [
+        "смуток",
+        "жаль",
+        "прийняття"
+      ]
+    },
+    "synopsis": {
+      "en": "Loss and grief; focus on what still remains.",
+      "uk": "Втрата й смуток; згадай, що ще залишилось."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Grief or regret—honor the loss, then notice what remains.",
+        "uk": "Смуток або жаль — проживи втрату, але помічай, що лишилось."
+      },
+      "reversed": {
+        "en": "Acceptance, emotional recovery, and moving forward.",
+        "uk": "Прийняття, емоційне відновлення і рух уперед."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Loss and grief; focus on what still remains.\n\nGrief or regret—honor the loss, then notice what remains.\n\nKey themes: grief, regret, acceptance.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Втрата й смуток; згадай, що ще залишилось.\n\nСмуток або жаль — проживи втрату, але помічай, що лишилось.\n\nКлючові теми: смуток, жаль, прийняття.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Loss and grief; focus on what still remains.\n\nAcceptance, emotional recovery, and moving forward.\n\nKey themes: grief, regret, acceptance.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Втрата й смуток; згадай, що ще залишилось.\n\nПрийняття, емоційне відновлення і рух уперед.\n\nКлючові теми: смуток, жаль, прийняття.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Grief or regret—honor the loss, then notice what remains.",
+          "uk": "Смуток або жаль — проживи втрату, але помічай, що лишилось."
+        },
+        "reversed": {
+          "en": "Acceptance, emotional recovery, and moving forward.",
+          "uk": "Прийняття, емоційне відновлення і рух уперед."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_cups_06",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 6,
+    "name": {
+      "en": "Six of Cups",
+      "uk": "Шістка Кубків"
+    },
+    "slug": "six-of-cups",
+    "file": "cups/SixOfCups.png",
+    "keywords": {
+      "en": [
+        "nostalgia",
+        "kindness",
+        "past"
+      ],
+      "uk": [
+        "nostalgia",
+        "доброта",
+        "минуле"
+      ]
+    },
+    "synopsis": {
+      "en": "Nostalgia, innocence, revisiting the past.",
+      "uk": "Ностальгія, дитинство, повернення до минулого."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Nostalgia, kindness, and sweet memories.",
+        "uk": "Ностальгія, доброта і теплі спогади."
+      },
+      "reversed": {
+        "en": "Living in the past or needing to grow up.",
+        "uk": "Життя минулим або потреба подорослішати."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Nostalgia, innocence, revisiting the past.\n\nNostalgia, kindness, and sweet memories.\n\nKey themes: nostalgia, kindness, past.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Ностальгія, дитинство, повернення до минулого.\n\nНостальгія, доброта і теплі спогади.\n\nКлючові теми: nostalgia, доброта, минуле.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Nostalgia, innocence, revisiting the past.\n\nLiving in the past or needing to grow up.\n\nKey themes: nostalgia, kindness, past.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Ностальгія, дитинство, повернення до минулого.\n\nЖиття минулим або потреба подорослішати.\n\nКлючові теми: nostalgia, доброта, минуле.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Nostalgia, kindness, and sweet memories.",
+          "uk": "Ностальгія, доброта і теплі спогади."
+        },
+        "reversed": {
+          "en": "Living in the past or needing to grow up.",
+          "uk": "Життя минулим або потреба подорослішати."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_cups_07",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 7,
+    "name": {
+      "en": "Seven of Cups",
+      "uk": "Сімка Кубків"
+    },
+    "slug": "seven-of-cups",
+    "file": "cups/SevenOfCups.png",
+    "keywords": {
+      "en": [
+        "strategy",
+        "faith",
+        "tests",
+        "feelings",
+        "love",
+        "intuition"
+      ],
+      "uk": [
+        "стратегія",
+        "віра",
+        "випробування",
+        "почуття",
+        "кохання",
+        "інтуїція"
+      ]
+    },
+    "synopsis": {
+      "en": "Choices and fantasies; beware illusion and overload.",
+      "uk": "Вибір і фантазії; обережно з ілюзіями."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A challenge to your plan—stay strategic and trust yourself in emotions, relationships, intuition.",
+        "uk": "Виклик твоєму плану — тримай стратегію й вір у себе у сфері: емоції, стосунки, інтуїція."
+      },
+      "reversed": {
+        "en": "Giving up too soon or losing focus in emotions, relationships, intuition.",
+        "uk": "Здатися занадто рано або втратити фокус у сфері: емоції, стосунки, інтуїція."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Choices and fantasies; beware illusion and overload.\n\nA challenge to your plan—stay strategic and trust yourself in emotions, relationships, intuition.\n\nKey themes: strategy, faith, tests, feelings, love, intuition.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Вибір і фантазії; обережно з ілюзіями.\n\nВиклик твоєму плану — тримай стратегію й вір у себе у сфері: емоції, стосунки, інтуїція.\n\nКлючові теми: стратегія, віра, випробування, почуття, кохання, інтуїція.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Choices and fantasies; beware illusion and overload.\n\nGiving up too soon or losing focus in emotions, relationships, intuition.\n\nKey themes: strategy, faith, tests, feelings, love, intuition.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Вибір і фантазії; обережно з ілюзіями.\n\nЗдатися занадто рано або втратити фокус у сфері: емоції, стосунки, інтуїція.\n\nКлючові теми: стратегія, віра, випробування, почуття, кохання, інтуїція.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A challenge to your plan—stay strategic and trust yourself in emotions, relationships, intuition.",
+          "uk": "Виклик твоєму плану — тримай стратегію й вір у себе у сфері: емоції, стосунки, інтуїція."
+        },
+        "reversed": {
+          "en": "Giving up too soon or losing focus in emotions, relationships, intuition.",
+          "uk": "Здатися занадто рано або втратити фокус у сфері: емоції, стосунки, інтуїція."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_cups_08",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 8,
+    "name": {
+      "en": "Eight of Cups",
+      "uk": "Вісімка Кубків"
+    },
+    "slug": "eight-of-cups",
+    "file": "cups/EightOfCups.png",
+    "keywords": {
+      "en": [
+        "movement",
+        "practice",
+        "momentum",
+        "feelings",
+        "love",
+        "intuition"
+      ],
+      "uk": [
+        "рух",
+        "практика",
+        "імпульс",
+        "почуття",
+        "кохання",
+        "інтуїція"
+      ]
+    },
+    "synopsis": {
+      "en": "Walking away to seek deeper meaning.",
+      "uk": "Відхід заради глибшого сенсу."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Momentum and mastery grow through action in emotions, relationships, intuition.",
+        "uk": "Імпульс і майстерність ростуть через дію у сфері: емоції, стосунки, інтуїція."
+      },
+      "reversed": {
+        "en": "Scattered effort, impatience, or burnout in emotions, relationships, intuition.",
+        "uk": "Розсіяні зусилля, нетерплячість або вигорання у сфері: емоції, стосунки, інтуїція."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Walking away to seek deeper meaning.\n\nMomentum and mastery grow through action in emotions, relationships, intuition.\n\nKey themes: movement, practice, momentum, feelings, love, intuition.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Відхід заради глибшого сенсу.\n\nІмпульс і майстерність ростуть через дію у сфері: емоції, стосунки, інтуїція.\n\nКлючові теми: рух, практика, імпульс, почуття, кохання, інтуїція.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Walking away to seek deeper meaning.\n\nScattered effort, impatience, or burnout in emotions, relationships, intuition.\n\nKey themes: movement, practice, momentum, feelings, love, intuition.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Відхід заради глибшого сенсу.\n\nРозсіяні зусилля, нетерплячість або вигорання у сфері: емоції, стосунки, інтуїція.\n\nКлючові теми: рух, практика, імпульс, почуття, кохання, інтуїція.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Momentum and mastery grow through action in emotions, relationships, intuition.",
+          "uk": "Імпульс і майстерність ростуть через дію у сфері: емоції, стосунки, інтуїція."
+        },
+        "reversed": {
+          "en": "Scattered effort, impatience, or burnout in emotions, relationships, intuition.",
+          "uk": "Розсіяні зусилля, нетерплячість або вигорання у сфері: емоції, стосунки, інтуїція."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_cups_09",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 9,
+    "name": {
+      "en": "Nine of Cups",
+      "uk": "Девʼятка Кубків"
+    },
+    "slug": "nine-of-cups",
+    "file": "cups/NineOfCups.png",
+    "keywords": {
+      "en": [
+        "satisfaction",
+        "wish",
+        "comfort"
+      ],
+      "uk": [
+        "задоволення",
+        "бажання",
+        "комфорт"
+      ]
+    },
+    "synopsis": {
+      "en": "Contentment, a wish fulfilled, enjoying what you earned.",
+      "uk": "Задоволення, здійснення бажання, насолода результатом."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Contentment and wishes fulfilled; enjoy the moment.",
+        "uk": "Задоволення і виконання бажань; насолоджуйся моментом."
+      },
+      "reversed": {
+        "en": "Overindulgence or chasing happiness in the wrong place.",
+        "uk": "Надмірності або пошук щастя не там, де воно є."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Contentment, a wish fulfilled, enjoying what you earned.\n\nContentment and wishes fulfilled; enjoy the moment.\n\nKey themes: satisfaction, wish, comfort.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Задоволення, здійснення бажання, насолода результатом.\n\nЗадоволення і виконання бажань; насолоджуйся моментом.\n\nКлючові теми: задоволення, бажання, комфорт.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Contentment, a wish fulfilled, enjoying what you earned.\n\nOverindulgence or chasing happiness in the wrong place.\n\nKey themes: satisfaction, wish, comfort.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Задоволення, здійснення бажання, насолода результатом.\n\nНадмірності або пошук щастя не там, де воно є.\n\nКлючові теми: задоволення, бажання, комфорт.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Contentment and wishes fulfilled; enjoy the moment.",
+          "uk": "Задоволення і виконання бажань; насолоджуйся моментом."
+        },
+        "reversed": {
+          "en": "Overindulgence or chasing happiness in the wrong place.",
+          "uk": "Надмірності або пошук щастя не там, де воно є."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_cups_10",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": 10,
+    "name": {
+      "en": "Ten of Cups",
+      "uk": "Десятка Кубків"
+    },
+    "slug": "ten-of-cups",
+    "file": "cups/TenOfCups.png",
+    "keywords": {
+      "en": [
+        "harmony",
+        "family",
+        "fulfillment"
+      ],
+      "uk": [
+        "гармонія",
+        "родина",
+        "задоволення"
+      ]
+    },
+    "synopsis": {
+      "en": "Harmony, family, lasting emotional fulfillment.",
+      "uk": "Гармонія, сім’я, тривале щастя."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Emotional fulfillment, harmony, and home happiness.",
+        "uk": "Емоційне наповнення, гармонія та щастя вдома."
+      },
+      "reversed": {
+        "en": "Tension at home or unrealistic expectations.",
+        "uk": "Напруга в родині або завищені очікування."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Harmony, family, lasting emotional fulfillment.\n\nEmotional fulfillment, harmony, and home happiness.\n\nKey themes: harmony, family, fulfillment.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Гармонія, сім’я, тривале щастя.\n\nЕмоційне наповнення, гармонія та щастя вдома.\n\nКлючові теми: гармонія, родина, задоволення.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Harmony, family, lasting emotional fulfillment.\n\nTension at home or unrealistic expectations.\n\nKey themes: harmony, family, fulfillment.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Гармонія, сім’я, тривале щастя.\n\nНапруга в родині або завищені очікування.\n\nКлючові теми: гармонія, родина, задоволення.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Emotional fulfillment, harmony, and home happiness.",
+          "uk": "Емоційне наповнення, гармонія та щастя вдома."
+        },
+        "reversed": {
+          "en": "Tension at home or unrealistic expectations.",
+          "uk": "Напруга в родині або завищені очікування."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_cups_11",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": "page",
+    "name": {
+      "en": "Page of Cups",
+      "uk": "Паж Кубків"
+    },
+    "slug": "page-of-cups",
+    "file": "cups/PageOfCups.png",
+    "keywords": {
+      "en": [
+        "curiosity",
+        "message",
+        "learning",
+        "feelings",
+        "love",
+        "intuition"
+      ],
+      "uk": [
+        "цікавість",
+        "звістка",
+        "навчання",
+        "почуття",
+        "кохання",
+        "інтуїція"
+      ]
+    },
+    "synopsis": {
+      "en": "Curiosity, learning, messages; a fresh approach to emotions, relationships, intuition.",
+      "uk": "Допитливість, навчання, новини; свіжий підхід до: емоції, стосунки, інтуїція."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A message or new curiosity; learn and explore in emotions, relationships, intuition.",
+        "uk": "Звістка або нова цікавість; вчись і досліджуй у сфері: емоції, стосунки, інтуїція."
+      },
+      "reversed": {
+        "en": "Immaturity, mixed signals, or lack of follow-through in emotions, relationships, intuition.",
+        "uk": "Незрілість, змішані сигнали або брак наполегливості у сфері: емоції, стосунки, інтуїція."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Curiosity, learning, messages; a fresh approach to emotions, relationships, intuition.\n\nA message or new curiosity; learn and explore in emotions, relationships, intuition.\n\nKey themes: curiosity, message, learning, feelings, love, intuition.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Допитливість, навчання, новини; свіжий підхід до: емоції, стосунки, інтуїція.\n\nЗвістка або нова цікавість; вчись і досліджуй у сфері: емоції, стосунки, інтуїція.\n\nКлючові теми: цікавість, звістка, навчання, почуття, кохання, інтуїція.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Curiosity, learning, messages; a fresh approach to emotions, relationships, intuition.\n\nImmaturity, mixed signals, or lack of follow-through in emotions, relationships, intuition.\n\nKey themes: curiosity, message, learning, feelings, love, intuition.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Допитливість, навчання, новини; свіжий підхід до: емоції, стосунки, інтуїція.\n\nНезрілість, змішані сигнали або брак наполегливості у сфері: емоції, стосунки, інтуїція.\n\nКлючові теми: цікавість, звістка, навчання, почуття, кохання, інтуїція.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A message or new curiosity; learn and explore in emotions, relationships, intuition.",
+          "uk": "Звістка або нова цікавість; вчись і досліджуй у сфері: емоції, стосунки, інтуїція."
+        },
+        "reversed": {
+          "en": "Immaturity, mixed signals, or lack of follow-through in emotions, relationships, intuition.",
+          "uk": "Незрілість, змішані сигнали або брак наполегливості у сфері: емоції, стосунки, інтуїція."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_cups_12",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": "knight",
+    "name": {
+      "en": "Knight of Cups",
+      "uk": "Лицар Кубків"
+    },
+    "slug": "knight-of-cups",
+    "file": "cups/KnightOfCups.png",
+    "keywords": {
+      "en": [
+        "action",
+        "pursuit",
+        "movement",
+        "feelings",
+        "love",
+        "intuition"
+      ],
+      "uk": [
+        "дія",
+        "прагнення",
+        "рух",
+        "почуття",
+        "кохання",
+        "інтуїція"
+      ]
+    },
+    "synopsis": {
+      "en": "Action and pursuit; moving boldly within emotions, relationships, intuition.",
+      "uk": "Дія й рух уперед; сміливо діяти в темі: емоції, стосунки, інтуїція."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Active pursuit—move decisively in emotions, relationships, intuition.",
+        "uk": "Активна дія — рухайся рішуче у сфері: емоції, стосунки, інтуїція."
+      },
+      "reversed": {
+        "en": "Haste, recklessness, or stalled action in emotions, relationships, intuition.",
+        "uk": "Поспіх, необачність або застій дій у сфері: емоції, стосунки, інтуїція."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Action and pursuit; moving boldly within emotions, relationships, intuition.\n\nActive pursuit—move decisively in emotions, relationships, intuition.\n\nKey themes: action, pursuit, movement, feelings, love, intuition.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Дія й рух уперед; сміливо діяти в темі: емоції, стосунки, інтуїція.\n\nАктивна дія — рухайся рішуче у сфері: емоції, стосунки, інтуїція.\n\nКлючові теми: дія, прагнення, рух, почуття, кохання, інтуїція.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Action and pursuit; moving boldly within emotions, relationships, intuition.\n\nHaste, recklessness, or stalled action in emotions, relationships, intuition.\n\nKey themes: action, pursuit, movement, feelings, love, intuition.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Дія й рух уперед; сміливо діяти в темі: емоції, стосунки, інтуїція.\n\nПоспіх, необачність або застій дій у сфері: емоції, стосунки, інтуїція.\n\nКлючові теми: дія, прагнення, рух, почуття, кохання, інтуїція.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Active pursuit—move decisively in emotions, relationships, intuition.",
+          "uk": "Активна дія — рухайся рішуче у сфері: емоції, стосунки, інтуїція."
+        },
+        "reversed": {
+          "en": "Haste, recklessness, or stalled action in emotions, relationships, intuition.",
+          "uk": "Поспіх, необачність або застій дій у сфері: емоції, стосунки, інтуїція."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_cups_13",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": "queen",
+    "name": {
+      "en": "Queen of Cups",
+      "uk": "Королева Кубків"
+    },
+    "slug": "queen-of-cups",
+    "file": "cups/QueenOfCups.png",
+    "keywords": {
+      "en": [
+        "mastery",
+        "care",
+        "intuition",
+        "feelings",
+        "love"
+      ],
+      "uk": [
+        "майстерність",
+        "турбота",
+        "інтуїція",
+        "почуття",
+        "кохання"
+      ]
+    },
+    "synopsis": {
+      "en": "Mature, receptive mastery; embodying the best of emotions, relationships, intuition.",
+      "uk": "Зріла, м’яка сила; втілення найкращого в: емоції, стосунки, інтуїція."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Mature, steady influence; embody wisdom in emotions, relationships, intuition.",
+        "uk": "Зріла, стабільна сила; втілюй мудрість у сфері: емоції, стосунки, інтуїція."
+      },
+      "reversed": {
+        "en": "Insecurity, imbalance, or emotional extremes in emotions, relationships, intuition.",
+        "uk": "Невпевненість, дисбаланс або емоційні крайнощі у сфері: емоції, стосунки, інтуїція."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Mature, receptive mastery; embodying the best of emotions, relationships, intuition.\n\nMature, steady influence; embody wisdom in emotions, relationships, intuition.\n\nKey themes: mastery, care, intuition, feelings, love.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Зріла, м’яка сила; втілення найкращого в: емоції, стосунки, інтуїція.\n\nЗріла, стабільна сила; втілюй мудрість у сфері: емоції, стосунки, інтуїція.\n\nКлючові теми: майстерність, турбота, інтуїція, почуття, кохання.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Mature, receptive mastery; embodying the best of emotions, relationships, intuition.\n\nInsecurity, imbalance, or emotional extremes in emotions, relationships, intuition.\n\nKey themes: mastery, care, intuition, feelings, love.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Зріла, м’яка сила; втілення найкращого в: емоції, стосунки, інтуїція.\n\nНевпевненість, дисбаланс або емоційні крайнощі у сфері: емоції, стосунки, інтуїція.\n\nКлючові теми: майстерність, турбота, інтуїція, почуття, кохання.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Mature, steady influence; embody wisdom in emotions, relationships, intuition.",
+          "uk": "Зріла, стабільна сила; втілюй мудрість у сфері: емоції, стосунки, інтуїція."
+        },
+        "reversed": {
+          "en": "Insecurity, imbalance, or emotional extremes in emotions, relationships, intuition.",
+          "uk": "Невпевненість, дисбаланс або емоційні крайнощі у сфері: емоції, стосунки, інтуїція."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  },
+  {
+    "id": "minor_cups_14",
+    "arcana": "minor",
+    "suit": "cups",
+    "rank": "king",
+    "name": {
+      "en": "King of Cups",
+      "uk": "Король Кубків"
+    },
+    "slug": "king-of-cups",
+    "file": "cups/KingOfCups.png",
+    "keywords": {
+      "en": [
+        "leadership",
+        "control",
+        "responsibility",
+        "feelings",
+        "love",
+        "intuition"
+      ],
+      "uk": [
+        "лідерство",
+        "контроль",
+        "відповідальність",
+        "почуття",
+        "кохання",
+        "інтуїція"
+      ]
+    },
+    "synopsis": {
+      "en": "Leadership and control; directing emotions, relationships, intuition with confidence.",
+      "uk": "Лідерство й контроль; керувати темою: емоції, стосунки, інтуїція впевнено."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Leadership and responsibility; direct emotions, relationships, intuition with maturity.",
+        "uk": "Лідерство й відповідальність; керуй сферою зріло: емоції, стосунки, інтуїція."
+      },
+      "reversed": {
+        "en": "Dominating, rigid control, or misusing authority in emotions, relationships, intuition.",
+        "uk": "Домінування, жорсткий контроль або зловживання владою у сфері: емоції, стосунки, інтуїція."
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Leadership and control; directing emotions, relationships, intuition with confidence.\n\nLeadership and responsibility; direct emotions, relationships, intuition with maturity.\n\nKey themes: leadership, control, responsibility, feelings, love, intuition.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.",
+        "uk": "Лідерство й контроль; керувати темою: емоції, стосунки, інтуїція впевнено.\n\nЛідерство й відповідальність; керуй сферою зріло: емоції, стосунки, інтуїція.\n\nКлючові теми: лідерство, контроль, відповідальність, почуття, кохання, інтуїція.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності."
+      },
+      "reversed": {
+        "en": "Leadership and control; directing emotions, relationships, intuition with confidence.\n\nDominating, rigid control, or misusing authority in emotions, relationships, intuition.\n\nKey themes: leadership, control, responsibility, feelings, love, intuition.\n\nUse this as a practical prompt today: choose one small action that matches the message above, and keep it consistent.\n\nIf you feel off-track, simplify: remove one distraction, set one boundary, and return to the core message above.",
+        "uk": "Лідерство й контроль; керувати темою: емоції, стосунки, інтуїція впевнено.\n\nДомінування, жорсткий контроль або зловживання владою у сфері: емоції, стосунки, інтуїція.\n\nКлючові теми: лідерство, контроль, відповідальність, почуття, кохання, інтуїція.\n\nВикористай це як практичну підказку на сьогодні: обери одну маленьку дію, що відповідає посланню вище, і тримайся послідовності.\n\nЯкщо відчуваєш, що збився з курсу — спростіть: прибери одне відволікання, постав одну межу і повернись до основного послання вище."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Leadership and responsibility; direct emotions, relationships, intuition with maturity.",
+          "uk": "Лідерство й відповідальність; керуй сферою зріло: емоції, стосунки, інтуїція."
+        },
+        "reversed": {
+          "en": "Dominating, rigid control, or misusing authority in emotions, relationships, intuition.",
+          "uk": "Домінування, жорсткий контроль або зловживання владою у сфері: емоції, стосунки, інтуїція."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    }
+  }
+]

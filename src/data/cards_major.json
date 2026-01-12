@@ -1,0 +1,1564 @@
+[
+  {
+    "id": "major_00",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 0,
+    "name": {
+      "en": "The Fool",
+      "uk": "Блазень"
+    },
+    "slug": "the-fool",
+    "file": "majorArcana/TheFool.png",
+    "keywords": {
+      "en": [
+        "beginnings",
+        "freedom",
+        "trust"
+      ],
+      "uk": [
+        "початок",
+        "свобода",
+        "довіра"
+      ]
+    },
+    "synopsis": {
+      "en": "New beginnings, spontaneity, a leap of faith.",
+      "uk": "Новий початок, спонтанність, стрибок віри."
+    },
+    "meaning": {
+      "upright": {
+        "en": "New start, curiosity, take the leap with an open heart.",
+        "uk": "Новий старт, цікавість; зроби крок у невідоме з відкритим серцем."
+      },
+      "reversed": {
+        "en": "Recklessness, naivety, or fear of stepping forward.",
+        "uk": "Безрозсудність, наївність або страх рухатися вперед."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "New start, curiosity, take the leap with an open heart.",
+          "uk": "Новий старт, цікавість; зроби крок у невідоме з відкритим серцем."
+        },
+        "reversed": {
+          "en": "Recklessness, naivety, or fear of stepping forward.",
+          "uk": "Безрозсудність, наївність або страх рухатися вперед."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "0",
+    "description": {
+      "upright": {
+        "en": "The Fool points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. New start, curiosity, take the leap with an open heart.\n\nNotice the themes of beginnings, freedom, and trust in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Блазень підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. New start, curiosity, take the leap with an open heart.\n\nПомічай теми початок, свобода, and довіра у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The Fool shows where the lesson is blocked or distorted. Recklessness, naivety, or fear of stepping forward.\n\nWatch for a pattern around beginnings, freedom, and trust: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Блазень показує, де урок заблокований або спотворений. Recklessness, naivety, or fear of stepping forward.\n\nСтережись патерну навколо початок, свобода, and довіра: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_01",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 1,
+    "name": {
+      "en": "The Magician",
+      "uk": "Маг"
+    },
+    "slug": "the-magician",
+    "file": "majorArcana/TheMagician.png",
+    "keywords": {
+      "en": [
+        "willpower",
+        "skill",
+        "manifestation"
+      ],
+      "uk": [
+        "воля",
+        "майстерність",
+        "втілення"
+      ]
+    },
+    "synopsis": {
+      "en": "Manifestation, skill, willpower, taking action.",
+      "uk": "Втілення задумів, майстерність, воля, дія."
+    },
+    "meaning": {
+      "upright": {
+        "en": "You have the tools—focus, act, and make things real.",
+        "uk": "У тебе є інструменти — зосередься, дій і втілюй задумане."
+      },
+      "reversed": {
+        "en": "Trickery, scattered energy, or using talents the wrong way.",
+        "uk": "Маніпуляції, розсіяність або використання талантів не за призначенням."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "You have the tools—focus, act, and make things real.",
+          "uk": "У тебе є інструменти — зосередься, дій і втілюй задумане."
+        },
+        "reversed": {
+          "en": "Trickery, scattered energy, or using talents the wrong way.",
+          "uk": "Маніпуляції, розсіяність або використання талантів не за призначенням."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "I",
+    "description": {
+      "upright": {
+        "en": "The Magician points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. You have the tools—focus, act, and make things real.\n\nNotice the themes of willpower, skill, and manifestation in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Маг підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. You have the tools—focus, act, and make things real.\n\nПомічай теми воля, майстерність, and втілення у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The Magician shows where the lesson is blocked or distorted. Trickery, scattered energy, or using talents the wrong way.\n\nWatch for a pattern around willpower, skill, and manifestation: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Маг показує, де урок заблокований або спотворений. Trickery, scattered energy, or using talents the wrong way.\n\nСтережись патерну навколо воля, майстерність, and втілення: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_02",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 2,
+    "name": {
+      "en": "The High Priestess",
+      "uk": "Верховна Жриця"
+    },
+    "slug": "the-high-priestess",
+    "file": "majorArcana/TheHighPriestess.png",
+    "keywords": {
+      "en": [
+        "intuition",
+        "mystery",
+        "inner-voice"
+      ],
+      "uk": [
+        "інтуїція",
+        "таємниця",
+        "внутрішній голос"
+      ]
+    },
+    "synopsis": {
+      "en": "Intuition, inner knowing, hidden truths.",
+      "uk": "Інтуїція, внутрішнє знання, приховані істини."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Listen inward; hidden truths reveal themselves in silence.",
+        "uk": "Слухай себе; прихована правда відкривається в тиші."
+      },
+      "reversed": {
+        "en": "Ignoring intuition, secrets, or confusion clouding judgment.",
+        "uk": "Ігнорування інтуїції, таємниці або плутанина в рішеннях."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Listen inward; hidden truths reveal themselves in silence.",
+          "uk": "Слухай себе; прихована правда відкривається в тиші."
+        },
+        "reversed": {
+          "en": "Ignoring intuition, secrets, or confusion clouding judgment.",
+          "uk": "Ігнорування інтуїції, таємниці або плутанина в рішеннях."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "II",
+    "description": {
+      "upright": {
+        "en": "The High Priestess points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Listen inward; hidden truths reveal themselves in silence.\n\nNotice the themes of intuition, mystery, and inner-voice in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Верховна Жриця підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Listen inward; hidden truths reveal themselves in silence.\n\nПомічай теми інтуїція, таємниця, and внутрішній голос у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The High Priestess shows where the lesson is blocked or distorted. Ignoring intuition, secrets, or confusion clouding judgment.\n\nWatch for a pattern around intuition, mystery, and inner-voice: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Верховна Жриця показує, де урок заблокований або спотворений. Ignoring intuition, secrets, or confusion clouding judgment.\n\nСтережись патерну навколо інтуїція, таємниця, and внутрішній голос: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_03",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 3,
+    "name": {
+      "en": "The Empress",
+      "uk": "Імператриця"
+    },
+    "slug": "the-empress",
+    "file": "majorArcana/TheEmpress.png",
+    "keywords": {
+      "en": [
+        "nurture",
+        "abundance",
+        "creativity"
+      ],
+      "uk": [
+        "турбота",
+        "достаток",
+        "творчість"
+      ]
+    },
+    "synopsis": {
+      "en": "Abundance, nurturing, creativity, growth.",
+      "uk": "Достаток, турбота, творчість, ріст."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Growth and care—create, receive, and let things bloom.",
+        "uk": "Ріст і турбота — твори, приймай і дай справам розквітнути."
+      },
+      "reversed": {
+        "en": "Overgiving, stagnation, or neglect of self-care.",
+        "uk": "Виснаження через «надто багато для інших», застій або нестача турботи про себе."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Growth and care—create, receive, and let things bloom.",
+          "uk": "Ріст і турбота — твори, приймай і дай справам розквітнути."
+        },
+        "reversed": {
+          "en": "Overgiving, stagnation, or neglect of self-care.",
+          "uk": "Виснаження через «надто багато для інших», застій або нестача турботи про себе."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "III",
+    "description": {
+      "upright": {
+        "en": "The Empress points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Growth and care—create, receive, and let things bloom.\n\nNotice the themes of nurture, abundance, and creativity in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Імператриця підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Growth and care—create, receive, and let things bloom.\n\nПомічай теми турбота, достаток, and творчість у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The Empress shows where the lesson is blocked or distorted. Overgiving, stagnation, or neglect of self-care.\n\nWatch for a pattern around nurture, abundance, and creativity: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Імператриця показує, де урок заблокований або спотворений. Overgiving, stagnation, or neglect of self-care.\n\nСтережись патерну навколо турбота, достаток, and творчість: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_04",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 4,
+    "name": {
+      "en": "The Emperor",
+      "uk": "Імператор"
+    },
+    "slug": "the-emperor",
+    "file": "majorArcana/TheEmperor.png",
+    "keywords": {
+      "en": [
+        "structure",
+        "authority",
+        "stability"
+      ],
+      "uk": [
+        "структура",
+        "авторитет",
+        "стабільність"
+      ]
+    },
+    "synopsis": {
+      "en": "Structure, authority, stability, leadership.",
+      "uk": "Структура, авторитет, стабільність, лідерство."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Order and leadership—set boundaries and build solid foundations.",
+        "uk": "Порядок і лідерство — встанови межі та збудуй міцну основу."
+      },
+      "reversed": {
+        "en": "Control issues, rigidity, or weak boundaries.",
+        "uk": "Надмірний контроль, жорсткість або слабкі межі."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Order and leadership—set boundaries and build solid foundations.",
+          "uk": "Порядок і лідерство — встанови межі та збудуй міцну основу."
+        },
+        "reversed": {
+          "en": "Control issues, rigidity, or weak boundaries.",
+          "uk": "Надмірний контроль, жорсткість або слабкі межі."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "IV",
+    "description": {
+      "upright": {
+        "en": "The Emperor points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Order and leadership—set boundaries and build solid foundations.\n\nNotice the themes of structure, authority, and stability in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Імператор підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Order and leadership—set boundaries and build solid foundations.\n\nПомічай теми структура, авторитет, and стабільність у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The Emperor shows where the lesson is blocked or distorted. Control issues, rigidity, or weak boundaries.\n\nWatch for a pattern around structure, authority, and stability: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Імператор показує, де урок заблокований або спотворений. Control issues, rigidity, or weak boundaries.\n\nСтережись патерну навколо структура, авторитет, and стабільність: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_05",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 5,
+    "name": {
+      "en": "The Hierophant",
+      "uk": "Ієрофант"
+    },
+    "slug": "the-hierophant",
+    "file": "majorArcana/TheHierophant.png",
+    "keywords": {
+      "en": [
+        "tradition",
+        "learning",
+        "guidance"
+      ],
+      "uk": [
+        "традиція",
+        "навчання",
+        "наставництво"
+      ]
+    },
+    "synopsis": {
+      "en": "Tradition, learning, guidance, institutions.",
+      "uk": "Традиції, навчання, наставництво, система."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Wisdom through tradition, mentors, and shared values.",
+        "uk": "Мудрість через традиції, наставників і спільні цінності."
+      },
+      "reversed": {
+        "en": "Rebellion, outdated rules, or empty rituals.",
+        "uk": "Бунт, застарілі правила або порожні ритуали."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Wisdom through tradition, mentors, and shared values.",
+          "uk": "Мудрість через традиції, наставників і спільні цінності."
+        },
+        "reversed": {
+          "en": "Rebellion, outdated rules, or empty rituals.",
+          "uk": "Бунт, застарілі правила або порожні ритуали."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "V",
+    "description": {
+      "upright": {
+        "en": "The Hierophant points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Wisdom through tradition, mentors, and shared values.\n\nNotice the themes of tradition, learning, and guidance in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Ієрофант підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Wisdom through tradition, mentors, and shared values.\n\nПомічай теми традиція, навчання, and наставництво у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The Hierophant shows where the lesson is blocked or distorted. Rebellion, outdated rules, or empty rituals.\n\nWatch for a pattern around tradition, learning, and guidance: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Ієрофант показує, де урок заблокований або спотворений. Rebellion, outdated rules, or empty rituals.\n\nСтережись патерну навколо традиція, навчання, and наставництво: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_06",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 6,
+    "name": {
+      "en": "The Lovers",
+      "uk": "Закохані"
+    },
+    "slug": "the-lovers",
+    "file": "majorArcana/TheLovers.png",
+    "keywords": {
+      "en": [
+        "union",
+        "choice",
+        "values"
+      ],
+      "uk": [
+        "єдність",
+        "вибір",
+        "цінності"
+      ]
+    },
+    "synopsis": {
+      "en": "Union, alignment of values, an important choice.",
+      "uk": "Союз, узгодження цінностей, важливий вибір."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Alignment in love or partnership; a choice guided by values.",
+        "uk": "Єдність у коханні/партнерстві; вибір, що спирається на цінності."
+      },
+      "reversed": {
+        "en": "Misalignment, temptation, or avoiding an important decision.",
+        "uk": "Невідповідність, спокуси або уникання важливого рішення."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Alignment in love or partnership; a choice guided by values.",
+          "uk": "Єдність у коханні/партнерстві; вибір, що спирається на цінності."
+        },
+        "reversed": {
+          "en": "Misalignment, temptation, or avoiding an important decision.",
+          "uk": "Невідповідність, спокуси або уникання важливого рішення."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "VI",
+    "description": {
+      "upright": {
+        "en": "The Lovers points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Alignment in love or partnership; a choice guided by values.\n\nNotice the themes of union, choice, and values in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Закохані підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Alignment in love or partnership; a choice guided by values.\n\nПомічай теми єдність, вибір, and цінності у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The Lovers shows where the lesson is blocked or distorted. Misalignment, temptation, or avoiding an important decision.\n\nWatch for a pattern around union, choice, and values: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Закохані показує, де урок заблокований або спотворений. Misalignment, temptation, or avoiding an important decision.\n\nСтережись патерну навколо єдність, вибір, and цінності: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_07",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 7,
+    "name": {
+      "en": "The Chariot",
+      "uk": "Колісниця"
+    },
+    "slug": "the-chariot",
+    "file": "majorArcana/TheChariot.png",
+    "keywords": {
+      "en": [
+        "drive",
+        "victory",
+        "self-control"
+      ],
+      "uk": [
+        "рух",
+        "перемога",
+        "самоконтроль"
+      ]
+    },
+    "synopsis": {
+      "en": "Determination, control, momentum, victory.",
+      "uk": "Рішучість, контроль, рух уперед, перемога."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Forward motion—discipline and confidence bring success.",
+        "uk": "Рух уперед — дисципліна й упевненість ведуть до перемоги."
+      },
+      "reversed": {
+        "en": "Loss of direction, impulsiveness, or inner conflict.",
+        "uk": "Втрата курсу, імпульсивність або внутрішній конфлікт."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Forward motion—discipline and confidence bring success.",
+          "uk": "Рух уперед — дисципліна й упевненість ведуть до перемоги."
+        },
+        "reversed": {
+          "en": "Loss of direction, impulsiveness, or inner conflict.",
+          "uk": "Втрата курсу, імпульсивність або внутрішній конфлікт."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "VII",
+    "description": {
+      "upright": {
+        "en": "The Chariot points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Forward motion—discipline and confidence bring success.\n\nNotice the themes of drive, victory, and self-control in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Колісниця підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Forward motion—discipline and confidence bring success.\n\nПомічай теми рух, перемога, and самоконтроль у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The Chariot shows where the lesson is blocked or distorted. Loss of direction, impulsiveness, or inner conflict.\n\nWatch for a pattern around drive, victory, and self-control: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Колісниця показує, де урок заблокований або спотворений. Loss of direction, impulsiveness, or inner conflict.\n\nСтережись патерну навколо рух, перемога, and самоконтроль: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_08",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 8,
+    "name": {
+      "en": "Strength",
+      "uk": "Сила"
+    },
+    "slug": "strength",
+    "file": "majorArcana/Strength.png",
+    "keywords": {
+      "en": [
+        "courage",
+        "patience",
+        "compassion"
+      ],
+      "uk": [
+        "сміливість",
+        "терпіння",
+        "співчуття"
+      ]
+    },
+    "synopsis": {
+      "en": "Courage, compassion, inner power, patience.",
+      "uk": "Сміливість, співчуття, внутрішня сила, терпіння."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Gentle power—bravery, calm, and kindness tame the wild.",
+        "uk": "М’яка сила — сміливість, спокій і доброта приборкують емоції."
+      },
+      "reversed": {
+        "en": "Self-doubt, impatience, or feeling emotionally overwhelmed.",
+        "uk": "Невпевненість, нетерплячість або емоційне перевантаження."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Gentle power—bravery, calm, and kindness tame the wild.",
+          "uk": "М’яка сила — сміливість, спокій і доброта приборкують емоції."
+        },
+        "reversed": {
+          "en": "Self-doubt, impatience, or feeling emotionally overwhelmed.",
+          "uk": "Невпевненість, нетерплячість або емоційне перевантаження."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "VIII",
+    "description": {
+      "upright": {
+        "en": "Strength points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Gentle power—bravery, calm, and kindness tame the wild.\n\nNotice the themes of courage, patience, and compassion in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Сила підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Gentle power—bravery, calm, and kindness tame the wild.\n\nПомічай теми сміливість, терпіння, and співчуття у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, Strength shows where the lesson is blocked or distorted. Self-doubt, impatience, or feeling emotionally overwhelmed.\n\nWatch for a pattern around courage, patience, and compassion: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Сила показує, де урок заблокований або спотворений. Self-doubt, impatience, or feeling emotionally overwhelmed.\n\nСтережись патерну навколо сміливість, терпіння, and співчуття: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_09",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 9,
+    "name": {
+      "en": "The Hermit",
+      "uk": "Відлюдник"
+    },
+    "slug": "the-hermit",
+    "file": "majorArcana/TheHermit.png",
+    "keywords": {
+      "en": [
+        "reflection",
+        "solitude",
+        "wisdom"
+      ],
+      "uk": [
+        "рефлексія",
+        "самітність",
+        "мудрість"
+      ]
+    },
+    "synopsis": {
+      "en": "Introspection, solitude, seeking guidance.",
+      "uk": "Самоаналіз, усамітнення, пошук поради."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Step back to gain clarity; answers come with reflection.",
+        "uk": "Відійди вбік, щоб прояснити думки; відповіді приходять у тиші."
+      },
+      "reversed": {
+        "en": "Isolation, withdrawal, or refusing guidance.",
+        "uk": "Ізоляція, відсторонення або відмова прийняти допомогу."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Step back to gain clarity; answers come with reflection.",
+          "uk": "Відійди вбік, щоб прояснити думки; відповіді приходять у тиші."
+        },
+        "reversed": {
+          "en": "Isolation, withdrawal, or refusing guidance.",
+          "uk": "Ізоляція, відсторонення або відмова прийняти допомогу."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "IX",
+    "description": {
+      "upright": {
+        "en": "The Hermit points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Step back to gain clarity; answers come with reflection.\n\nNotice the themes of reflection, solitude, and wisdom in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Відлюдник підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Step back to gain clarity; answers come with reflection.\n\nПомічай теми рефлексія, самітність, and мудрість у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The Hermit shows where the lesson is blocked or distorted. Isolation, withdrawal, or refusing guidance.\n\nWatch for a pattern around reflection, solitude, and wisdom: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Відлюдник показує, де урок заблокований або спотворений. Isolation, withdrawal, or refusing guidance.\n\nСтережись патерну навколо рефлексія, самітність, and мудрість: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_10",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 10,
+    "name": {
+      "en": "Wheel of Fortune",
+      "uk": "Колесо Фортуни"
+    },
+    "slug": "wheel-of-fortune",
+    "file": "majorArcana/WheelOfFortune.png",
+    "keywords": {
+      "en": [
+        "change",
+        "cycles",
+        "fate"
+      ],
+      "uk": [
+        "зміни",
+        "цикли",
+        "доля"
+      ]
+    },
+    "synopsis": {
+      "en": "Change, cycles, turning point, fate.",
+      "uk": "Зміни, цикли, поворотний момент, доля."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A turning point—luck shifts and cycles move you forward.",
+        "uk": "Переломний момент — удача змінюється, цикл веде далі."
+      },
+      "reversed": {
+        "en": "Resistance to change or repeating patterns.",
+        "uk": "Опір змінам або повторення одних і тих самих сценаріїв."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A turning point—luck shifts and cycles move you forward.",
+          "uk": "Переломний момент — удача змінюється, цикл веде далі."
+        },
+        "reversed": {
+          "en": "Resistance to change or repeating patterns.",
+          "uk": "Опір змінам або повторення одних і тих самих сценаріїв."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "X",
+    "description": {
+      "upright": {
+        "en": "Wheel of Fortune points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. A turning point—luck shifts and cycles move you forward.\n\nNotice the themes of change, cycles, and fate in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Колесо Фортуни підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. A turning point—luck shifts and cycles move you forward.\n\nПомічай теми зміни, цикли, and доля у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, Wheel of Fortune shows where the lesson is blocked or distorted. Resistance to change or repeating patterns.\n\nWatch for a pattern around change, cycles, and fate: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Колесо Фортуни показує, де урок заблокований або спотворений. Resistance to change or repeating patterns.\n\nСтережись патерну навколо зміни, цикли, and доля: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_11",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 11,
+    "name": {
+      "en": "Justice",
+      "uk": "Справедливість"
+    },
+    "slug": "justice",
+    "file": "majorArcana/Justice.png",
+    "keywords": {
+      "en": [
+        "truth",
+        "fairness",
+        "accountability"
+      ],
+      "uk": [
+        "правда",
+        "справедливість",
+        "відповідальність"
+      ]
+    },
+    "synopsis": {
+      "en": "Fairness, truth, accountability, cause and effect.",
+      "uk": "Справедливість, правда, відповідальність, причина-наслідок."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Balance and truth—own choices and seek fairness.",
+        "uk": "Баланс і правда — бери відповідальність і шукай справедливість."
+      },
+      "reversed": {
+        "en": "Dishonesty, bias, or avoiding consequences.",
+        "uk": "Нечесність, упередженість або уникання наслідків."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Balance and truth—own choices and seek fairness.",
+          "uk": "Баланс і правда — бери відповідальність і шукай справедливість."
+        },
+        "reversed": {
+          "en": "Dishonesty, bias, or avoiding consequences.",
+          "uk": "Нечесність, упередженість або уникання наслідків."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XI",
+    "description": {
+      "upright": {
+        "en": "Justice points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Balance and truth—own choices and seek fairness.\n\nNotice the themes of truth, fairness, and accountability in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Справедливість підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Balance and truth—own choices and seek fairness.\n\nПомічай теми правда, справедливість, and відповідальність у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, Justice shows where the lesson is blocked or distorted. Dishonesty, bias, or avoiding consequences.\n\nWatch for a pattern around truth, fairness, and accountability: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Справедливість показує, де урок заблокований або спотворений. Dishonesty, bias, or avoiding consequences.\n\nСтережись патерну навколо правда, справедливість, and відповідальність: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_12",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 12,
+    "name": {
+      "en": "The Hanged Man",
+      "uk": "Повішений"
+    },
+    "slug": "the-hanged-man",
+    "file": "majorArcana/TheHangedMan.png",
+    "keywords": {
+      "en": [
+        "pause",
+        "surrender",
+        "new-view"
+      ],
+      "uk": [
+        "пауза",
+        "прийняття",
+        "новий погляд"
+      ]
+    },
+    "synopsis": {
+      "en": "Pause, surrender, new perspective.",
+      "uk": "Пауза, прийняття, новий погляд."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Pause and reframe; surrender brings a new perspective.",
+        "uk": "Пауза й переосмислення; прийняття дає новий погляд."
+      },
+      "reversed": {
+        "en": "Stalling, martyrdom, or refusing to let go.",
+        "uk": "Застрягання, «жертвенність» або небажання відпустити."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Pause and reframe; surrender brings a new perspective.",
+          "uk": "Пауза й переосмислення; прийняття дає новий погляд."
+        },
+        "reversed": {
+          "en": "Stalling, martyrdom, or refusing to let go.",
+          "uk": "Застрягання, «жертвенність» або небажання відпустити."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XII",
+    "description": {
+      "upright": {
+        "en": "The Hanged Man points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Pause and reframe; surrender brings a new perspective.\n\nNotice the themes of pause, surrender, and new-view in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Повішений підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Pause and reframe; surrender brings a new perspective.\n\nПомічай теми пауза, прийняття, and новий погляд у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The Hanged Man shows where the lesson is blocked or distorted. Stalling, martyrdom, or refusing to let go.\n\nWatch for a pattern around pause, surrender, and new-view: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Повішений показує, де урок заблокований або спотворений. Stalling, martyrdom, or refusing to let go.\n\nСтережись патерну навколо пауза, прийняття, and новий погляд: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_13",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 13,
+    "name": {
+      "en": "Death",
+      "uk": "Смерть"
+    },
+    "slug": "death",
+    "file": "majorArcana/Death.png",
+    "keywords": {
+      "en": [
+        "ending",
+        "transformation",
+        "renewal"
+      ],
+      "uk": [
+        "завершення",
+        "трансформація",
+        "оновлення"
+      ]
+    },
+    "synopsis": {
+      "en": "Endings, transformation, release, renewal.",
+      "uk": "Завершення, трансформація, відпускання, оновлення."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A clean ending makes room for rebirth and transformation.",
+        "uk": "Завершення, що очищає; звільнення місця для оновлення."
+      },
+      "reversed": {
+        "en": "Clinging to the past or fearing necessary change.",
+        "uk": "Чіпляння за минуле або страх необхідних змін."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A clean ending makes room for rebirth and transformation.",
+          "uk": "Завершення, що очищає; звільнення місця для оновлення."
+        },
+        "reversed": {
+          "en": "Clinging to the past or fearing necessary change.",
+          "uk": "Чіпляння за минуле або страх необхідних змін."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XIII",
+    "description": {
+      "upright": {
+        "en": "Death points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. A clean ending makes room for rebirth and transformation.\n\nNotice the themes of ending, transformation, and renewal in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Смерть підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. A clean ending makes room for rebirth and transformation.\n\nПомічай теми завершення, трансформація, and оновлення у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, Death shows where the lesson is blocked or distorted. Clinging to the past or fearing necessary change.\n\nWatch for a pattern around ending, transformation, and renewal: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Смерть показує, де урок заблокований або спотворений. Clinging to the past or fearing necessary change.\n\nСтережись патерну навколо завершення, трансформація, and оновлення: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_14",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 14,
+    "name": {
+      "en": "Temperance",
+      "uk": "Помірність"
+    },
+    "slug": "temperance",
+    "file": "majorArcana/Temperance.png",
+    "keywords": {
+      "en": [
+        "balance",
+        "healing",
+        "moderation"
+      ],
+      "uk": [
+        "баланс",
+        "зцілення",
+        "помірність"
+      ]
+    },
+    "synopsis": {
+      "en": "Balance, moderation, harmony, healing.",
+      "uk": "Баланс, помірність, гармонія, зцілення."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Mix and harmonize—patience brings healing and flow.",
+        "uk": "Гармонія й міра — терпіння приносить зцілення та потік."
+      },
+      "reversed": {
+        "en": "Extremes, imbalance, or lack of long-term harmony.",
+        "uk": "Крайнощі, дисбаланс або відсутність узгодженості."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Mix and harmonize—patience brings healing and flow.",
+          "uk": "Гармонія й міра — терпіння приносить зцілення та потік."
+        },
+        "reversed": {
+          "en": "Extremes, imbalance, or lack of long-term harmony.",
+          "uk": "Крайнощі, дисбаланс або відсутність узгодженості."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XIV",
+    "description": {
+      "upright": {
+        "en": "Temperance points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Mix and harmonize—patience brings healing and flow.\n\nNotice the themes of balance, healing, and moderation in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Помірність підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Mix and harmonize—patience brings healing and flow.\n\nПомічай теми баланс, зцілення, and помірність у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, Temperance shows where the lesson is blocked or distorted. Extremes, imbalance, or lack of long-term harmony.\n\nWatch for a pattern around balance, healing, and moderation: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Помірність показує, де урок заблокований або спотворений. Extremes, imbalance, or lack of long-term harmony.\n\nСтережись патерну навколо баланс, зцілення, and помірність: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_15",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 15,
+    "name": {
+      "en": "The Devil",
+      "uk": "Диявол"
+    },
+    "slug": "the-devil",
+    "file": "majorArcana/TheDevil.png",
+    "keywords": {
+      "en": [
+        "attachment",
+        "temptation",
+        "shadow"
+      ],
+      "uk": [
+        "залежність",
+        "спокуса",
+        "тінь"
+      ]
+    },
+    "synopsis": {
+      "en": "Attachment, temptation, unhealthy patterns.",
+      "uk": "Прив’язаності, спокуси, нездорові патерни."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Notice what binds you—habits, fear, or unhealthy attachments.",
+        "uk": "Побач, що тебе тримає — звички, страхи чи залежності."
+      },
+      "reversed": {
+        "en": "Breaking chains, reclaiming power, or facing the shadow.",
+        "uk": "Розрив кайданів, повернення сили або робота з «тінню»."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Notice what binds you—habits, fear, or unhealthy attachments.",
+          "uk": "Побач, що тебе тримає — звички, страхи чи залежності."
+        },
+        "reversed": {
+          "en": "Breaking chains, reclaiming power, or facing the shadow.",
+          "uk": "Розрив кайданів, повернення сили або робота з «тінню»."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XV",
+    "description": {
+      "upright": {
+        "en": "The Devil points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Notice what binds you—habits, fear, or unhealthy attachments.\n\nNotice the themes of attachment, temptation, and shadow in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Диявол підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Notice what binds you—habits, fear, or unhealthy attachments.\n\nПомічай теми залежність, спокуса, and тінь у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The Devil shows where the lesson is blocked or distorted. Breaking chains, reclaiming power, or facing the shadow.\n\nWatch for a pattern around attachment, temptation, and shadow: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Диявол показує, де урок заблокований або спотворений. Breaking chains, reclaiming power, or facing the shadow.\n\nСтережись патерну навколо залежність, спокуса, and тінь: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_16",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 16,
+    "name": {
+      "en": "The Tower",
+      "uk": "Вежа"
+    },
+    "slug": "the-tower",
+    "file": "majorArcana/TheTower.png",
+    "keywords": {
+      "en": [
+        "upheaval",
+        "truth",
+        "breakthrough"
+      ],
+      "uk": [
+        "переворот",
+        "правда",
+        "прорив"
+      ]
+    },
+    "synopsis": {
+      "en": "Sudden change, upheaval, revelation, liberation.",
+      "uk": "Раптова зміна, потрясіння, прозріння, звільнення."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Sudden change clears illusions—painful but liberating truth.",
+        "uk": "Раптові зміни руйнують ілюзії — боляче, але звільняє."
+      },
+      "reversed": {
+        "en": "Avoiding the inevitable or rebuilding after disruption.",
+        "uk": "Спроба уникнути неминучого або відбудова після потрясіння."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Sudden change clears illusions—painful but liberating truth.",
+          "uk": "Раптові зміни руйнують ілюзії — боляче, але звільняє."
+        },
+        "reversed": {
+          "en": "Avoiding the inevitable or rebuilding after disruption.",
+          "uk": "Спроба уникнути неминучого або відбудова після потрясіння."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XVI",
+    "description": {
+      "upright": {
+        "en": "The Tower points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Sudden change clears illusions—painful but liberating truth.\n\nNotice the themes of upheaval, truth, and breakthrough in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Вежа підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Sudden change clears illusions—painful but liberating truth.\n\nПомічай теми переворот, правда, and прорив у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The Tower shows where the lesson is blocked or distorted. Avoiding the inevitable or rebuilding after disruption.\n\nWatch for a pattern around upheaval, truth, and breakthrough: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Вежа показує, де урок заблокований або спотворений. Avoiding the inevitable or rebuilding after disruption.\n\nСтережись патерну навколо переворот, правда, and прорив: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_17",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 17,
+    "name": {
+      "en": "The Star",
+      "uk": "Зірка"
+    },
+    "slug": "the-star",
+    "file": "majorArcana/TheStar.png",
+    "keywords": {
+      "en": [
+        "hope",
+        "renewal",
+        "inspiration"
+      ],
+      "uk": [
+        "надія",
+        "оновлення",
+        "натхнення"
+      ]
+    },
+    "synopsis": {
+      "en": "Hope, inspiration, calm, healing.",
+      "uk": "Надія, натхнення, спокій, зцілення."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Hope returns—healing, guidance, and renewed faith.",
+        "uk": "Повертається надія — зцілення, натхнення і віра."
+      },
+      "reversed": {
+        "en": "Doubt, burnout, or losing sight of the bigger picture.",
+        "uk": "Сумніви, вигорання або втрата орієнтира."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Hope returns—healing, guidance, and renewed faith.",
+          "uk": "Повертається надія — зцілення, натхнення і віра."
+        },
+        "reversed": {
+          "en": "Doubt, burnout, or losing sight of the bigger picture.",
+          "uk": "Сумніви, вигорання або втрата орієнтира."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XVII",
+    "description": {
+      "upright": {
+        "en": "The Star points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Hope returns—healing, guidance, and renewed faith.\n\nNotice the themes of hope, renewal, and inspiration in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Зірка підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Hope returns—healing, guidance, and renewed faith.\n\nПомічай теми надія, оновлення, and натхнення у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The Star shows where the lesson is blocked or distorted. Doubt, burnout, or losing sight of the bigger picture.\n\nWatch for a pattern around hope, renewal, and inspiration: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Зірка показує, де урок заблокований або спотворений. Doubt, burnout, or losing sight of the bigger picture.\n\nСтережись патерну навколо надія, оновлення, and натхнення: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_18",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 18,
+    "name": {
+      "en": "The Moon",
+      "uk": "Місяць"
+    },
+    "slug": "the-moon",
+    "file": "majorArcana/TheMoon.png",
+    "keywords": {
+      "en": [
+        "uncertainty",
+        "dreams",
+        "illusion"
+      ],
+      "uk": [
+        "невизначеність",
+        "сни",
+        "ілюзія"
+      ]
+    },
+    "synopsis": {
+      "en": "Illusions, uncertainty, subconscious, fears.",
+      "uk": "Ілюзії, невизначеність, підсвідоме, страхи."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Trust the journey through fog; intuition guides in uncertainty.",
+        "uk": "Туман і невизначеність; іди інтуїцією крізь невідоме."
+      },
+      "reversed": {
+        "en": "Fear, deception, or clarity emerging after confusion.",
+        "uk": "Страхи, самообман або прояснення після плутанини."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Trust the journey through fog; intuition guides in uncertainty.",
+          "uk": "Туман і невизначеність; іди інтуїцією крізь невідоме."
+        },
+        "reversed": {
+          "en": "Fear, deception, or clarity emerging after confusion.",
+          "uk": "Страхи, самообман або прояснення після плутанини."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XVIII",
+    "description": {
+      "upright": {
+        "en": "The Moon points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Trust the journey through fog; intuition guides in uncertainty.\n\nNotice the themes of uncertainty, dreams, and illusion in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Місяць підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Trust the journey through fog; intuition guides in uncertainty.\n\nПомічай теми невизначеність, сни, and ілюзія у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The Moon shows where the lesson is blocked or distorted. Fear, deception, or clarity emerging after confusion.\n\nWatch for a pattern around uncertainty, dreams, and illusion: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Місяць показує, де урок заблокований або спотворений. Fear, deception, or clarity emerging after confusion.\n\nСтережись патерну навколо невизначеність, сни, and ілюзія: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_19",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 19,
+    "name": {
+      "en": "The Sun",
+      "uk": "Сонце"
+    },
+    "slug": "the-sun",
+    "file": "majorArcana/TheSun.png",
+    "keywords": {
+      "en": [
+        "joy",
+        "success",
+        "vitality"
+      ],
+      "uk": [
+        "радість",
+        "успіх",
+        "життєва сила"
+      ]
+    },
+    "synopsis": {
+      "en": "Joy, clarity, success, vitality.",
+      "uk": "Радість, ясність, успіх, життєва сила."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Warmth and success—clarity, confidence, and happiness.",
+        "uk": "Радість і успіх — ясність, впевненість, тепло."
+      },
+      "reversed": {
+        "en": "Delayed joy, pessimism, or needing to recharge.",
+        "uk": "Затримка радості, песимізм або потреба відновитись."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Warmth and success—clarity, confidence, and happiness.",
+          "uk": "Радість і успіх — ясність, впевненість, тепло."
+        },
+        "reversed": {
+          "en": "Delayed joy, pessimism, or needing to recharge.",
+          "uk": "Затримка радості, песимізм або потреба відновитись."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XIX",
+    "description": {
+      "upright": {
+        "en": "The Sun points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Warmth and success—clarity, confidence, and happiness.\n\nNotice the themes of joy, success, and vitality in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Сонце підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Warmth and success—clarity, confidence, and happiness.\n\nПомічай теми радість, успіх, and життєва сила у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The Sun shows where the lesson is blocked or distorted. Delayed joy, pessimism, or needing to recharge.\n\nWatch for a pattern around joy, success, and vitality: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Сонце показує, де урок заблокований або спотворений. Delayed joy, pessimism, or needing to recharge.\n\nСтережись патерну навколо радість, успіх, and життєва сила: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_20",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 20,
+    "name": {
+      "en": "Judgement",
+      "uk": "Суд"
+    },
+    "slug": "judgement",
+    "file": "majorArcana/Judgement.png",
+    "keywords": {
+      "en": [
+        "awakening",
+        "forgiveness",
+        "calling"
+      ],
+      "uk": [
+        "пробудження",
+        "прощення",
+        "поклик"
+      ]
+    },
+    "synopsis": {
+      "en": "Awakening, calling, reflection, rebirth.",
+      "uk": "Пробудження, поклик, переосмислення, відродження."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A wake-up call—review, forgive, and step into your purpose.",
+        "uk": "Пробудження — переоцінка, прощення і крок у покликання."
+      },
+      "reversed": {
+        "en": "Harsh self-judgment or refusing to answer the call.",
+        "uk": "Жорстка самокритика або відмова почути «поклик»."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A wake-up call—review, forgive, and step into your purpose.",
+          "uk": "Пробудження — переоцінка, прощення і крок у покликання."
+        },
+        "reversed": {
+          "en": "Harsh self-judgment or refusing to answer the call.",
+          "uk": "Жорстка самокритика або відмова почути «поклик»."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XX",
+    "description": {
+      "upright": {
+        "en": "Judgement points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. A wake-up call—review, forgive, and step into your purpose.\n\nNotice the themes of awakening, forgiveness, and calling in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Суд підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. A wake-up call—review, forgive, and step into your purpose.\n\nПомічай теми пробудження, прощення, and поклик у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, Judgement shows where the lesson is blocked or distorted. Harsh self-judgment or refusing to answer the call.\n\nWatch for a pattern around awakening, forgiveness, and calling: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Суд показує, де урок заблокований або спотворений. Harsh self-judgment or refusing to answer the call.\n\nСтережись патерну навколо пробудження, прощення, and поклик: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  },
+  {
+    "id": "major_21",
+    "arcana": "major",
+    "suit": "major",
+    "rank": 21,
+    "name": {
+      "en": "The World",
+      "uk": "Світ"
+    },
+    "slug": "the-world",
+    "file": "majorArcana/TheWorld.png",
+    "keywords": {
+      "en": [
+        "completion",
+        "integration",
+        "milestone"
+      ],
+      "uk": [
+        "завершення",
+        "цілісність",
+        "етап"
+      ]
+    },
+    "synopsis": {
+      "en": "Completion, integration, achievement, travel.",
+      "uk": "Завершення циклу, цілісність, досягнення, подорожі."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Completion and wholeness—celebrate a milestone and level up.",
+        "uk": "Завершення й цілісність — святкуй етап і переходь на новий рівень."
+      },
+      "reversed": {
+        "en": "Loose ends, delays, or not recognizing progress.",
+        "uk": "Незавершені справи, затримки або недооцінка прогресу."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Completion and wholeness—celebrate a milestone and level up.",
+          "uk": "Завершення й цілісність — святкуй етап і переходь на новий рівень."
+        },
+        "reversed": {
+          "en": "Loose ends, delays, or not recognizing progress.",
+          "uk": "Незавершені справи, затримки або недооцінка прогресу."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "numeral": "XXI",
+    "description": {
+      "upright": {
+        "en": "The World points you toward a meaningful life lesson that can be applied today—not as theory, but as practice. Completion and wholeness—celebrate a milestone and level up.\n\nNotice the themes of completion, integration, and milestone in your day. Choose one clear action that matches the card’s message: set a boundary, make an honest decision, add structure, or ask for guidance. Small alignment creates big clarity.\n\nInstead of chasing certainty, commit to what you value. When your intention is clean, your next step becomes obvious.",
+        "uk": "Світ підсвічує змістовний життєвий урок, який сьогодні можна застосувати не як теорію, а як практику. Completion and wholeness—celebrate a milestone and level up.\n\nПомічай теми завершення, цілісність, and етап у своєму дні. Обери одну чітку дію, що відповідає посланню карти: встанови межу, прийми чесне рішення, додай структуру або попроси настанови. Маленьке узгодження дає велику ясність.\n\nЗамість гнатися за 100% певністю — тримайся цінностей. Коли намір чистий, наступний крок стає очевидним."
+      },
+      "reversed": {
+        "en": "Reversed, The World shows where the lesson is blocked or distorted. Loose ends, delays, or not recognizing progress.\n\nWatch for a pattern around completion, integration, and milestone: forcing outcomes, avoiding the truth, or repeating an old story. Pick one correction—slow down, simplify, and return to a steadier approach.\n\nDon’t aim for perfection. Aim for honesty and a cleaner path forward.",
+        "uk": "У перевернутому положенні Світ показує, де урок заблокований або спотворений. Loose ends, delays, or not recognizing progress.\n\nСтережись патерну навколо завершення, цілісність, and етап: означення силою, уникання правди або повторення старого сценарію. Зроби одну корекцію — сповільнись, спростіть і повернись до стабільнішого підходу.\n\nНе прагни ідеальності. Прагни чесності й чистішого руху вперед."
+      }
+    }
+  }
+]

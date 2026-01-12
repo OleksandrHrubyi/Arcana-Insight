@@ -1,0 +1,1042 @@
+[
+  {
+    "id": "minor_pentacles_01",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "rank": 1,
+    "name": {
+      "en": "Ace of Pentacles",
+      "uk": "Туз Пентаклів"
+    },
+    "slug": "ace-of-pentacles",
+    "file": "pentacles/AceOfPentacles.png",
+    "keywords": {
+      "en": [
+        "new",
+        "potential",
+        "spark",
+        "money",
+        "work",
+        "stability"
+      ],
+      "uk": [
+        "нове",
+        "потенціал",
+        "іскра",
+        "гроші",
+        "праця",
+        "стабільність"
+      ]
+    },
+    "synopsis": {
+      "en": "A tangible opportunity; new job/money/health start.",
+      "uk": "Матеріальна можливість; новий старт у роботі/грошах/здоров’ї."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A fresh start and pure potential in work, money, body, stability.",
+        "uk": "Новий старт і чистий потенціал у сфері: праця, гроші, тіло, стабільність."
+      },
+      "reversed": {
+        "en": "Blocked potential, delays, or missed chances in work, money, body, stability.",
+        "uk": "Потенціал заблокований, затримки або втрачені шанси у сфері: праця, гроші, тіло, стабільність."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A fresh start and pure potential in work, money, body, stability.",
+          "uk": "Новий старт і чистий потенціал у сфері: праця, гроші, тіло, стабільність."
+        },
+        "reversed": {
+          "en": "Blocked potential, delays, or missed chances in work, money, body, stability.",
+          "uk": "Потенціал заблокований, затримки або втрачені шанси у сфері: праця, гроші, тіло, стабільність."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. An Ace is a seed—pure potential. It asks you to notice the first spark and give it space to grow.\n\nIn your situation, this can look like: A fresh start and pure potential in work, money, body, stability. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Туз — це насінина, чистий потенціал. Помічай перший імпульс і дай йому простір вирости.\n\nУ твоїй ситуації це може виглядати так: A fresh start and pure potential in work, money, body, stability. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Reversed, the seed is blocked: hesitation, distraction, or energy leaking into the wrong place.\n\nThis may show up as: Blocked potential, delays, or missed chances in work, money, body, stability. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. У перевернутому положенні насінина заблокована: вагання, відволікання або витік енергії не туди.\n\nЦе може проявитися як: Blocked potential, delays, or missed chances in work, money, body, stability. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_pentacles_02",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "rank": 2,
+    "name": {
+      "en": "Two of Pentacles",
+      "uk": "Двійка Пентаклів"
+    },
+    "slug": "two-of-pentacles",
+    "file": "pentacles/TwoOfPentacles.png",
+    "keywords": {
+      "en": [
+        "choice",
+        "balance",
+        "planning",
+        "money",
+        "work",
+        "stability"
+      ],
+      "uk": [
+        "вибір",
+        "баланс",
+        "планування",
+        "гроші",
+        "праця",
+        "стабільність"
+      ]
+    },
+    "synopsis": {
+      "en": "Juggling priorities; adapt and keep balance.",
+      "uk": "Балансувати справи; гнучкість і пріоритети."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Choices and balance; plan your next step in work, money, body, stability.",
+        "uk": "Вибір і баланс; сплануй наступний крок у сфері: праця, гроші, тіло, стабільність."
+      },
+      "reversed": {
+        "en": "Indecision, imbalance, or juggling too much in work, money, body, stability.",
+        "uk": "Нерішучість, дисбаланс або «жонглювання» надто багатьом у сфері: праця, гроші, тіло, стабільність."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Choices and balance; plan your next step in work, money, body, stability.",
+          "uk": "Вибір і баланс; сплануй наступний крок у сфері: праця, гроші, тіло, стабільність."
+        },
+        "reversed": {
+          "en": "Indecision, imbalance, or juggling too much in work, money, body, stability.",
+          "uk": "Нерішучість, дисбаланс або «жонглювання» надто багатьом у сфері: праця, гроші, тіло, стабільність."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Two is choice and balance. It’s about holding two options and deciding what you’re willing to commit to.\n\nIn your situation, this can look like: Choices and balance; plan your next step in work, money, body, stability. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Двійка — це вибір і баланс. Ти тримаєш два варіанти й вирішуєш, у що готовий вкладатися.\n\nУ твоїй ситуації це може виглядати так: Choices and balance; plan your next step in work, money, body, stability. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Reversed, the balance wobbles: indecision, mixed signals, or avoiding a necessary choice.\n\nThis may show up as: Indecision, imbalance, or juggling too much in work, money, body, stability. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Перевернуто — баланс хитається: нерішучість, двозначність або уникання потрібного вибору.\n\nЦе може проявитися як: Indecision, imbalance, or juggling too much in work, money, body, stability. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_pentacles_03",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "rank": 3,
+    "name": {
+      "en": "Three of Pentacles",
+      "uk": "Трійка Пентаклів"
+    },
+    "slug": "three-of-pentacles",
+    "file": "pentacles/ThreeOfPentacles.png",
+    "keywords": {
+      "en": [
+        "craft",
+        "teamwork",
+        "skill"
+      ],
+      "uk": [
+        "ремесло",
+        "командність",
+        "навичка"
+      ]
+    },
+    "synopsis": {
+      "en": "Teamwork, craftsmanship, being valued for skill.",
+      "uk": "Командна робота, майстерність, визнання навичок."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Skill and teamwork; good work is recognized.",
+        "uk": "Навичка й командність; твою роботу помічають і цінують."
+      },
+      "reversed": {
+        "en": "Miscommunication, lack of planning, or uneven effort.",
+        "uk": "Непорозуміння, слабке планування або нерівний внесок."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Skill and teamwork; good work is recognized.",
+          "uk": "Навичка й командність; твою роботу помічають і цінують."
+        },
+        "reversed": {
+          "en": "Miscommunication, lack of planning, or uneven effort.",
+          "uk": "Непорозуміння, слабке планування або нерівний внесок."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Three is growth through connection—support, collaboration, and the first visible results.\n\nIn your situation, this can look like: Skill and teamwork; good work is recognized. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Трійка — це зростання через взаємодію: підтримка, співпраця й перші видимі результати.\n\nУ твоїй ситуації це може виглядати так: Skill and teamwork; good work is recognized. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Reversed, collaboration strains: miscommunication, comparison, or delays that need a new approach.\n\nThis may show up as: Miscommunication, lack of planning, or uneven effort. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Перевернуто — напруга у взаємодії: непорозуміння, порівняння або затримки, що потребують іншого підходу.\n\nЦе може проявитися як: Miscommunication, lack of planning, or uneven effort. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_pentacles_04",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "rank": 4,
+    "name": {
+      "en": "Four of Pentacles",
+      "uk": "Четвірка Пентаклів"
+    },
+    "slug": "four-of-pentacles",
+    "file": "pentacles/FourOfPentacles.png",
+    "keywords": {
+      "en": [
+        "security",
+        "control",
+        "boundaries"
+      ],
+      "uk": [
+        "безпека",
+        "контроль",
+        "межі"
+      ]
+    },
+    "synopsis": {
+      "en": "Holding on; security vs. fear of loss.",
+      "uk": "Триматися; безпека vs страх втрат."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Holding tight—security, saving, strong boundaries.",
+        "uk": "Тримати міцно — безпека, заощадження, жорсткі межі."
+      },
+      "reversed": {
+        "en": "Letting go, generosity, or fear of loss easing.",
+        "uk": "Відпускання, щедрість або менший страх втрати."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Holding tight—security, saving, strong boundaries.",
+          "uk": "Тримати міцно — безпека, заощадження, жорсткі межі."
+        },
+        "reversed": {
+          "en": "Letting go, generosity, or fear of loss easing.",
+          "uk": "Відпускання, щедрість або менший страх втрати."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Four is structure and stability. It helps you create a base: rest, boundaries, and a reliable plan.\n\nIn your situation, this can look like: Holding tight—security, saving, strong boundaries. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Четвірка — це структура й опора. Вона допомагає створити базу: відпочинок, межі, надійний план.\n\nУ твоїй ситуації це може виглядати так: Holding tight—security, saving, strong boundaries. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Reversed, stability becomes rigidity or the base is missing: rest is ignored, boundaries collapse, or plans are chaotic.\n\nThis may show up as: Letting go, generosity, or fear of loss easing. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Перевернуто — або жорсткість, або відсутність опори: відпочинок ігнорується, межі руйнуються, плани хаотичні.\n\nЦе може проявитися як: Letting go, generosity, or fear of loss easing. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_pentacles_05",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "rank": 5,
+    "name": {
+      "en": "Five of Pentacles",
+      "uk": "Пʼятірка Пентаклів"
+    },
+    "slug": "five-of-pentacles",
+    "file": "pentacles/FiveOfPentacles.png",
+    "keywords": {
+      "en": [
+        "hardship",
+        "support",
+        "resources"
+      ],
+      "uk": [
+        "скрута",
+        "підтримка",
+        "ресурси"
+      ]
+    },
+    "synopsis": {
+      "en": "Hardship; ask for support and keep hope.",
+      "uk": "Скрута; проси підтримку і не втрачай надію."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Hardship or lack—seek support and practical help.",
+        "uk": "Скрута або нестача — шукай підтримку й практичну допомогу."
+      },
+      "reversed": {
+        "en": "Recovery, assistance, and rebuilding stability.",
+        "uk": "Відновлення, допомога і повернення стабільності."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Hardship or lack—seek support and practical help.",
+          "uk": "Скрута або нестача — шукай підтримку й практичну допомогу."
+        },
+        "reversed": {
+          "en": "Recovery, assistance, and rebuilding stability.",
+          "uk": "Відновлення, допомога і повернення стабільності."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Five brings tension and change that push growth. It’s a challenge that reveals what matters most.\n\nIn your situation, this can look like: Hardship or lack—seek support and practical help. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. П’ятірка приносить напругу й зміни, які штовхають до росту. Це виклик, що показує найважливіше.\n\nУ твоїй ситуації це може виглядати так: Hardship or lack—seek support and practical help. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Reversed, the lesson is avoided: conflict repeats, resistance grows, or the change is postponed.\n\nThis may show up as: Recovery, assistance, and rebuilding stability. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Перевернуто — урок уникається: конфлікт повторюється, опір зростає або зміни відкладаються.\n\nЦе може проявитися як: Recovery, assistance, and rebuilding stability. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_pentacles_06",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "rank": 6,
+    "name": {
+      "en": "Six of Pentacles",
+      "uk": "Шістка Пентаклів"
+    },
+    "slug": "six-of-pentacles",
+    "file": "pentacles/SixOfPentacles.png",
+    "keywords": {
+      "en": [
+        "harmony",
+        "progress",
+        "support",
+        "money",
+        "work",
+        "stability"
+      ],
+      "uk": [
+        "гармонія",
+        "прогрес",
+        "підтримка",
+        "гроші",
+        "праця",
+        "стабільність"
+      ]
+    },
+    "synopsis": {
+      "en": "Giving and receiving; generosity and fairness.",
+      "uk": "Давати й отримувати; щедрість і справедливість."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Support and forward movement; things improve in work, money, body, stability.",
+        "uk": "Підтримка й рух уперед; стає краще у сфері: праця, гроші, тіло, стабільність."
+      },
+      "reversed": {
+        "en": "Delayed progress or needing help to move on in work, money, body, stability.",
+        "uk": "Затримка прогресу або потреба в допомозі, щоб рушити далі у сфері: праця, гроші, тіло, стабільність."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Support and forward movement; things improve in work, money, body, stability.",
+          "uk": "Підтримка й рух уперед; стає краще у сфері: праця, гроші, тіло, стабільність."
+        },
+        "reversed": {
+          "en": "Delayed progress or needing help to move on in work, money, body, stability.",
+          "uk": "Затримка прогресу або потреба в допомозі, щоб рушити далі у сфері: праця, гроші, тіло, стабільність."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Six restores harmony—support, progress, and learning from what you’ve been through.\n\nIn your situation, this can look like: Support and forward movement; things improve in work, money, body, stability. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Шістка повертає гармонію: підтримка, прогрес і користь з пережитого досвіду.\n\nУ твоїй ситуації це може виглядати так: Support and forward movement; things improve in work, money, body, stability. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Reversed, the past pulls you back or the path feels uneven: nostalgia, doubt, or slow progress.\n\nThis may show up as: Delayed progress or needing help to move on in work, money, body, stability. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Перевернуто — минуле тягне назад або шлях нерівний: ностальгія, сумніви чи повільний рух.\n\nЦе може проявитися як: Delayed progress or needing help to move on in work, money, body, stability. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_pentacles_07",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "rank": 7,
+    "name": {
+      "en": "Seven of Pentacles",
+      "uk": "Сімка Пентаклів"
+    },
+    "slug": "seven-of-pentacles",
+    "file": "pentacles/SevenOfPentacles.png",
+    "keywords": {
+      "en": [
+        "strategy",
+        "faith",
+        "tests",
+        "money",
+        "work",
+        "stability"
+      ],
+      "uk": [
+        "стратегія",
+        "віра",
+        "випробування",
+        "гроші",
+        "праця",
+        "стабільність"
+      ]
+    },
+    "synopsis": {
+      "en": "Patience; long-term investment and assessment.",
+      "uk": "Терпіння; оцінка довгострокових вкладень."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A challenge to your plan—stay strategic and trust yourself in work, money, body, stability.",
+        "uk": "Виклик твоєму плану — тримай стратегію й вір у себе у сфері: праця, гроші, тіло, стабільність."
+      },
+      "reversed": {
+        "en": "Giving up too soon or losing focus in work, money, body, stability.",
+        "uk": "Здатися занадто рано або втратити фокус у сфері: праця, гроші, тіло, стабільність."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A challenge to your plan—stay strategic and trust yourself in work, money, body, stability.",
+          "uk": "Виклик твоєму плану — тримай стратегію й вір у себе у сфері: праця, гроші, тіло, стабільність."
+        },
+        "reversed": {
+          "en": "Giving up too soon or losing focus in work, money, body, stability.",
+          "uk": "Здатися занадто рано або втратити фокус у сфері: праця, гроші, тіло, стабільність."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Seven tests focus and integrity. It asks for discernment: what is real, what is noise, and what is worth it.\n\nIn your situation, this can look like: A challenge to your plan—stay strategic and trust yourself in work, money, body, stability. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Сімка перевіряє фокус і цілісність. Потрібна розбірливість: що реальне, що шум і що справді варте зусиль.\n\nУ твоїй ситуації це може виглядати так: A challenge to your plan—stay strategic and trust yourself in work, money, body, stability. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Reversed, you may feel scattered: too many options, weak boundaries, or giving up too soon.\n\nThis may show up as: Giving up too soon or losing focus in work, money, body, stability. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Перевернуто — розпорошення: забагато варіантів, слабкі межі або передчасна здача.\n\nЦе може проявитися як: Giving up too soon or losing focus in work, money, body, stability. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_pentacles_08",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "rank": 8,
+    "name": {
+      "en": "Eight of Pentacles",
+      "uk": "Вісімка Пентаклів"
+    },
+    "slug": "eight-of-pentacles",
+    "file": "pentacles/EightOfPentacles.png",
+    "keywords": {
+      "en": [
+        "movement",
+        "practice",
+        "momentum",
+        "money",
+        "work",
+        "stability"
+      ],
+      "uk": [
+        "рух",
+        "практика",
+        "імпульс",
+        "гроші",
+        "праця",
+        "стабільність"
+      ]
+    },
+    "synopsis": {
+      "en": "Learning, practice, improving your craft.",
+      "uk": "Навчання, практика, прокачка майстерності."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Momentum and mastery grow through action in work, money, body, stability.",
+        "uk": "Імпульс і майстерність ростуть через дію у сфері: праця, гроші, тіло, стабільність."
+      },
+      "reversed": {
+        "en": "Scattered effort, impatience, or burnout in work, money, body, stability.",
+        "uk": "Розсіяні зусилля, нетерплячість або вигорання у сфері: праця, гроші, тіло, стабільність."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Momentum and mastery grow through action in work, money, body, stability.",
+          "uk": "Імпульс і майстерність ростуть через дію у сфері: праця, гроші, тіло, стабільність."
+        },
+        "reversed": {
+          "en": "Scattered effort, impatience, or burnout in work, money, body, stability.",
+          "uk": "Розсіяні зусилля, нетерплячість або вигорання у сфері: праця, гроші, тіло, стабільність."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Eight is movement and mastery—practice, momentum, and small steps that compound.\n\nIn your situation, this can look like: Momentum and mastery grow through action in work, money, body, stability. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Вісімка — це рух і майстерність: практика, темп і маленькі кроки, що накопичуються.\n\nУ твоїй ситуації це може виглядати так: Momentum and mastery grow through action in work, money, body, stability. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Reversed, energy stalls: procrastination, scattered effort, or pushing without a plan.\n\nThis may show up as: Scattered effort, impatience, or burnout in work, money, body, stability. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Перевернуто — застій: прокрастинація, розпорошені зусилля або тиск без плану.\n\nЦе може проявитися як: Scattered effort, impatience, or burnout in work, money, body, stability. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_pentacles_09",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "rank": 9,
+    "name": {
+      "en": "Nine of Pentacles",
+      "uk": "Девʼятка Пентаклів"
+    },
+    "slug": "nine-of-pentacles",
+    "file": "pentacles/NineOfPentacles.png",
+    "keywords": {
+      "en": [
+        "independence",
+        "comfort",
+        "reward"
+      ],
+      "uk": [
+        "незалежність",
+        "комфорт",
+        "нагорода"
+      ]
+    },
+    "synopsis": {
+      "en": "Independence, comfort, enjoying results.",
+      "uk": "Самостійність, комфорт, насолода результатом."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Independence and reward; enjoy what you’ve built.",
+        "uk": "Незалежність і нагорода; насолоджуйся тим, що збудував."
+      },
+      "reversed": {
+        "en": "Dependence, overspending, or valuing status over peace.",
+        "uk": "Залежність, марнотратство або гонитва за статусом."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Independence and reward; enjoy what you’ve built.",
+          "uk": "Незалежність і нагорода; насолоджуйся тим, що збудував."
+        },
+        "reversed": {
+          "en": "Dependence, overspending, or valuing status over peace.",
+          "uk": "Залежність, марнотратство або гонитва за статусом."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Nine is near completion—resilience, self-reliance, and protecting what you’ve built.\n\nIn your situation, this can look like: Independence and reward; enjoy what you’ve built. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Дев’ятка — майже фініш: витривалість, самодостатність і захист того, що ти збудував.\n\nУ твоїй ситуації це може виглядати так: Independence and reward; enjoy what you’ve built. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Reversed, fatigue shows up: defensiveness, discouragement, or forgetting to ask for help.\n\nThis may show up as: Dependence, overspending, or valuing status over peace. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Перевернуто — ознаки втоми: захисна позиція, зневіра або небажання просити підтримку.\n\nЦе може проявитися як: Dependence, overspending, or valuing status over peace. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_pentacles_10",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "rank": 10,
+    "name": {
+      "en": "Ten of Pentacles",
+      "uk": "Десятка Пентаклів"
+    },
+    "slug": "ten-of-pentacles",
+    "file": "pentacles/TenOfPentacles.png",
+    "keywords": {
+      "en": [
+        "completion",
+        "results",
+        "burden",
+        "money",
+        "work",
+        "stability"
+      ],
+      "uk": [
+        "завершення",
+        "підсумок",
+        "тягар",
+        "гроші",
+        "праця",
+        "стабільність"
+      ]
+    },
+    "synopsis": {
+      "en": "Legacy, family wealth, long-term stability.",
+      "uk": "Спадок, достаток, довгострокова стабільність."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A full cycle—results are here; carry it to completion in work, money, body, stability.",
+        "uk": "Повний цикл — підсумок уже тут; доведи до завершення у сфері: праця, гроші, тіло, стабільність."
+      },
+      "reversed": {
+        "en": "Overload, endings delayed, or needing to release in work, money, body, stability.",
+        "uk": "Перевантаження, затримані фінали або потреба відпустити у сфері: праця, гроші, тіло, стабільність."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A full cycle—results are here; carry it to completion in work, money, body, stability.",
+          "uk": "Повний цикл — підсумок уже тут; доведи до завершення у сфері: праця, гроші, тіло, стабільність."
+        },
+        "reversed": {
+          "en": "Overload, endings delayed, or needing to release in work, money, body, stability.",
+          "uk": "Перевантаження, затримані фінали або потреба відпустити у сфері: праця, гроші, тіло, стабільність."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Ten is culmination: outcomes, legacy, and the full weight (or joy) of what you created.\n\nIn your situation, this can look like: A full cycle—results are here; carry it to completion in work, money, body, stability. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Десятка — завершення: результат, «вага» зробленого й підсумок циклу.\n\nУ твоїй ситуації це може виглядати так: A full cycle—results are here; carry it to completion in work, money, body, stability. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Reversed, the load is too heavy or the ending is messy: simplify, share responsibility, and close the cycle cleanly.\n\nThis may show up as: Overload, endings delayed, or needing to release in work, money, body, stability. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Перевернуто — надмірне навантаження або хаотичне завершення: спрощуй, діли відповідальність і закривай цикл чисто.\n\nЦе може проявитися як: Overload, endings delayed, or needing to release in work, money, body, stability. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_pentacles_11",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "rank": "page",
+    "name": {
+      "en": "Page of Pentacles",
+      "uk": "Паж Пентаклів"
+    },
+    "slug": "page-of-pentacles",
+    "file": "pentacles/PageOfPentacles.png",
+    "keywords": {
+      "en": [
+        "curiosity",
+        "message",
+        "learning",
+        "money",
+        "work",
+        "stability"
+      ],
+      "uk": [
+        "цікавість",
+        "звістка",
+        "навчання",
+        "гроші",
+        "праця",
+        "стабільність"
+      ]
+    },
+    "synopsis": {
+      "en": "Curiosity, learning, messages; a fresh approach to work, money, body, stability.",
+      "uk": "Допитливість, навчання, новини; свіжий підхід до: робота, гроші, тіло, стабільність."
+    },
+    "meaning": {
+      "upright": {
+        "en": "A message or new curiosity; learn and explore in work, money, body, stability.",
+        "uk": "Звістка або нова цікавість; вчись і досліджуй у сфері: праця, гроші, тіло, стабільність."
+      },
+      "reversed": {
+        "en": "Immaturity, mixed signals, or lack of follow-through in work, money, body, stability.",
+        "uk": "Незрілість, змішані сигнали або брак наполегливості у сфері: праця, гроші, тіло, стабільність."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "A message or new curiosity; learn and explore in work, money, body, stability.",
+          "uk": "Звістка або нова цікавість; вчись і досліджуй у сфері: праця, гроші, тіло, стабільність."
+        },
+        "reversed": {
+          "en": "Immaturity, mixed signals, or lack of follow-through in work, money, body, stability.",
+          "uk": "Незрілість, змішані сигнали або брак наполегливості у сфері: праця, гроші, тіло, стабільність."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. The Page is curiosity and learning—new messages, new skills, and beginner’s mind.\n\nIn your situation, this can look like: A message or new curiosity; learn and explore in work, money, body, stability. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Паж — це цікавість і навчання: новини, нові навички й стан «початківця».\n\nУ твоїй ситуації це може виглядати так: A message or new curiosity; learn and explore in work, money, body, stability. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Reversed, the lesson is resisted: immaturity, inconsistency, or not taking the message seriously.\n\nThis may show up as: Immaturity, mixed signals, or lack of follow-through in work, money, body, stability. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Перевернуто — опір уроку: незрілість, непослідовність або знецінення важливого сигналу.\n\nЦе може проявитися як: Immaturity, mixed signals, or lack of follow-through in work, money, body, stability. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_pentacles_12",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "rank": "knight",
+    "name": {
+      "en": "Knight of Pentacles",
+      "uk": "Лицар Пентаклів"
+    },
+    "slug": "knight-of-pentacles",
+    "file": "pentacles/KnightOfPentacles.png",
+    "keywords": {
+      "en": [
+        "action",
+        "pursuit",
+        "movement",
+        "money",
+        "work",
+        "stability"
+      ],
+      "uk": [
+        "дія",
+        "прагнення",
+        "рух",
+        "гроші",
+        "праця",
+        "стабільність"
+      ]
+    },
+    "synopsis": {
+      "en": "Action and pursuit; moving boldly within work, money, body, stability.",
+      "uk": "Дія й рух уперед; сміливо діяти в темі: робота, гроші, тіло, стабільність."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Active pursuit—move decisively in work, money, body, stability.",
+        "uk": "Активна дія — рухайся рішуче у сфері: праця, гроші, тіло, стабільність."
+      },
+      "reversed": {
+        "en": "Haste, recklessness, or stalled action in work, money, body, stability.",
+        "uk": "Поспіх, необачність або застій дій у сфері: праця, гроші, тіло, стабільність."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Active pursuit—move decisively in work, money, body, stability.",
+          "uk": "Активна дія — рухайся рішуче у сфері: праця, гроші, тіло, стабільність."
+        },
+        "reversed": {
+          "en": "Haste, recklessness, or stalled action in work, money, body, stability.",
+          "uk": "Поспіх, необачність або застій дій у сфері: праця, гроші, тіло, стабільність."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. The Knight is movement and commitment—taking action, pursuing a goal, and staying on course.\n\nIn your situation, this can look like: Active pursuit—move decisively in work, money, body, stability. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Лицар — це рух і відданість: дія, переслідування цілі та здатність тримати курс.\n\nУ твоїй ситуації це може виглядати так: Active pursuit—move decisively in work, money, body, stability. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Reversed, momentum turns reckless or stuck: impulsivity, frustration, or acting without listening.\n\nThis may show up as: Haste, recklessness, or stalled action in work, money, body, stability. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Перевернуто — або надто різко, або застрягло: імпульсивність, фрустрація чи дія без слухання.\n\nЦе може проявитися як: Haste, recklessness, or stalled action in work, money, body, stability. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_pentacles_13",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "rank": "queen",
+    "name": {
+      "en": "Queen of Pentacles",
+      "uk": "Королева Пентаклів"
+    },
+    "slug": "queen-of-pentacles",
+    "file": "pentacles/QueenOfPentacles.png",
+    "keywords": {
+      "en": [
+        "mastery",
+        "care",
+        "intuition",
+        "money",
+        "work",
+        "stability"
+      ],
+      "uk": [
+        "майстерність",
+        "турбота",
+        "інтуїція",
+        "гроші",
+        "праця",
+        "стабільність"
+      ]
+    },
+    "synopsis": {
+      "en": "Mature, receptive mastery; embodying the best of work, money, body, stability.",
+      "uk": "Зріла, м’яка сила; втілення найкращого в: робота, гроші, тіло, стабільність."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Mature, steady influence; embody wisdom in work, money, body, stability.",
+        "uk": "Зріла, стабільна сила; втілюй мудрість у сфері: праця, гроші, тіло, стабільність."
+      },
+      "reversed": {
+        "en": "Insecurity, imbalance, or emotional extremes in work, money, body, stability.",
+        "uk": "Невпевненість, дисбаланс або емоційні крайнощі у сфері: праця, гроші, тіло, стабільність."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Mature, steady influence; embody wisdom in work, money, body, stability.",
+          "uk": "Зріла, стабільна сила; втілюй мудрість у сфері: праця, гроші, тіло, стабільність."
+        },
+        "reversed": {
+          "en": "Insecurity, imbalance, or emotional extremes in work, money, body, stability.",
+          "uk": "Невпевненість, дисбаланс або емоційні крайнощі у сфері: праця, гроші, тіло, стабільність."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. The Queen embodies mature mastery—inner authority, care, and wise boundaries.\n\nIn your situation, this can look like: Mature, steady influence; embody wisdom in work, money, body, stability. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Королева — зріла майстерність: внутрішня опора, турбота й мудрі межі.\n\nУ твоїй ситуації це може виглядати так: Mature, steady influence; embody wisdom in work, money, body, stability. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Reversed, the energy turns inward poorly: insecurity, control, or neglecting your own needs.\n\nThis may show up as: Insecurity, imbalance, or emotional extremes in work, money, body, stability. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Перевернуто — дисбаланс: невпевненість, контроль або ігнорування власних потреб.\n\nЦе може проявитися як: Insecurity, imbalance, or emotional extremes in work, money, body, stability. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  },
+  {
+    "id": "minor_pentacles_14",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "rank": "king",
+    "name": {
+      "en": "King of Pentacles",
+      "uk": "Король Пентаклів"
+    },
+    "slug": "king-of-pentacles",
+    "file": "pentacles/KingOfPentacles.png",
+    "keywords": {
+      "en": [
+        "leadership",
+        "control",
+        "responsibility",
+        "money",
+        "work",
+        "stability"
+      ],
+      "uk": [
+        "лідерство",
+        "контроль",
+        "відповідальність",
+        "гроші",
+        "праця",
+        "стабільність"
+      ]
+    },
+    "synopsis": {
+      "en": "Leadership and control; directing work, money, body, stability with confidence.",
+      "uk": "Лідерство й контроль; керувати темою: робота, гроші, тіло, стабільність впевнено."
+    },
+    "meaning": {
+      "upright": {
+        "en": "Leadership and responsibility; direct work, money, body, stability with maturity.",
+        "uk": "Лідерство й відповідальність; керуй сферою зріло: праця, гроші, тіло, стабільність."
+      },
+      "reversed": {
+        "en": "Dominating, rigid control, or misusing authority in work, money, body, stability.",
+        "uk": "Домінування, жорсткий контроль або зловживання владою у сфері: праця, гроші, тіло, стабільність."
+      }
+    },
+    "themes": {
+      "general": {
+        "upright": {
+          "en": "Leadership and responsibility; direct work, money, body, stability with maturity.",
+          "uk": "Лідерство й відповідальність; керуй сферою зріло: праця, гроші, тіло, стабільність."
+        },
+        "reversed": {
+          "en": "Dominating, rigid control, or misusing authority in work, money, body, stability.",
+          "uk": "Домінування, жорсткий контроль або зловживання владою у сфері: праця, гроші, тіло, стабільність."
+        }
+      }
+    },
+    "ui": {
+      "badge": {
+        "en": "UPR/REV",
+        "uk": "ПРЯМ/ПЕР"
+      },
+      "ctaLabel": {
+        "en": "Reflect",
+        "uk": "Осмислити"
+      }
+    },
+    "description": {
+      "upright": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. The King is leadership and steadiness—responsibility, strategy, and grounded influence.\n\nIn your situation, this can look like: Leadership and responsibility; direct work, money, body, stability with maturity. Let today be simple—name what you want, take one practical step, and follow through.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. If you stay consistent, the message of this card becomes momentum.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Король — це лідерство й стійкість: відповідальність, стратегія й вплив із опорою.\n\nУ твоїй ситуації це може виглядати так: Leadership and responsibility; direct work, money, body, stability with maturity. Нехай день буде простим — назви, чого хочеш, зроби один практичний крок і доведи його до кінця.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. Послідовність перетворює послання цієї карти на реальний рух."
+      },
+      "reversed": {
+        "en": "Pentacles speak of earth—money, work, the body, stability, and practical results. Reversed, leadership becomes rigid or inconsistent: ego, avoidance, or misuse of power.\n\nThis may show up as: Dominating, rigid control, or misusing authority in work, money, body, stability. Reduce noise, choose one priority, and make a small correction instead of forcing a result.\n\nWhen earth is healthy, it supports growth and security; when it gets too heavy, it turns into stubbornness or fear of change. A gentle reset is more powerful than a dramatic push.",
+        "uk": "Пентаклі — це земля: гроші, робота, тіло, стабільність і практичний результат. Перевернуто — жорсткість або непослідовність: его, уникання або зловживання силою.\n\nЦе може проявитися як: Dominating, rigid control, or misusing authority in work, money, body, stability. Прибери зайве, обери один пріоритет і зроби маленьке виправлення замість тиску на результат.\n\nКоли земля здорова — вона підтримує зростання й безпеку; коли стає надто важкою — це впертість або страх змін. М’яке перезавантаження сильніше за різкий ривок."
+      }
+    }
+  }
+]
