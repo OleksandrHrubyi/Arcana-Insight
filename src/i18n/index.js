@@ -13,7 +13,12 @@ export const messages = {
     energy: 'Energy',
     theme: 'Theme',
     shareSubInfo: 'If it resonates — forward it to someone who needs it.',
-
+    tarotCard: 'TAROT CARD',
+    forToday: 'FOR TODAY',
+    choseYourCard: 'Choose your card',
+    openThisCard: 'Open this card?',
+    noTitle: 'No',
+    yesTitle: 'Yes',
     zodiac: {
       aries: 'Aries',
       taurus: 'Taurus',
@@ -77,7 +82,12 @@ export const messages = {
     energy: 'Енергія',
     theme: 'Тема',
     shareSubInfo: 'Якщо відгукнулося — перешли тому, кому це потрібно',
-
+    tarotCard: 'КАРТА ТАРО',
+    forToday: 'НА СЬОГОДНІ',
+    choseYourCard: 'Обери свою карту',
+    openThisCard: 'Відкрити цю карту?',
+    noTitle: 'Ні',
+    yesTitle: 'Так',
     zodiac: {
       aries: 'Овен',
       taurus: 'Телець',

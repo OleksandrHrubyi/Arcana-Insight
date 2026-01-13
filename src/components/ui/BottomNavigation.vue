@@ -31,8 +31,15 @@ export default {
 
   mounted() {
     const saved = localStorage.getItem('locale');
+    this.current = this.$route?.name || 'arcana';
     if (saved === 'uk' || saved === 'en') {
       this.selectedLocale = saved;
+    }
+  },
+
+  watch:{
+    '$route.name'(val){
+      this.current = val
     }
   },
 
@@ -71,7 +78,7 @@ export default {
 <style scoped>
 /* прозорий фон футера, нічого зайвого */
 .telegram-footer {
-  background: #0B131B;
+  background: transparent;
   box-shadow: none !important;
   border: 0;
   padding-bottom: env(safe-area-inset-bottom);

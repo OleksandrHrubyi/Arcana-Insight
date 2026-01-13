@@ -1,21 +1,21 @@
 <template>
   <div class="tarotPage">
     <header class="title">
-      <div class="t1">TAROT&nbsp;&nbsp;CARD</div>
-      <div class="t2">FOR TODAY</div>
+      <div class="t1">{{ tt('tarotCard')}}</div>
+      <div class="t2">{{ tt('forToday')}} </div>
     </header>
 
     <div
       ref="windowEl"
       class="wheelWindow"
-      :class="{ dealt, dragging, inertia, locked: selectedIndex !== null }"
+      :class="{ dealt, dragging, inertia, locked: pendingIndex !== null }"
       @pointerdown="onDown"
       @pointermove="onMove"
       @pointerup="onUp"
       @pointercancel="onUp"
     >
-      <div class="arc arc--outer"></div>
-      <div class="arc arc--inner"></div>
+<!--      <div class="arc arc&#45;&#45;outer"></div>-->
+<!--      <div class="arc arc&#45;&#45;inner"></div>-->
 
       <div
         v-for="(c, i) in cards"
@@ -23,8 +23,8 @@
         class="card"
         :class="{
           hidden: !getCardMeta(i).visible,
-          disabled: selectedIndex !== null && selectedIndex !== i,
-          picked: selectedIndex === i
+          disabled: pendingIndex !== null && pendingIndex !== i,
+          picked: pendingIndex === i
         }"
         :style="getCardStyle(i)"
         @click="pick(i)"
@@ -36,48 +36,59 @@
     </div>
 
     <div class="chooser">
-      <div class="chevron" />
-      <div class="hint">Choose your card</div>
+      <div class="chevron" :class="{'hidden-chevron': pendingIndex !== null }"/>
+      <div class="hint" v-if="pendingIndex !== null">{{tt('openThisCard')}}</div>
+      <div class="hint" v-else>{{tt('choseYourCard')}}</div>
+
     </div>
 
-    <!-- простий оверлей БЕЗ блюра: клік поза картою = "Ні" -->
-    <div v-if="selectedIndex !== null" class="confirmOverlay" @click="cancelPick"></div>
+    <!-- overlay без blur, для tap-outside = cancel -->
+    <div
+      v-if="pendingIndex !== null"
+      class="confirmOverlay"
+      @click="cancelPick"
+    ></div>
 
-    <!-- Так / Ні -->
-    <div v-if="selectedIndex !== null" class="confirmBar">
-      <div class="confirmText">Open this card?</div>
+    <!-- confirm -->
+    <div v-if="pendingIndex !== null" class="confirmBar">
       <div class="confirmActions">
-        <button class="btn btnNo" @click="cancelPick">Ні</button>
-        <button class="btn btnYes" @click="confirmPick">Так</button>
+        <div class="auth-btn-wrap">
+          <q-btn @click="cancelPick" :label="tt('noTitle')" flat class="auth-btn mono-text" no-caps />
+          <span class="auth-separator">|</span>
+          <q-btn @click="confirmPick" :label="tt('yesTitle')" flat class="auth-btn mono-text" no-caps />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { Haptics } from '@capacitor/haptics';
+import { Haptics } from "@capacitor/haptics";
+import { t } from 'src/i18n/index.js';
+import tarotData from "../../../src/data/cardsV2/tarot_full.json";
 
 export default {
-  name: 'TarotPage',
+  name: "TarotPage",
   data() {
-    const COUNT = 72;
     return {
-      COUNT,
-      cards: Array.from({ length: COUNT }, (_, i) => ({ id: i + 1 })),
-
+      tarotData,
+      cards: tarotData.cards || [],
       fanDeg: 90, // 80..110
 
+      // geometry
       centerX: 0,
-      centerY: 0,
+      centerY: 0, // "лінія" де стоїть НИЗ карт
       radius: 280,
       cardW: 56,
 
+      // rotation
       rotation: -18,
       dealt: false,
 
-      selectedIndex: null,
-      pickedCardId: null,
+      // selection (confirm)
+      pendingIndex: null,
 
+      // drag/inertia
       dragging: false,
       inertia: false,
       pointerId: null,
@@ -88,23 +99,41 @@ export default {
       vel: 0,
       raf: 0,
 
+      // haptic
       hapticActive: false,
       lastTickIndex: null,
       lastTickAt: 0,
+      selectedLocale: 'uk',
     };
   },
   computed: {
+    COUNT() {
+      return this.cards.length || 72;
+    },
     cardH() {
       return Math.round(this.cardW * 1.55);
     },
     stepDeg() {
       return 360 / this.COUNT;
     },
+    pendingCard() {
+      if (this.pendingIndex == null) return null;
+      return this.cards[this.pendingIndex] || null;
+    },
+    tt() {
+      return (key) => t(this.selectedLocale, key);
+    },
   },
   mounted() {
+    const saved = localStorage.getItem('locale');
+    if (saved === 'uk' || saved === 'en') {
+      this.selectedLocale = saved;
+    }
     this.computeGeometry();
+
     this._ro = new ResizeObserver(() => this.computeGeometry());
     this._ro.observe(this.$refs.windowEl);
+
     requestAnimationFrame(() => requestAnimationFrame(() => this.startDeal()));
   },
   beforeUnmount() {
@@ -127,6 +156,7 @@ export default {
       const w = el.clientWidth;
       const h = el.clientHeight;
 
+      // ширші карти
       this.cardW = Math.max(52, Math.min(86, Math.round(w * 0.16)));
       this.centerX = w / 2;
 
@@ -138,7 +168,7 @@ export default {
 
     getCardMeta(i) {
       const thetaDeg = this.normalizeDeg(i * this.stepDeg + this.rotation);
-      const theta = thetaDeg * Math.PI / 180;
+      const theta = (thetaDeg * Math.PI) / 160;
 
       const visible = Math.abs(thetaDeg) <= this.fanDeg / 2;
       const depth = Math.cos(theta);
@@ -152,36 +182,33 @@ export default {
       const x = this.centerX + this.radius * Math.sin(theta);
       const y = this.centerY + this.radius * (Math.cos(theta) - 1);
 
+      // поворот "навпаки"
       const rot = -thetaDeg * 0.6;
 
       const z = 3000 - Math.round(Math.abs(thetaDeg) * 20);
-      const delay = (i * 18) + 'ms';
+      const delay = i * 18 + "ms";
 
       return {
-        width: this.cardW + 'px',
-        height: this.cardH + 'px',
+        width: this.cardW + "px",
+        height: this.cardH + "px",
 
-        '--x': (x - this.centerX) + 'px',
-        '--y': (y - this.centerY) + 'px',
-        '--rot': rot + 'deg',
-        '--delay': delay,
+        "--x": x - this.centerX + "px",
+        "--y": y - this.centerY + "px",
+        "--rot": rot + "deg",
+        "--delay": delay,
 
-        // для “витягування” карти вниз при виборі
-        '--pop': '0px',
-        '--scale': '1',
+        left: this.centerX + "px",
+        top: this.centerY + "px",
 
-        left: this.centerX + 'px',
-        top: this.centerY + 'px',
-        zIndex: this.selectedIndex === i ? 9999 : z,
+        zIndex: this.pendingIndex === i ? 9999 : z,
         opacity: 1,
-        pointerEvents: visible ? 'auto' : 'none',
+        pointerEvents: visible ? "auto" : "none"
       };
     },
 
     startDeal() {
       this.dealt = false;
-      this.selectedIndex = null;
-      this.pickedCardId = null;
+      this.pendingIndex = null;
 
       clearTimeout(this._dealTimer);
       this._dealTimer = setTimeout(() => {
@@ -189,34 +216,33 @@ export default {
       }, 2400);
     },
 
+    // ===== selection confirm =====
     pick(i) {
       if (!this.dealt) return;
+      if (this.pendingIndex !== null) return;
+
       const meta = this.getCardMeta(i);
       if (!meta.visible) return;
-      if (this.selectedIndex !== null) return;
 
-      this.selectedIndex = i;
-      this.pickedCardId = this.cards[i].id;
-
-      Haptics.selectionChanged().catch(() => {
-      });
+      this.pendingIndex = i;
+      Haptics.selectionChanged().catch(() => {});
     },
 
     cancelPick() {
-      this.selectedIndex = null;
-      this.pickedCardId = null;
-      Haptics.selectionChanged().catch(() => {
-      });
+      this.pendingIndex = null;
+      Haptics.selectionChanged().catch(() => {});
     },
 
     confirmPick() {
-      if (this.pickedCardId == null) return;
+      const card = this.pendingCard;
+      if (!card) return;
 
-      Haptics.selectionChanged().catch(() => {
-      });
+      Haptics.selectionChanged().catch(() => {});
+
+      // ✅ головне: передаємо id з JSON
       this.$router.push({
-        name: 'TarotResult',
-        params: { id: this.pickedCardId },
+        name: "TarotResult",
+        params: { id: card.id }
       });
     },
 
@@ -230,8 +256,7 @@ export default {
     hapticStart() {
       if (this.hapticActive) return;
       this.hapticActive = true;
-      Haptics.selectionStart().catch(() => {
-      });
+      Haptics.selectionStart().catch(() => {});
       this.lastTickIndex = this.currentTickIndex();
       this.lastTickAt = performance.now();
     },
@@ -246,14 +271,12 @@ export default {
 
       this.lastTickIndex = idx;
       this.lastTickAt = now;
-      Haptics.selectionChanged().catch(() => {
-      });
+      Haptics.selectionChanged().catch(() => {});
     },
     hapticEnd() {
       if (!this.hapticActive) return;
       this.hapticActive = false;
-      Haptics.selectionEnd().catch(() => {
-      });
+      Haptics.selectionEnd().catch(() => {});
     },
 
     stopInertia() {
@@ -266,7 +289,7 @@ export default {
 
     onDown(e) {
       if (!this.dealt) return;
-      if (this.selectedIndex !== null) return;
+      if (this.pendingIndex !== null) return;
 
       this.stopInertia();
 
@@ -292,7 +315,6 @@ export default {
       const k = 0.22;
 
       this.rotation = this.startRot + dx * k;
-
       this.hapticTickIfNeeded();
 
       const now = performance.now();
@@ -328,57 +350,50 @@ export default {
       };
 
       this.raf = requestAnimationFrame(tick);
-    },
-  },
+    }
+  }
 };
 </script>
 
 <style scoped>
-.tarotPage {
+.tarotPage{
   height: 100vh;
-  background: #0B131B;
+  background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
   color: #eaf2ff;
   overflow: hidden;
   position: relative;
 }
 
-.title {
+.title{
   padding-top: 62px;
   text-align: center;
   letter-spacing: 0.22em;
   font-weight: 500;
   opacity: 0.95;
 }
+.t1{ font-size: 14px; }
+.t2{ font-size: 12px; margin-top: 6px; }
 
-.t1 {
-  font-size: 14px;
-}
-
-.t2 {
-  font-size: 12px;
-  margin-top: 6px;
-}
-
-.wheelWindow {
+.wheelWindow{
   position: relative;
   width: 100%;
-  height: 360px;
+  height: 440px;
   margin-top: 60px;
   overflow: hidden;
   user-select: none;
   touch-action: none;
 }
 
-/* заблокувати саме колесо при виборі */
-.wheelWindow.locked {
+/* блокуємо колесо при confirm */
+.wheelWindow.locked{
   pointer-events: none;
 }
-
-.wheelWindow.locked .picked {
+.wheelWindow.locked .picked{
   pointer-events: auto;
 }
 
-.arc {
+/* дуги */
+.arc{
   position: absolute;
   left: 50%;
   top: -210px;
@@ -390,37 +405,31 @@ export default {
   border-top: 1px solid rgba(205, 141, 121, 0.85);
   opacity: 0.9;
 }
+.arc--inner{ top: -198px; opacity: 0.6; }
 
-.arc--inner {
-  top: -198px;
-  opacity: 0.6;
-}
-
-/* АНКОРИМО НИЗ */
-.card {
+/* anchor низ */
+.card{
   position: absolute;
   transform: translate(-50%, -100%);
 }
 
-.cardInner {
+.cardInner{
   width: 100%;
   height: 100%;
   transform-origin: 50% 95%;
   backface-visibility: hidden;
 
-  /* ✅ базовий трансформ + можливість “попа” */
-  transform: translate3d(var(--x), calc(var(--y) + var(--pop, 0px)), 0) rotate(var(--rot)) scale(var(--scale, 1));
-
-  transition: transform 220ms cubic-bezier(0.2, 0.85, 0.2, 1), opacity 160ms ease, filter 160ms ease;
+  transform: translate3d(var(--x), var(--y), 0) rotate(var(--rot));
+  transition: transform 220ms cubic-bezier(0.2,0.85,0.2,1), opacity 160ms ease, filter 160ms ease;
   will-change: transform;
 }
 
 .wheelWindow.dragging .cardInner,
-.wheelWindow.inertia .cardInner {
+.wheelWindow.inertia .cardInner{
   transition: none;
 }
 
-.cardBack {
+.cardBack{
   width: 100%;
   height: 100%;
   background-image: url("/images/cardV1.png");
@@ -430,36 +439,25 @@ export default {
 }
 
 /* стартова “роздача” */
-.wheelWindow:not(.dealt) .cardInner {
-  animation: deal 900ms cubic-bezier(0.2, 0.85, 0.2, 1) forwards;
+.wheelWindow:not(.dealt) .cardInner{
+  animation: deal 900ms cubic-bezier(0.2,0.85,0.2,1) forwards;
   animation-delay: var(--delay);
 }
 
-.hidden {
-  opacity: 0;
+.hidden{ opacity: 0; pointer-events: none; }
+
+/* лише блокуємо кліки на інших (без затемнення) */
+.disabled{
   pointer-events: none;
 }
 
-.disabled {
-  pointer-events: none;
-}
-
-.dimmed .cardInner {
-  opacity: 0.14 !important;
-}
-
-/* ✅ вибір: карта просто трохи “витягується” вниз + легкий акцент */
-.picked .cardInner {
-  --pop: 28px; /* скільки витягувати (20..40) */
-  --scale: 1.04; /* невелике збільшення */
+/* вибір: карта трохи виїжджає вниз */
+.picked .cardInner{
+  transform: translate3d(var(--x), calc(var(--y) + 28px), 0) rotate(var(--rot)) scale(1.04);
   filter: brightness(1.08);
 }
 
-.picked .cardBack {
-  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.45));
-}
-
-.chooser {
+.chooser{
   position: absolute;
   left: 50%;
   top: 515px;
@@ -467,91 +465,70 @@ export default {
   text-align: center;
   opacity: 0.95;
 }
-
-.chevron {
+.chevron{
   width: 0;
   height: 0;
   margin: 0 auto 10px;
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
   border-bottom: 9px solid rgba(235, 210, 170, 0.9);
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.35));
 }
-
-.hint {
+.hint{
   font-size: 16px;
   letter-spacing: 0.12em;
   color: rgba(234, 242, 255, 0.92);
+  min-width: 250px;
 }
 
-@keyframes deal {
-  0% {
+@keyframes deal{
+  0%{
     opacity: 0;
     transform: translate3d(0, 240px, 0) rotate(0deg) scale(0.92);
   }
-  72% {
+  72%{
     opacity: 1;
-    transform: translate3d(calc(var(--x) * 0.25), calc(var(--y) * 0.18), 0) rotate(calc(var(--rot) * 0.35)) scale(1);
+    transform: translate3d(calc(var(--x) * 0.25), calc(var(--y) * 0.18), 0)
+    rotate(calc(var(--rot) * 0.35)) scale(1);
   }
-  100% {
+  100%{
     opacity: 1;
     transform: translate3d(var(--x), var(--y), 0) rotate(var(--rot)) scale(1);
   }
 }
 
-/* ===== confirm UI (без blur) ===== */
-.confirmOverlay {
+/* confirm UI */
+.confirmOverlay{
   position: absolute;
   inset: 0;
   z-index: 7000;
-  background: transparent; /* легка плівка, можна 0 */
+  background: transparent;
 }
 
-.confirmBar {
+.confirmBar{
   position: absolute;
   left: 50%;
-  bottom: calc(96px + env(safe-area-inset-bottom));
+  bottom: calc(220px + env(safe-area-inset-bottom));
   transform: translateX(-50%);
   z-index: 9000;
 
   width: min(340px, calc(100% - 32px));
   padding: 12px 14px;
-
-  border-radius: 18px;
-  border: 1px solid rgba(205, 141, 121, 0.35);
-  background: rgba(7, 14, 22, 0.72);
 }
 
-.confirmText {
-  text-align: center;
-  font-size: 13px;
-  letter-spacing: 0.12em;
-  opacity: 0.92;
-  margin-bottom: 10px;
-}
-
-.confirmActions {
+.confirmActions{
   display: flex;
-  gap: 12px;
+  align-items: center;
+  justify-content: center;
 }
 
-.btn {
-  flex: 1;
-  height: 44px;
-  border-radius: 14px;
-  border: 1px solid rgba(205, 141, 121, 0.45);
-  background: rgba(10, 15, 22, 0.62);
-  color: rgba(234, 242, 255, 0.92);
-  letter-spacing: 0.10em;
-  font-size: 14px;
-}
+.hidden-chevron{
+  opacity: 0;
+pointer-events: none}
 
-.btnYes {
-  border-color: rgba(235, 210, 170, 0.65);
-  background: rgba(205, 141, 121, 0.18);
-}
-
-.btn:active {
-  transform: translateY(1px);
+.auth-btn-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 </style>

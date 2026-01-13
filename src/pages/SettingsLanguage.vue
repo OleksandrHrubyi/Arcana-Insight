@@ -65,7 +65,7 @@ export default defineComponent({
 <style scoped>
 .settings-page {
   min-height: 100%;
-  background: #0B131B;
+  background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
   padding: 72px 16px 30px;
 }
 

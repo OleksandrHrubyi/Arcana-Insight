@@ -366,18 +366,6 @@ export default {
           </svg>
         </q-btn>
       </div>
-
-      <div class="bottom-btn-back">
-        <q-btn
-          icon="arrow_back_ios"
-          class="back-small-btn mono-text"
-          no-caps
-          flat
-          @click="goBack"
-          dense
-          :loading="loading"
-        />
-      </div>
     </div>
   </div>
 </template>
@@ -389,14 +377,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: stretch;
-  background: linear-gradient(
-      180deg,
-      #101721 0%,
-      #12202b 16.7%,
-      #142632 35.58%,
-      #12212b 57.35%,
-      #080c0f 96.63%
-  );
+  background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
 }
 
 .login-container {

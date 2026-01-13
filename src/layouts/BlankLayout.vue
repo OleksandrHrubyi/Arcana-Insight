@@ -17,9 +17,13 @@ export default {
   },
 
   computed: {
-    isLoggedIn() {
-      console.log(this.authStore.isLoggedIn, 'this.authStore.isLoggedIn');
-      return this.authStore.isLoggedIn
+    showNavigation() {
+      if(!this.authStore.isLoggedIn){
+       return  !this.$route.path.includes('/tarot/') && this.$route?.name !== 'arcana'
+      }
+      else {
+        return !this.$route.path.includes('/tarot/')
+      }
     }
   }
 }
@@ -30,12 +34,13 @@ export default {
     <q-page-container class="page-container">
       <router-view />
     </q-page-container>
-    <BottomNavigation v-if="isLoggedIn" />
+    <BottomNavigation v-if="showNavigation" />
   </q-layout>
 </template>
 
 <style scoped>
 .page-container {
   height: 100vh;
+  background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
 }
 </style>
