@@ -2,17 +2,11 @@
   <div class="wrapper" :class="{ 'scene-ready': isPreloaded }">
     <div class="container bg-container" :class="{ 'scene-ready': isPreloaded }">
       <div class="content-wrapper">
-        <div class="content-left">
-          <div class="content-write">
-            <div class="content-bottom"></div>
-          </div>
-        </div>
-
         <div class="appear-content mono-text">
           <span
             v-for="(ch, index) in fullTextArray"
             :key="index"
-            :class="{ 'char-hidden': !revealedIndices.includes(index) && ch !== ' ' }"
+            :class="{ 'char-hidden': ch !== ' ' && !revealedSet.has(index) }"
           >
             {{ ch === ' ' ? '\u00A0' : ch }}
           </span>
@@ -28,12 +22,13 @@
       </div>
 
       <div class="main-title mono-text no-pointer-events">
-        Between the stars and silence…
-        <div>your path is forming</div>
+        {{tt('betweenStars')}}
+        <div> {{tt('answerAppear')}}</div>
       </div>
+
       <div v-if="!isLoggedIn" class="bottom-btn">
         <q-btn
-          label="Start my reading"
+          :label="tt('startReading')"
           class="no-auth-btn mono-text"
           no-caps
           flat
@@ -41,9 +36,9 @@
         />
 
         <div class="auth-btn-wrap">
-          <q-btn @click="pushTo('/login')" label="Login" flat class="auth-btn mono-text" no-caps />
+          <q-btn @click="pushTo('/login')" :label="tt('login')" flat class="auth-btn mono-text" no-caps />
           <span class="auth-separator">|</span>
-          <q-btn @click="pushTo('/sign-up')" label="Sign up" flat class="auth-btn mono-text" no-caps />
+          <q-btn @click="pushTo('/sign-up')" :label="tt('signUp')" flat class="auth-btn mono-text" no-caps />
         </div>
       </div>
     </div>
@@ -51,10 +46,9 @@
 </template>
 
 <script>
-import logo from 'src/assets/images/logo.svg';
-import { useAuthStore } from 'src/stores/authStore.js';
-import { supabase } from 'src/boot/supabase';
-
+import logo from 'src/assets/images/logo.svg'
+import { useAuthStore } from 'src/stores/authStore.js'
+import { t } from 'src/i18n/index.js';
 export default {
   name: 'LandingScene',
 
@@ -65,8 +59,12 @@ export default {
       revealedIndices: [],
       lettersTimer: null,
       hideTimer: null,
+      revealTimeout: null,
+      hideTimeout: null,
       isPreloaded: false,
       authStore: null,
+      cycleTimeout: null,
+      selectedLocale: 'en'
     };
   },
 
@@ -76,146 +74,123 @@ export default {
   },
 
   computed: {
+    tt() {
+      return (key) => t(this.selectedLocale, key);
+    },
     fullTextArray() {
-      return this.fullText.split('');
+      return this.fullText.split('')
     },
-    auth() {
-      return useAuthStore();
-    },
-    user() {
-      console.log(this.auth);
-      return this.auth.state.user;
+    revealedSet() {
+      return new Set(this.revealedIndices)
     },
     isLoggedIn() {
-      return this.authStore.isLoggedIn;
+      return this.authStore.isLoggedIn
     },
   },
 
   mounted() {
-    this.$nextTick(() => {
-      this.preloadAllImages().then(() => {
-        this.isPreloaded = true;
-        this.startRandomLetterReveal();
-      });
-    });
+    // без preload — одразу показуємо сцену
+    this.isPreloaded = true
+    const saved = localStorage.getItem('locale');
+    if (saved === 'uk' || saved === 'en') {
+      this.selectedLocale = saved;
+    }
+    this.startRandomLetterReveal()
   },
 
   beforeUnmount() {
-    if (this.lettersTimer) clearInterval(this.lettersTimer);
-    if (this.hideTimer) clearInterval(this.hideTimer);
+    clearInterval(this.lettersTimer)
+    clearInterval(this.hideTimer)
+    clearTimeout(this.revealTimeout)
+    clearTimeout(this.hideTimeout)
+    clearTimeout(this.cycleTimeout)
   },
 
   methods: {
-    // Прелоад всіх фонів (1x + потрібний @2x/@3x)
-    preloadAllImages() {
-      const dpr = window.devicePixelRatio || 1;
-      const high = dpr >= 2.5 ? '@3x.png' : dpr >= 1.5 ? '@2x.png' : '@1x.png';
+    clearAnimTimers() {
+      clearInterval(this.lettersTimer)
+      clearInterval(this.hideTimer)
+      clearTimeout(this.revealTimeout)
+      clearTimeout(this.hideTimeout)
+      clearTimeout(this.cycleTimeout)
 
-      const images = ['bg1', 'bg2', 'bg3', 'bg4', 'bg5'].flatMap(name => [
-        `assets/images/${name}@1x.png`,
-        `assets/images/${name}${high}`,
-      ]);
-
-      const promises = images.map(src => {
-        return new Promise(resolve => {
-          const img = new Image();
-          img.onload = img.onerror = resolve;
-          img.src = src;
-        });
-      });
-
-      return Promise.all(promises);
+      this.lettersTimer = null
+      this.hideTimer = null
+      this.revealTimeout = null
+      this.hideTimeout = null
+      this.cycleTimeout = null
     },
 
     startRandomLetterReveal() {
-      const indices = [];
+      this.clearAnimTimers()
+
+      const indices = []
       for (let i = 0; i < this.fullText.length; i++) {
-        if (this.fullText[i] !== ' ') indices.push(i);
+        if (this.fullText[i] !== ' ') indices.push(i)
       }
+
+      if (!indices.length) return
 
       // Fisher–Yates shuffle
       for (let i = indices.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
-        ;[indices[i], indices[j]] = [indices[j], indices[i]];
+        ;[indices[i], indices[j]] = [indices[j], indices[i]]
       }
 
-      this.revealedIndices = [];
+      this.revealedIndices = []
 
-      setTimeout(() => {
-        let current = 0;
-        const totalDuration = 4000;
-        const minInterval = 90;
-        const step = Math.max(minInterval, Math.floor(totalDuration / indices.length));
+      this.revealTimeout = setTimeout(() => {
+        let current = 0
+        const totalDuration = 4000
+        const minInterval = 90
+        const step = Math.max(minInterval, Math.floor(totalDuration / indices.length))
 
         this.lettersTimer = setInterval(() => {
           if (current >= indices.length) {
-            clearInterval(this.lettersTimer);
-            this.startRandomLetterHide(indices);
-            return;
+            clearInterval(this.lettersTimer)
+            this.lettersTimer = null
+            this.startRandomLetterHide(indices)
+            return
           }
-          this.revealedIndices = [...this.revealedIndices, indices[current]];
-          current++;
-        }, step);
-      }, 800);
+
+          this.revealedIndices = [...this.revealedIndices, indices[current]]
+          current++
+        }, step)
+      }, 800)
     },
 
     startRandomLetterHide(indices) {
-      const shuffled = [...indices];
-      let current = 0;
-      const totalDuration = 3500;
-      const minInterval = 90;
-      const step = Math.max(minInterval, Math.floor(totalDuration / shuffled.length));
+      const shuffled = [...indices]
+      let current = 0
+      const totalDuration = 3500
+      const minInterval = 90
+      const step = Math.max(minInterval, Math.floor(totalDuration / shuffled.length))
 
-      setTimeout(() => {
+      this.hideTimeout = setTimeout(() => {
         this.hideTimer = setInterval(() => {
           if (current >= shuffled.length) {
-            clearInterval(this.hideTimer);
-            return;
+            clearInterval(this.hideTimer)
+            this.hideTimer = null
+
+            // ✅ перезапуск циклу (пауза перед новим reveal)
+            this.cycleTimeout = setTimeout(() => {
+              this.startRandomLetterReveal()
+            }, 3200)
+
+            return
           }
-          this.revealedIndices = this.revealedIndices.filter(i => i !== shuffled[current]);
-          current++;
-        }, step);
-      }, 4000);
+
+          this.revealedIndices = this.revealedIndices.filter(i => i !== shuffled[current])
+          current++
+        }, step)
+      }, 4000)
     },
 
     pushTo(path) {
-      this.$router.push(path);
+      this.$router.push(path)
     },
-
-    async onLogout() {
-      const auth = useAuthStore();
-
-      try {
-        // спочатку подивимось, чи є взагалі активна сесія
-        const { data } = await supabase.auth.getSession();
-        const session = data.session;
-
-        if (!session) {
-          // сесії немає – значить юзер і так не залогінений
-          auth.state.user = null;
-          this.$router.push('/login');
-          return;
-        }
-
-        const { error } = await supabase.auth.signOut();
-
-        if (error && error.name !== 'AuthSessionMissingError') {
-          // інші помилки покажемо в консолі
-          console.error('Logout error:', error);
-          return;
-        }
-
-        // локально чистимо стейт
-        auth.state.user = null;
-        this.$router.push('/login');
-      } catch (e) {
-        console.error('Logout error:', e);
-        // навіть якщо щось пішло не так – все одно ведемо на логін
-        this.$router.push('/login');
-      }
-    },
-  },
-};
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -238,53 +213,15 @@ export default {
   position: relative;
   height: 100dvh;
   overflow: hidden;
-  background-color: #0a0a0f; /* проти білого спалаху */
 }
 
 .bg-container {
-  background-image: image-set(
-      url('assets/images/bg1@1x.png') 1x,
-      url('assets/images/bg1@2x.png') 2x,
-      url('assets/images/bg1@3x.png') 3x
-  );
+  background-image: url('assets/images/1v4.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-/* Усі шари фону */
-.content-wrapper,
-.content-left,
-.content-write,
-.content-bottom {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.content-wrapper {
-  z-index: 1;
-  background-image: image-set(
-      'assets/images/bg2@1x.png' 1x,
-      'assets/images/bg2@2x.png' 2x,
-      'assets/images/bg2@3x.png' 3x
-  );
-}
-
-.content-left {
-  background-image: image-set('assets/images/bg3@1x.png' 1x, 'assets/images/bg3@2x.png' 2x, 'assets/images/bg3@3x.png' 3x);
-}
-
-.content-write {
-  background-image: image-set('assets/images/bg4@1x.png' 1x, 'assets/images/bg4@2x.png' 2x, 'assets/images/bg4@3x.png' 3x);
-}
-
-.content-bottom {
-  background-image: image-set('assets/images/bg5@1x.png' 1x, 'assets/images/bg5@2x.png' 2x, 'assets/images/bg5@3x.png' 3x);
-}
 
 .mono-text {
   font-style: normal;
@@ -311,7 +248,7 @@ export default {
   text-align: center;
   font-size: 12px;
   line-height: 20px;
-  color: #FFFFFF;
+  color: #ffffff;
   margin: 24px auto;
   position: relative;
   z-index: 2;
@@ -327,7 +264,7 @@ export default {
   opacity: 0.8;
   line-height: 18px;
   text-align: center;
-  color: #FFFFFF;
+  color: #ffffff;
   max-width: 192px;
 }
 
@@ -344,34 +281,13 @@ export default {
   z-index: 3;
   opacity: 0;
   transform: translateY(12px);
-  animation: bottom-fade-up 0.6s ease-out 4s forwards; /* тепер кнопки з'являються після анімації тексту */
-}
-
-/* ТВОЇ ОРИГІНАЛЬНІ КРАСИВІ КНОПКИ — 100% збережений дизайн */
-.no-auth-btn {
-  height: 45px;
-  width: 100%;
-  max-width: 240px;
-  background: linear-gradient(98.11deg, #0C0D0E 14.75%, #242C35 54.07%, #0C0D0E 89.76%);
-  border: 1px solid #9FD8F6;
-  border-radius: 12px;
-  font-size: 14px;
-  line-height: 21px;
-  color: #FFFFFF;
-  letter-spacing: 0.02em;
-  margin-bottom: 4px;
-  box-shadow: 0 0 0 rgba(159, 216, 246, 0);
-  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.3s ease;
-
-  &:active {
-    opacity: 0.9;
-  }
+  animation: bottom-fade-up 0.6s ease-out 4s forwards;
 }
 
 .auth-btn-wrap {
   display: flex;
   width: 100%;
-  max-width: 150px;
+  max-width: 190px;
   justify-content: space-between;
 }
 
@@ -380,12 +296,10 @@ export default {
   font-size: 14px;
   line-height: 18px;
   text-align: center;
-  color: #FFFFFF;
+  color: #ffffff;
   padding: 10px 6px;
   white-space: nowrap;
   border-radius: 12px;
-  background: rgba(7, 9, 12, 0.55);
-  backdrop-filter: blur(8px);
   transition: transform 0.15s ease, opacity 0.15s ease, border-color 0.2s ease;
 
   &:active {
@@ -396,7 +310,7 @@ export default {
 }
 
 .auth-separator {
-  color: #FFFFFF;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -457,9 +371,67 @@ export default {
     opacity: 1;
     transform: translate3d(-60vw, 40vh, 0);
   }
-  70%, 100% {
+  70%,
+  100% {
     opacity: 0;
     transform: translate3d(-75vw, 55vh, 0);
   }
+}
+
+.no-auth-btn {
+  position: relative;
+  overflow: hidden;
+
+  height: 45px;
+  width: 100%;
+  max-width: 240px;
+
+  border-radius: 12px;
+  border: 1px solid rgba(159, 216, 246, 0.65);
+
+  /* glass */
+  background: rgba(10, 12, 14, 0.55);
+  font-size: 14px;
+  line-height: 21px;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+/* outer glow bloom */
+.no-auth-btn::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 999px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* inner glossy layer */
+.no-auth-btn::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* щоб текст був поверх псевдоелементів */
+.no-auth-btn :deep(.q-btn__content) {
+  position: relative;
+  z-index: 2;
+}
+.main-title {
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.main-title div {
+  opacity: 0.72;
 }
 </style>

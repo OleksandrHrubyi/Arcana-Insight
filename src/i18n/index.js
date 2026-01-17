@@ -19,6 +19,11 @@ export const messages = {
     openThisCard: 'Open this card?',
     noTitle: 'No',
     yesTitle: 'Yes',
+    betweenStars: 'Between the stars and silence',
+    answerAppear: 'your answer appears',
+    startReading: 'Start reading',
+    login: 'Log in',
+    signUp: 'Sign up',
     zodiac: {
       aries: 'Aries',
       taurus: 'Taurus',
@@ -102,6 +107,11 @@ export const messages = {
       aquarius: 'Водолій',
       pisces: 'Риби',
     },
+    betweenStars: 'Між зорями та тишею',
+    answerAppear: 'твоя відповідь з’являється',
+    startReading: 'Почати читання',
+    login: 'Увійти',
+    signUp: 'Реєстрація',
 
     astro: {
       moonIn: 'Місяць у',
