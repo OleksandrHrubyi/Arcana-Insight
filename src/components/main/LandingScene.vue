@@ -3,13 +3,21 @@
     <div class="container bg-container" :class="{ 'scene-ready': isPreloaded }">
       <div class="content-wrapper">
         <div class="appear-content mono-text">
-          <span
-            v-for="(ch, index) in fullTextArray"
-            :key="index"
-            :class="{ 'char-hidden': ch !== ' ' && !revealedSet.has(index) }"
-          >
-            {{ ch === ' ' ? '\u00A0' : ch }}
-          </span>
+          <template v-for="token in fullTextTokens" :key="token.key">
+            <!-- пробіли -->
+            <span v-if="token.type === 'space'">{{ token.text }}</span>
+
+            <!-- слова (не рвемо по буквах на переносі) -->
+            <span v-else style="display: inline-block; white-space: nowrap;">
+      <span
+        v-for="(ch, i) in token.chars"
+        :key="token.start + i"
+        :class="{ 'char-hidden': !revealedSet.has(token.start + i) }"
+      >
+        {{ ch }}
+      </span>
+    </span>
+          </template>
         </div>
       </div>
 
@@ -55,7 +63,67 @@ export default {
   data() {
     return {
       logo,
-      fullText: 'What you are waiting for may soon appear',
+      fullText: '',
+
+      phrases: {
+        en: [
+          'A quiet sign is near',
+          'The stars are aligning',
+          'Today holds a hint',
+          'Draw a card, feel the truth',
+          'Listen to what resonates',
+
+          'Your intuition knows',
+          'Clarity is closer',
+          'Trust the timing',
+          'A sign in the smallest things',
+          'The message is already here',
+          'Let it unfold',
+          'Follow what feels true',
+          'A gentle nudge forward',
+          'Your next step is simple',
+          'Everything aligns quietly',
+          'Your question has a direction',
+          'A gentle truth emerges',
+          'The answer is within reach',
+          'Hold the question lightly',
+          'Look closer',
+          'A small shift changes everything',
+          'Your energy speaks',
+          'Read the moment',
+          'Let the night guide you',
+          'Trust what feels right',
+        ],
+        uk: [
+          'Тихий знак вже близько',
+          'Зорі складаються',
+          'Сьогодні є підказка',
+          'Витягни карту — відчуй правду',
+          'Слухай, що відгукується',
+
+          'Інтуїція вже знає',
+          'Ясність ближче, ніж здається',
+          'Довірся моменту',
+          'Знак — у дрібницях',
+          'Послання вже поруч',
+          'Нехай це розгорнеться',
+          'Йди за тим, що відчувається правдою',
+          'Легкий поштовх уперед',
+          'Твій наступний крок простий',
+          'Все тихо стає на місце',
+          'Твоє питання має напрямок',
+          'М’яка істина відкривається',
+          'Відповідь поруч',
+          'Тримай питання легко',
+          'Подивись уважніше',
+          'Малий зсув змінює все',
+          'Твоя енергія говорить',
+          'Читай момент',
+          'Нехай ніч веде тебе',
+          'Довірся тому, що відчувається правильним',
+        ],
+      },
+      lastPhraseIndex: -1,
       revealedIndices: [],
       lettersTimer: null,
       hideTimer: null,
@@ -64,7 +132,9 @@ export default {
       isPreloaded: false,
       authStore: null,
       cycleTimeout: null,
-      selectedLocale: 'en'
+      selectedLocale: 'en',
+      phraseQueue: [],
+      phraseCursor: 0,
     };
   },
 
@@ -74,6 +144,40 @@ export default {
   },
 
   computed: {
+    fullTextTokens() {
+      const tokens = []
+      let cursor = 0
+
+      // split зі збереженням пробілів
+      const parts = this.fullText.split(/(\s+)/)
+
+      for (const part of parts) {
+        if (!part) continue
+
+        // spaces
+        if (/^\s+$/.test(part)) {
+          tokens.push({
+            type: 'space',
+            text: part.replace(/ /g, '\u00A0'),
+            key: `sp-${cursor}`,
+          })
+          cursor += part.length
+          continue
+        }
+
+        // word
+        tokens.push({
+          type: 'word',
+          chars: Array.from(part),
+          start: cursor,
+          key: `w-${cursor}`,
+        })
+        cursor += part.length
+      }
+
+      return tokens
+    },
+
     tt() {
       return (key) => t(this.selectedLocale, key);
     },
@@ -95,7 +199,12 @@ export default {
     if (saved === 'uk' || saved === 'en') {
       this.selectedLocale = saved;
     }
-    this.startRandomLetterReveal()
+    this.resetPhraseQueue()
+    this.setNextPhrase()
+    this.$nextTick(() => {
+      this.startRandomLetterReveal()
+    })
+
   },
 
   beforeUnmount() {
@@ -107,6 +216,45 @@ export default {
   },
 
   methods: {
+    shuffleArray(arr) {
+      // Fisher–Yates
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[arr[i], arr[j]] = [arr[j], arr[i]]
+      }
+      return arr
+    },
+
+    resetPhraseQueue() {
+      const list = this.phrases?.[this.selectedLocale] || this.phrases.en
+      if (!list?.length) return
+
+      // створюємо список індексів фраз
+      this.phraseQueue = this.shuffleArray([...Array(list.length).keys()])
+      this.phraseCursor = 0
+
+      // ✅ щоб перша фраза нового кола не була такою самою, як остання минулого
+      if (list.length > 1 && this.phraseQueue[0] === this.lastPhraseIndex) {
+        const swapIndex = 1
+        ;[this.phraseQueue[0], this.phraseQueue[swapIndex]] = [this.phraseQueue[swapIndex], this.phraseQueue[0]]
+      }
+    },
+
+    setNextPhrase() {
+      const list = this.phrases?.[this.selectedLocale] || this.phrases.en
+      if (!list?.length) return
+      this.revealedIndices = []
+      if (!this.phraseQueue.length || this.phraseCursor >= this.phraseQueue.length) {
+        this.resetPhraseQueue()
+      }
+
+      const nextIndex = this.phraseQueue[this.phraseCursor]
+      this.phraseCursor++
+
+      this.lastPhraseIndex = nextIndex
+      this.fullText = list[nextIndex]
+    },
+
     clearAnimTimers() {
       clearInterval(this.lettersTimer)
       clearInterval(this.hideTimer)
@@ -172,10 +320,14 @@ export default {
             clearInterval(this.hideTimer)
             this.hideTimer = null
 
-            // ✅ перезапуск циклу (пауза перед новим reveal)
             this.cycleTimeout = setTimeout(() => {
-              this.startRandomLetterReveal()
+              this.setNextPhrase()
+              this.$nextTick(() => {
+                this.startRandomLetterReveal()
+              })
             }, 3200)
+
+
 
             return
           }
@@ -266,6 +418,7 @@ export default {
   text-align: center;
   color: #ffffff;
   max-width: 192px;
+  word-break: normal;
 }
 
 .bottom-btn {
