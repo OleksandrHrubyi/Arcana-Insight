@@ -1027,7 +1027,7 @@ export default {
 }
 
 .horoscope-info {
-  max-width: 360px;
+  max-width: calc(100vw - 10px);
   text-align: center;
 }
 

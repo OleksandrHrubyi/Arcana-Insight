@@ -74,100 +74,123 @@
 </template>
 
 <script>
-import { useAuthStore } from 'stores/authStore.js';
-import { t } from 'src/i18n';
+import { useAuthStore } from 'stores/authStore.js'
+import { t } from 'src/i18n'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
 
 export default {
   name: 'BottomNavigation',
 
   created() {
-    const { initAuth } = useAuthStore();
-    initAuth();
+    const { initAuth } = useAuthStore()
+    initAuth()
   },
 
   mounted() {
-    const saved = localStorage.getItem('locale');
-    this.current = this.$route?.name || 'arcana';
+    const saved = localStorage.getItem('locale')
+    this.current = this.$route?.name || 'arcana'
     if (saved === 'uk' || saved === 'en') {
-      this.selectedLocale = saved;
+      this.selectedLocale = saved
     }
 
-    // ✅ крапка після першого рендера
-    this.$nextTick(() => this.updateIndicator());
-
-    // ✅ щоб не зʼїжджала при ресайзі
-    window.addEventListener('resize', this.updateIndicator, { passive: true });
+    this.$nextTick(() => this.updateIndicator())
+    window.addEventListener('resize', this.updateIndicator, { passive: true })
   },
 
   beforeUnmount() {
-    window.removeEventListener('resize', this.updateIndicator);
+    window.removeEventListener('resize', this.updateIndicator)
   },
 
-  watch:{
-    '$route.name'(val){
+  watch: {
+    '$route.name'(val) {
       this.current = val
     },
 
-    // ✅ коли змінюється таб — пересуваємо крапку плавно
     current() {
-      this.$nextTick(() => this.updateIndicator());
+      this.$nextTick(() => this.updateIndicator())
     }
   },
 
-  data () {
+  data() {
     return {
       current: 'arcana',
       selectedLocale: 'uk',
       items: [
-        { name: 'arcana',    label: 'Arcana',    icon: '/images/arcana.svg', route: '/' },
-        { name: 'horoscope', label: 'Horoscope', icon: '/images/horoscope.svg', route: '/horoscope'  },
-        { name: 'tarot',     label: 'Tarot',     icon: '/images/tarot.svg', route: '/tarot'  },
-        { name: 'settings',  label: 'Settings',  icon: '/images/settings.svg', route: '/settings'  }
+        { name: 'arcana', label: 'Arcana', icon: '/images/arcana.svg', route: '/' },
+        { name: 'horoscope', label: 'Horoscope', icon: '/images/horoscope.svg', route: '/horoscope' },
+        { name: 'tarot', label: 'Tarot', icon: '/images/tarot.svg', route: '/tarot' },
+        { name: 'settings', label: 'Settings', icon: '/images/settings.svg', route: '/settings' }
       ],
 
-      // ✅ тільки для плавної крапки
       indicatorX: 0,
       indicatorReady: false
     }
   },
 
-  computed:{
+  computed: {
     tt() {
-      return (key) => t(this.selectedLocale, key);
+      return (key) => t(this.selectedLocale, key)
     },
 
-    // ✅ стилі для translate крапки
     indicatorStyle() {
       return {
         transform: `translateX(${this.indicatorX}px) translateX(-50%)`,
         opacity: this.indicatorReady ? 1 : 0
-      };
+      }
     }
   },
 
   methods: {
-    onClick (name) {
-      this.current = name
-      this.$emit('change', name)
-      this.$router.push({ name: name })
+    // ✅ дуже легкий “tick” як при selection на iOS
+    async hapticSelection() {
+      try {
+        await Haptics.selectionChanged()
+      } catch (e) {
+        console.log(e);
+      }
     },
 
-    // ✅ рахуємо центр активного таба і ставимо крапку туди
+    // ✅ легкий impact (можеш юзати якщо хочеш трохи сильніше)
+    async hapticLight() {
+      try {
+        await Haptics.impact({ style: ImpactStyle.Light })
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async onClick(name) {
+      // 👉 варіант 1 (рекомендую): найніжніший
+      await this.hapticLight()
+
+      // 👉 якщо хочеш трохи сильніше — заміни рядок вище на:
+      // await this.hapticLight()
+
+      // ✅ щоб не пушити в той самий роут
+      if (name === this.current) return
+
+      this.current = name
+      this.$emit('change', name)
+      this.$router.push({ name })
+    },
+
     updateIndicator() {
-      const pill = this.$refs.pill;
-      const tab = this.$refs[`tab-${this.current}`];
+      const pill = this.$refs.pill
+      const tab = this.$refs[`tab-${this.current}`]
 
-      if (!pill || !tab) return;
+      if (!pill || !tab) return
 
-      const pillRect = pill.getBoundingClientRect();
-      const tabRect = tab.getBoundingClientRect();
+      const pillRect = pill.getBoundingClientRect()
+      const tabRect = tab.getBoundingClientRect()
 
-      this.indicatorX = tabRect.left - pillRect.left + tabRect.width / 2;
-      this.indicatorReady = true;
+      this.indicatorX = tabRect.left - pillRect.left + tabRect.width / 2
+      this.indicatorReady = true
     }
   }
+
 }
 </script>
+
 
 <style scoped>
 /* Footer як у Figma: прозорий, без тіней, + safe area */

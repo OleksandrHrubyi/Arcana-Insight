@@ -8,7 +8,8 @@ export default {
 
   data() {
     return {
-      authStore: useAuthStore(), // реактивний store
+      authStore: useAuthStore(),
+      navReady: false,
     }
   },
 
@@ -16,14 +17,18 @@ export default {
     this.authStore.initAuth()
   },
 
+  mounted() {
+    setTimeout(() => {
+      this.navReady = true
+    }, 6000)
+  },
+
   computed: {
     showNavigation() {
-      if(!this.authStore.isLoggedIn){
-       return  !this.$route.path.includes('/tarot/') && this.$route?.name !== 'arcana'
+      if (!this.authStore.isLoggedIn) {
+        return !this.$route.path.includes('/tarot/') && this.$route?.name !== 'arcana'
       }
-      else {
-        return !this.$route.path.includes('/tarot/')
-      }
+      return !this.$route.path.includes('/tarot/')
     }
   }
 }
@@ -34,7 +39,12 @@ export default {
     <q-page-container class="page-container">
       <router-view />
     </q-page-container>
-    <BottomNavigation v-if="showNavigation" />
+
+    <transition name="nav-up" appear>
+      <div class="bottom-nav-wrap">
+        <BottomNavigation />
+      </div>
+    </transition>
   </q-layout>
 </template>
 
@@ -42,5 +52,33 @@ export default {
 .page-container {
   height: 100vh;
   background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
+}
+
+/* обгортка тримає навігацію знизу */
+.bottom-nav-wrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+}
+
+/* анімація появи знизу */
+.nav-up-enter-active,
+.nav-up-leave-active {
+  transition: transform 260ms ease, opacity 260ms ease;
+  will-change: transform, opacity;
+}
+
+.nav-up-enter-from,
+.nav-up-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.nav-up-enter-to,
+.nav-up-leave-from {
+  transform: translateY(0);
+  opacity: 1;
 }
 </style>

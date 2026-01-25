@@ -34,21 +34,21 @@
         <div> {{tt('answerAppear')}}</div>
       </div>
 
-      <div v-if="!isLoggedIn" class="bottom-btn">
-        <q-btn
-          :label="tt('startReading')"
-          class="no-auth-btn mono-text"
-          no-caps
-          flat
-          @click="pushTo('/horoscope')"
-        />
+<!--      <div v-if="!isLoggedIn" class="bottom-btn">-->
+<!--        <q-btn-->
+<!--          :label="tt('startReading')"-->
+<!--          class="no-auth-btn mono-text"-->
+<!--          no-caps-->
+<!--          flat-->
+<!--          @click="pushTo('/horoscope')"-->
+<!--        />-->
 
-        <div class="auth-btn-wrap">
-          <q-btn @click="pushTo('/login')" :label="tt('login')" flat class="auth-btn mono-text" no-caps />
-          <span class="auth-separator">|</span>
-          <q-btn @click="pushTo('/sign-up')" :label="tt('signUp')" flat class="auth-btn mono-text" no-caps />
-        </div>
-      </div>
+<!--        <div class="auth-btn-wrap">-->
+<!--          <q-btn @click="pushTo('/login')" :label="tt('login')" flat class="auth-btn mono-text" no-caps />-->
+<!--          <span class="auth-separator">|</span>-->
+<!--          <q-btn @click="pushTo('/sign-up')" :label="tt('signUp')" flat class="auth-btn mono-text" no-caps />-->
+<!--        </div>-->
+<!--      </div>-->
     </div>
   </div>
 </template>
