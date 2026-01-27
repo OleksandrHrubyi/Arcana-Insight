@@ -1,54 +1,45 @@
 <template>
-  <div ref="container" class="container">
+  <div ref="container" class="container" :class="{ dragging: isDragging }">
+    <!-- DATE -->
     <div class="date-info">
       <div class="date-info-label date-top">{{ tt('dailyHoroscope') }}</div>
       <div class="date-info-label date-bottom">{{ monthDayLabel }}</div>
     </div>
 
-    <!-- ✅ SVG MASK + CLIP + BACKGROUND IMAGE -->
-    <svg
-      class="sector-svg"
-      :viewBox="`0 0 ${svgW} ${svgH}`"
-      preserveAspectRatio="none"
-    >
-      <defs>
-        <mask id="ringMask" maskUnits="userSpaceOnUse">
-          <rect :width="svgW" :height="svgH" fill="black" />
-          <circle :cx="maskCx" :cy="maskCy" :r="maskRTop" fill="white" />
-          <circle :cx="maskCx" :cy="maskCy" :r="maskRBottom" fill="black" />
-        </mask>
+    <!-- ✅ HERO DISC: 3D + авто обертання + круті частинки -->
+    <div class="hero-disc" aria-hidden="true">
+      <div class="hero-disc__tilt">
+        <!-- крутиться повільно -->
+        <div class="hero-disc__spin">
+          <img class="hero-disc__img" src="/images/p-7.png" alt="" />
 
-        <clipPath id="sectorClip" clipPathUnits="userSpaceOnUse">
-          <polygon :points="clipPoints" />
-        </clipPath>
+          <!-- “зерно/зорі” всередині диска -->
+          <div class="hero-disc__stars"></div>
+          <div class="hero-disc__stars hero-disc__stars--2"></div>
 
-        <!-- ✅ SVG-friendly gradient (без rgba у stop-color) -->
-        <linearGradient id="fadeGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#000" stop-opacity="0.10" />
-          <stop offset="100%" stop-color="#000" stop-opacity="0.55" />
-        </linearGradient>
-      </defs>
+          <!-- світлова хвиля -->
+          <div class="hero-disc__sweep"></div>
+        </div>
 
-      <g mask="url(#ringMask)" clip-path="url(#sectorClip)">
-        <!-- ✅ ЗОРІ (твій файл) -->
-        <image
-          ref="bgImg"
-          :href="bgHref"
-          :x="bgX"
-          :y="bgY"
-          :width="bgSize"
-          :height="bgSize"
-          preserveAspectRatio="xMidYMin slice"
-        />
-        <rect :width="svgW" :height="svgH" fill="url(#fadeGrad)" />
-      </g>
-    </svg>
-    <!-- ✅ ховаємо боки (без масок) -->
+        <!-- ✅ реальні летючі частинки (не крутяться разом з фоном) -->
+        <div class="hero-disc__particles" aria-hidden="true">
+          <span
+            v-for="p in particles"
+            :key="p.id"
+            class="particle"
+            :style="p.style"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ ховаємо боки -->
     <div class="side-cover side-cover--left"></div>
     <div class="side-cover side-cover--right"></div>
 
-    <!-- ✅ перемальована дуга (щоб вона була видна на боках) -->
+    <!-- ✅ перемальована дуга -->
     <div class="arc-overlay"></div>
+
     <!-- ЛІНІЇ -->
     <div ref="lineLeft" class="line"></div>
     <div ref="lineRight" class="line"></div>
@@ -56,14 +47,9 @@
     <div class="top-round"></div>
     <div ref="topBg" class="top-bg"></div>
 
+    <!-- WHEEL -->
     <div ref="stage" class="wheel-stage">
-      <!-- ✅ колесо: тепер БЕЗ :style — крутиться імперативно -->
       <div ref="wheel" class="wheel" :class="{ gpu: gpuOn }"></div>
-
-      <div class="active-zodiac" aria-hidden="false">
-        <div class="active-zodiac-name">{{ tt(`zodiac.${activeZodiac.key}`) }}</div>
-        <div class="active-zodiac-dates">{{ activeZodiac.dates }}</div>
-      </div>
 
       <div
         ref="dragLayer"
@@ -77,47 +63,67 @@
       />
     </div>
 
+    <!-- CENTER -->
     <div ref="centerRound" class="center-round">
       <div class="bottom-wrapper">
         <div class="q-px-sm q-pt-md horoscope-info">
+          <div class="active-zodiac" aria-hidden="false">
+            <div class="active-zodiac-name">{{ tt(`zodiac.${activeZodiac.key}`) }}</div>
+            <div class="active-zodiac-dates">{{ activeZodiac.dates }}</div>
+          </div>
           <q-tab-panels
             v-model="themeTab"
             animated
             swipeable
-            class="bg-transparent"
+            class="bg-transparent horoscope-panels"
           >
             <q-tab-panel name="love" class="q-pa-none">
-              <div class="horoscope-info-title"> {{ tt('love') }}</div>
-              <div class="horoscope-info-style">
-                {{ horoscope[activeZodiac.key]?.love?.detailed }}
+              <div class="panel-inner">
+                <div class="horoscope-info-title">{{ tt('love') }}</div>
+                <div class="horoscope-divider"></div>
+
+                <div class="horoscope-info-style">
+                  {{ horoscope[activeZodiac.key]?.love?.detailed || '' }}
+                </div>
               </div>
             </q-tab-panel>
 
             <q-tab-panel name="career" class="q-pa-none">
-              <div class="horoscope-info-title"> {{ tt('career') }}</div>
-              <div class="horoscope-info-style">{{ horoscope[activeZodiac.key]?.career?.detailed || '' }}</div>
+              <div class="panel-inner">
+                <div class="horoscope-info-title">{{ tt('career') }}</div>
+                <div class="horoscope-divider"></div>
+
+                <div class="horoscope-info-style">
+                  {{ horoscope[activeZodiac.key]?.career?.detailed || '' }}
+                </div>
+              </div>
             </q-tab-panel>
 
             <q-tab-panel name="energy" class="q-pa-none">
-              <div class="horoscope-info-title"> {{ tt('energy') }}</div>
-              <div class="horoscope-info-style">{{ horoscope[activeZodiac.key]?.energy?.detailed || '' }}</div>
+              <div class="panel-inner">
+                <div class="horoscope-info-title">{{ tt('energy') }}</div>
+                <div class="horoscope-divider"></div>
+
+                <div class="horoscope-info-style">
+                  {{ horoscope[activeZodiac.key]?.energy?.detailed || '' }}
+                </div>
+              </div>
             </q-tab-panel>
           </q-tab-panels>
-
-          <!-- dots -->
-          <div class="relative-position">
+          <div class="horoscope-controls">
             <div class="dots">
-              <button class="dot" :class="{ active: themeTab === 'love' }" @click="themeTab = 'love'"></button>
-              <button class="dot" :class="{ active: themeTab === 'career' }" @click="themeTab = 'career'"></button>
-              <button class="dot" :class="{ active: themeTab === 'energy' }" @click="themeTab = 'energy'"></button>
+              <button class="dot" :class="{ active: themeTab === 'love' }" @click="setTheme('love')"></button>
+              <button class="dot" :class="{ active: themeTab === 'career' }" @click="setTheme('career')"></button>
+              <button class="dot" :class="{ active: themeTab === 'energy' }" @click="setTheme('energy')"></button>
             </div>
-            <q-btn size="14px" round class="share-wrap" icon="share" @click="handleShare" />
+
+            <q-btn size="12px" round class="share-wrap" icon="share" @click="handleShare" />
           </div>
         </div>
+
       </div>
     </div>
 
-    <div class="bottom-info"></div>
     <div class="bottom-bg-wrap"></div>
   </div>
 </template>
@@ -130,21 +136,17 @@ import { t } from 'src/i18n';
 import { Share } from '@capacitor/share';
 import { supabase } from 'boot/supabase';
 
-
 const DESIGN_W = 440;
 const DESIGN_TOP_INSET = 30;
 const DESIGN_GAP = 136;
 const JOIN_OFFSET = 10;
 const ACTIVE_OFFSET = 0;
 
-const BG_MAX = 2048;
-const BG_NUDGE_Y_DESIGN = -260;
-const BG_NUDGE_X_DESIGN = 0;
-
 const FLING_THRESHOLD_DEG_PER_SEC = 80;
 const INERTIA_FRICTION_PER_SEC = 15.2;
 const SNAP_STIFFNESS = 90;
 const SNAP_DAMPING = 18;
+
 const ZODIAC_EMOJI = {
   capricorn: '♑️', aquarius: '♒️', pisces: '♓️',
   aries: '♈️', taurus: '♉️', gemini: '♊️',
@@ -196,18 +198,8 @@ export default {
 
       gpuOn: false,
 
-      svgW: 0,
-      svgH: 0,
-      maskCx: 0,
-      maskCy: 0,
-      maskRBottom: 0,
-      maskRTop: 0,
-      clipPoints: '',
-
-      bgHref: '/images/test.svg',
-      bgX: 0,
-      bgY: 0,
-      bgSize: 1024,
+      // ✅ нове: частинки
+      particles: [],
 
       zodiacMeta: [
         { key: 'capricorn', name: 'CAPRICORN', dates: '(22.12 – 19.01)' },
@@ -224,11 +216,7 @@ export default {
         { key: 'sagittarius', name: 'SAGITTARIUS', dates: '(22.11 – 21.12)' },
       ],
 
-      horoscopeToday: '',
       selectedLocale: 'uk',
-
-      // ✅ РЕЄСТР замість масиву
-      // horoscope[signKey][theme] = { summary, detailed }
       horoscope: {},
 
       midnightTimer: null,
@@ -258,21 +246,6 @@ export default {
       return label.toLocaleUpperCase(locale);
     },
 
-
-    // ✅ доступ в розмітці:
-    // horoscope[activeZodiac.key]?.love?.summary ...
-    loveHoroscope() {
-      const key = this.activeZodiac?.key;
-      return this.horoscope?.[key]?.love?.summary ?? '';
-    },
-    careerHoroscope() {
-      const key = this.activeZodiac?.key;
-      return this.horoscope?.[key]?.career?.summary ?? '';
-    },
-    energyHoroscope() {
-      const key = this.activeZodiac?.key;
-      return this.horoscope?.[key]?.energy?.summary ?? '';
-    },
     tt() {
       return (key) => t(this.selectedLocale, key);
     },
@@ -280,19 +253,19 @@ export default {
 
   mounted() {
     const saved = localStorage.getItem('locale');
-    if (saved === 'uk' || saved === 'en') {
-      this.selectedLocale = saved;
-    }
+    if (saved === 'uk' || saved === 'en') this.selectedLocale = saved;
 
     this.setVh();
+    this.applyScale();
     this.loadHoroscopesForDay();
+
+    // ✅ частинки
+    this.buildParticles();
 
     this.rotation = Math.round(this.rotation / this.stepDeg) * this.stepDeg;
     this.desiredRotation = this.rotation;
     this.lastSnapIndex = Math.floor(this.rotation / this.stepDeg + 0.5);
     this.currentSector = this.mod(this.lastSnapIndex, this.sectorCount);
-    this.horoscopeToday = new Date();
-    this.applyScale();
 
     this.$nextTick(() => {
       this.recalcCenter();
@@ -310,6 +283,7 @@ export default {
     window.removeEventListener('resize', this.onResize);
     window.removeEventListener('orientationchange', this.onResize);
     this.stopLoop();
+    clearTimeout(this.midnightTimer);
 
     const drag = this.$refs.dragLayer;
     if (this.activePointerId != null && drag?.releasePointerCapture) {
@@ -319,16 +293,57 @@ export default {
         console.log(e);
       }
     }
-    clearTimeout(this.midnightTimer);
   },
 
   methods: {
-    // ✅ перетворює масив рядків в реєстр
+    // ✅ генерація “реальних” летючих частинок
+    buildParticles() {
+      const count = 36; // 20–40
+      const colors = [
+        'rgba(255,255,255,0.95)',
+        'rgba(159,216,246,0.85)',
+        'rgba(255,220,180,0.70)',
+      ];
+
+      const out = [];
+      for (let i = 0; i < count; i++) {
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+
+        const s = 1.2 + Math.random() * 2.8;        // size px
+        const blur = Math.random() * 1.2;           // blur px
+        const dur = 7 + Math.random() * 14;         // seconds
+        const delay = -Math.random() * dur;         // negative start
+        const dx = -22 + Math.random() * 44;        // drift X px
+        const dy = -(90 + Math.random() * 150);     // drift up px
+        const o = 0.25 + Math.random() * 0.70;      // opacity
+        const c = colors[Math.floor(Math.random() * colors.length)];
+
+        out.push({
+          id: i,
+          style: {
+            '--x': `${x.toFixed(2)}`,
+            '--y': `${y.toFixed(2)}`,
+            '--s': `${s.toFixed(2)}`,
+            '--blur': `${blur.toFixed(2)}`,
+            '--dur': `${dur.toFixed(2)}`,
+            '--delay': `${delay.toFixed(2)}`,
+            '--dx': `${dx.toFixed(2)}`,
+            '--dy': `${dy.toFixed(2)}`,
+            '--o': `${o.toFixed(2)}`,
+            '--c': c,
+          },
+        });
+      }
+
+      this.particles = out;
+    },
+
     rowsToRegistry(rows) {
       const reg = {};
       for (const row of rows ?? []) {
-        const sign = row.sign;   // 'aries'
-        const theme = row.theme; // 'love'|'career'|'energy'
+        const sign = row.sign;
+        const theme = row.theme;
         if (!sign || !theme) continue;
 
         if (!reg[sign]) reg[sign] = {};
@@ -340,7 +355,6 @@ export default {
       return reg;
     },
 
-    // ✅ перетворює реєстр назад у rows (щоб зберігати як раніше, нічого не ламати)
     registryToRows(reg) {
       const rows = [];
       for (const sign of Object.keys(reg || {})) {
@@ -360,9 +374,8 @@ export default {
 
     async loadHoroscopesForDay({ forceNetwork = false } = {}) {
       const locale = this.selectedLocale;
-      const today = localISODate(); // локальна дата юзера
+      const today = localISODate();
 
-      // 1) локально (як було)
       if (!forceNetwork) {
         const local = await loadLocal();
         if (
@@ -371,7 +384,6 @@ export default {
           Array.isArray(local?.rows) &&
           local.rows.length
         ) {
-          // ✅ тепер кладемо в реєстр
           this.horoscope = this.rowsToRegistry(local.rows);
           return;
         }
@@ -387,7 +399,6 @@ export default {
         return data ?? [];
       };
 
-      // 2) мережа: today, якщо пусто — tomorrow (як було)
       let rows = await fetchByDate(today);
 
       if (!rows.length) {
@@ -400,11 +411,9 @@ export default {
         rows = await fetchByDate(tomorrow);
       }
 
-      // ✅ кладемо в реєстр
       const reg = this.rowsToRegistry(rows);
       this.horoscope = reg;
 
-      // 3) зберігаємо локально (структуру з rows лишаємо як є, щоб не ламати твій saver)
       await saveLocal({ date: today, locale, rows: this.registryToRows(reg) });
     },
 
@@ -455,25 +464,20 @@ export default {
     },
 
     layoutAll() {
-      this.layoutLinesAndSvg();
+      this.layoutLines();
     },
 
-    layoutLinesAndSvg() {
+    layoutLines() {
       const container = this.$refs.container;
       const leftEl = this.$refs.lineLeft;
       const rightEl = this.$refs.lineRight;
       const centerRound = this.$refs.centerRound;
-      const wheel = this.$refs.wheel;
 
-      if (!container || !leftEl || !rightEl || !centerRound || !wheel) return;
+      if (!container || !leftEl || !rightEl || !centerRound) return;
 
       const rect = container.getBoundingClientRect();
       const W = rect.width;
-      const H = rect.height;
       const s = W / DESIGN_W;
-
-      this.svgW = W;
-      this.svgH = H;
 
       const cx = W / 2;
       const halfGap = (DESIGN_GAP / 2) * s;
@@ -482,6 +486,10 @@ export default {
       const c = centerRound.getBoundingClientRect();
       const yJoin = (c.top - rect.top) + (JOIN_OFFSET * s);
 
+      container.style.setProperty('--yJoin', `${yJoin}px`);
+      container.style.setProperty('--halfGap', `${halfGap}px`);
+      container.style.setProperty('--inset', `${inset}px`);
+
       const leftTop = { x: inset, y: 0 };
       const rightTop = { x: W - inset, y: 0 };
       const leftBottom = { x: cx - halfGap, y: yJoin };
@@ -489,45 +497,6 @@ export default {
 
       this.setLine(leftEl, leftTop.x, leftTop.y, leftBottom.x, leftBottom.y);
       this.setLine(rightEl, rightTop.x, rightTop.y, rightBottom.x, rightBottom.y);
-
-      this.clipPoints = [
-        `${leftTop.x},${leftTop.y}`,
-        `${rightTop.x},${rightTop.y}`,
-        `${rightBottom.x},${rightBottom.y}`,
-        `${leftBottom.x},${leftBottom.y}`,
-      ].join(' ');
-
-      const w = wheel.getBoundingClientRect();
-      const wx = (w.left - rect.left) + w.width / 2;
-      const wy = (w.top - rect.top) + w.height / 2;
-
-      const rBottom = Math.hypot(leftBottom.x - wx, leftBottom.y - wy);
-
-      const topBg = this.$refs.topBg;
-      let yTopArc = 140 * s;
-      if (topBg) {
-        const t = topBg.getBoundingClientRect();
-        const TOP_ARC_NUDGE = 84;
-        yTopArc = (t.bottom - rect.top) + ((6 - TOP_ARC_NUDGE) * s);
-      }
-
-      const rTop = Math.hypot(cx - wx, yTopArc - wy);
-
-      this.maskCx = wx;
-      this.maskCy = wy;
-      this.maskRBottom = rBottom;
-      this.maskRTop = rTop;
-
-      const size = Math.min(rTop * 4, BG_MAX);
-      this.bgSize = size;
-
-      const nudgeX = BG_NUDGE_X_DESIGN * s;
-      const nudgeY = BG_NUDGE_Y_DESIGN * s;
-
-      this.bgX = wx - size / 2 + nudgeX;
-      this.bgY = wy - size / 2 + nudgeY;
-
-      this.setStarsTransform(this.rotation);
     },
 
     mod(n, m) {
@@ -554,27 +523,16 @@ export default {
       const fling = Math.abs(omegaDegPerSec) > FLING_THRESHOLD_DEG_PER_SEC;
       let targetIdx;
 
-      if (fling) {
-        targetIdx = omegaDegPerSec > 0 ? Math.ceil(idx) : Math.floor(idx);
-      } else {
-        targetIdx = Math.round(idx);
-      }
+      if (fling) targetIdx = omegaDegPerSec > 0 ? Math.ceil(idx) : Math.floor(idx);
+      else targetIdx = Math.round(idx);
+
       return targetIdx * step;
     },
 
     applyRotationToView(rot, withHaptic) {
       const wheel = this.$refs.wheel;
-      if (wheel) {
-        wheel.style.transform = `translate3d(-50%, -50%, 0) rotate(${rot}deg)`;
-      }
-      this.setStarsTransform(rot);
+      if (wheel) wheel.style.transform = `translate3d(-50%, -50%, 0) rotate(${rot}deg)`;
       this.updateSnapState(withHaptic);
-    },
-
-    setStarsTransform(rot) {
-      const img = this.$refs.bgImg;
-      if (!img) return;
-      img.setAttribute('transform', `rotate(${rot} ${this.maskCx} ${this.maskCy})`);
     },
 
     async playHapticForIndex(snapIndex) {
@@ -592,13 +550,14 @@ export default {
       }
     },
 
-    updateSnapState() {
+    updateSnapState(withHaptic = false) {
       const step = this.stepDeg;
       const snapIndex = Math.floor((-this.rotation) / step + 0.5);
 
       if (snapIndex !== this.lastSnapIndex) {
         this.lastSnapIndex = snapIndex;
         this.currentSector = this.mod(snapIndex, this.sectorCount);
+        if (withHaptic) this.playHapticForIndex(snapIndex);
       }
     },
 
@@ -772,12 +731,11 @@ export default {
       return String(s).replace(/\r/g, '').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
     },
 
-
     buildShareTextCard({ title, date, zodiacEmoji, zodiacName, datesRange, themeEmoji, themeLabel, text }) {
       const clean = this.normalizeText(text);
       return [
         `✨ ${title}`,
-        `🗓️ ${date}`, // замість 📅
+        `🗓️ ${date}`,
         `${zodiacEmoji} ${zodiacName} ${datesRange}`.trim(),
         `${themeEmoji} ${this.tt('theme')}: ${themeLabel}`,
         '━━━━━━━━━━━━',
@@ -812,33 +770,47 @@ export default {
         themeEmoji, themeLabel,
         text: rawText,
       };
+
       requestAnimationFrame(() => {
-        document.activeElement?.blur?.()
-      })
+        document.activeElement?.blur?.();
+      });
+
       try {
-        await Share.share({
-          text: this.buildShareTextCard(payload),
-        });
+        await Share.share({ text: this.buildShareTextCard(payload) });
       } catch (e) {
         console.warn('Share cancelled/failed', e);
       }
     },
 
+    async setTheme(tab) {
+      this.themeTab = tab;
+      try { await Haptics.impact({ style: ImpactStyle.Light }); } catch(e) {
+        console.log(e);
+      }
+    }
   },
 };
 </script>
-
 
 <style scoped lang="scss">
 .container {
   --s: 1;
   --vh: 1vh;
 
+  /* оновлюються з JS */
+  --inset: 30px;
+  --halfGap: 98px;
+  --yJoin: 380px;
+
+  --arcBand: 18px;
+  --arcStroke: 1.2px;
+  --coverSlope: 42px;
+  --coverBleed: 3px;
+
   background: #031018;
   width: 100%;
   max-width: 440px;
   margin: 0 auto;
-
   height: calc(var(--vh) * 100);
 
   display: flex;
@@ -852,13 +824,395 @@ export default {
   contain: layout paint;
 }
 
-.sector-svg {
+/* ✅ HERO DISC */
+.hero-disc {
+  position: absolute;
+  left: 50%;
+  top: calc(160px * var(--s));
+  transform: translate(-50%, -50%);
+  width: calc(870px * var(--s));
+  height: calc(870px * var(--s));
+  border-radius: 50%;
+  overflow: hidden;
+  z-index: 145;
+  pointer-events: none;
+
+  box-shadow: 0 26px 44px rgba(0, 0, 0, 0.60),
+  0 0 0 1px rgba(159, 216, 246, 0.10);
+
+  -webkit-mask-image: radial-gradient(circle, #fff 72%, transparent 100%);
+  mask-image: radial-gradient(circle, #fff 72%, transparent 100%);
+}
+
+/* ✅ 3D WRAPPER */
+.hero-disc__tilt {
   position: absolute;
   inset: 0;
-  z-index: 60;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* 3D tilt auto */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-disc__tilt {
+    animation: discTilt 10.5s ease-in-out infinite;
+  }
+  @keyframes discTilt {
+    0% {
+      transform: perspective(900px) rotateX(10deg) rotateY(-9deg) scale(1);
+    }
+    50% {
+      transform: perspective(900px) rotateX(6deg) rotateY(10deg) scale(1.01);
+    }
+    100% {
+      transform: perspective(900px) rotateX(10deg) rotateY(-9deg) scale(1);
+    }
+  }
+}
+
+/* ✅ slow spin */
+.hero-disc__spin {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-disc__spin {
+    animation: discSpin 320s linear infinite;
+  }
+  @keyframes discSpin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+.hero-disc__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.08);
+  backface-visibility: hidden;
+}
+
+/* ✅ STAR TEXTURE */
+.hero-disc__stars {
+  position: absolute;
+  inset: -10%;
+  opacity: 0.22;
+  mix-blend-mode: screen;
+  filter: blur(0.2px);
+
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.85) 0 1px, transparent 1.8px),
+  radial-gradient(circle, rgba(159, 216, 246, 0.55) 0 1px, transparent 2.2px),
+  radial-gradient(circle, rgba(255, 220, 180, 0.35) 0 1.1px, transparent 2.6px);
+
+  background-size: 90px 90px,
+  150px 150px,
+  240px 240px;
+
+  background-position: 10px 20px,
+  60px 90px,
+  140px 40px;
+}
+
+.hero-disc__stars--2 {
+  opacity: 0.14;
+  filter: blur(0.7px);
+
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.60) 0 1px, transparent 2.2px),
+  radial-gradient(circle, rgba(255, 255, 255, 0.35) 0 1px, transparent 2.8px);
+
+  background-size: 120px 120px,
+  260px 260px;
+
+  background-position: 30px 70px,
+  180px 20px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-disc__stars {
+    animation: starsTwinkle 4.8s ease-in-out infinite;
+  }
+  .hero-disc__stars--2 {
+    animation: starsTwinkle2 6.2s ease-in-out infinite;
+  }
+
+  @keyframes starsTwinkle {
+    0%, 100% {
+      opacity: 0.20;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.32;
+      transform: scale(1.012);
+    }
+  }
+  @keyframes starsTwinkle2 {
+    0%, 100% {
+      opacity: 0.12;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.20;
+      transform: scale(1.016);
+    }
+  }
+}
+
+/* ✅ LIGHT SWEEP */
+.hero-disc__sweep {
+  position: absolute;
+  inset: -35%;
+  opacity: 0;
+  mix-blend-mode: screen;
+  filter: blur(7px);
+
+  background: linear-gradient(
+      115deg,
+      transparent 0%,
+      transparent 40%,
+      rgba(255, 255, 255, 0.06) 47%,
+      rgba(159, 216, 246, 0.20) 50%,
+      rgba(255, 220, 180, 0.08) 53%,
+      transparent 60%,
+      transparent 100%
+  );
+
+  transform: translateX(-60%) rotate(18deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-disc__sweep {
+    animation: sweepPass 12s ease-in-out infinite;
+  }
+  @keyframes sweepPass {
+    0% {
+      opacity: 0;
+      transform: translateX(-70%) rotate(18deg);
+    }
+    18% {
+      opacity: 0;
+    }
+    30% {
+      opacity: 0.45;
+    }
+    48% {
+      opacity: 0.16;
+      transform: translateX(62%) rotate(18deg);
+    }
+    58% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(62%) rotate(18deg);
+    }
+  }
+}
+
+/* ✅ PARTICLES */
+.hero-disc__particles {
+  position: absolute;
+  inset: -8%;
+  z-index: 4;
+  pointer-events: none;
+  transform: translateZ(60px);
+  contain: paint;
+
+  /* трохи “haze” як у рефі */
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.25));
+}
+
+/* shooting star */
+.hero-disc__particles::before {
+  content: "";
+  position: absolute;
+  left: -35%;
+  top: 20%;
+  width: 220px;
+  height: 2px;
+  opacity: 0;
+  transform: rotate(22deg);
+  filter: blur(0.4px);
+  background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.70) 45%,
+      rgba(159, 216, 246, 0.50) 55%,
+      transparent 100%
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-disc__particles::before {
+    animation: shoot 11s linear infinite;
+  }
+  @keyframes shoot {
+    0% {
+      opacity: 0;
+      transform: translate(-80%, -80%) rotate(22deg);
+    }
+    6% {
+      opacity: 0.9;
+    }
+    10% {
+      opacity: 0;
+      transform: translate(200%, 200%) rotate(22deg);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(200%, 200%) rotate(22deg);
+    }
+  }
+}
+
+.particle {
+  position: absolute;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1%);
+
+  width: calc(var(--s) * 1px);
+  height: calc(var(--s) * 1px);
+  border-radius: 999px;
+
+  /* glow dot */
+  background: radial-gradient(circle, var(--c) 0%, rgba(255, 255, 255, 0) 72%);
+  mix-blend-mode: screen;
+
+  filter: blur(calc(var(--blur) * 1px));
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .particle {
+    animation: particleMove calc(var(--dur) * 1s) linear infinite,
+    particleFade calc(var(--dur) * 1s) ease-in-out infinite;
+    animation-delay: calc(var(--delay) * 1s), calc(var(--delay) * 1s);
+  }
+
+  @keyframes particleMove {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(calc(var(--dx) * 1px), calc(var(--dy) * 1px), 0);
+    }
+  }
+
+  @keyframes particleFade {
+    0% {
+      opacity: 0;
+    }
+    15% {
+      opacity: var(--o);
+    }
+    85% {
+      opacity: var(--o);
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+}
+
+/* ✅ VIGNETTE + rim */
+.hero-disc::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: radial-gradient(
+      circle at 50% 45%,
+      rgba(0, 0, 0, 0.00) 0%,
+      rgba(0, 0, 0, 0.12) 62%,
+      rgba(0, 0, 0, 0.50) 100%
+  );
+}
+
+.hero-disc::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  pointer-events: none;
+  border-radius: 50%;
+  border: 1px solid rgba(159, 216, 246, 0.10);
+  box-shadow: 0 0 22px rgba(159, 216, 246, 0.07);
+}
+
+/* ✅ side covers */
+.side-cover {
+  position: absolute;
+  top: 0;
+  left: calc(-1 * var(--coverBleed));
+  width: calc(100% + (2 * var(--coverBleed)));
+  height: calc(var(--yJoin) + var(--coverSlope));
+  background: #031018;
+  z-index: 140;
   pointer-events: none;
 }
 
+.side-cover--left {
+  clip-path: polygon(
+      0 0,
+      calc(var(--inset) + var(--coverBleed)) 0,
+      calc(50% - var(--halfGap)) var(--yJoin),
+      0 calc(var(--yJoin) + var(--coverSlope))
+  );
+}
+
+.side-cover--right {
+  clip-path: polygon(
+      calc(100% - (var(--inset) + var(--coverBleed))) 0,
+      100% 0,
+      100% calc(var(--yJoin) + var(--coverSlope)),
+      calc(50% + var(--halfGap)) var(--yJoin)
+  );
+}
+
+/* ✅ arc overlay */
+.arc-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 150;
+  pointer-events: none;
+  clip-path: inset(
+      calc(var(--yJoin) - var(--arcBand)) 0 calc(100% - (var(--yJoin) + var(--arcBand))) 0
+  );
+}
+
+.arc-overlay::before,
+.arc-overlay::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(740px * var(--s));
+  width: calc(1800px * var(--s));
+  height: calc(1800px * var(--s));
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: var(--arcStroke) solid rgba(159, 216, 246, 0.85);
+  box-sizing: border-box;
+}
+
+.arc-overlay::after {
+  border-color: rgba(159, 216, 246, 0.35);
+  transform: translate(-50%, -50%) scale(1.006);
+}
+
+/* LINES */
 .line {
   position: absolute;
   height: 1px;
@@ -869,11 +1223,13 @@ export default {
   opacity: 0.7;
 }
 
+/* WHEEL */
 .wheel-stage {
   position: relative;
   width: 100%;
   height: calc(var(--vh) * 100);
   overflow: hidden;
+  z-index: 150;
 }
 
 .wheel {
@@ -886,7 +1242,6 @@ export default {
   background: url('/images/final7.svg') center/contain no-repeat;
   transform-origin: 50% 50%;
   z-index: 80;
-  will-change: auto;
   transform: translate3d(-50%, -50%, 0) rotate(0deg);
 
   @media screen and (max-height: 670px) {
@@ -896,7 +1251,6 @@ export default {
 
 .wheel.gpu {
   will-change: transform;
-  transform: translate3d(-50%, -50%, 0) rotate(0deg);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
@@ -910,26 +1264,21 @@ export default {
 }
 
 .active-zodiac {
-  position: absolute;
-  left: 50%;
-  top: calc(520px * var(--s));
-  transform: translate(-50%, -50%);
-  z-index: 500;
   display: flex;
   flex-direction: column;
   align-items: center;
   pointer-events: none;
+  color: white;
+  margin-bottom: 16px;
 }
 
 .active-zodiac-name {
-  margin-top: calc(1px * var(--s));
   font-size: calc(12px * var(--s));
   letter-spacing: 0.14em;
   color: rgba(255, 255, 255, 0.92);
 }
 
 .active-zodiac-dates {
-  margin-top: calc(1px * var(--s));
   font-size: calc(12px * var(--s));
   color: rgba(159, 216, 246, 0.75);
 }
@@ -943,11 +1292,25 @@ export default {
   left: 0;
   right: 0;
   height: calc(143px * var(--s));
-  z-index: 300;
+  z-index: 90;
 }
 
+.top-round {
+  width: calc(1378px * var(--s));
+  height: calc(1378px * var(--s));
+  position: absolute;
+  top: calc(54px * var(--s));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  border: 1px solid rgba(159, 216, 246, 0.25);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* CENTER ROUND */
 .center-round {
-  background-color: #031018;
   width: calc(530px * var(--s));
   height: calc(530px * var(--s));
   border-radius: 50%;
@@ -966,29 +1329,133 @@ export default {
   }
 }
 
-.top-round {
-  width: calc(1378px * var(--s));
-  height: calc(1378px * var(--s));
-  position: absolute;
-  top: calc(54px * var(--s));
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 200;
+.bottom-wrapper {
+  width: 100%;
+  height: 100%;
   border: 1px solid rgba(159, 216, 246, 0.25);
   border-radius: 50%;
-  pointer-events: none;
-  opacity: 0.5;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding-bottom: calc(18px + env(safe-area-inset-bottom));
+  background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(159,216,246,0.10),
+    inset 0 30px 60px rgba(159,216,246,0.05);
 }
 
-.bottom-info {
-  bottom: 0;
+.horoscope-info {
+  max-width: calc(100vw - 10px);
+  text-align: center;
+}
+
+.horoscope-info-title {
+  font-weight: 500;
+  font-size: calc(18px * var(--s));
+  line-height: 22px;
+  margin-bottom: 10px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.horoscope-info-style {
+  font-weight: 400;
+  font-size: calc(14.5px * var(--s));
+  line-height: 175%;
+  letter-spacing: 0.01em;
+  color: rgba(225, 235, 250, 0.78);
+  padding: 0 clamp(14px, 4vw, 22px);
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+
+  scrollbar-width: none;
+  text-wrap: pretty;
+  hyphens: auto;
+
+  /* ✅ fade зверху/знизу (виглядає дуже “дорого”) */
+  -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0px,
+      #000 14px,
+      #000 calc(100% - 18px),
+      transparent 100%
+  );
+  mask-image: linear-gradient(
+      to bottom,
+      transparent 0px,
+      #000 14px,
+      #000 calc(100% - 18px),
+      transparent 100%
+  );
+}
+
+.horoscope-info-style::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* dots */
+.dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.dot {
+  width: 22px;        /* ✅ tap area */
+  height: 22px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.dot::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.22);
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.dot.active::after {
+  background: rgba(255,255,255,0.92);
+  transform: scale(1.12);
+}
+
+
+.share-wrap {
   position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 260;
-  background-color: #031018;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 36px;
+  height: 36px;
+
+  border-radius: 999px;
+  background: rgba(9, 16, 26, 0.55);
+  border: 1px solid rgba(159,216,246,0.18);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 10px 20px rgba(0,0,0,0.35),
+    0 0 0 1px rgba(255,255,255,0.04);
+
+  color: rgba(159,216,246,0.75);
 }
 
+/* DATE */
 .date-info {
   position: absolute;
   top: 100px;
@@ -1005,78 +1472,16 @@ export default {
   font-size: 16px;
   line-height: 24px;
   letter-spacing: 0.12em;
-  color: #ffffff;
+  color: #fff;
   margin-bottom: 8px;
 }
 
 .date-bottom {
   font-size: 14px;
   line-height: 18px;
-  text-align: center;
 }
 
-.bottom-wrapper {
-  width: 100%;
-  height: 100%;
-  border: 1px solid rgba(159, 216, 246, 0.25);
-  border-radius: 50%;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  padding-top: 60px;
-}
-
-.horoscope-info {
-  max-width: calc(100vw - 10px);
-  text-align: center;
-}
-
-.horoscope-info-title {
-  font-weight: 400;
-  font-size: 18px;
-  line-height: 24px;
-  text-align: center;
-  margin-bottom: 12px;
-  color: #FFFFFF;
-}
-
-.horoscope-info-style {
-  font-style: normal;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 160%;
-  text-align: center;
-  color: #7E8AA5;
-  height: 162px;
-  overflow: auto;
-}
-
-.custom-carousel {
-  height: max-content;
-}
-
-.dots {
-  margin-top: 8px;
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  align-items: center;
-  pointer-events: auto;
-  height: 30px;
-}
-
-.dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  border: none;
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.dot.active {
-  background: rgba(255, 255, 255, 0.9);
-}
-
+/* Bottom bg */
 .bottom-bg-wrap {
   position: fixed;
   bottom: 0;
@@ -1084,146 +1489,187 @@ export default {
   background-color: #031018 !important;
   height: 90px;
   width: 100%;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 @media screen and (max-height: 670px) {
-  .bottom-wrapper {
-    padding-top: 40px;
-  }
-
   .date-info {
     top: 50px;
   }
-
   .date-info-label {
     font-size: 12px;
   }
-
   .horoscope-info-title {
     font-size: 14px;
     margin-bottom: 6px;
   }
-
   .horoscope-info-style {
     font-size: 12px;
     height: 100px;
   }
-
   .active-zodiac {
     top: calc(420px * var(--s));
   }
-
-}
-
-/* базові розміри з твого дизайну */
-.container {
-  --inset: calc(30px * var(--s)); /* DESIGN_TOP_INSET */
-  --halfGap: calc(98px * var(--s)); /* DESIGN_GAP / 2 */
-  --yJoin: calc(380px * var(--s)); /* centerRound top 480 + JOIN_OFFSET 10 */
-  --arcBand: calc(18px * var(--s)); /* ширина “смуги”, де видно дугу */
-  --arcStroke: calc(1.2px * var(--s));
-  --coverSlope: calc(42px * var(--s)); /* наскільки нижче на краях */
-  --coverBleed: calc(3px * var(--s)); /* 2..5px */
-
-}
-
-@media screen and (max-height: 670px) {
-  .container {
-    --yJoin: calc(390px * var(--s)); /* 380 + 10 */
+  .bottom-wrapper {
+    padding-top: 40px;
   }
 }
 
-/* top-bg НЕ має перекривати наші cover/дугу */
-.top-bg {
-  z-index: 90;
+.horoscope-divider {
+  width: 46px;
+  height: 1px;
+  margin: 0 auto 12px;
+  background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(159, 216, 246, 0.75) 40%,
+      rgba(255, 255, 255, 0.35) 60%,
+      transparent 100%
+  );
+  opacity: 0.8;
 }
 
-/* було 300 */
-
-/* 1) бокові “заливки” — тільки до yJoin */
-.side-cover {
-  position: absolute;
-  top: 0;
-  left: calc(-1 * var(--coverBleed));
-  width: calc(100% + (2 * var(--coverBleed)));
-  height: var(--yJoin);
-  background: #031018;
-  z-index: 140; /* вище wheel(80), нижче center-round(250) */
-  pointer-events: none;
+.q-tab-panel {
+  animation: panelIn 180ms ease-out;
 }
 
-.side-cover {
-  height: calc(var(--yJoin) + var(--coverSlope));
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.side-cover--left {
-  clip-path: polygon(
-      0 0,
-      calc(var(--inset) + var(--coverBleed)) 0,
-      calc(50% - var(--halfGap)) var(--yJoin),
-      0 calc(var(--yJoin) + var(--coverSlope))
+
+.horoscope-info {
+  width: 100%;
+  height: 100%;
+  max-width: calc(100vw - 10px);
+
+  display: flex;
+  flex-direction: column;
+
+  /* важливо щоб скрол всередині працював нормально */
+  min-height: 0;
+}
+
+/* ✅ q-tab-panels займає весь вільний простір */
+:deep(.horoscope-panels) {
+  flex: 1;
+  min-height: 0;
+  max-height: calc(100% - 200px);
+}
+
+/* ✅ кожна панель = колонка на всю висоту */
+:deep(.q-tab-panel) {
+  height: 100%;
+  min-height: 0;
+}
+
+/* ✅ внутрішній layout панелі */
+.panel-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ✅ головне: текст стає динамічним */
+.horoscope-info-style {
+  flex: 1;          /* займає весь доступний простір */
+  min-height: 0;    /* must-have для overflow */
+
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+
+  font-weight: 400;
+  font-size: calc(14.5px * var(--s));
+  line-height: 175%;
+  letter-spacing: 0.01em;
+  color: rgba(225, 235, 250, 0.78);
+
+  padding: 0 clamp(14px, 4vw, 22px);
+
+  scrollbar-width: none;
+  text-wrap: pretty;
+  hyphens: auto;
+
+  /* ✅ fade зверху/знизу */
+  -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0px,
+      #000 14px,
+      #000 calc(100% - 18px),
+      transparent 100%
+  );
+  mask-image: linear-gradient(
+      to bottom,
+      transparent 0px,
+      #000 14px,
+      #000 calc(100% - 18px),
+      transparent 100%
   );
 }
 
-
-.side-cover--right {
-  clip-path: polygon(
-      calc(100% - (var(--inset) + var(--coverBleed))) 0,
-      100% 0,
-      100% calc(var(--yJoin) + var(--coverSlope)),
-      calc(50% + var(--halfGap)) var(--yJoin)
-  );
+.horoscope-info-style::-webkit-scrollbar {
+  display: none;
 }
 
-
-/* 2) перемальована дуга поверх заливок, але тільки “смуга” біля yJoin */
-.arc-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 150; /* поверх заливок */
-  pointer-events: none;
-
-  /* показуємо тільки вузьку смугу навколо дуги */
-  clip-path: inset(
-      calc(var(--yJoin) - var(--arcBand)) 0 calc(100% - (var(--yJoin) + var(--arcBand))) 0
-  );
-}
-
-/* саме коло (та ж геометрія, що wheel) */
-.arc-overlay::before,
-.arc-overlay::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: calc(740px * var(--s)); /* як у .wheel */
-  width: calc(1800px * var(--s));
-  height: calc(1800px * var(--s));
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  border: var(--arcStroke) solid rgba(159, 216, 246, 0.85);
-  box-sizing: border-box;
-}
-
-/* друга слабша дуга (як в арті подвійна) */
-.arc-overlay::after {
-  border-color: rgba(159, 216, 246, 0.35);
-  transform: translate(-50%, -50%) scale(1.006); /* легкий зсув, щоб було “дві” */
-}
-
-/* center-round завжди поверх */
-.center-round {
-  z-index: 250;
-}
-
-.share-wrap {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #0D1321;
+/* ✅ контрол-блок завжди внизу */
+.horoscope-controls {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #617C97;
 }
+
+/* dots залишаємо як у тебе */
+.dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dots {
+  position: relative;
+   border-radius: 12px;
+  overflow: hidden;
+}
+
+.dots::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  background: radial-gradient(
+      120px 40px at 50% 0%,
+      rgba(159,216,246,0.20),
+      transparent 50%
+  );
+
+  opacity: 0.7;
+}
+.dot::after {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+
+  background: rgba(255,255,255,0.22);
+  box-shadow: 0 0 0 rgba(159,216,246,0);
+
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.dot.active::after {
+  background: rgba(255,255,255,0.92);
+  transform: scale(1.15);
+  box-shadow: 0 0 14px rgba(159,216,246,0.35);
+}
+
 </style>
