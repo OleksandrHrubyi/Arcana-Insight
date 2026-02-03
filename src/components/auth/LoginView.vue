@@ -1,6 +1,7 @@
 <script>
 import { SignInWithApple } from '@capacitor-community/apple-sign-in';
 import { supabase } from 'boot/supabase.js';
+import { t, currentLocale } from 'src/i18n';
 
 export default {
   name: 'LoginView',
@@ -9,8 +10,18 @@ export default {
     return {
       email: '',
       loading: false,
-      errorMessage: ''
+      errorMessage: '',
     };
+  },
+
+  computed: {
+    locale() {
+      return currentLocale.value || 'en';
+    },
+
+    tt() {
+      return (key) => t(this.locale, key);
+    }
   },
 
   methods: {
@@ -107,7 +118,7 @@ export default {
         });
       } catch (e) {
         console.error(e);
-        this.errorMessage = e.message || 'Something went wrong. Please try again.';
+        this.errorMessage = e.message || this.tt('errors.generic');
       } finally {
         this.loading = false;
       }
@@ -119,10 +130,10 @@ export default {
 <template>
   <div class="login-wrap">
     <div class="login-container">
-      <p class="subtitle">Welcome back to Arcana</p>
+      <p class="subtitle">{{ tt('auth.welcomeBack') }}</p>
 
       <div class="field">
-        <span class="field-label q-mb-xs">Email</span>
+        <span class="field-label q-mb-xs">{{ tt('fields.email') }}</span>
         <input
           class="field-input"
           v-model="email"
@@ -133,7 +144,7 @@ export default {
 
       <div class="q-mb-md">
         <q-btn
-          label="Login"
+          :label="tt('auth.loginAction')"
           class="no-auth-btn mono-text"
           no-caps
           flat
@@ -143,13 +154,13 @@ export default {
       </div>
 
       <p class="bottom-text">
-        New to Arcana?
-        <router-link to="/sign-up" class="link">Sign up</router-link>
+        {{ tt('auth.newToArcana') }}
+        <router-link to="/sign-up" class="link">{{ tt('auth.signUpAction') }}</router-link>
       </p>
 
       <div class="divider">
         <span class="divider-line"></span>
-        <span class="divider-text">or continue with</span>
+        <span class="divider-text">{{ tt('auth.orContinueWith') }}</span>
         <span class="divider-line"></span>
       </div>
 

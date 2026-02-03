@@ -3,6 +3,7 @@
 
 import { supabase } from 'boot/supabase.js';
 import CodeInput from 'components/ui/CodeInput.vue';
+import { t, currentLocale } from 'src/i18n';
 
 export default {
   name: 'ConfirmEmailCode',
@@ -26,6 +27,14 @@ export default {
 
 
   computed: {
+    locale() {
+      return currentLocale.value || 'en';
+    },
+
+    tt() {
+      return (key) => t(this.locale, key);
+    },
+
     email() {
       return (this.$route.query.email || '').toString();
     },
@@ -69,7 +78,7 @@ export default {
 
       } catch (e) {
         console.error(e);
-        this.errorMessage = e.message || 'Something went wrong. Please try again.';
+        this.errorMessage = e.message || this.tt('errors.generic');
       } finally {
         this.loading = false;
       }
@@ -94,13 +103,13 @@ export default {
         }
 
         if (!data?.session) {
-          throw new Error('No session returned');
+          throw new Error(this.tt('errors.noSession'));
         }
 
         this.$router.push('/'); // або '/home' – куди веде твій "апп-скрін"
       } catch (e) {
         console.error(e);
-        this.errorMessage = 'Wrong or expired code. Try again.';
+        this.errorMessage = this.tt('auth.wrongOrExpiredCode');
       } finally {
         this.loading = false;
       }
@@ -114,7 +123,7 @@ export default {
 <template>
   <div class="login-wrap">
     <div class="login-container">
-      <p class="subtitle q-mb-md">We’ve sent a 6-digit verification code to your email</p>
+      <p class="subtitle q-mb-md">{{ tt('auth.codeSent') }}</p>
       <div class="email q-mb-lg">
         {{ email }}
         <router-link to="/login" class="row items-center q-ml-md">
@@ -141,9 +150,9 @@ export default {
       <q-separator class="separator-color"/>
 
       <p class="send-code">
-        Didn't get your code?
+        {{ tt('auth.didntGetCode') }}
         <q-btn flat no-caps @click="resendCode">
-          <span class="sent-code-btn">  Send a new code</span>
+          <span class="sent-code-btn">  {{ tt('auth.sendCodeAgain') }}</span>
         </q-btn>
 
       </p>

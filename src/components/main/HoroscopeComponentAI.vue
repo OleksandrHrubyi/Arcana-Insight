@@ -1,8 +1,8 @@
 <template>
   <div ref="container" class="container">
     <div class="date-info">
-      <div class="date-info-label date-top">HOROSCOPE FOR</div>
-      <div class="date-info-label date-bottom">DECEMBER 19</div>
+      <div class="date-info-label date-top">{{ tt('horoscopeFor') }}</div>
+      <div class="date-info-label date-bottom">{{ monthDayLabel }}</div>
     </div>
 
     <!-- ✅ SVG MASK (замість CSS mask-image: radial-gradient) -->
@@ -92,6 +92,7 @@
 
 <script>
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { t, currentLocale } from 'src/i18n';
 
 const DESIGN_W = 440;
 const DESIGN_TOP_INSET = 30;
@@ -179,8 +180,24 @@ export default {
       ],
     };
   },
-
   computed: {
+    locale() {
+      return currentLocale.value || 'en';
+    },
+
+    tt() {
+      return (key) => t(this.locale, key);
+    },
+
+    monthDayLabel() {
+      const now = new Date();
+      const locale = this.locale === 'uk' ? 'uk-UA' : 'en-US';
+      const label = new Intl.DateTimeFormat(locale, {
+        day: 'numeric',
+        month: 'long',
+      }).format(now);
+      return label.toLocaleUpperCase(locale);
+    },
     stepDeg() {
       return 360 / this.sectorCount;
     },

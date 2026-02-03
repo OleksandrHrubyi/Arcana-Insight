@@ -64,7 +64,7 @@
 
 <script>
 import { Haptics } from "@capacitor/haptics";
-import { t } from 'src/i18n/index.js';
+import { t, currentLocale } from 'src/i18n/index.js';
 import tarotData from "../../../src/data/cardsV2/tarot_full.json";
 
 export default {
@@ -103,10 +103,13 @@ export default {
       hapticActive: false,
       lastTickIndex: null,
       lastTickAt: 0,
-      selectedLocale: 'uk',
     };
   },
   computed: {
+    locale() {
+      return currentLocale.value || 'en';
+    },
+
     COUNT() {
       return this.cards.length || 72;
     },
@@ -121,14 +124,10 @@ export default {
       return this.cards[this.pendingIndex] || null;
     },
     tt() {
-      return (key) => t(this.selectedLocale, key);
+      return (key) => t(this.locale, key);
     },
   },
   mounted() {
-    const saved = localStorage.getItem('locale');
-    if (saved === 'uk' || saved === 'en') {
-      this.selectedLocale = saved;
-    }
     this.computeGeometry();
 
     this._ro = new ResizeObserver(() => this.computeGeometry());

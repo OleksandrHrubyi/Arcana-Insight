@@ -1,16 +1,30 @@
 <script>
 import BottomNavigation from 'components/ui/BottomNavigation.vue';
+import { t, currentLocale } from 'src/i18n';
 
 export default {
   name: 'MainLayout',
   components: { BottomNavigation },
+  data() {
+    return {
+    };
+  },
+  computed: {
+    locale() {
+      return currentLocale.value || 'en';
+    },
+
+    tt() {
+      return (key) => t(this.locale, key);
+    }
+  },
 };
 </script>
 
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated class="header-container">
-      hello
+      {{ tt('appName') }}
     </q-header>
     <q-page-container>
       <router-view />

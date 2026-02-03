@@ -1,6 +1,6 @@
 <template>
   <q-footer class="telegram-footer no-auth-btn">
-    <nav class="telegram-pill" ref="pill" aria-label="Bottom navigation">
+    <nav class="telegram-pill" ref="pill" :aria-label="tt('nav.bottom')">
       <button
         v-for="item in items"
         :key="item.name"
@@ -119,7 +119,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { t } from 'src/i18n'
+import { t, currentLocale } from 'src/i18n'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 
 // Якщо хочеш лишити initAuth тут — розкоментуй (але краще винести в boot / layout)
@@ -133,7 +133,7 @@ const router = useRouter()
 const pill = ref(null)
 
 const current = ref('arcana')
-const selectedLocale = ref('uk')
+const selectedLocale = computed(() => currentLocale.value || 'en')
 
 const items = [
   { name: 'arcana', labelKey: 'arcana' },
@@ -212,9 +212,6 @@ onMounted(async () => {
   // // initAuth (опційно)
   // const { initAuth } = useAuthStore()
   // initAuth()
-
-  const saved = localStorage.getItem('locale')
-  selectedLocale.value = saved === 'uk' || saved === 'en' ? saved : 'uk'
 
   await nextTick()
   updateIndicator()

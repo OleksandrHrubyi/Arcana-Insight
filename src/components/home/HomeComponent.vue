@@ -16,6 +16,7 @@ import home3_1x from 'src/assets/images/home3_1x.png';
 import home3_2x from 'src/assets/images/home3_2x.png';
 import home4_1x from 'src/assets/images/home4_1x.png';
 import home4_2x from 'src/assets/images/home4_2x.png';
+import { t, currentLocale } from 'src/i18n';
 
 export default {
   name: 'HomeComponent',
@@ -42,6 +43,16 @@ export default {
       home4_2x,
     }
   },
+
+  computed: {
+    locale() {
+      return currentLocale.value || 'en';
+    },
+
+    tt() {
+      return (key) => t(this.locale, key);
+    }
+  },
 };
 </script>
 
@@ -63,7 +74,7 @@ export default {
           <img
             :src="img1x"
             :srcset="`${img1x} 1x, ${img2x} 2x, ${img3x} 3x`"
-            alt="slide 1"
+            :alt="tt('home.slide1Alt')"
             loading="lazy"
             decoding="async"
           />
@@ -75,7 +86,7 @@ export default {
           <img
             :src="img2_1x"
             :srcset="`${img2_1x} 1x, ${img2_2x} 2x, ${img2_3x} 3x`"
-            alt="slide 2"
+            :alt="tt('home.slide2Alt')"
             loading="lazy"
             decoding="async"
           />
@@ -87,7 +98,7 @@ export default {
           <img
             :src="img3_1x"
             :srcset="`${img3_1x} 1x, ${img3_2x} 2x, ${img3_3x} 3x`"
-            alt="slide 3"
+            :alt="tt('home.slide3Alt')"
             loading="lazy"
             decoding="async"
           />
@@ -96,7 +107,7 @@ export default {
     </q-carousel>
 
     <div class="title">
-      Daily Insights
+      {{ tt('home.dailyInsights') }}
     </div>
     <div class="list">
       <div class="item">
@@ -104,11 +115,11 @@ export default {
           <img
             :src="home1_1x"
             :srcset="`${home1_1x} 1x, ${home1_2x} 2x`"
-            alt="slide 1"
+            :alt="tt('home.tarot')"
             loading="lazy"
             decoding="async"
           />
-          <h3 class="subtitle">Tarot</h3>
+          <h3 class="subtitle">{{ tt('home.tarot') }}</h3>
         </div>
 
       </div>
@@ -117,11 +128,11 @@ export default {
           <img
             :src="home2_1x"
             :srcset="`${home2_1x} 1x, ${home2_2x} 2x`"
-            alt="slide 1"
+            :alt="tt('home.zodiac')"
             loading="lazy"
             decoding="async"
           />
-          <h3 class="subtitle">Zodiac</h3>
+          <h3 class="subtitle">{{ tt('home.zodiac') }}</h3>
         </div>
       </div>
       <div class="item">
@@ -129,11 +140,11 @@ export default {
           <img
             :src="home3_1x"
             :srcset="`${home3_1x} 1x, ${home3_2x} 2x`"
-            alt="slide 1"
+            :alt="tt('home.daily')"
             loading="lazy"
             decoding="async"
           />
-          <h3 class="subtitle">Daily</h3>
+          <h3 class="subtitle">{{ tt('home.daily') }}</h3>
         </div>
       </div>
       <div class="item">
@@ -141,29 +152,29 @@ export default {
           <img
             :src="home4_1x"
             :srcset="`${home4_1x} 1x, ${home4_2x} 2x`"
-            alt="slide 1"
+            :alt="tt('home.astrology')"
             loading="lazy"
             decoding="async"
           />
-          <h3 class="subtitle">Astrology</h3>
+          <h3 class="subtitle">{{ tt('home.astrology') }}</h3>
         </div>
       </div>
 
 
     </div>
     <div class="back-to-main row items-center justify-center">
-      <router-link to="/" class="auth-link" aria-label="Back to Home">
-        ← Back to Home
+      <router-link to="/" class="auth-link" :aria-label="tt('backToHome')">
+        ← {{ tt('backToHome') }}
       </router-link>
     </div>
     <div class="back-to-main row items-center justify-center">
-      <router-link to="/settings" class="auth-link" aria-label="Settings">
-        Settings
+      <router-link to="/settings" class="auth-link" :aria-label="tt('home.settings')">
+        {{ tt('home.settings') }}
       </router-link>
     </div>
     <div class="back-to-main row items-center justify-center">
-      <router-link to="/animation" class="auth-link" aria-label="Settings">
-        Test Animation
+      <router-link to="/animation" class="auth-link" :aria-label="tt('home.testAnimation')">
+        {{ tt('home.testAnimation') }}
       </router-link>
     </div>
   </div>

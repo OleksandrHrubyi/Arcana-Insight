@@ -26,7 +26,7 @@
       </div>
 
       <div class="logo-wrap no-pointer-events">
-        <img :src="logo" alt="logo" class="logo-img" />
+        <img :src="logo" :alt="tt('appName')" class="logo-img" />
       </div>
 
       <div class="main-title mono-text no-pointer-events">
@@ -56,7 +56,7 @@
 <script>
 import logo from 'src/assets/images/logo.svg'
 import { useAuthStore } from 'src/stores/authStore.js'
-import { t } from 'src/i18n/index.js';
+import { t, currentLocale } from 'src/i18n/index.js';
 export default {
   name: 'LandingScene',
 
@@ -132,7 +132,6 @@ export default {
       isPreloaded: false,
       authStore: null,
       cycleTimeout: null,
-      selectedLocale: 'en',
       phraseQueue: [],
       phraseCursor: 0,
     };
@@ -179,7 +178,10 @@ export default {
     },
 
     tt() {
-      return (key) => t(this.selectedLocale, key);
+      return (key) => t(this.locale, key);
+    },
+    locale() {
+      return currentLocale.value || 'en';
     },
     fullTextArray() {
       return this.fullText.split('')
@@ -195,10 +197,6 @@ export default {
   mounted() {
     // без preload — одразу показуємо сцену
     this.isPreloaded = true
-    const saved = localStorage.getItem('locale');
-    if (saved === 'uk' || saved === 'en') {
-      this.selectedLocale = saved;
-    }
     this.resetPhraseQueue()
     this.setNextPhrase()
     this.$nextTick(() => {
@@ -226,7 +224,7 @@ export default {
     },
 
     resetPhraseQueue() {
-      const list = this.phrases?.[this.selectedLocale] || this.phrases.en
+      const list = this.phrases?.[this.locale] || this.phrases.en
       if (!list?.length) return
 
       // створюємо список індексів фраз
@@ -241,7 +239,7 @@ export default {
     },
 
     setNextPhrase() {
-      const list = this.phrases?.[this.selectedLocale] || this.phrases.en
+      const list = this.phrases?.[this.locale] || this.phrases.en
       if (!list?.length) return
       this.revealedIndices = []
       if (!this.phraseQueue.length || this.phraseCursor >= this.phraseQueue.length) {

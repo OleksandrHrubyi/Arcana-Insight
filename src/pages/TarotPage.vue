@@ -1,12 +1,12 @@
 <script>
-import TarotComponent from 'components/main/TarotComponent.vue';
+import TarotOraclePage from 'components/TarotOraclePage.vue';
 
 export default {
   name: 'TarotPage',
-  components: { TarotComponent },
+  components: { TarotOraclePage },
 };
 </script>
 
 <template>
-<TarotComponent/>
+<TarotOraclePage/>
 </template>

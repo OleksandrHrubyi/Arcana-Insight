@@ -2,22 +2,22 @@
   <q-page class="settings-page">
 
     <div class="topbar">
-      <q-btn flat class="cancel-btn" label="Cancel" @click="$router.back()" />
-      <div class="topbar-title">Account Edit</div>
-      <q-btn flat class="done-btn" label="Done" :disable="saving" @click="save" />
+      <q-btn flat class="cancel-btn" :label="tt('common.cancel')" @click="$router.back()" />
+      <div class="topbar-title">{{ tt('accountEdit.title') }}</div>
+      <q-btn flat class="done-btn" :label="tt('done')" :disable="saving" @click="save" />
     </div>
 
     <q-list class="settings-list">
       <q-item class="settings-item">
         <q-item-section class="custom-section-item">
-          <q-item-label>Name</q-item-label>
+          <q-item-label>{{ tt('fields.name') }}</q-item-label>
           <q-input v-model="form.name" dense borderless />
         </q-item-section>
       </q-item>
 
       <q-item class="settings-item">
         <q-item-section class="custom-section-item">
-          <q-item-label>Email</q-item-label>
+          <q-item-label>{{ tt('fields.email') }}</q-item-label>
           <q-input v-model="form.email" dense borderless />
         </q-item-section>
       </q-item>
@@ -25,7 +25,7 @@
 
       <q-item clickable v-ripple class="settings-item" @click="birthDialog = true">
         <q-item-section class="custom-section-item">
-          <q-item-label>Date of birth</q-item-label>
+          <q-item-label>{{ tt('fields.dateOfBirth') }}</q-item-label>
         </q-item-section>
         <q-item-section side class="row items-center custom-section-item">
           <div class="settings-value">{{ form.date_of_birth || '—' }}</div>
@@ -36,7 +36,7 @@
 
       <q-item class="settings-item">
         <q-item-section class="custom-section-item">
-          <q-item-label>City of birth</q-item-label>
+          <q-item-label>{{ tt('fields.cityOfBirth') }}</q-item-label>
           <q-input v-model="form.city_of_birth" dense borderless />
         </q-item-section>
       </q-item>
@@ -44,7 +44,7 @@
 
       <q-item clickable v-ripple class="settings-item" @click="countryDialog = true">
         <q-item-section class="custom-section-item">
-          <q-item-label>Country</q-item-label>
+          <q-item-label>{{ tt('fields.country') }}</q-item-label>
         </q-item-section>
         <q-item-section side class="row items-center custom-section-item">
           <div class="settings-value">{{ countryLabel }}</div>
@@ -58,12 +58,12 @@
     <!-- dialogs -->
     <q-dialog v-model="birthDialog">
       <q-card class="q-pa-md" style="width: 360px; max-width: 92vw; border-radius: 14px;">
-        <div class="text-subtitle1 q-mb-sm">Date of birth</div>
+        <div class="text-subtitle1 q-mb-sm">{{ tt('fields.dateOfBirth') }}</div>
         <q-date v-model="birthModel" mask="YYYY-MM-DD" minimal />
         <div class="row q-mt-md justify-end q-gutter-sm">
-          <q-btn flat label="Cancel" v-close-popup />
-          <q-btn flat label="Clear" @click="birthModel=''; form.date_of_birth=''; birthDialog=false" />
-          <q-btn unelevated color="cyan-4" text-color="black" label="Save"
+          <q-btn flat :label="tt('common.cancel')" v-close-popup />
+          <q-btn flat :label="tt('clear')" @click="birthModel=''; form.date_of_birth=''; birthDialog=false" />
+          <q-btn unelevated color="cyan-4" text-color="black" :label="tt('common.save')"
                  @click="form.date_of_birth=birthModel; birthDialog=false" />
         </div>
       </q-card>
@@ -71,7 +71,7 @@
 
     <q-dialog v-model="countryDialog">
       <q-card class="q-pa-md" style="width: 360px; max-width: 92vw; border-radius: 14px;">
-        <div class="text-subtitle1 q-mb-sm">Country</div>
+        <div class="text-subtitle1 q-mb-sm">{{ tt('fields.country') }}</div>
 
         <q-select
           v-model="form.country"
@@ -85,8 +85,8 @@
         />
 
         <div class="row q-mt-md justify-end q-gutter-sm">
-          <q-btn flat label="Cancel" v-close-popup />
-          <q-btn unelevated color="cyan-4" text-color="black" label="Save" v-close-popup />
+          <q-btn flat :label="tt('common.cancel')" v-close-popup />
+          <q-btn unelevated color="cyan-4" text-color="black" :label="tt('common.save')" v-close-popup />
         </div>
       </q-card>
     </q-dialog>
@@ -97,6 +97,7 @@
 <script>
 import { defineComponent } from 'vue'
 import { supabase } from 'boot/supabase'
+import { t, currentLocale } from 'src/i18n'
 
 export default defineComponent({
   name: 'AccountEdit',
@@ -115,19 +116,43 @@ export default defineComponent({
       birthDialog: false,
       birthModel: '',
       countryDialog: false,
-      countryOptions: [
-        { value: 'Ukraine', label: 'Ukraine' },
-        { value: 'Germany', label: 'Germany' },
-        { value: 'Poland', label: 'Poland' },
-        { value: 'Netherlands', label: 'Netherlands' },
-        { value: 'USA', label: 'USA' }
-      ]
+      countryOptionsRaw: ['Ukraine', 'Germany', 'Poland', 'Netherlands', 'USA']
     }
   },
 
   computed: {
+    locale () {
+      return currentLocale.value || 'en'
+    },
+
+    tt () {
+      return (key) => t(this.locale, key)
+    },
+
+    countryOptions () {
+      const map = {
+        Ukraine: 'countries.ukraine',
+        Germany: 'countries.germany',
+        Poland: 'countries.poland',
+        Netherlands: 'countries.netherlands',
+        USA: 'countries.usa'
+      }
+      return this.countryOptionsRaw.map((value) => ({
+        value,
+        label: this.tt(map[value]) || value
+      }))
+    },
+
     countryLabel () {
-      return this.form.country || '—'
+      const map = {
+        Ukraine: 'countries.ukraine',
+        Germany: 'countries.germany',
+        Poland: 'countries.poland',
+        Netherlands: 'countries.netherlands',
+        USA: 'countries.usa'
+      }
+      if (!this.form.country) return '—'
+      return this.tt(map[this.form.country]) || this.form.country
     }
   },
 
@@ -176,7 +201,7 @@ export default defineComponent({
 
         if (error) {
           console.log(error)
-          this.$q.notify({ type: 'negative', message: 'Save failed' })
+          this.$q.notify({ type: 'negative', message: this.tt('errors.saveFailed') })
           return
         }
 

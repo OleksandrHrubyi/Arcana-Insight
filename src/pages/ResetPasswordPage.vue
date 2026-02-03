@@ -1,23 +1,24 @@
 <template>
   <q-page class="q-pa-md" style="max-width:420px;margin:0 auto">
-    <div class="text-h6 q-mb-md">Новий пароль</div>
+    <div class="text-h6 q-mb-md">{{ tt('resetPassword.title') }}</div>
 
     <q-banner v-if="loading" class="bg-blue-2 text-blue-10 q-mb-md">
-      Перевіряю посилання…
+      {{ tt('resetPassword.checking') }}
     </q-banner>
 
     <q-form @submit.prevent="onUpdate" class="q-gutter-md">
-      <q-input v-model="password" type="password" label="Новий пароль" filled :disable="!sessionReady"/>
-      <q-btn :loading="saving" :disable="!sessionReady" type="submit" color="primary" label="ЗБЕРЕГТИ"/>
+      <q-input v-model="password" type="password" :label="tt('resetPassword.newPassword')" filled :disable="!sessionReady"/>
+      <q-btn :loading="saving" :disable="!sessionReady" type="submit" color="primary" :label="tt('common.save')"/>
     </q-form>
 
-    <q-banner v-if="ok" class="bg-green-2 text-green-10 q-mt-md">Пароль оновлено</q-banner>
+    <q-banner v-if="ok" class="bg-green-2 text-green-10 q-mt-md">{{ tt('resetPassword.updated') }}</q-banner>
     <q-banner v-if="error" class="bg-red-2 text-red-10 q-mt-md">{{ error }}</q-banner>
   </q-page>
 </template>
 
 <script>
 import { supabase } from 'src/boot/supabase'
+import { t, currentLocale } from 'src/i18n'
 
 function parseHashParams() {
   const hash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : window.location.hash
@@ -33,7 +34,23 @@ function parseHashParams() {
 export default {
   name: 'ResetPasswordPage',
   data () {
-    return { password: '', loading: true, saving: false, error: '', ok: false, sessionReady: false }
+    return {
+      password: '',
+      loading: true,
+      saving: false,
+      error: '',
+      ok: false,
+      sessionReady: false
+    }
+  },
+  computed: {
+    locale () {
+      return currentLocale.value || 'en'
+    },
+
+    tt () {
+      return (key) => t(this.locale, key)
+    }
   },
   async mounted () {
     try {
@@ -58,7 +75,7 @@ export default {
       }
 
       this.sessionReady = sessionOk
-      if (!sessionOk) this.error = 'Посилання недійсне або прострочене. Запроси нове.'
+      if (!sessionOk) this.error = this.tt('resetPassword.invalidLink')
     } catch (e) {
       this.error = e.message || String(e)
     } finally {

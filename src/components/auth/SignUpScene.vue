@@ -1,6 +1,7 @@
 <script>
 import { supabase } from 'src/boot/supabase';
 import { SignInWithApple } from '@capacitor-community/apple-sign-in';
+import { t, currentLocale } from 'src/i18n';
 
 export default {
   name: 'SignUpScene',
@@ -18,6 +19,14 @@ export default {
   },
 
   computed: {
+    locale() {
+      return currentLocale.value || 'en';
+    },
+
+    tt() {
+      return (key) => t(this.locale, key);
+    },
+
     trimmedName() {
       return this.name.trim();
     },
@@ -60,7 +69,7 @@ export default {
     async onSignUp() {
       // базова валідація перед запитом
       if (!this.isFormValid) {
-        this.errorMessage = 'Please fill all fields correctly.';
+        this.errorMessage = this.tt('auth.fillAllFields');
         return;
       }
 
@@ -97,7 +106,7 @@ export default {
         });
       } catch (e) {
         console.error(e);
-        this.errorMessage = e.message || 'Something went wrong. Please try again.';
+        this.errorMessage = e.message || this.tt('errors.generic');
       } finally {
         this.loading = false;
       }
@@ -200,11 +209,11 @@ export default {
 <template>
   <div class="login-wrap">
     <div class="login-container">
-      <p class="subtitle">Welcome to Arcana</p>
+      <p class="subtitle">{{ tt('auth.welcomeTo') }}</p>
 
       <form novalidate>
         <div class="field">
-          <label class="field-label q-mb-xs" for="signup-name">Name</label> <input
+          <label class="field-label q-mb-xs" for="signup-name">{{ tt('fields.name') }}</label> <input
           id="signup-name"
           class="field-input"
           v-model="name"
@@ -216,7 +225,7 @@ export default {
 
 
         <div class="field">
-          <label class="field-label q-mb-xs" for="signup-email">Email</label> <input
+          <label class="field-label q-mb-xs" for="signup-email">{{ tt('fields.email') }}</label> <input
           id="signup-email"
           class="field-input"
           v-model="email"
@@ -227,7 +236,7 @@ export default {
         </div>
 
         <div class="field">
-          <label class="field-label q-mb-xs" for="signup-dob">Date of birth</label> <input
+          <label class="field-label q-mb-xs" for="signup-dob">{{ tt('fields.dateOfBirth') }}</label> <input
           id="signup-dob"
           class="field-input"
           v-model="dateOfBirth"
@@ -237,7 +246,7 @@ export default {
         </div>
 
         <div class="field">
-          <label class="field-label q-mb-xs" for="signup-city">City of birth</label> <input
+          <label class="field-label q-mb-xs" for="signup-city">{{ tt('fields.cityOfBirth') }}</label> <input
           id="signup-city"
           class="field-input"
           v-model="cityOfBirth"
@@ -247,7 +256,7 @@ export default {
         </div>
 
         <div class="field">
-          <label class="field-label q-mb-xs" for="signup-country">Country</label> <input
+          <label class="field-label q-mb-xs" for="signup-country">{{ tt('fields.country') }}</label> <input
           id="signup-country"
           class="field-input"
           v-model="country"
@@ -257,13 +266,13 @@ export default {
         </div>
 
         <p class="terms-link terms-link-wrap">
-          By creating an account, you agree to our
-          <router-link to="/" class="terms-link">Terms and Conditions</router-link>
+          {{ tt('auth.byCreatingAccount') }}
+          <router-link to="/" class="terms-link">{{ tt('auth.terms') }}</router-link>
         </p>
 
         <div class="q-mb-md">
           <q-btn
-            label="Sign up"
+            :label="tt('auth.signUpAction')"
             class="no-auth-btn mono-text"
             no-caps
             flat
@@ -273,12 +282,12 @@ export default {
       </form>
 
       <p class="bottom-text">
-        Already have an account?
-        <router-link to="/login" class="link">Login</router-link>
+        {{ tt('auth.alreadyHaveAccount') }}
+        <router-link to="/login" class="link">{{ tt('auth.loginAction') }}</router-link>
       </p>
 
       <div class="divider">
-        <span class="divider-line"></span> <span class="divider-text">or continue with</span>
+        <span class="divider-line"></span> <span class="divider-text">{{ tt('auth.orContinueWith') }}</span>
         <span class="divider-line"></span>
       </div>
 

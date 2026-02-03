@@ -3,7 +3,7 @@
 
     <div class="topbar">
       <q-btn flat round icon="chevron_left" @click="$router.back()" />
-      <div class="topbar-title">Optimal time</div>
+      <div class="topbar-title">{{ tt('optimalTime') }}</div>
       <div style="width: 40px;"></div>
     </div>
 
@@ -29,7 +29,7 @@
       <q-separator class="settings-sep" />
       <q-item clickable v-ripple class="settings-item" @click="selectTime('')">
         <q-item-section>
-          <q-item-label>Default (08:00 UTC)</q-item-label>
+          <q-item-label>{{ tt('notifications.defaultTime') }}</q-item-label>
         </q-item-section>
         <q-item-section side>
           <q-icon v-if="selected === ''" name="check" />
@@ -43,10 +43,9 @@
 <script>
 import { defineComponent } from 'vue'
 import { syncRegisterDevice, getSavedTime, setSavedTime } from 'src/helpers/pushBackend'
+import { t, currentLocale } from 'src/i18n'
 
 const LS_DAILY_PUSH = 'daily_push_enabled'
-const LS_LOCALE = 'locale'
-
 export default defineComponent({
   name: 'SettingsTime',
 
@@ -54,8 +53,17 @@ export default defineComponent({
     return {
       selected: getSavedTime(), // "HH:mm" або ""
       dailyPush: JSON.parse(localStorage.getItem(LS_DAILY_PUSH) || 'false'),
-      locale: localStorage.getItem(LS_LOCALE) || 'en',
       timeOptions: []
+    }
+  },
+
+  computed: {
+    locale () {
+      return currentLocale.value || 'en'
+    },
+
+    tt () {
+      return (key) => t(this.locale, key)
     }
   },
 

@@ -2,6 +2,7 @@
 import ActionBtn from 'components/ActionBtn.vue';
 import img1x from 'src/assets/images/getStarted1x.png';
 import img2x from 'src/assets/images/getStarted2x.png';
+import { t, currentLocale } from 'src/i18n';
 
 export default {
   name: 'GetStartedComponent',
@@ -9,6 +10,16 @@ export default {
 
   data() {
     return { img1x, img2x };
+  },
+
+  computed: {
+    locale() {
+      return currentLocale.value || 'en';
+    },
+
+    tt() {
+      return (key) => t(this.locale, key);
+    }
   },
 
   methods:{
@@ -28,13 +39,13 @@ export default {
           Arcana Insight
         </h1>
         <p class="subtitle">
-          Discover daily Tarot and Horoscope readings.
+          {{ tt('getStarted.subtitle') }}
         </p>
         <div class="row items-center justify-center">
           <img
             :src="img1x"
             :srcset="`${img1x} 1x, ${img2x} 2x`"
-            alt="logo"
+            :alt="tt('appName')"
             loading="lazy"
             decoding="async"
             width="258px"
@@ -44,10 +55,10 @@ export default {
 
       </div>
       <div>
-        <ActionBtn btn-label="Get Started" @onClick="handleGetStarted" />
+        <ActionBtn :btn-label="tt('getStarted.action')" @onClick="handleGetStarted" />
         <div class="q-mt-lg row items-center justify-center">
-          <router-link class="auth-link" to="/login">Already a user?</router-link>
-          <router-link class="auth-link" to="/sign-up">Sign up</router-link>
+          <router-link class="auth-link" to="/login">{{ tt('auth.alreadyUser') }}</router-link>
+          <router-link class="auth-link" to="/sign-up">{{ tt('auth.signUpAction') }}</router-link>
         </div>
       </div>
     </div>

@@ -117,7 +117,7 @@
               <button class="dot" :class="{ active: themeTab === 'energy' }" @click="setTheme('energy')"></button>
             </div>
 
-            <q-btn size="12px" round class="share-wrap" icon="share" @click="handleShare" />
+<!--            <q-btn size="12px" round class="share-wrap" icon="share" @click="handleShare" />-->
           </div>
         </div>
 
@@ -132,7 +132,7 @@
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { localISODate } from 'src/helpers/date.js';
 import { saveLocal, loadLocal } from 'src/helpers/localStorageSaver.js';
-import { t } from 'src/i18n';
+import { t, currentLocale } from 'src/i18n';
 import { Share } from '@capacitor/share';
 import { supabase } from 'boot/supabase';
 
@@ -216,7 +216,6 @@ export default {
         { key: 'sagittarius', name: 'SAGITTARIUS', dates: '(22.11 – 21.12)' },
       ],
 
-      selectedLocale: 'uk',
       horoscope: {},
 
       midnightTimer: null,
@@ -225,6 +224,10 @@ export default {
   },
 
   computed: {
+    locale() {
+      return currentLocale.value || 'en';
+    },
+
     stepDeg() {
       return 360 / this.sectorCount;
     },
@@ -236,7 +239,7 @@ export default {
 
     monthDayLabel() {
       const now = new Date();
-      const locale = this.selectedLocale === 'uk' ? 'uk-UA' : 'en-US';
+      const locale = this.locale === 'uk' ? 'uk-UA' : 'en-US';
 
       const label = new Intl.DateTimeFormat(locale, {
         day: 'numeric',
@@ -247,14 +250,11 @@ export default {
     },
 
     tt() {
-      return (key) => t(this.selectedLocale, key);
+      return (key) => t(this.locale, key);
     },
   },
 
   mounted() {
-    const saved = localStorage.getItem('locale');
-    if (saved === 'uk' || saved === 'en') this.selectedLocale = saved;
-
     this.setVh();
     this.applyScale();
     this.loadHoroscopesForDay();
@@ -373,7 +373,7 @@ export default {
     },
 
     async loadHoroscopesForDay({ forceNetwork = false } = {}) {
-      const locale = this.selectedLocale;
+      const locale = this.locale;
       const today = localISODate();
 
       if (!forceNetwork) {
@@ -748,7 +748,7 @@ export default {
     async handleShare() {
       const rawText = this.horoscope?.[this.activeZodiac.key]?.[this.themeTab]?.detailed || '';
       if (!rawText) {
-        this.$q.notify({ type: 'negative', message: 'Немає тексту для поширення' });
+        this.$q.notify({ type: 'negative', message: this.tt('errors.noShareText') });
         return;
       }
 
@@ -784,10 +784,12 @@ export default {
 
     async setTheme(tab) {
       this.themeTab = tab;
-      try { await Haptics.impact({ style: ImpactStyle.Light }); } catch(e) {
+      try {
+        await Haptics.impact({ style: ImpactStyle.Light });
+      } catch (e) {
         console.log(e);
       }
-    }
+    },
   },
 };
 </script>
@@ -797,7 +799,6 @@ export default {
   --s: 1;
   --vh: 1vh;
 
-  /* оновлюються з JS */
   --inset: 30px;
   --halfGap: 98px;
   --yJoin: 380px;
@@ -824,7 +825,6 @@ export default {
   contain: layout paint;
 }
 
-/* ✅ HERO DISC */
 .hero-disc {
   position: absolute;
   left: 50%;
@@ -844,7 +844,6 @@ export default {
   mask-image: radial-gradient(circle, #fff 72%, transparent 100%);
 }
 
-/* ✅ 3D WRAPPER */
 .hero-disc__tilt {
   position: absolute;
   inset: 0;
@@ -852,7 +851,6 @@ export default {
   will-change: transform;
 }
 
-/* 3D tilt auto */
 @media (prefers-reduced-motion: no-preference) {
   .hero-disc__tilt {
     animation: discTilt 10.5s ease-in-out infinite;
@@ -870,7 +868,6 @@ export default {
   }
 }
 
-/* ✅ slow spin */
 .hero-disc__spin {
   position: absolute;
   inset: 0;
@@ -902,7 +899,6 @@ export default {
   backface-visibility: hidden;
 }
 
-/* ✅ STAR TEXTURE */
 .hero-disc__stars {
   position: absolute;
   inset: -10%;
@@ -914,13 +910,8 @@ export default {
   radial-gradient(circle, rgba(159, 216, 246, 0.55) 0 1px, transparent 2.2px),
   radial-gradient(circle, rgba(255, 220, 180, 0.35) 0 1.1px, transparent 2.6px);
 
-  background-size: 90px 90px,
-  150px 150px,
-  240px 240px;
-
-  background-position: 10px 20px,
-  60px 90px,
-  140px 40px;
+  background-size: 90px 90px, 150px 150px, 240px 240px;
+  background-position: 10px 20px, 60px 90px, 140px 40px;
 }
 
 .hero-disc__stars--2 {
@@ -930,11 +921,8 @@ export default {
   background-image: radial-gradient(circle, rgba(255, 255, 255, 0.60) 0 1px, transparent 2.2px),
   radial-gradient(circle, rgba(255, 255, 255, 0.35) 0 1px, transparent 2.8px);
 
-  background-size: 120px 120px,
-  260px 260px;
-
-  background-position: 30px 70px,
-  180px 20px;
+  background-size: 120px 120px, 260px 260px;
+  background-position: 30px 70px, 180px 20px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -967,7 +955,6 @@ export default {
   }
 }
 
-/* ✅ LIGHT SWEEP */
 .hero-disc__sweep {
   position: absolute;
   inset: -35%;
@@ -1018,7 +1005,6 @@ export default {
   }
 }
 
-/* ✅ PARTICLES */
 .hero-disc__particles {
   position: absolute;
   inset: -8%;
@@ -1026,12 +1012,9 @@ export default {
   pointer-events: none;
   transform: translateZ(60px);
   contain: paint;
-
-  /* трохи “haze” як у рефі */
   filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.25));
 }
 
-/* shooting star */
 .hero-disc__particles::before {
   content: "";
   position: absolute;
@@ -1078,19 +1061,16 @@ export default {
   position: absolute;
   left: calc(var(--x) * 1%);
   top: calc(var(--y) * 1%);
-
   width: calc(var(--s) * 1px);
   height: calc(var(--s) * 1px);
   border-radius: 999px;
 
-  /* glow dot */
   background: radial-gradient(circle, var(--c) 0%, rgba(255, 255, 255, 0) 72%);
   mix-blend-mode: screen;
 
   filter: blur(calc(var(--blur) * 1px));
   will-change: transform, opacity;
   transform: translate3d(0, 0, 0);
-
   opacity: 0;
 }
 
@@ -1126,7 +1106,6 @@ export default {
   }
 }
 
-/* ✅ VIGNETTE + rim */
 .hero-disc::before {
   content: "";
   position: absolute;
@@ -1152,7 +1131,6 @@ export default {
   box-shadow: 0 0 22px rgba(159, 216, 246, 0.07);
 }
 
-/* ✅ side covers */
 .side-cover {
   position: absolute;
   top: 0;
@@ -1182,7 +1160,6 @@ export default {
   );
 }
 
-/* ✅ arc overlay */
 .arc-overlay {
   position: absolute;
   inset: 0;
@@ -1212,7 +1189,6 @@ export default {
   transform: translate(-50%, -50%) scale(1.006);
 }
 
-/* LINES */
 .line {
   position: absolute;
   height: 1px;
@@ -1223,7 +1199,6 @@ export default {
   opacity: 0.7;
 }
 
-/* WHEEL */
 .wheel-stage {
   position: relative;
   width: 100%;
@@ -1263,26 +1238,6 @@ export default {
   touch-action: none;
 }
 
-.active-zodiac {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  pointer-events: none;
-  color: white;
-  margin-bottom: 16px;
-}
-
-.active-zodiac-name {
-  font-size: calc(12px * var(--s));
-  letter-spacing: 0.14em;
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.active-zodiac-dates {
-  font-size: calc(12px * var(--s));
-  color: rgba(159, 216, 246, 0.75);
-}
-
 .top-bg {
   background-image: url('/images/darkGradientTop_1x.png');
   background-size: contain;
@@ -1309,7 +1264,6 @@ export default {
   opacity: 0.5;
 }
 
-/* CENTER ROUND */
 .center-round {
   width: calc(530px * var(--s));
   height: calc(530px * var(--s));
@@ -1339,14 +1293,39 @@ export default {
   justify-content: center;
   padding-bottom: calc(18px + env(safe-area-inset-bottom));
   background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
-  box-shadow:
-    inset 0 0 0 1px rgba(159,216,246,0.10),
-    inset 0 30px 60px rgba(159,216,246,0.05);
+  box-shadow: inset 0 0 0 1px rgba(159, 216, 246, 0.10),
+  inset 0 30px 60px rgba(159, 216, 246, 0.05);
 }
 
 .horoscope-info {
+  width: 100%;
+  height: 100%;
   max-width: calc(100vw - 10px);
   text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.active-zodiac {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.active-zodiac-name {
+  font-size: calc(12px * var(--s));
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.active-zodiac-dates {
+  font-size: calc(12px * var(--s));
+  color: rgba(159, 216, 246, 0.75);
 }
 
 .horoscope-info-title {
@@ -1359,24 +1338,73 @@ export default {
   color: rgba(255, 255, 255, 0.92);
 }
 
+.horoscope-divider {
+  width: 46px;
+  height: 1px;
+  margin: 0 auto 12px;
+  background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(159, 216, 246, 0.75) 40%,
+      rgba(255, 255, 255, 0.35) 60%,
+      transparent 100%
+  );
+  opacity: 0.8;
+}
+
+:deep(.horoscope-panels) {
+  flex: 1;
+  min-height: 0;
+  max-height: calc(100% - 200px);
+}
+
+:deep(.q-tab-panel) {
+  height: 100%;
+  min-height: 0;
+}
+
+.q-tab-panel {
+  animation: panelIn 180ms ease-out;
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .horoscope-info-style {
+  flex: 1;
+  min-height: 0;
+
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+
   font-weight: 400;
   font-size: calc(14.5px * var(--s));
   line-height: 175%;
   letter-spacing: 0.01em;
   color: rgba(225, 235, 250, 0.78);
+
   padding: 0 clamp(14px, 4vw, 22px);
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
 
   scrollbar-width: none;
   text-wrap: pretty;
   hyphens: auto;
 
-  /* ✅ fade зверху/знизу (виглядає дуже “дорого”) */
   -webkit-mask-image: linear-gradient(
       to bottom,
       transparent 0px,
@@ -1397,18 +1425,29 @@ export default {
   display: none;
 }
 
-
-/* dots */
-.dots {
+.horoscope-controls {
+  position: relative;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  min-height: 12px;
+}
+
+.dots {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 12px;
+  overflow: hidden;
+
   pointer-events: auto;
 }
 
 .dot {
-  width: 22px;        /* ✅ tap area */
-  height: 22px;
+  width: 12px;
+  height: 12px;
   border-radius: 999px;
   border: none;
   background: transparent;
@@ -1422,15 +1461,18 @@ export default {
   width: 7px;
   height: 7px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.22);
-  transition: transform 160ms ease, background 160ms ease;
+
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 0 0 rgba(159, 216, 246, 0);
+
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
 }
 
 .dot.active::after {
-  background: rgba(255,255,255,0.92);
-  transform: scale(1.12);
+  background: rgba(255, 255, 255, 0.72);
+  transform: scale(1.15);
+  box-shadow: 0 0 14px rgba(159, 216, 246, 0.35);
 }
-
 
 .share-wrap {
   position: absolute;
@@ -1443,19 +1485,17 @@ export default {
 
   border-radius: 999px;
   background: rgba(9, 16, 26, 0.55);
-  border: 1px solid rgba(159,216,246,0.18);
+  border: 1px solid rgba(159, 216, 246, 0.18);
 
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
-  box-shadow:
-    0 10px 20px rgba(0,0,0,0.35),
-    0 0 0 1px rgba(255,255,255,0.04);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35),
+  0 0 0 1px rgba(255, 255, 255, 0.04);
 
-  color: rgba(159,216,246,0.75);
+  color: rgba(159, 216, 246, 0.75);
 }
 
-/* DATE */
 .date-info {
   position: absolute;
   top: 100px;
@@ -1481,7 +1521,6 @@ export default {
   line-height: 18px;
 }
 
-/* Bottom bg */
 .bottom-bg-wrap {
   position: fixed;
   bottom: 0;
@@ -1499,177 +1538,18 @@ export default {
   .date-info-label {
     font-size: 12px;
   }
+
   .horoscope-info-title {
     font-size: 14px;
     margin-bottom: 6px;
   }
+
   .horoscope-info-style {
     font-size: 12px;
-    height: 100px;
   }
-  .active-zodiac {
-    top: calc(420px * var(--s));
-  }
+
   .bottom-wrapper {
     padding-top: 40px;
   }
 }
-
-.horoscope-divider {
-  width: 46px;
-  height: 1px;
-  margin: 0 auto 12px;
-  background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(159, 216, 246, 0.75) 40%,
-      rgba(255, 255, 255, 0.35) 60%,
-      transparent 100%
-  );
-  opacity: 0.8;
-}
-
-.q-tab-panel {
-  animation: panelIn 180ms ease-out;
-}
-
-@keyframes panelIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-
-.horoscope-info {
-  width: 100%;
-  height: 100%;
-  max-width: calc(100vw - 10px);
-
-  display: flex;
-  flex-direction: column;
-
-  /* важливо щоб скрол всередині працював нормально */
-  min-height: 0;
-}
-
-/* ✅ q-tab-panels займає весь вільний простір */
-:deep(.horoscope-panels) {
-  flex: 1;
-  min-height: 0;
-  max-height: calc(100% - 200px);
-}
-
-/* ✅ кожна панель = колонка на всю висоту */
-:deep(.q-tab-panel) {
-  height: 100%;
-  min-height: 0;
-}
-
-/* ✅ внутрішній layout панелі */
-.panel-inner {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-/* ✅ головне: текст стає динамічним */
-.horoscope-info-style {
-  flex: 1;          /* займає весь доступний простір */
-  min-height: 0;    /* must-have для overflow */
-
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-
-  font-weight: 400;
-  font-size: calc(14.5px * var(--s));
-  line-height: 175%;
-  letter-spacing: 0.01em;
-  color: rgba(225, 235, 250, 0.78);
-
-  padding: 0 clamp(14px, 4vw, 22px);
-
-  scrollbar-width: none;
-  text-wrap: pretty;
-  hyphens: auto;
-
-  /* ✅ fade зверху/знизу */
-  -webkit-mask-image: linear-gradient(
-      to bottom,
-      transparent 0px,
-      #000 14px,
-      #000 calc(100% - 18px),
-      transparent 100%
-  );
-  mask-image: linear-gradient(
-      to bottom,
-      transparent 0px,
-      #000 14px,
-      #000 calc(100% - 18px),
-      transparent 100%
-  );
-}
-
-.horoscope-info-style::-webkit-scrollbar {
-  display: none;
-}
-
-/* ✅ контрол-блок завжди внизу */
-.horoscope-controls {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* dots залишаємо як у тебе */
-.dots {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.dots {
-  position: relative;
-   border-radius: 12px;
-  overflow: hidden;
-}
-
-.dots::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-
-  background: radial-gradient(
-      120px 40px at 50% 0%,
-      rgba(159,216,246,0.20),
-      transparent 50%
-  );
-
-  opacity: 0.7;
-}
-.dot::after {
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-
-  background: rgba(255,255,255,0.22);
-  box-shadow: 0 0 0 rgba(159,216,246,0);
-
-  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
-}
-
-.dot.active::after {
-  background: rgba(255,255,255,0.92);
-  transform: scale(1.15);
-  box-shadow: 0 0 14px rgba(159,216,246,0.35);
-}
-
 </style>

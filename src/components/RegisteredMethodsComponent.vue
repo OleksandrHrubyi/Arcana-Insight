@@ -1,16 +1,31 @@
 <script>
+import { t, currentLocale } from 'src/i18n';
+
 export default {
   name: 'RegisteredMethodsComponent',
+  data() {
+    return {
+    };
+  },
+  computed: {
+    locale() {
+      return currentLocale.value || 'en';
+    },
+
+    tt() {
+      return (key) => t(this.locale, key);
+    }
+  },
 };
 </script>
 
 <template>
 <div class="row items-center justify-center">
-  <div class="text-style q-pa-md">or</div>
+  <div class="text-style q-pa-md">{{ tt('misc.or') }}</div>
 </div>
   <div class="row items-center justify-between">
-    <q-btn label="Apple" rounded class="auth-btn"/>
-    <q-btn label="Google" rounded class="auth-btn"/>
+    <q-btn :label="tt('misc.apple')" rounded class="auth-btn"/>
+    <q-btn :label="tt('misc.google')" rounded class="auth-btn"/>
   </div>
 </template>
 

@@ -1,6 +1,7 @@
 <script>
 import ActionBtn from 'components/ActionBtn.vue';
 import RegisteredMethodsComponent from 'components/RegisteredMethodsComponent.vue';
+import { t, currentLocale } from 'src/i18n';
 
 
 export default {
@@ -15,6 +16,16 @@ export default {
       repeatPassword: '',
       repeatShowPassword: false,
     };
+  },
+
+  computed: {
+    locale() {
+      return currentLocale.value || 'en';
+    },
+
+    tt() {
+      return (key) => t(this.locale, key);
+    }
   },
 
   methods:{
@@ -36,12 +47,12 @@ export default {
         <div class="row justify-center items-center image-wrap">
         </div>
         <div class="input-wrapper">
-          <q-input outlined rounded label="Email" v-model="email" class="auth-input q-mb-md">
+          <q-input outlined rounded :label="tt('fields.email')" v-model="email" class="auth-input q-mb-md">
             <template v-slot:prepend>
               <q-icon name="email" size="16px" />
             </template>
           </q-input>
-          <q-input outlined rounded label="Password" v-model="password" class="auth-input  q-mb-md">
+          <q-input outlined rounded :label="tt('fields.password')" v-model="password" class="auth-input  q-mb-md">
             <template v-slot:prepend>
               <q-icon name="lock" size="16px" />
             </template>
@@ -49,7 +60,7 @@ export default {
               <q-btn @click.stop="handleVisibilityPassword" flat icon="visibility_off" size="10px" class="q-pa-xs" />
             </template>
           </q-input>
-          <q-input outlined rounded label="Repeat Password" v-model="repeatPassword" class="auth-input">
+          <q-input outlined rounded :label="tt('fields.repeatPassword')" v-model="repeatPassword" class="auth-input">
             <template v-slot:prepend>
               <q-icon name="lock" size="16px" />
             </template>
@@ -59,19 +70,19 @@ export default {
           </q-input>
         </div>
         <div>
-          <ActionBtn btn-label="Sign Up" @onClick="handleLogin"/>
+          <ActionBtn :btn-label="tt('auth.signUpAction')" @onClick="handleLogin"/>
         </div>
         <div>
           <RegisteredMethodsComponent/>
         </div>
         <div class="row items-center justify-center">
-          <router-link to="/login" class="auth-link">Already have an account?<span class="q-pl-sm">Log in</span></router-link>
+          <router-link to="/login" class="auth-link">{{ tt('auth.alreadyHaveAccount') }}<span class="q-pl-sm">{{ tt('login') }}</span></router-link>
         </div>
       </div>
       <div class="back-to-main row items-center justify-center">
-        <router-link to="/" class="auth-link" aria-label="Back to Home">
-          ← Back to Home
-        </router-link>
+      <router-link to="/" class="auth-link" :aria-label="tt('backToHome')">
+        ← {{ tt('backToHome') }}
+      </router-link>
       </div>
     </div>
   </div>

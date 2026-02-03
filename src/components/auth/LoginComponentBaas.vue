@@ -2,9 +2,9 @@
 <template>
   <q-page class="q-pa-md" style="max-width:520px;margin:0 auto">
     <q-tabs v-model="tab" class="text-primary" dense>
-      <q-tab name="login" label="Увійти"/>
-      <q-tab name="signup" label="Зареєструватись"/>
-      <q-tab name="reset" label="Reset"/>
+      <q-tab name="login" :label="tt('baas.loginTab')"/>
+      <q-tab name="signup" :label="tt('baas.signupTab')"/>
+      <q-tab name="reset" :label="tt('baas.resetTab')"/>
     </q-tabs>
     <q-separator/>
 
@@ -12,11 +12,11 @@
       <!-- LOGIN -->
       <q-tab-panel name="login">
         <q-form @submit.prevent="onLogin" class="q-gutter-md">
-          <q-input v-model="email" type="email" label="Email" filled/>
-          <q-input v-model="password" type="password" label="Пароль" filled/>
+          <q-input v-model="email" type="email" :label="tt('fields.email')" filled/>
+          <q-input v-model="password" type="password" :label="tt('fields.password')" filled/>
           <div class="row q-gutter-sm">
-            <q-btn :loading="loading" type="submit" label="Увійти" color="primary"/>
-            <q-btn flat label="Magic link" @click="onMagicLink"/>
+            <q-btn :loading="loading" type="submit" :label="tt('baas.loginTab')" color="primary"/>
+            <q-btn flat :label="tt('baas.magicLink')" @click="onMagicLink"/>
           </div>
         </q-form>
       </q-tab-panel>
@@ -24,12 +24,12 @@
       <!-- SIGN UP -->
       <q-tab-panel name="signup">
         <q-form @submit.prevent="onSignup" class="q-gutter-md">
-          <q-input v-model="email" type="email" label="Email" filled/>
-          <q-input v-model="password" type="password" label="Пароль (мін. 6)" filled/>
-          <q-input v-model="displayName" label="Нік (необов’язково)" filled/>
-          <q-btn :loading="loading" type="submit" label="Зареєструватись" color="primary"/>
+          <q-input v-model="email" type="email" :label="tt('fields.email')" filled/>
+          <q-input v-model="password" type="password" :label="tt('baas.passwordMin')" filled/>
+          <q-input v-model="displayName" :label="tt('baas.nicknameOptional')" filled/>
+          <q-btn :loading="loading" type="submit" :label="tt('baas.signupTab')" color="primary"/>
           <div class="text-caption text-grey-7 q-mt-sm">
-            Після реєстрації перевір пошту (Confirm email).
+            {{ tt('baas.checkEmailAfterSignup') }}
           </div>
         </q-form>
       </q-tab-panel>
@@ -37,8 +37,8 @@
       <!-- RESET PASSWORD -->
       <q-tab-panel name="reset">
         <q-form @submit.prevent="onReset" class="q-gutter-md">
-          <q-input v-model="email" type="email" label="Email" filled/>
-          <q-btn :loading="loading" type="submit" label="Надіслати лист для скидання" color="primary"/>
+          <q-input v-model="email" type="email" :label="tt('fields.email')" filled/>
+          <q-btn :loading="loading" type="submit" :label="tt('baas.sendResetEmail')" color="primary"/>
         </q-form>
       </q-tab-panel>
     </q-tab-panels>
@@ -48,14 +48,15 @@
 
     <div class="q-mt-lg" v-if="user">
       <q-separator/>
-      <div class="q-mt-md">Увійшов як: <b>{{ user.email || user.id }}</b></div>
-      <q-btn class="q-mt-sm" color="negative" label="Вийти" @click="onLogout"/>
+      <div class="q-mt-md">{{ tt('baas.signedInAs') }}: <b>{{ user.email || user.id }}</b></div>
+      <q-btn class="q-mt-sm" color="negative" :label="tt('logout')" @click="onLogout"/>
     </div>
   </q-page>
 </template>
 
 <script>
 import { supabase } from 'src/boot/supabase'
+import { t, currentLocale } from 'src/i18n'
 
 export default {
   name: 'LoginComponentBaas',
@@ -69,6 +70,15 @@ export default {
       error: '',
       notice: '',
       user: null
+    }
+  },
+  computed: {
+    locale () {
+      return currentLocale.value || 'en'
+    },
+
+    tt () {
+      return (key) => t(this.locale, key)
     }
   },
   async mounted () {
@@ -93,7 +103,7 @@ export default {
         if (data.user) {
           await supabase.from('app_users').upsert({ id: data.user.id, display_name: this.displayName || null })
         }
-        this.notice = 'Перевір пошту: підтверди email і увійди.'
+        this.notice = this.tt('baas.checkEmailConfirm')
       } catch (e) {
         this.error = e.message || String(e)
       } finally {
@@ -109,7 +119,7 @@ export default {
         if (error) throw error
         // гарантуємо профіль
         await supabase.from('app_users').upsert({ id: data.user.id })
-        this.notice = 'Вхід виконано'
+        this.notice = this.tt('baas.loginSuccess')
       } catch (e) {
         this.error = e.message || String(e)
       } finally {
@@ -126,7 +136,7 @@ export default {
           options: { emailRedirectTo: 'http://localhost:9000/' }
         })
         if (error) throw error
-        this.notice = 'Надіслав magic-link. Перевір пошту.'
+        this.notice = this.tt('baas.magicLinkSent')
       } catch (e) {
         this.error = e.message || String(e)
       } finally {
@@ -142,7 +152,7 @@ export default {
           redirectTo: 'http://localhost:9000/#/reset-password'
         })
         if (error) throw error
-        this.notice = 'Надіслав лист для скидання пароля.'
+        this.notice = this.tt('baas.resetEmailSent')
       } catch (e) {
         this.error = e.message || String(e)
       } finally {
@@ -153,7 +163,7 @@ export default {
     async onLogout () {
       this._resetMsgs()
       await supabase.auth.signOut()
-      this.notice = 'Вийшов'
+      this.notice = this.tt('baas.loggedOut')
     },
 
     _resetMsgs () {

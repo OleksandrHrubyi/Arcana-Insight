@@ -18,10 +18,6 @@ const routes = [
       { path: 'settings', name: 'settings', component: () => import('src/pages/SettingsPage.vue') },
       { path: 'reset-password', component: () => import('src/pages/ResetPasswordPage.vue') },
       {
-        path: '/settings/language',
-        component: () => import('src/pages/SettingsLanguage.vue')
-      },
-      {
         path: '/settings/time',
         component: () => import('src/pages/SettingsTime.vue')
       },

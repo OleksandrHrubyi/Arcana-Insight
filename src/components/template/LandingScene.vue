@@ -3,7 +3,7 @@
     <div class="container bg-container">
       <div class="content-wrapper">
         <div class="appear-content">
-          What you are waiting for will soon appear
+          {{ tt('template.waitingSoon') }}
         </div>
         <div class="content-left">
           <div class="content-write">
@@ -12,17 +12,17 @@
         </div>
      </div>
       <div class="row items-center justify-center logo-wrap">
-        <q-img :src="logo" alt="logo" class="logo-img" />
+        <q-img :src="logo" :alt="tt('appName')" class="logo-img" />
       </div>
       <div class="main-title">
-        Can you know your future? We thing YES you can. Just take it
+        {{ tt('template.futureLine') }}
       </div>
       <div class="bottom-btn">
-        <q-btn label="Looking for my future" class="no-auth-btn" no-caps flat/>
+        <q-btn :label="tt('template.lookForFuture')" class="no-auth-btn" no-caps flat/>
 
         <div class="auth-btn-wrap">
-          <q-btn label="Login" flat class="auth-btn" no-caps/>
-          <q-btn label="Sign up" flat class="auth-btn" no-caps/>
+          <q-btn :label="tt('auth.loginAction')" flat class="auth-btn" no-caps/>
+          <q-btn :label="tt('auth.signUpAction')" flat class="auth-btn" no-caps/>
         </div>
       </div>
     </div>
@@ -31,6 +31,7 @@
 
 <script>
 import logo from 'src/assets/images/logo.svg'
+import { t, currentLocale } from 'src/i18n'
 export default {
   name: 'LandingScene',
 
@@ -45,6 +46,16 @@ export default {
       // bg5_3x
     }
   },
+
+  computed: {
+    locale () {
+      return currentLocale.value || 'en'
+    },
+
+    tt () {
+      return (key) => t(this.locale, key)
+    }
+  }
 }
 </script>
 

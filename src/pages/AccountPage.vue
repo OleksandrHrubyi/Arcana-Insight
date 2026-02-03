@@ -3,39 +3,39 @@
 
     <div class="topbar">
       <q-btn flat round icon="chevron_left" @click="$router.back()" />
-      <div class="topbar-title">Account</div>
-      <q-btn flat class="edit-btn" label="Edit" @click="goEdit" />
+      <div class="topbar-title">{{ tt('account') }}</div>
+      <q-btn flat class="edit-btn" :label="tt('edit')" @click="goEdit" />
     </div>
 
     <q-list class="settings-list">
       <q-item class="settings-item">
-        <q-item-section class="section-1"><q-item-label>Name</q-item-label></q-item-section>
+        <q-item-section class="section-1"><q-item-label>{{ tt('fields.name') }}</q-item-label></q-item-section>
         <q-item-section side class="section-1"><div class="settings-value">{{ profile.name || '—' }}</div></q-item-section>
       </q-item>
 
 
       <q-item class="settings-item">
-        <q-item-section class="section-1"><q-item-label>Email</q-item-label></q-item-section>
+        <q-item-section class="section-1"><q-item-label>{{ tt('fields.email') }}</q-item-label></q-item-section>
         <q-item-section side class="section-1"><div class="settings-value">{{ profile.email || userEmail || '—' }}</div></q-item-section>
       </q-item>
 
       <q-item class="settings-item">
-        <q-item-section class="section-1"><q-item-label>Date of birth</q-item-label></q-item-section>
+        <q-item-section class="section-1"><q-item-label>{{ tt('fields.dateOfBirth') }}</q-item-label></q-item-section>
         <q-item-section side class="section-1"><div class="settings-value">{{ profile.date_of_birth || '—' }}</div></q-item-section>
       </q-item>
 
       <q-item class="settings-item">
-        <q-item-section class="section-1"><q-item-label>City of birth</q-item-label></q-item-section>
+        <q-item-section class="section-1"><q-item-label>{{ tt('fields.cityOfBirth') }}</q-item-label></q-item-section>
         <q-item-section side class="section-1"><div class="settings-value">{{ profile.city_of_birth || '—' }}</div></q-item-section>
       </q-item>
 
       <q-item class="settings-item">
-        <q-item-section class="section-1"><q-item-label>Country</q-item-label></q-item-section>
+        <q-item-section class="section-1"><q-item-label>{{ tt('fields.country') }}</q-item-label></q-item-section>
         <q-item-section side class="section-1"><div class="settings-value">{{ profile.country || '—' }}</div></q-item-section>
       </q-item>
     </q-list>
 
-    <q-btn flat class="logout" label="Logout" @click="logout" />
+    <q-btn flat class="logout" :label="tt('logout')" @click="logout" />
 
   </q-page>
 </template>
@@ -43,6 +43,7 @@
 <script>
 import { defineComponent } from 'vue'
 import { supabase } from 'boot/supabase'
+import { t, currentLocale } from 'src/i18n'
 
 export default defineComponent({
   name: 'AccountPage',
@@ -57,6 +58,16 @@ export default defineComponent({
         country: ''
       },
       userEmail: ''
+    }
+  },
+
+  computed: {
+    locale () {
+      return currentLocale.value || 'en'
+    },
+
+    tt () {
+      return (key) => t(this.locale, key)
     }
   },
 

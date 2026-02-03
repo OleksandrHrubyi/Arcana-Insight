@@ -5,7 +5,7 @@
       <div class="t2">{{ tt('forToday')}} </div>
     </header>
     <main class="content">
-      <div v-if="!card" class="notFound">Card not found</div>
+      <div v-if="!card" class="notFound">{{ tt('tarotResult.cardNotFound') }}</div>
 
       <template v-else>
         <div class="cardWrap">
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { t } from 'src/i18n/index.js';
+import { t, currentLocale } from 'src/i18n/index.js';
 import tarotData from "../../src/data/cardsV2/tarot_full.json";
 import { Share } from "@capacitor/share";
 
@@ -43,15 +43,14 @@ export default {
     return {
       tarotData,
       card: null,
-      selectedLocale: 'uk'
     };
   },
   computed: {
     tt() {
-      return (key) => t(this.selectedLocale, key);
+      return (key) => t(this.locale, key);
     },
     locale() {
-      return this.selectedLocale;
+      return currentLocale.value || 'en';
     },
     orientation() {
       const o = String(this.$route.query.o || "upright");
@@ -94,10 +93,6 @@ export default {
     }
   },
   mounted() {
-    const saved = localStorage.getItem('locale');
-    if (saved === 'uk' || saved === 'en') {
-      this.selectedLocale = saved;
-    }
     this.loadCard();
   },
   watch: {
@@ -120,7 +115,7 @@ export default {
         await Share.share({
           title: String(title),
           text,
-          dialogTitle: "Share card"
+          dialogTitle: this.tt('tarotResult.shareCard')
         });
       } catch (e) {
         console.log(e);
