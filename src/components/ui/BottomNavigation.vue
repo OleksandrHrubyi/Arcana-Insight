@@ -172,7 +172,7 @@ async function hapticLight() {
   try {
     await Haptics.impact({ style: ImpactStyle.Light })
   } catch(e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

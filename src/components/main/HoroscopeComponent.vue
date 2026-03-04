@@ -290,7 +290,7 @@ export default {
       try {
         drag.releasePointerCapture(this.activePointerId);
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     }
   },
@@ -546,7 +546,7 @@ export default {
       try {
         await Haptics.impact({ style: ImpactStyle.Light });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     },
 
@@ -675,7 +675,7 @@ export default {
         try {
           drag.setPointerCapture(this.activePointerId);
         } catch (e) {
-          console.log(e);
+          console.error(e);
         }
       }
 
@@ -713,7 +713,7 @@ export default {
         try {
           drag.releasePointerCapture(this.activePointerId);
         } catch (e) {
-          console.log(e);
+          console.error(e);
         }
       }
       this.activePointerId = null;
@@ -787,7 +787,7 @@ export default {
       try {
         await Haptics.impact({ style: ImpactStyle.Light });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     },
   },

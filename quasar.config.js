@@ -2,6 +2,12 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file
 
 import { defineConfig } from '#q-app/wrappers'
+import crypto from 'node:crypto'
+
+if (typeof crypto.hash !== 'function') {
+  crypto.hash = (algorithm, data, outputEncoding) =>
+    crypto.createHash(algorithm).update(data).digest(outputEncoding)
+}
 
 export default defineConfig((/* ctx */) => {
   return {

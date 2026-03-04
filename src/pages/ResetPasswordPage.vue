@@ -61,7 +61,7 @@ export default {
         const { data: { session } } = await supabase.auth.getSession()
         sessionOk = !!session?.access_token
       } catch {
-        console.log('error');
+        sessionOk = false
       }
 
       // 2) якщо ні — обробляємо implicit (#access_token=...)

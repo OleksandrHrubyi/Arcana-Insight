@@ -4,12 +4,18 @@
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 
-const TEAM_ID = '5J6P4Q932X';              // напр. 5J6P4Q93ZX
-const KEY_ID = 'DUKZLD2Z98';                // напр. DUKZLD2Z98
-const CLIENT_ID = 'com.hrubyi.arcana.supabase';  // твій Service ID
+const TEAM_ID = process.env.APPLE_TEAM_ID || '5J6P4Q932X';
+const KEY_ID = process.env.APPLE_KEY_ID || 'DUKZLD2Z98';
+const CLIENT_ID = process.env.APPLE_CLIENT_ID || 'com.hrubyi.arcana.supabase';
 
-// шлях до .p8 файлу від кореня проєкту
-const privateKey = fs.readFileSync('./src/constants/AuthKey_DUKZLD2Z98.p8', 'utf8');
+const privateKeyPath = process.env.APPLE_PRIVATE_KEY_PATH;
+const privateKey = process.env.APPLE_PRIVATE_KEY || (
+  privateKeyPath ? fs.readFileSync(privateKeyPath, 'utf8') : null
+);
+
+if (!privateKey) {
+  throw new Error('Set APPLE_PRIVATE_KEY or APPLE_PRIVATE_KEY_PATH before generating the Apple client secret.');
+}
 
 const now = Math.floor(Date.now() / 1000);
 // ~5 місяців (Apple дозволяє до 6)

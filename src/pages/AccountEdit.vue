@@ -200,7 +200,7 @@ export default defineComponent({
         .upsert(payload, { onConflict: 'id' })
 
         if (error) {
-          console.log(error)
+          console.error(error)
           this.$q.notify({ type: 'negative', message: this.tt('errors.saveFailed') })
           return
         }

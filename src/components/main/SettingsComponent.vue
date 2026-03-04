@@ -219,12 +219,12 @@ export default defineComponent({
             locale: this.locale
           })
           if (!res.ok) {
-            console.log(res.error)
+            console.error(res.error)
             this.$q.notify({ type: 'negative', message: this.tt('notifications.syncFailed') })
           }
         } else {
           const res = await syncRegisterDevice({ enabled: false, timeHHMM: '', locale: this.locale })
-          if (!res.ok) console.log(res.error)
+          if (!res.ok) console.error(res.error)
         }
       } finally {
         this.busy = false
@@ -237,7 +237,7 @@ export default defineComponent({
     try {
       this.reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
 
     const { data } = await supabase.auth.getSession()
@@ -265,7 +265,7 @@ export default defineComponent({
       try {
         await Haptics.selectionChanged()
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     },
 
@@ -275,7 +275,7 @@ export default defineComponent({
       try {
         await Haptics.impact({ style: ImpactStyle.Light })
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     },
 

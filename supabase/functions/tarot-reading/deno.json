@@ -1,0 +1,5 @@
+{
+  "name": "tarot-reading",
+  "entrypoint": "index.ts",
+  "verify_jwt": false
+}

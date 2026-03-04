@@ -118,7 +118,7 @@ export default {
           dialogTitle: this.tt('tarotResult.shareCard')
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     },
 

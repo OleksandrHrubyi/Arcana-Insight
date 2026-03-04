@@ -9,18 +9,11 @@ export default {
   data() {
     return {
       authStore: useAuthStore(),
-      navReady: false,
     }
   },
 
   created() {
     this.authStore.initAuth()
-  },
-
-  mounted() {
-    setTimeout(() => {
-      this.navReady = true
-    }, 6000)
   },
 
   computed: {

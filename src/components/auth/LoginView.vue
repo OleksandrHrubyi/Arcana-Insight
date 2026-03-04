@@ -26,16 +26,12 @@ export default {
 
   methods: {
     async loginWithApple() {
-      console.log('-------333333333333');
       try {
-        // 1. Запит до Apple
         const result = await SignInWithApple.authorize({
-          clientId: 'com.hrubyi.arcana.supabase', // твій Services ID
+          clientId: 'com.hrubyi.arcana.supabase',
           redirectURI: 'https://rgqfkdhzllhmagrcasav.supabase.co/auth/v1/callback',
           scopes: 'email name',
-          // state / nonce можна додати пізніше, поки залишимо мінімальний варіант
         });
-
 
         const idToken = result?.response?.identityToken;
 
@@ -44,22 +40,16 @@ export default {
           return;
         }
 
-        // 2. Логін через Supabase по idToken
-        const { data, error } = await supabase.auth.signInWithIdToken({
+        const { error } = await supabase.auth.signInWithIdToken({
           provider: 'apple',
           token: idToken,
         });
-        console.log(data, 'result-------');
-        console.log(idToken, 'idToken-------');
 
         if (error) {
           console.error('Supabase Apple login error', error, error.message, error.status, error.error_description);
           return;
         }
 
-        console.log('Logged in with Apple:', data);
-
-        // 3. Переходимо в апці куди треба (поки що умовно /)
         this.$router.push('/');
       } catch (err) {
         console.error('Apple login failed', err);
@@ -68,27 +58,23 @@ export default {
 
     async loginWithGoogle() {
       try {
-        const { data, error } = await supabase.auth.signInWithOAuth({
+        const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            redirectTo: window.location.origin + '/', // головна сторінка
+            redirectTo: window.location.origin + '/',
           },
         });
-
-        console.log(data, 'data');
 
         if (error) {
           console.error('Google login error', error);
         }
-
-        // Сюди код майже не доходить, бо браузер піде на Google.
       } catch (err) {
         console.error('Google OAuth error', err);
       }
     },
 
     loginWithTelegram() {
-      console.log('Login with Telegram');
+      this.errorMessage = this.tt('errors.generic');
     },
     goBack() {
       this.$router.push('/');

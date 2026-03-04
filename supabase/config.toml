@@ -21,6 +21,12 @@ entrypoint = "./functions/tarot-draw/index.ts"
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/tarot-draw/*.html" ]
 
+[functions.tarot-reading]
+enabled = true
+verify_jwt = false
+import_map = "./functions/tarot-reading/deno.json"
+entrypoint = "./functions/tarot-reading/index.ts"
+
 [functions.register-device]
 enabled = true
 verify_jwt = true

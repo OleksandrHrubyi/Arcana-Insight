@@ -46,7 +46,7 @@ export async function ensureToken () {
       const value = token?.value
       if (value) localStorage.setItem(LS_TOKEN, value)
       try { handle.remove() } catch (e) {
-        console.log(e);
+        console.error(e);
       }
       resolve(value || null)
     })

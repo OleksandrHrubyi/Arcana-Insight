@@ -105,7 +105,7 @@ export default defineComponent({
           timeHHMM: hhmm, // "" => дефолт
           locale: this.locale
         })
-        if (!res.ok) console.log(res.error)
+        if (!res.ok) console.error(res.error)
       }
 
       this.$router.back()
