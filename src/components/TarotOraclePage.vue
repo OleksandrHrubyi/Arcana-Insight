@@ -19,44 +19,41 @@
 
     <div class="oracle-ui">
       <section class="oracle-dialogue" aria-live="polite">
-        <transition-group name="oracle-mist" tag="div" class="oracle-dialogue__stack">
-          <p v-for="line in dialogueLines" :key="line" class="oracle-dialogue__line">
-            {{ line }}
-          </p>
-        </transition-group>
         <transition name="oracle-bubble-fade" mode="out-in">
-          <p v-if="currentPrompt" :key="currentPrompt" class="oracle-dialogue__prompt oracle-bubble">
-            {{ currentPrompt }}
+          <p v-if="activeBubbleText" :key="activeBubbleText" class="oracle-dialogue__prompt oracle-bubble">
+            {{ activeBubbleText }}
           </p>
         </transition>
       </section>
 
-      <section v-if="showChoices" class="oracle-actions">
-        <textarea
-          v-if="showQuestionInput"
-          v-model="draftQuestion"
-          class="oracle-question"
-          rows="2"
-          :placeholder="questionPlaceholder"
-        ></textarea>
+      <transition name="oracle-actions-veil" appear>
+        <section v-if="showChoices" class="oracle-actions">
+          <textarea
+            v-if="showQuestionInput"
+            v-model="draftQuestion"
+            class="oracle-question"
+            rows="2"
+            :placeholder="questionPlaceholder"
+          ></textarea>
 
-        <div v-if="historyRows.length" class="oracle-history">
-          <p v-for="row in historyRows" :key="row" class="oracle-history__item">{{ row }}</p>
-        </div>
+          <div v-if="historyRows.length" class="oracle-history">
+            <p v-for="row in historyRows" :key="row" class="oracle-history__item">{{ row }}</p>
+          </div>
 
-        <div class="oracle-buttons">
-          <button
-            v-for="choice in choices"
-            :key="choice.label"
-            type="button"
-            class="oracle-button"
-            :disabled="Boolean(choice.disabled)"
-            @click="runChoice(choice)"
-          >
-            {{ choice.label }}
-          </button>
-        </div>
-      </section>
+          <div class="oracle-buttons">
+            <button
+              v-for="choice in choices"
+              :key="choice.label"
+              type="button"
+              class="oracle-button"
+              :disabled="Boolean(choice.disabled)"
+              @click="runChoice(choice)"
+            >
+              {{ choice.label }}
+            </button>
+          </div>
+        </section>
+      </transition>
     </div>
   </q-page>
 </template>
@@ -66,8 +63,9 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { currentLocale } from 'src/i18n'
 
 const videoRef = ref(null)
-const dialogueLines = ref([])
+const narrationLine = ref('')
 const currentPrompt = ref('')
+const controlsUnlocked = ref(false)
 const currentLang = computed(() => {
   const locale = String(currentLocale.value || 'en').toLowerCase()
   return locale.startsWith('uk') ? 'uk' : 'en'
@@ -81,6 +79,7 @@ const draftQuestion = ref('')
 
 const timers = []
 const lastVariantByKey = ref({})
+let controlsRevealToken = 0
 
 const copy = {
   uk: {
@@ -435,6 +434,18 @@ const setPrompt = (promptKey) => {
   currentPrompt.value = pickVariant(promptKey, t.value.prompts[promptKey])
 }
 
+const revealControlsWithDelay = (delay = 1100) => {
+  controlsUnlocked.value = false
+  const token = ++controlsRevealToken
+
+  schedule(delay, () => {
+    if (token !== controlsRevealToken) {
+      return
+    }
+    controlsUnlocked.value = true
+  })
+}
+
 const applyPlaybackRate = () => {
   if (videoRef.value) {
     videoRef.value.playbackRate = 0.75
@@ -449,6 +460,7 @@ const schedule = (delay, fn) => {
 const askThemePrimary = () => {
   stage.value = 'theme'
   setPrompt('theme')
+  revealControlsWithDelay(1400)
 }
 
 const pickTheme = (theme) => {
@@ -457,10 +469,13 @@ const pickTheme = (theme) => {
   if (theme === 'default') {
     stage.value = 'question_input'
     setPrompt('questionInput')
+    revealControlsWithDelay(900)
     return
   }
 
   stage.value = 'theme_confirm'
+  controlsUnlocked.value = false
+  controlsRevealToken += 1
   const confirmTemplate = pickVariant('themeConfirm', t.value.prompts.themeConfirm)
   currentPrompt.value = confirmTemplate.replace('{theme}', t.value.themeLabels[theme] ?? '')
 
@@ -471,18 +486,21 @@ const pickTheme = (theme) => {
 
     stage.value = 'question_mode'
     setPrompt('questionMode')
+    revealControlsWithDelay(950)
   })
 }
 
 const openQuestionInput = () => {
   stage.value = 'question_input'
   setPrompt('questionInput')
+  revealControlsWithDelay(700)
 }
 
 const pickTemplate = (template) => {
   selectedQuestion.value = template
   stage.value = 'spread_primary'
   setPrompt('spread')
+  revealControlsWithDelay(850)
 }
 
 const confirmQuestion = () => {
@@ -496,22 +514,26 @@ const confirmQuestion = () => {
   selectedQuestion.value = value
   stage.value = 'spread_primary'
   setPrompt('spread')
+  revealControlsWithDelay(850)
 }
 
 const setSpread = (spread) => {
   selectedSpread.value = spread
   stage.value = 'ready'
   setPrompt('ready')
+  revealControlsWithDelay(800)
 }
 
 const touchDeck = () => {
   stage.value = 'started'
   setPrompt('started')
+  revealControlsWithDelay(700)
 }
 
 const toQuestionMode = () => {
   stage.value = 'question_mode'
   setPrompt('questionMode')
+  revealControlsWithDelay(900)
 }
 
 const resetDialogue = () => {
@@ -519,6 +541,8 @@ const resetDialogue = () => {
   selectedSpread.value = 0
   selectedQuestion.value = ''
   draftQuestion.value = ''
+  controlsUnlocked.value = false
+  controlsRevealToken += 1
   askThemePrimary()
 }
 
@@ -613,7 +637,8 @@ const choices = computed(() => {
 })
 
 const showQuestionInput = computed(() => stage.value === 'question_input')
-const showChoices = computed(() => stage.value !== 'intro' && choices.value.length > 0)
+const showChoices = computed(() => controlsUnlocked.value && stage.value !== 'intro' && choices.value.length > 0)
+const activeBubbleText = computed(() => currentPrompt.value || narrationLine.value)
 
 const runChoice = (choice) => {
   if (!choice || choice.disabled) {
@@ -627,10 +652,17 @@ onMounted(() => {
   applyPlaybackRate()
 
   const introSet = pickVariant('introSet', t.value.introSets)
-  schedule(700, () => dialogueLines.value.push(introSet[0]))
-  schedule(3200, () => dialogueLines.value.push(introSet[1]))
-  schedule(6200, () => dialogueLines.value.push(introSet[2]))
-  schedule(9400, () => {
+  schedule(1100, () => {
+    narrationLine.value = introSet[0]
+  })
+  schedule(4600, () => {
+    narrationLine.value = introSet[1]
+  })
+  schedule(8400, () => {
+    narrationLine.value = introSet[2]
+  })
+  schedule(12300, () => {
+    narrationLine.value = ''
     askThemePrimary()
   })
 })
@@ -642,6 +674,15 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .tarot-page {
+  --oracle-surface-top: rgba(18, 15, 14, 0.68);
+  --oracle-surface-bottom: rgba(10, 9, 11, 0.64);
+  --oracle-surface-soft-top: rgba(14, 14, 16, 0.3);
+  --oracle-surface-soft-bottom: rgba(10, 10, 12, 0.24);
+  --oracle-border-strong: rgba(198, 178, 136, 0.2);
+  --oracle-border-soft: rgba(228, 232, 242, 0.18);
+  --oracle-text-main: rgba(238, 235, 228, 0.94);
+  --oracle-text-muted: rgba(196, 184, 161, 0.72);
+  --oracle-text-soft: rgba(188, 177, 154, 0.62);
   position: relative;
   min-height: 100dvh;
   background: #000;
@@ -661,7 +702,7 @@ onBeforeUnmount(() => {
   inset: 0;
   z-index: 1;
   width: 100%;
-  height: 90dvh;
+  height: 100dvh;
   object-fit: contain;
   object-position: center center;
   background: #000;
@@ -704,23 +745,22 @@ onBeforeUnmount(() => {
 }
 
 .oracle-dialogue {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-352%);
   max-width: 560px;
-  margin: calc(env(safe-area-inset-top, 0px) + 76px) 14px 0;
+  margin: 0 auto;
   padding: 0;
   background: transparent;
-  color: rgba(221, 232, 248, 0.82);
+  color: var(--oracle-text-muted);
 }
 
-.oracle-dialogue__line,
 .oracle-dialogue__prompt {
   margin: 0 0 6px;
   font-size: 15px;
   line-height: 1.35;
-}
-
-.oracle-dialogue__stack {
-  display: grid;
-  gap: 2px;
 }
 
 .oracle-history {
@@ -733,75 +773,66 @@ onBeforeUnmount(() => {
   margin: 0;
   font-size: 11px;
   line-height: 1.25;
-  color: rgba(176, 188, 208, 0.68);
+  color: var(--oracle-text-soft);
 }
 
 .oracle-dialogue__prompt {
-  margin-top: 26px;
-  margin-bottom: 0;
-  color: #141621;
+  color: var(--oracle-text-main);
   font-weight: 500;
   width: fit-content;
   max-width: min(92vw, 520px);
-  margin-left: auto;
+  margin: 22px 12px 0 auto;
 }
 
 .oracle-bubble {
   position: relative;
   display: block;
-  border: 1px solid rgba(11, 14, 22, 0.18);
+  border: 1px solid var(--oracle-border-soft);
   border-radius: 15px;
-  padding: 10px 12px;
-  background: rgba(246, 248, 253, 0.92);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  padding: 11px 13px;
+  background:
+    radial-gradient(120% 150% at 50% 0%, rgba(120, 94, 52, 0.08), rgba(120, 94, 52, 0)),
+    linear-gradient(180deg, var(--oracle-surface-top), var(--oracle-surface-bottom));
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(250, 236, 208, 0.04);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .oracle-bubble::after {
   content: '';
   position: absolute;
-  right: 20px;
-  bottom: -8px;
-  width: 14px;
-  height: 14px;
-  background: rgba(246, 248, 253, 0.92);
-  border-right: 1px solid rgba(11, 14, 22, 0.18);
-  border-bottom: 1px solid rgba(11, 14, 22, 0.18);
+  right: 18px;
+  bottom: -7px;
+  width: 13px;
+  height: 13px;
+  background: var(--oracle-surface-bottom);
+  border-right: 1px solid var(--oracle-border-soft);
+  border-bottom: 1px solid var(--oracle-border-soft);
   transform: rotate(45deg);
-}
-
-.oracle-mist-enter-active {
-  transition: opacity 520ms ease, transform 520ms ease, filter 520ms ease;
-}
-
-.oracle-mist-enter-from {
-  opacity: 0;
-  transform: translateY(6px);
-  filter: blur(3px);
-}
-
-.oracle-mist-enter-to {
-  opacity: 1;
-  transform: translateY(0);
-  filter: blur(0);
 }
 
 .oracle-bubble-fade-enter-active,
 .oracle-bubble-fade-leave-active {
-  transition: opacity 420ms ease, transform 420ms ease, filter 420ms ease;
+  transition:
+    opacity 760ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 760ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 760ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .oracle-bubble-fade-enter-from,
 .oracle-bubble-fade-leave-to {
   opacity: 0;
-  transform: translateY(8px) scale(0.985);
-  filter: blur(2px);
+  transform: translateY(10px) scale(0.982);
+  filter: blur(4px);
 }
 
 .oracle-actions {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 178px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 160px);
   margin: 0 auto;
   width: min(560px, calc(100% - 24px));
   pointer-events: auto;
@@ -812,23 +843,23 @@ onBeforeUnmount(() => {
   padding-left: 2px;
   font-size: 12px;
   line-height: 1.2;
-  color: rgba(198, 208, 226, 0.72);
+  color: var(--oracle-text-soft);
 }
 
 .oracle-question {
   width: 100%;
   margin: 0 0 8px;
-  border: 1px solid rgba(208, 178, 122, 0.34);
+  border: 1px solid var(--oracle-border-strong);
   border-radius: 12px;
   padding: 10px 11px;
-  background: linear-gradient(180deg, rgba(12, 18, 30, 0.82), rgba(8, 12, 22, 0.74));
-  color: #f2f7ff;
-  box-shadow: inset 0 0 0 1px rgba(245, 216, 150, 0.08);
+  background: linear-gradient(180deg, var(--oracle-surface-top), var(--oracle-surface-bottom));
+  color: var(--oracle-text-main);
+  box-shadow: inset 0 0 0 1px rgba(245, 216, 150, 0.05);
   resize: none;
 }
 
 .oracle-question::placeholder {
-  color: rgba(205, 220, 245, 0.72);
+  color: var(--oracle-text-soft);
 }
 
 .oracle-buttons {
@@ -841,35 +872,61 @@ onBeforeUnmount(() => {
   width: 100%;
   min-width: 0;
   min-height: 41px;
-  border: 1px solid rgba(236, 243, 255, 0.18);
+  border: 1px solid var(--oracle-border-soft);
   border-radius: 12px;
-  padding: 9px 9px;
-  background: linear-gradient(180deg, rgba(11, 15, 24, 0.34), rgba(9, 12, 20, 0.28));
+  padding: 9px;
+  background: linear-gradient(180deg, var(--oracle-surface-soft-top), var(--oracle-surface-soft-bottom));
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  color: rgba(231, 238, 250, 0.9);
+  color: var(--oracle-text-main);
   font-size: 13px;
   line-height: 1.2;
   font-weight: 450;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+    0 6px 14px rgba(0, 0, 0, 0.24);
+  transform: translateY(0);
+  transition: transform 120ms ease, box-shadow 120ms ease;
   cursor: pointer;
+}
+
+.oracle-button:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+    0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 .oracle-button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
   transform: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.14);
+}
+
+.oracle-actions-veil-enter-active,
+.oracle-actions-veil-leave-active {
+  transition: opacity 680ms ease, transform 680ms ease, filter 680ms ease;
+}
+
+.oracle-actions-veil-enter-from,
+.oracle-actions-veil-leave-to {
+  opacity: 0;
+  transform: translateY(10px) scale(0.985);
+  filter: blur(4px);
 }
 
 @media (max-width: 480px) {
   .oracle-dialogue {
-    margin-top: calc(env(safe-area-inset-top, 0px) + 88px);
+    transform: translateY(-354%);
   }
 
   .oracle-actions {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 188px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 160px);
   }
 
   .oracle-button {
