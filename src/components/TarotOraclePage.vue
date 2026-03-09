@@ -1,6 +1,6 @@
 <template>
   <q-page class="tarot-page">
-    <div ref="sceneRef" class="oracle-video-layer" aria-hidden="true" @click="onSceneTap">
+    <div ref="sceneRef" class="oracle-video-layer" aria-hidden="true">
       <video
         ref="videoRef"
         :class="['oracle-video', { 'oracle-video--visible': isVideoPlaying }]"
@@ -25,6 +25,20 @@
       </video>
       <div class="oracle-smoke oracle-smoke--one"></div>
       <div class="oracle-smoke oracle-smoke--two"></div>
+      <div
+        v-if="showDeckHotspot"
+        :class="['oracle-deck-aura', { 'oracle-deck-aura--revealed': isDeckHotspotActive }]"
+        :style="deckAuraStyle"
+        aria-hidden="true"
+      ></div>
+      <button
+        v-if="showDeckHotspot"
+        type="button"
+        :class="['oracle-deck-hit', { 'oracle-deck-hit--lit': isDeckHotspotActive }]"
+        :style="deckHitStyle"
+        :aria-label="currentLang === 'uk' ? 'Торкнутися колоди' : 'Touch the deck'"
+        @click.stop="touchDeck"
+      ></button>
     </div>
 
     <div class="oracle-ui">
@@ -111,6 +125,7 @@ import { useRouter } from 'vue-router'
 import { currentLocale, t as i18nT } from 'src/i18n'
 
 const videoRef = ref(null)
+const sceneRef = ref(null)
 const narrationLine = ref('')
 const currentPrompt = ref('')
 const controlsUnlocked = ref(false)
@@ -132,6 +147,9 @@ const selectedSubTheme = ref('')
 const selectedSpread = ref(0)
 const selectedQuestion = ref('')
 const draftQuestion = ref('')
+const deckAuraStyle = ref({})
+const deckHitStyle = ref({})
+const isDeckHotspotActive = ref(false)
 
 const timers = []
 let videoPlaybackWatchdog = null
@@ -144,7 +162,15 @@ const INTRO_LINE_STEP_DELAY = 4200
 const INTRO_LINES_TO_SHOW = 2
 const INTRO_TO_THEME_DELAY = 1400
 const THEME_CONFIRM_HOLD_DELAY = INTRO_LINE_STEP_DELAY
+const READY_HOTSPOT_REVEAL_DELAY = 2400
 let controlsRevealToken = 0
+const DECK_ANCHOR = Object.freeze({
+  x: 0.728,
+  y: 0.668,
+  size: 0.18,
+  offsetX: 20,
+  offsetY: 80,
+})
 
 const t = computed(() => i18nT(currentLang.value, 'tarotOracle'))
 
@@ -189,7 +215,72 @@ const applyPlaybackRate = () => {
   if (videoRef.value) {
     videoRef.value.playbackRate = 0.75
   }
+  updateDeckHotspotPosition()
   ensureVideoPlayback()
+}
+
+const getContainedVideoRect = () => {
+  const scene = sceneRef.value
+  const video = videoRef.value
+  if (!scene || !video) {
+    return null
+  }
+
+  const sceneRect = scene.getBoundingClientRect()
+  if (!sceneRect.width || !sceneRect.height) {
+    return null
+  }
+
+  const sourceWidth = video.videoWidth || 1080
+  const sourceHeight = video.videoHeight || 1920
+  const sourceRatio = sourceWidth / sourceHeight
+  const boxRatio = sceneRect.width / sceneRect.height
+
+  let renderWidth = sceneRect.width
+  let renderHeight = sceneRect.height
+  let offsetLeft = 0
+  let offsetTop = 0
+
+  if (boxRatio > sourceRatio) {
+    renderHeight = sceneRect.height
+    renderWidth = renderHeight * sourceRatio
+    offsetLeft = (sceneRect.width - renderWidth) / 2
+  } else {
+    renderWidth = sceneRect.width
+    renderHeight = renderWidth / sourceRatio
+    offsetTop = (sceneRect.height - renderHeight) / 2
+  }
+
+  return {
+    left: offsetLeft,
+    top: offsetTop,
+    width: renderWidth,
+    height: renderHeight,
+  }
+}
+
+const updateDeckHotspotPosition = () => {
+  const rect = getContainedVideoRect()
+  if (!rect) {
+    return
+  }
+
+  const centerX = rect.left + rect.width * DECK_ANCHOR.x + DECK_ANCHOR.offsetX
+  const centerY = rect.top + rect.height * DECK_ANCHOR.y + DECK_ANCHOR.offsetY
+  const size = Math.max(72, Math.min(136, Math.round(Math.min(rect.width, rect.height) * DECK_ANCHOR.size)))
+
+  deckAuraStyle.value = {
+    left: `${centerX}px`,
+    top: `${centerY}px`,
+    width: `${size}px`,
+    height: `${size}px`,
+  }
+  deckHitStyle.value = {
+    left: `${centerX}px`,
+    top: `${centerY}px`,
+    width: `${size + 40}px`,
+    height: `${size + 40}px`,
+  }
 }
 
 const ensureVideoPlayback = () => {
@@ -218,6 +309,7 @@ const ensureVideoPlayback = () => {
 
 const handleVideoPlaying = () => {
   isVideoPlaying.value = true
+  updateDeckHotspotPosition()
 }
 
 const handleVideoPause = () => {
@@ -346,10 +438,14 @@ const setSpread = (spread) => {
 }
 
 const touchDeck = () => {
+  if (stage.value !== 'ready' || !isDeckHotspotActive.value) {
+    return
+  }
   stage.value = 'started'
   setPrompt('started')
   controlsUnlocked.value = false
   actionsSheetOpen.value = false
+  isDeckHotspotActive.value = false
 }
 
 const toQuestionMode = () => {
@@ -363,12 +459,6 @@ const toQuestionMode = () => {
   stage.value = 'question_mode'
   setPrompt('questionMode')
   revealControlsWithDelay(900)
-}
-
-const onSceneTap = () => {
-  if (stage.value === 'ready' && !actionsSheetOpen.value && !isChoiceTransitioning.value) {
-    touchDeck()
-  }
 }
 
 const historyRows = computed(() => {
@@ -483,6 +573,7 @@ const showQuestionInput = computed(() => stage.value === 'question_input')
 const showChoices = computed(() => controlsUnlocked.value && stage.value !== 'intro' && choices.value.length > 0)
 const activeBubbleText = computed(() => currentPrompt.value || narrationLine.value)
 const isSummaryBubble = computed(() => stage.value === 'ready')
+const showDeckHotspot = computed(() => stage.value === 'ready')
 const selectedChoice = computed(() => choices.value[selectedWheelIndex.value] || null)
 const selectedChoiceDisabled = computed(
   () => isChoiceTransitioning.value || !selectedChoice.value || Boolean(selectedChoice.value.disabled),
@@ -490,6 +581,20 @@ const selectedChoiceDisabled = computed(
 
 watch(showChoices, (visible) => {
   actionsSheetOpen.value = visible
+})
+
+watch(showDeckHotspot, (visible) => {
+  if (!visible) {
+    isDeckHotspotActive.value = false
+    return
+  }
+  schedule(0, updateDeckHotspotPosition)
+  schedule(READY_HOTSPOT_REVEAL_DELAY, () => {
+    if (stage.value !== 'ready') {
+      return
+    }
+    isDeckHotspotActive.value = true
+  })
 })
 
 watch(actionsSheetOpen, (open) => {
@@ -610,9 +715,12 @@ const confirmWheelSelection = () => {
 onMounted(() => {
   applyPlaybackRate()
   ensureVideoPlayback()
+  updateDeckHotspotPosition()
   document.addEventListener('visibilitychange', handleVisibilityChange)
   window.addEventListener('pageshow', ensureVideoPlayback)
   window.addEventListener('focus', ensureVideoPlayback)
+  window.addEventListener('resize', updateDeckHotspotPosition)
+  window.addEventListener('orientationchange', updateDeckHotspotPosition)
   videoPlaybackWatchdog = window.setInterval(() => {
     const video = videoRef.value
     if (!video) {
@@ -648,6 +756,7 @@ onMounted(() => {
 
 onActivated(() => {
   ensureVideoPlayback()
+  updateDeckHotspotPosition()
 })
 
 onBeforeUnmount(() => {
@@ -655,6 +764,8 @@ onBeforeUnmount(() => {
   document.removeEventListener('visibilitychange', handleVisibilityChange)
   window.removeEventListener('pageshow', ensureVideoPlayback)
   window.removeEventListener('focus', ensureVideoPlayback)
+  window.removeEventListener('resize', updateDeckHotspotPosition)
+  window.removeEventListener('orientationchange', updateDeckHotspotPosition)
   if (videoPlaybackWatchdog !== null) {
     window.clearInterval(videoPlaybackWatchdog)
     videoPlaybackWatchdog = null
@@ -742,6 +853,110 @@ onBeforeUnmount(() => {
   background-image: url('/tarrotTest/smoke-opt.jpg');
   transform: scale(1.12);
   animation: oracle-smoke-drift-b 38s linear infinite alternate;
+}
+
+.oracle-deck-aura {
+  --aura-core: rgba(248, 252, 255, 0.58);
+  --aura-mid: rgba(224, 236, 255, 0.33);
+  --aura-edge: rgba(194, 212, 240, 0.17);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 5;
+  width: 96px;
+  height: 96px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 42% at 50% 52%, var(--aura-core), rgba(255, 255, 255, 0) 100%),
+    radial-gradient(86% 86% at 56% 46%, var(--aura-mid), rgba(255, 255, 255, 0) 78%),
+    radial-gradient(124% 124% at 46% 58%, var(--aura-edge), rgba(255, 255, 255, 0) 74%);
+  box-shadow:
+    0 0 34px rgba(242, 248, 255, 0.46),
+    0 0 92px rgba(214, 228, 248, 0.3);
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(-50%, -50%, 0);
+  opacity: 0;
+  filter: blur(5px) brightness(0.82);
+  transition:
+    opacity 2800ms cubic-bezier(0.19, 1, 0.22, 1),
+    transform 2800ms cubic-bezier(0.19, 1, 0.22, 1),
+    filter 2800ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.oracle-deck-aura--revealed {
+  opacity: 0.96;
+  transform: translate3d(-50%, -50%, 0) scale(1.02);
+  filter: blur(1.2px) brightness(1.02);
+  animation: oracle-deck-aura-breathe 5200ms ease-in-out infinite;
+  animation-play-state: running;
+}
+
+.oracle-deck-hit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 6;
+  width: 132px;
+  height: 132px;
+  transform: translate(-50%, -50%);
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  pointer-events: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0;
+  transition: opacity 1600ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.oracle-deck-hit--lit {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.oracle-deck-hit:active {
+  transform: translate(-50%, -50%) scale(0.98);
+}
+
+.oracle-deck-aura::before,
+.oracle-deck-aura::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+
+.oracle-deck-aura::before {
+  inset: 16%;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 44% 40%, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0) 72%),
+    radial-gradient(circle at 62% 62%, rgba(210, 229, 255, 0.18), rgba(210, 229, 255, 0) 68%);
+  opacity: 0.7;
+  animation: none;
+  will-change: transform, opacity;
+}
+
+.oracle-deck-aura::after {
+  inset: -14%;
+  border-radius: 999px;
+  border: 1px solid rgba(236, 244, 255, 0.36);
+  opacity: 0;
+  pointer-events: none;
+  animation: none;
+  will-change: transform, opacity;
+}
+
+.oracle-deck-aura--revealed::before {
+  animation: oracle-deck-aura-drift 6200ms ease-in-out infinite alternate;
+}
+
+.oracle-deck-aura--revealed::after {
+  animation: oracle-deck-aura-halo 6600ms ease-in-out infinite;
 }
 
 .oracle-ui {
@@ -1085,6 +1300,7 @@ onBeforeUnmount(() => {
   .oracle-wheel__scroll {
     height: 146px;
   }
+
 }
 
 @keyframes oracle-smoke-drift-a {
@@ -1112,6 +1328,42 @@ onBeforeUnmount(() => {
 
   100% {
     transform: translate3d(-10%, 8%, 0) scale(1.22);
+  }
+}
+
+@keyframes oracle-deck-aura-breathe {
+  0%,
+  100% {
+    transform: translate3d(-50%, -50%, 0) scale(1.01);
+  }
+  50% {
+    transform: translate3d(-50%, -50%, 0) scale(1.07);
+  }
+}
+
+@keyframes oracle-deck-aura-drift {
+  0% {
+    transform: scale(0.98) translate(-3%, -1%);
+    opacity: 0.44;
+  }
+  100% {
+    transform: scale(1.05) translate(3%, 2%);
+    opacity: 0.66;
+  }
+}
+
+@keyframes oracle-deck-aura-halo {
+  0% {
+    opacity: 0.18;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 0.16;
+    transform: scale(1.16);
   }
 }
 </style>
