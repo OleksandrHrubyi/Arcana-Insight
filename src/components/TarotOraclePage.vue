@@ -67,16 +67,19 @@
           <div class="sheet-handle" aria-hidden="true"></div>
           <div class="sheet-title">{{ actionsSheetTitle }}</div>
 
-          <textarea
-            v-if="showQuestionInput"
-            v-model="draftQuestion"
-            class="oracle-question"
-            rows="2"
-            :placeholder="questionPlaceholder"
-          ></textarea>
-
           <div v-if="historyRows.length" class="oracle-history">
             <p v-for="row in historyRows" :key="row" class="oracle-history__item">{{ row }}</p>
+          </div>
+
+          <div v-if="showQuestionInput" class="oracle-question-wrap">
+            <p class="oracle-question__label">{{ questionInputLabel }}</p>
+            <textarea
+              v-model="draftQuestion"
+              class="oracle-question"
+              rows="2"
+              :placeholder="questionPlaceholder"
+            ></textarea>
+            <p v-if="questionValidationError" class="oracle-question__error">{{ questionValidationError }}</p>
           </div>
 
           <div class="oracle-wheel">
@@ -155,14 +158,16 @@ const timers = []
 let videoPlaybackWatchdog = null
 const lastVariantByKey = ref({})
 const WHEEL_ITEM_HEIGHT = 44
-const ACTIONS_READ_DELAY = 1300
+const ACTIONS_READ_DELAY = 980
 const ACTIONS_HIDE_TO_NEXT_PROMPT_DELAY = 520
-const INTRO_LINE_START_DELAY = 1200
-const INTRO_LINE_STEP_DELAY = 4200
+const INTRO_LINE_START_DELAY = 900
+const INTRO_LINE_STEP_DELAY = 3400
 const INTRO_LINES_TO_SHOW = 2
-const INTRO_TO_THEME_DELAY = 1400
+const INTRO_TO_THEME_DELAY = 1000
 const THEME_CONFIRM_HOLD_DELAY = INTRO_LINE_STEP_DELAY
-const READY_HOTSPOT_REVEAL_DELAY = 2400
+const READY_HOTSPOT_REVEAL_DELAY = 1800
+const QUESTION_MIN_LENGTH = 10
+const QUESTION_MAX_LENGTH = 220
 let controlsRevealToken = 0
 const DECK_ANCHOR = Object.freeze({
   x: 0.728,
@@ -175,6 +180,7 @@ const DECK_ANCHOR = Object.freeze({
 const t = computed(() => i18nT(currentLang.value, 'tarotOracle'))
 
 const questionPlaceholder = computed(() => t.value.questionPlaceholder)
+const questionInputLabel = computed(() => t.value.questionInputLabel)
 const actionsSheetTitle = computed(() => t.value.actionsSheetTitle)
 const subThemeLabels = computed(() => t.value.subThemeLabels)
 const questionTemplates = computed(() => t.value.questionTemplates)
@@ -272,14 +278,12 @@ const updateDeckHotspotPosition = () => {
   deckAuraStyle.value = {
     left: `${centerX}px`,
     top: `${centerY}px`,
-    width: `${size}px`,
-    height: `${size}px`,
+    '--aura-size': `${size}px`,
   }
   deckHitStyle.value = {
     left: `${centerX}px`,
     top: `${centerY}px`,
-    width: `${size + 40}px`,
-    height: `${size + 40}px`,
+    '--aura-hit-size': `${size + 40}px`,
   }
 }
 
@@ -335,9 +339,25 @@ const leaveSession = () => {
 const withLeaveSession = (items) => [...items, { label: t.value.choices.leaveSession, action: leaveSession }]
 
 const askThemePrimary = () => {
+  selectedTheme.value = ''
+  selectedSubTheme.value = ''
+  selectedQuestion.value = ''
+  selectedSpread.value = 0
+  draftQuestion.value = ''
   stage.value = 'theme'
   setPrompt('theme')
   revealControlsWithDelay(1400)
+}
+
+const openCustomQuestionInput = ({ resetDraft = true } = {}) => {
+  stage.value = 'question_input'
+  setPrompt('questionMode')
+  if (resetDraft) {
+    draftQuestion.value = ''
+  } else if (!draftQuestion.value.trim() && selectedQuestion.value) {
+    draftQuestion.value = selectedQuestion.value
+  }
+  revealControlsWithDelay(900)
 }
 
 const pickTheme = (theme) => {
@@ -352,6 +372,11 @@ const pickTheme = (theme) => {
 
   schedule(THEME_CONFIRM_HOLD_DELAY, () => {
     if (stage.value !== 'theme_confirm') {
+      return
+    }
+
+    if (theme === 'default') {
+      openCustomQuestionInput({ resetDraft: true })
       return
     }
 
@@ -381,11 +406,40 @@ const pickTemplate = (template) => {
   revealControlsWithDelay(850)
 }
 
+const normalizeQuestionDraft = (value) => String(value || '').replace(/\s+/g, ' ').trim()
+
+const getQuestionValidationError = (value) => {
+  const text = normalizeQuestionDraft(value)
+  if (!text) {
+    return ''
+  }
+
+  if (text.length < QUESTION_MIN_LENGTH) {
+    return t.value.questionValidation.tooShort
+  }
+
+  if (text.length > QUESTION_MAX_LENGTH) {
+    return t.value.questionValidation.tooLong
+  }
+
+  const meaningfulChars = text.match(/[\p{L}\p{N}]/gu) || []
+  if (meaningfulChars.length < 4) {
+    return t.value.questionValidation.meaningful
+  }
+
+  return ''
+}
+
 const confirmQuestion = () => {
-  const value = draftQuestion.value.trim()
+  const value = normalizeQuestionDraft(draftQuestion.value)
 
   if (!value) {
     setPrompt('empty')
+    return
+  }
+
+  const error = getQuestionValidationError(value)
+  if (error) {
     return
   }
 
@@ -406,25 +460,26 @@ const clampText = (text, max = 42) => {
 const buildReadySummaryWithTouchPrompt = (spread) => {
   const isUk = currentLang.value === 'uk'
   const themeLabel = t.value.themeLabels[selectedTheme.value] || t.value.themeLabels.default
-  const subThemeLabel =
+  const subThemeLabelRaw =
     subThemeLabels.value?.[selectedTheme.value]?.[selectedSubTheme.value] ||
     subThemeLabels.value?.default?.[selectedSubTheme.value] ||
     selectedSubTheme.value
+  const subThemeLabel = String(subThemeLabelRaw || '').trim()
   const question = clampText(selectedQuestion.value, 46)
   const spreadLabel = isUk ? { 1: '1 карта', 3: '3 карти', 5: '5 карт' }[spread] : { 1: '1 card', 3: '3 cards', 5: '5 cards' }[spread]
   const touchPrompt = pickVariant('ready', t.value.prompts.ready)
+  const subThemeLineUk = subThemeLabel ? `Підтема: «${subThemeLabel}»\n` : ''
+  const subThemeLineEn = subThemeLabel ? `Subtheme: “${subThemeLabel}”\n` : ''
 
   if (isUk) {
     return `Тема: «${themeLabel}»
-Підтема: «${subThemeLabel}»
-Питання: «${question}»
+${subThemeLineUk}Питання: «${question}»
 Глибина: ${spreadLabel}
 ${touchPrompt}`
   }
 
   return `Theme: “${themeLabel}”
-Subtheme: “${subThemeLabel}”
-Question: “${question}”
+${subThemeLineEn}Question: “${question}”
 Depth: ${spreadLabel}
 ${touchPrompt}`
 }
@@ -449,6 +504,11 @@ const touchDeck = () => {
 }
 
 const toQuestionMode = () => {
+  if (selectedTheme.value === 'default') {
+    openCustomQuestionInput({ resetDraft: false })
+    return
+  }
+
   if (!selectedSubTheme.value) {
     stage.value = 'subtheme'
     setPrompt('subTheme')
@@ -459,6 +519,14 @@ const toQuestionMode = () => {
   stage.value = 'question_mode'
   setPrompt('questionMode')
   revealControlsWithDelay(900)
+}
+
+const backFromQuestionInput = () => {
+  if (selectedTheme.value === 'default') {
+    askThemePrimary()
+    return
+  }
+  toQuestionMode()
 }
 
 const historyRows = computed(() => {
@@ -543,9 +611,9 @@ const choices = computed(() => {
       {
         label: t.value.choices.confirmQuestion,
         action: confirmQuestion,
-        disabled: !draftQuestion.value.trim(),
+        disabled: !isQuestionInputValid.value,
       },
-      { label: t.value.choices.back, action: toQuestionMode },
+      { label: t.value.choices.back, action: backFromQuestionInput },
     ])
   }
 
@@ -574,6 +642,16 @@ const showChoices = computed(() => controlsUnlocked.value && stage.value !== 'in
 const activeBubbleText = computed(() => currentPrompt.value || narrationLine.value)
 const isSummaryBubble = computed(() => stage.value === 'ready')
 const showDeckHotspot = computed(() => stage.value === 'ready')
+const questionValidationError = computed(() => {
+  if (!showQuestionInput.value) {
+    return ''
+  }
+  return getQuestionValidationError(draftQuestion.value)
+})
+const isQuestionInputValid = computed(() => {
+  const value = normalizeQuestionDraft(draftQuestion.value)
+  return Boolean(value) && !questionValidationError.value
+})
 const selectedChoice = computed(() => choices.value[selectedWheelIndex.value] || null)
 const selectedChoiceDisabled = computed(
   () => isChoiceTransitioning.value || !selectedChoice.value || Boolean(selectedChoice.value.disabled),
@@ -788,6 +866,15 @@ onBeforeUnmount(() => {
   --oracle-text-main: rgba(238, 235, 228, 0.94);
   --oracle-text-muted: rgba(196, 184, 161, 0.72);
   --oracle-text-soft: rgba(188, 177, 154, 0.62);
+  --aura-core: rgba(248, 252, 255, 0.58);
+  --aura-mid: rgba(224, 236, 255, 0.33);
+  --aura-edge: rgba(194, 212, 240, 0.17);
+  --aura-size: 96px;
+  --aura-hit-size: 132px;
+  --aura-fade: 2800ms;
+  --aura-pulse: 5200ms;
+  --aura-drift: 6200ms;
+  --aura-halo: 6600ms;
   position: relative;
   min-height: 100dvh;
   background: #000;
@@ -856,15 +943,12 @@ onBeforeUnmount(() => {
 }
 
 .oracle-deck-aura {
-  --aura-core: rgba(248, 252, 255, 0.58);
-  --aura-mid: rgba(224, 236, 255, 0.33);
-  --aura-edge: rgba(194, 212, 240, 0.17);
   position: absolute;
   left: 50%;
   top: 50%;
   z-index: 5;
-  width: 96px;
-  height: 96px;
+  width: var(--aura-size);
+  height: var(--aura-size);
   transform: translate(-50%, -50%);
   border-radius: 999px;
   pointer-events: none;
@@ -883,16 +967,16 @@ onBeforeUnmount(() => {
   opacity: 0;
   filter: blur(5px) brightness(0.82);
   transition:
-    opacity 2800ms cubic-bezier(0.19, 1, 0.22, 1),
-    transform 2800ms cubic-bezier(0.19, 1, 0.22, 1),
-    filter 2800ms cubic-bezier(0.19, 1, 0.22, 1);
+    opacity var(--aura-fade) cubic-bezier(0.19, 1, 0.22, 1),
+    transform var(--aura-fade) cubic-bezier(0.19, 1, 0.22, 1),
+    filter var(--aura-fade) cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .oracle-deck-aura--revealed {
   opacity: 0.96;
   transform: translate3d(-50%, -50%, 0) scale(1.02);
   filter: blur(1.2px) brightness(1.02);
-  animation: oracle-deck-aura-breathe 5200ms ease-in-out infinite;
+  animation: oracle-deck-aura-breathe var(--aura-pulse) ease-in-out infinite;
   animation-play-state: running;
 }
 
@@ -901,8 +985,8 @@ onBeforeUnmount(() => {
   left: 50%;
   top: 50%;
   z-index: 6;
-  width: 132px;
-  height: 132px;
+  width: var(--aura-hit-size);
+  height: var(--aura-hit-size);
   transform: translate(-50%, -50%);
   border: 0;
   border-radius: 999px;
@@ -952,11 +1036,11 @@ onBeforeUnmount(() => {
 }
 
 .oracle-deck-aura--revealed::before {
-  animation: oracle-deck-aura-drift 6200ms ease-in-out infinite alternate;
+  animation: oracle-deck-aura-drift var(--aura-drift) ease-in-out infinite alternate;
 }
 
 .oracle-deck-aura--revealed::after {
-  animation: oracle-deck-aura-halo 6600ms ease-in-out infinite;
+  animation: oracle-deck-aura-halo var(--aura-halo) ease-in-out infinite;
 }
 
 .oracle-ui {
@@ -1122,8 +1206,28 @@ onBeforeUnmount(() => {
   resize: none;
 }
 
+.oracle-question-wrap {
+  margin: 0 0 6px;
+}
+
+.oracle-question__label {
+  margin: 0 0 6px;
+  padding-left: 2px;
+  font-size: 12px;
+  line-height: 1.2;
+  color: rgba(233, 236, 244, 0.84);
+}
+
+.oracle-question__error {
+  margin: 0;
+  padding-left: 2px;
+  font-size: 11px;
+  line-height: 1.2;
+  color: rgba(255, 168, 168, 0.9);
+}
+
 .oracle-question::placeholder {
-  color: var(--oracle-text-soft);
+  color: rgba(197, 205, 220, 0.72);
 }
 
 .oracle-wheel {

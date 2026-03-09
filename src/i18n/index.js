@@ -25,7 +25,13 @@ export const messages = {
     horoscopeFor: 'HOROSCOPE FOR',
     tarotOracle: {
       actionsSheetTitle: 'Options',
-      questionPlaceholder: 'For example: What is most important for me to understand in this situation?',
+      questionInputLabel: 'Your question',
+      questionPlaceholder: 'Type your question in one sentence...',
+      questionValidation: {
+        tooShort: 'Please write at least 10 characters.',
+        tooLong: 'Please keep it under 220 characters.',
+        meaningful: 'Please write a meaningful question.',
+      },
       themeLabels: {
         relationships: 'Relationships',
         work: 'Career',
@@ -718,7 +724,13 @@ export const messages = {
     horoscopeFor: 'ГОРОСКОП НА',
     tarotOracle: {
       actionsSheetTitle: 'Варіанти',
-      questionPlaceholder: 'Наприклад: Що мені важливо зрозуміти в цій ситуації?',
+      questionInputLabel: 'Твоє питання',
+      questionPlaceholder: 'Введи своє питання одним реченням...',
+      questionValidation: {
+        tooShort: 'Напиши щонайменше 10 символів.',
+        tooLong: 'Скороти до 220 символів або менше.',
+        meaningful: 'Сформулюй питання змістовно.',
+      },
       themeLabels: {
         relationships: 'Стосунки',
         work: 'Карʼєра',
