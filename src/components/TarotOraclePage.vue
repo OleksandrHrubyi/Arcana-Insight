@@ -42,17 +42,90 @@
     </div>
 
     <div class="oracle-ui">
-      <section class="oracle-dialogue" aria-live="polite">
+      <transition name="oracle-dim-fade">
+        <div v-if="isReadingActive" class="oracle-scene-dim" aria-hidden="true"></div>
+      </transition>
+
+      <section class="oracle-dialogue" :style="oracleDialogueStyle" aria-live="polite">
         <transition name="oracle-bubble-fade" mode="out-in">
           <p
-            v-if="activeBubbleText"
-            :key="activeBubbleText"
+            v-if="bubbleText"
+            :key="bubbleKey"
             :class="['oracle-dialogue__prompt', 'oracle-bubble', isSummaryBubble ? 'oracle-bubble--summary' : 'oracle-bubble--normal']"
           >
-            {{ activeBubbleText }}
+            {{ bubbleText }}
           </p>
         </transition>
       </section>
+
+      <section
+        v-if="isReadingActive && spreadCards.length"
+        :class="['oracle-spread', `oracle-spread--${selectedSpread || 1}`]"
+        aria-live="polite"
+      >
+        <button
+          v-for="(card, index) in spreadCards"
+          :key="`${card.id || getCardTitle(card)}-${index}`"
+          type="button"
+          :class="[
+            'oracle-card',
+            { 'oracle-card--revealed': index < revealedCardsCount },
+            { 'oracle-card--flipped': index < flippedCardsCount },
+            { 'oracle-card--active': index === activeCardIndex },
+          ]"
+          :style="getSpreadCardStyle(index, spreadCards.length)"
+          :disabled="index >= flippedCardsCount"
+          @click="onCardTap(index)"
+        >
+          <div class="oracle-card__inner">
+            <div class="oracle-card__face oracle-card__face--back">
+              <div class="oracle-card__sigil">✦</div>
+            </div>
+
+            <div class="oracle-card__face oracle-card__face--front">
+              <img
+                class="oracle-card__image"
+                :class="{ 'oracle-card__image--reversed': card.reversed }"
+                :src="getCardImage(card)"
+                :alt="getCardTitle(card)"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </button>
+      </section>
+
+      <q-dialog
+        v-model="cardPreviewOpen"
+        transition-show="scale"
+        transition-hide="scale"
+        class="oracle-card-preview-dialog"
+      >
+        <div
+          v-if="previewCard"
+          class="oracle-card-preview"
+          role="dialog"
+          :aria-label="getCardTitle(previewCard)"
+          @click.stop
+        >
+          <button
+            type="button"
+            class="oracle-card-preview__close"
+            :aria-label="currentLang === 'uk' ? 'Закрити карту' : 'Close card'"
+            @click="cardPreviewOpen = false"
+          >
+            ×
+          </button>
+          <img
+            class="oracle-card-preview__image"
+            :class="{ 'oracle-card-preview__image--reversed': previewCard.reversed }"
+            :src="getCardImage(previewCard)"
+            :alt="getCardTitle(previewCard)"
+          />
+          <p class="oracle-card-preview__title">{{ getCardTitle(previewCard) }}</p>
+        </div>
+      </q-dialog>
 
       <q-dialog
         v-model="actionsSheetOpen"
@@ -126,6 +199,7 @@ import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { useRouter } from 'vue-router'
 import { currentLocale, t as i18nT } from 'src/i18n'
+import tarotCardsData from 'src/data/cardsV2/tarot_full.json'
 
 const videoRef = ref(null)
 const sceneRef = ref(null)
@@ -152,7 +226,15 @@ const selectedQuestion = ref('')
 const draftQuestion = ref('')
 const deckAuraStyle = ref({})
 const deckHitStyle = ref({})
+const oracleDialogueStyle = ref({})
 const isDeckHotspotActive = ref(false)
+const isReadingActive = ref(false)
+const spreadCards = ref([])
+const revealedCardsCount = ref(0)
+const flippedCardsCount = ref(0)
+const activeCardIndex = ref(-1)
+const cardPreviewOpen = ref(false)
+const cardPreviewIndex = ref(-1)
 
 const timers = []
 let videoPlaybackWatchdog = null
@@ -168,6 +250,10 @@ const THEME_CONFIRM_HOLD_DELAY = INTRO_LINE_STEP_DELAY
 const READY_HOTSPOT_REVEAL_DELAY = 1800
 const QUESTION_MIN_LENGTH = 10
 const QUESTION_MAX_LENGTH = 220
+const DEAL_START_DELAY = 680
+const DEAL_REVEAL_DELAY = 620
+const DEAL_FLIP_DELAY = 620
+const DEAL_FINISH_DELAY = 1100
 let controlsRevealToken = 0
 const DECK_ANCHOR = Object.freeze({
   x: 0.728,
@@ -175,6 +261,12 @@ const DECK_ANCHOR = Object.freeze({
   size: 0.18,
   offsetX: 20,
   offsetY: 80,
+})
+const ORACLE_HEAD_ANCHOR = Object.freeze({
+  x: 0.49,
+  y: 0.255,
+  offsetX: 0,
+  offsetY: -48,
 })
 
 const t = computed(() => i18nT(currentLang.value, 'tarotOracle'))
@@ -184,6 +276,14 @@ const questionInputLabel = computed(() => t.value.questionInputLabel)
 const actionsSheetTitle = computed(() => t.value.actionsSheetTitle)
 const subThemeLabels = computed(() => t.value.subThemeLabels)
 const questionTemplates = computed(() => t.value.questionTemplates)
+const CARD_POOL = (tarotCardsData?.cards || [])
+  .filter((card) => card && card.file)
+  .map((card) => ({
+    id: card.id,
+    titleUk: card?.name?.uk || card?.name?.en || 'Карта',
+    titleEn: card?.name?.en || card?.name?.uk || 'Card',
+    file: card.file,
+  }))
 
 const pickVariant = (key, variants) => {
   if (!variants || variants.length === 0) {
@@ -203,6 +303,44 @@ const pickVariant = (key, variants) => {
 
 const setPrompt = (promptKey) => {
   currentPrompt.value = pickVariant(promptKey, t.value.prompts[promptKey])
+}
+
+const drawCards = (count) => {
+  const deck = [...CARD_POOL]
+  for (let i = deck.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const temp = deck[i]
+    deck[i] = deck[j]
+    deck[j] = temp
+  }
+  return deck.slice(0, Math.max(1, count)).map((card) => ({
+    ...card,
+    reversed: Math.random() < 0.24,
+  }))
+}
+
+const impact = async (style = ImpactStyle.Light) => {
+  if (!Capacitor.isNativePlatform()) {
+    return
+  }
+  try {
+    await Haptics.impact({ style })
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const triggerDeckReadyHaptic = () => {
+  if (!Capacitor.isNativePlatform()) {
+    return
+  }
+
+  void impact(ImpactStyle.Light)
+  schedule(140, () => {
+    if (stage.value === 'ready' && isDeckHotspotActive.value) {
+      void impact(ImpactStyle.Medium)
+    }
+  })
 }
 
 const revealControlsWithDelay = (delay = 1100) => {
@@ -285,6 +423,13 @@ const updateDeckHotspotPosition = () => {
     top: `${centerY}px`,
     '--aura-hit-size': `${size + 40}px`,
   }
+
+  const dialogueX = rect.left + rect.width * ORACLE_HEAD_ANCHOR.x + ORACLE_HEAD_ANCHOR.offsetX
+  const dialogueY = rect.top + rect.height * ORACLE_HEAD_ANCHOR.y + ORACLE_HEAD_ANCHOR.offsetY
+  oracleDialogueStyle.value = {
+    left: `${dialogueX}px`,
+    top: `${dialogueY}px`,
+  }
 }
 
 const ensureVideoPlayback = () => {
@@ -344,6 +489,13 @@ const askThemePrimary = () => {
   selectedQuestion.value = ''
   selectedSpread.value = 0
   draftQuestion.value = ''
+  isReadingActive.value = false
+  spreadCards.value = []
+  revealedCardsCount.value = 0
+  flippedCardsCount.value = 0
+  activeCardIndex.value = -1
+  cardPreviewOpen.value = false
+  cardPreviewIndex.value = -1
   stage.value = 'theme'
   setPrompt('theme')
   revealControlsWithDelay(1400)
@@ -489,18 +641,190 @@ const setSpread = (spread) => {
   stage.value = 'ready'
   controlsUnlocked.value = false
   actionsSheetOpen.value = false
+  isReadingActive.value = false
+  spreadCards.value = []
+  revealedCardsCount.value = 0
+  flippedCardsCount.value = 0
+  activeCardIndex.value = -1
+  cardPreviewOpen.value = false
+  cardPreviewIndex.value = -1
   currentPrompt.value = buildReadySummaryWithTouchPrompt(spread)
+}
+
+const getCardRole = (index, total) => {
+  const isUk = currentLang.value === 'uk'
+  if (total === 1) {
+    return isUk ? 'Суть' : 'Core'
+  }
+  if (total === 3) {
+    return (
+      (isUk ? ['Корінь', 'Фокус', 'Вектор'] : ['Root', 'Focus', 'Vector'])[index] ||
+      (isUk ? `Карта ${index + 1}` : `Card ${index + 1}`)
+    )
+  }
+  if (total === 5) {
+    return (
+      (isUk ? ['Основа', 'Минуле', 'Тепер', 'Тінь', 'Вектор'] : ['Base', 'Past', 'Now', 'Shadow', 'Vector'])[index] ||
+      (isUk ? `Карта ${index + 1}` : `Card ${index + 1}`)
+    )
+  }
+  return isUk ? `Карта ${index + 1}` : `Card ${index + 1}`
+}
+
+const getCardTitle = (card) => (currentLang.value === 'uk' ? card?.titleUk : card?.titleEn) || card?.titleEn || card?.titleUk || 'Card'
+
+const getCardImage = (card) => `/images/cards/${card.file}`
+const previewCard = computed(() => spreadCards.value[cardPreviewIndex.value] || null)
+
+const revealedCardList = computed(() =>
+  spreadCards.value.slice(0, flippedCardsCount.value).map((card, index) => {
+    const title = getCardTitle(card)
+    const reversedSuffix = card?.reversed ? (currentLang.value === 'uk' ? ' (перевернута)' : ' (reversed)') : ''
+
+    return {
+      index,
+      title,
+      label: `${index + 1}. ${title}${reversedSuffix}`,
+    }
+  }),
+)
+
+const revealedCardListText = computed(() => revealedCardList.value.map((item) => item.label).join('\n'))
+
+const buildCardRevealPrompt = (card, index, total) => {
+  const role = getCardRole(index, total)
+  const title = getCardTitle(card)
+  const reversedTag = card?.reversed ? (currentLang.value === 'uk' ? ', перевернута' : ', reversed') : ''
+
+  if (currentLang.value === 'uk') {
+    return `${role}.\n${title}${reversedTag}.`
+  }
+
+  return `${role}.\n${title}${reversedTag}.`
+}
+
+const buildReadingReadyPrompt = () => {
+  if (currentLang.value === 'uk') {
+    return 'Карти відкриті. Бажаєш, щоб я перейшла до тлумачення?'
+  }
+
+  return 'The cards are open. Do you want me to move to the interpretation?'
+}
+
+const getCardPromptHold = (card, index, total) => {
+  const prompt = buildCardRevealPrompt(card, index, total)
+  const baseDelay = currentLang.value === 'uk' ? 1800 : 1650
+  return Math.max(baseDelay, Math.min(3000, baseDelay + prompt.length * 18))
+}
+
+const getSpreadCardStyle = (index, total) => {
+  const fallback = { rotate: 0, rise: 0 }
+  const map = {
+    1: [{ rotate: 0, rise: 0 }],
+    3: [{ rotate: -8, rise: 2 }, { rotate: 0, rise: -6 }, { rotate: 8, rise: 2 }],
+    5: [
+      { rotate: -13, rise: 7 },
+      { rotate: -6, rise: 2 },
+      { rotate: 0, rise: -8 },
+      { rotate: 6, rise: 2 },
+      { rotate: 13, rise: 7 },
+    ],
+  }
+  const entry = map[total]?.[index] || fallback
+  return {
+    '--card-rot': `${entry.rotate}deg`,
+    '--card-rise': `${entry.rise}px`,
+  }
+}
+
+const startSpreadScene = () => {
+  const count = selectedSpread.value || 1
+  spreadCards.value = drawCards(count)
+  revealedCardsCount.value = 0
+  flippedCardsCount.value = 0
+  activeCardIndex.value = -1
+  isReadingActive.value = true
+
+  schedule(DEAL_START_DELAY, () => {
+    if (stage.value !== 'started') {
+      return
+    }
+    const revealNextCard = (index) => {
+      if (stage.value !== 'started') {
+        return
+      }
+
+      const card = spreadCards.value[index]
+      if (!card) {
+        schedule(DEAL_FINISH_DELAY, () => {
+          if (stage.value !== 'started') {
+            return
+          }
+          activeCardIndex.value = spreadCards.value.length - 1
+          void impact(ImpactStyle.Heavy)
+          currentPrompt.value = buildReadingReadyPrompt()
+        })
+        return
+      }
+
+      revealedCardsCount.value = index + 1
+      activeCardIndex.value = index
+      void impact(ImpactStyle.Light)
+
+      schedule(DEAL_REVEAL_DELAY, () => {
+        if (stage.value !== 'started') {
+          return
+        }
+        currentPrompt.value = buildCardRevealPrompt(card, index, spreadCards.value.length)
+      })
+
+      schedule(DEAL_FLIP_DELAY, () => {
+        if (stage.value !== 'started') {
+          return
+        }
+        flippedCardsCount.value = Math.max(flippedCardsCount.value, index + 1)
+        void impact(ImpactStyle.Medium)
+
+        schedule(getCardPromptHold(card, index, spreadCards.value.length), () => {
+          revealNextCard(index + 1)
+        })
+      })
+    }
+
+    revealNextCard(0)
+  })
 }
 
 const touchDeck = () => {
   if (stage.value !== 'ready' || !isDeckHotspotActive.value) {
     return
   }
+  void impact(ImpactStyle.Light)
   stage.value = 'started'
-  setPrompt('started')
+  currentPrompt.value = ''
   controlsUnlocked.value = false
   actionsSheetOpen.value = false
   isDeckHotspotActive.value = false
+  cardPreviewOpen.value = false
+  cardPreviewIndex.value = -1
+  startSpreadScene()
+}
+
+const onCardTap = (index) => {
+  if (
+    index < 0 ||
+    index >= flippedCardsCount.value ||
+    !spreadCards.value[index] ||
+    flippedCardsCount.value < spreadCards.value.length
+  ) {
+    return
+  }
+
+  activeCardIndex.value = index
+  void impact(ImpactStyle.Light)
+  currentPrompt.value = buildCardRevealPrompt(spreadCards.value[index], index, spreadCards.value.length)
+  cardPreviewIndex.value = index
+  cardPreviewOpen.value = true
 }
 
 const toQuestionMode = () => {
@@ -640,6 +964,18 @@ const choices = computed(() => {
 const showQuestionInput = computed(() => stage.value === 'question_input')
 const showChoices = computed(() => controlsUnlocked.value && stage.value !== 'intro' && choices.value.length > 0)
 const activeBubbleText = computed(() => currentPrompt.value || narrationLine.value)
+const bubbleText = computed(() => {
+  if (stage.value === 'started' && revealedCardListText.value) {
+    if (flippedCardsCount.value >= spreadCards.value.length && spreadCards.value.length > 0) {
+      return `${revealedCardListText.value}\n\n${buildReadingReadyPrompt()}`
+    }
+
+    return revealedCardListText.value
+  }
+
+  return activeBubbleText.value
+})
+const bubbleKey = computed(() => (stage.value === 'started' ? 'started-list' : bubbleText.value))
 const isSummaryBubble = computed(() => stage.value === 'ready')
 const showDeckHotspot = computed(() => stage.value === 'ready')
 const questionValidationError = computed(() => {
@@ -672,6 +1008,7 @@ watch(showDeckHotspot, (visible) => {
       return
     }
     isDeckHotspotActive.value = true
+    triggerDeckReadyHaptic()
   })
 })
 
@@ -872,12 +1209,13 @@ onBeforeUnmount(() => {
   --aura-size: 96px;
   --aura-hit-size: 132px;
   --aura-fade: 2800ms;
-  --aura-pulse: 5200ms;
-  --aura-drift: 6200ms;
-  --aura-halo: 6600ms;
+  --aura-pulse: 3600ms;
+  --aura-drift: 3600ms;
+  --aura-halo: 3600ms;
   position: relative;
   min-height: 100dvh;
   background: #000;
+  overflow-x: clip;
 }
 
 .oracle-video-layer {
@@ -885,6 +1223,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100dvh;
   overflow: hidden;
+  overflow-x: clip;
   background: #000;
 }
 
@@ -952,20 +1291,17 @@ onBeforeUnmount(() => {
   transform: translate(-50%, -50%);
   border-radius: 999px;
   pointer-events: none;
-  background:
-    radial-gradient(42% 42% at 50% 52%, var(--aura-core), rgba(255, 255, 255, 0) 100%),
-    radial-gradient(86% 86% at 56% 46%, var(--aura-mid), rgba(255, 255, 255, 0) 78%),
-    radial-gradient(124% 124% at 46% 58%, var(--aura-edge), rgba(255, 255, 255, 0) 74%);
+  background: transparent;
   box-shadow:
-    0 0 34px rgba(242, 248, 255, 0.46),
-    0 0 92px rgba(214, 228, 248, 0.3);
+    0 0 34px rgba(242, 248, 255, 0.24),
+    0 0 108px rgba(214, 228, 248, 0.22);
   mix-blend-mode: screen;
   will-change: transform, opacity;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   transform: translate3d(-50%, -50%, 0);
   opacity: 0;
-  filter: blur(5px) brightness(0.82);
+  filter: brightness(0.9);
   transition:
     opacity var(--aura-fade) cubic-bezier(0.19, 1, 0.22, 1),
     transform var(--aura-fade) cubic-bezier(0.19, 1, 0.22, 1),
@@ -973,9 +1309,9 @@ onBeforeUnmount(() => {
 }
 
 .oracle-deck-aura--revealed {
-  opacity: 0.96;
+  opacity: 1;
   transform: translate3d(-50%, -50%, 0) scale(1.02);
-  filter: blur(1.2px) brightness(1.02);
+  filter: brightness(1.12);
   animation: oracle-deck-aura-breathe var(--aura-pulse) ease-in-out infinite;
   animation-play-state: running;
 }
@@ -1015,32 +1351,37 @@ onBeforeUnmount(() => {
 }
 
 .oracle-deck-aura::before {
-  inset: 16%;
+  inset: 20%;
   border-radius: 999px;
-  background:
-    radial-gradient(circle at 44% 40%, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0) 72%),
-    radial-gradient(circle at 62% 62%, rgba(210, 229, 255, 0.18), rgba(210, 229, 255, 0) 68%);
-  opacity: 0.7;
+  background: transparent;
+  box-shadow:
+    0 0 14px rgba(236, 244, 255, 0.3),
+    0 0 36px rgba(180, 202, 244, 0.24),
+    inset 0 0 22px rgba(236, 244, 255, 0.08);
+  opacity: 0.94;
   animation: none;
   will-change: transform, opacity;
 }
 
 .oracle-deck-aura::after {
-  inset: -14%;
+  inset: 2%;
   border-radius: 999px;
-  border: 1px solid rgba(236, 244, 255, 0.36);
-  opacity: 0;
+  box-shadow:
+    0 0 28px rgba(214, 228, 248, 0.24),
+    0 0 62px rgba(214, 228, 248, 0.14),
+    inset 0 0 28px rgba(214, 228, 248, 0.05);
+  opacity: 0.42;
   pointer-events: none;
   animation: none;
   will-change: transform, opacity;
 }
 
 .oracle-deck-aura--revealed::before {
-  animation: oracle-deck-aura-drift var(--aura-drift) ease-in-out infinite alternate;
+  animation: oracle-deck-aura-ring-breathe var(--aura-drift) ease-in-out infinite;
 }
 
 .oracle-deck-aura--revealed::after {
-  animation: oracle-deck-aura-halo var(--aura-halo) ease-in-out infinite;
+  animation: oracle-deck-aura-halo-breathe var(--aura-halo) ease-in-out infinite;
 }
 
 .oracle-ui {
@@ -1048,18 +1389,181 @@ onBeforeUnmount(() => {
   inset: 0;
   z-index: 4;
   pointer-events: none;
+  overflow-x: clip;
+}
+
+.oracle-scene-dim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(62% 44% at 50% 66%, rgba(130, 152, 188, 0.08), rgba(130, 152, 188, 0)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.54));
+  pointer-events: none;
+}
+
+.oracle-dim-fade-enter-active,
+.oracle-dim-fade-leave-active {
+  transition: opacity 680ms ease;
+}
+
+.oracle-dim-fade-enter-from,
+.oracle-dim-fade-leave-to {
+  opacity: 0;
+}
+
+.oracle-spread {
+  position: absolute;
+  left: 50%;
+  bottom: 15.5%;
+  transform: translateX(-50%);
+  z-index: 3;
+  width: 92vw;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 8px;
+  pointer-events: none;
+  perspective: 1100px;
+}
+
+.oracle-spread--1 {
+  gap: 0;
+}
+
+.oracle-spread--5 {
+  gap: 6px;
+}
+
+.oracle-card {
+  --card-rot: 0deg;
+  --card-rise: 0px;
+  width: min(24vw, 110px);
+  aspect-ratio: 0.62;
+  border: 0;
+  padding: 0;
+  border-radius: 14px;
+  background: transparent;
+  pointer-events: auto;
+  transform: translateY(calc(46px + var(--card-rise))) rotate(var(--card-rot)) scale(0.92);
+  opacity: 0;
+  transition:
+    transform 980ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    opacity 780ms ease,
+    box-shadow 780ms ease;
+}
+
+.oracle-card--revealed {
+  transform: translateY(var(--card-rise)) rotate(var(--card-rot)) scale(1);
+  opacity: 1;
+}
+
+.oracle-card--active {
+  transform: translateY(calc(-14px + var(--card-rise))) rotate(var(--card-rot)) scale(1.06);
+  z-index: 4;
+}
+
+.oracle-card__inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1120ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.oracle-card--flipped .oracle-card__inner {
+  transform: rotateY(180deg);
+}
+
+.oracle-card__face {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.oracle-card__face--back {
+  border: 1px solid rgba(204, 220, 247, 0.32);
+  background:
+    radial-gradient(80% 100% at 50% 0%, rgba(148, 171, 214, 0.24), rgba(148, 171, 214, 0) 60%),
+    radial-gradient(90% 120% at 50% 100%, rgba(64, 90, 138, 0.28), rgba(64, 90, 138, 0)),
+    linear-gradient(180deg, rgba(15, 24, 41, 0.98), rgba(5, 10, 19, 0.99));
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.52),
+    inset 0 1px 0 rgba(226, 237, 255, 0.22),
+    inset 0 -1px 0 rgba(88, 118, 174, 0.2);
+  opacity: 0.88;
+  transition: opacity 320ms ease, box-shadow 420ms ease;
+}
+
+.oracle-card__face--front {
+  transform: rotateY(180deg);
+  border: 1px solid rgba(214, 227, 250, 0.46);
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.56),
+    0 0 20px rgba(180, 202, 244, 0.2);
+  opacity: 0;
+  transition: opacity 460ms ease 90ms;
+}
+
+.oracle-card--flipped .oracle-card__face--front {
+  opacity: 1;
+}
+
+.oracle-card--flipped .oracle-card__face--back {
+  opacity: 0.08;
+}
+
+.oracle-card:disabled {
+  pointer-events: none;
+}
+
+.oracle-card__sigil {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(226, 237, 255, 0.8);
+  font-size: 24px;
+  text-shadow: 0 0 12px rgba(198, 220, 255, 0.46);
+}
+
+.oracle-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.oracle-card__image--reversed {
+  transform: rotate(180deg);
+}
+
+.oracle-card--active .oracle-card__face--front {
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.64);
+}
+
+.oracle-spread--1 .oracle-card {
+  width: min(34vw, 156px);
+}
+
+.oracle-spread--5 .oracle-card {
+  width: min(17.4vw, 84px);
 }
 
 .oracle-dialogue {
   position: absolute;
-  left: 14px;
-  right: 14px;
-  top: clamp(86px, 16vh, 148px);
-  max-width: 560px;
-  margin: 0 auto;
+  width: min(92vw, 540px);
   padding: 0;
   background: transparent;
   color: var(--oracle-text-muted);
+  display: flex;
+  justify-content: flex-end;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+  z-index: 7;
 }
 
 
@@ -1161,8 +1665,8 @@ onBeforeUnmount(() => {
   margin-bottom: 0;
   border-radius: 22px 22px 0 0;
   padding: 8px 12px calc(env(safe-area-inset-bottom, 0px) + 24px);
-  //backdrop-filter: blur(30px) saturate(120%);
-  //-webkit-backdrop-filter: blur(30px) saturate(120%);
+  /* backdrop-filter: blur(30px) saturate(120%);
+  -webkit-backdrop-filter: blur(30px) saturate(120%); */
   box-shadow: 0 -16px 46px rgba(0, 0, 0, 0.42);
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: #ffffff;
@@ -1235,10 +1739,10 @@ onBeforeUnmount(() => {
   border-radius: 12px;
   overflow: hidden;
   overflow-x: hidden;
-  //border: 1px solid rgba(255, 255, 255, 0.16);
-  //background:
-  //  linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
-  //  linear-gradient(180deg, rgba(10, 10, 12, 0.34), rgba(8, 8, 10, 0.4));
+  /* border: 1px solid rgba(255, 255, 255, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
+    linear-gradient(180deg, rgba(10, 10, 12, 0.34), rgba(8, 8, 10, 0.4)); */
   touch-action: pan-y;
 }
 
@@ -1255,12 +1759,12 @@ onBeforeUnmount(() => {
 
 .oracle-wheel::before {
   top: 0;
-  //background: linear-gradient(180deg, rgba(10, 10, 12, 0.74), rgba(10, 10, 12, 0));
+  /* background: linear-gradient(180deg, rgba(10, 10, 12, 0.74), rgba(10, 10, 12, 0)); */
 }
 
 .oracle-wheel::after {
   bottom: 0;
-  //background: linear-gradient(0deg, rgba(10, 10, 12, 0.74), rgba(10, 10, 12, 0));
+  /* background: linear-gradient(0deg, rgba(10, 10, 12, 0.74), rgba(10, 10, 12, 0)); */
 }
 
 .oracle-wheel__window {
@@ -1349,18 +1853,13 @@ onBeforeUnmount(() => {
   border-radius: 12px;
   border: 1px solid rgba(156, 184, 235, 0.36);
   padding: 12px 14px;
-  background:
-    radial-gradient(120% 200% at 50% 0%, rgba(105, 136, 198, 0.34), rgba(105, 136, 198, 0)),
-    linear-gradient(180deg, rgba(34, 48, 76, 0.92), rgba(10, 15, 27, 0.98));
+  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
   color: var(--oracle-text-main);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  box-shadow:
-    0 8px 20px rgba(3, 8, 18, 0.5),
-    inset 0 1px 0 rgba(222, 234, 255, 0.25),
-    inset 0 -1px 0 rgba(86, 118, 176, 0.34);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  box-shadow: none;
   transition: transform 120ms ease, box-shadow 160ms ease, border-color 160ms ease, filter 160ms ease;
 }
 
@@ -1368,10 +1867,7 @@ onBeforeUnmount(() => {
   transform: translateY(1px);
   border-color: rgba(156, 184, 235, 0.28);
   filter: saturate(0.92);
-  box-shadow:
-    0 4px 12px rgba(3, 8, 18, 0.5),
-    inset 0 1px 0 rgba(222, 234, 255, 0.16),
-    inset 0 -1px 0 rgba(86, 118, 176, 0.22);
+  box-shadow: none;
 }
 
 .oracle-actions__ok:disabled {
@@ -1382,10 +1878,78 @@ onBeforeUnmount(() => {
   box-shadow: inset 0 1px 0 rgba(214, 229, 255, 0.08);
 }
 
+.oracle-card-preview {
+  width: min(82vw, 340px);
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  transform: translateY(-40px);
+  padding: 14px 14px 18px;
+  border-radius: 24px;
+  background:
+    radial-gradient(140% 180% at 50% 0%, rgba(42, 54, 83, 0.34), rgba(42, 54, 83, 0)),
+    linear-gradient(180deg, rgba(8, 11, 18, 0.94), rgba(3, 5, 10, 0.98));
+  border: 1px solid rgba(188, 204, 235, 0.18);
+  box-shadow:
+    0 26px 64px rgba(0, 0, 0, 0.52),
+    inset 0 1px 0 rgba(223, 233, 255, 0.12);
+}
+
+.oracle-card-preview__close {
+  justify-self: end;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(188, 204, 235, 0.18);
+  border-radius: 999px;
+  background: rgba(6, 10, 18, 0.86);
+  color: rgba(244, 238, 227, 0.92);
+  font-size: 24px;
+  line-height: 1;
+  box-shadow: inset 0 1px 0 rgba(223, 233, 255, 0.1);
+}
+
+.oracle-card-preview__image {
+  display: block;
+  width: min(72vw, 300px);
+  aspect-ratio: 0.62;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow:
+    0 20px 44px rgba(0, 0, 0, 0.48),
+    0 0 0 1px rgba(228, 236, 255, 0.08);
+}
+
+.oracle-card-preview__image--reversed {
+  transform: rotate(180deg);
+}
+
+.oracle-card-preview__title {
+  margin: 0;
+  text-align: center;
+  color: rgba(244, 238, 227, 0.94);
+  font-size: 14px;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 :deep(.oracle-actions-dialog .q-dialog__backdrop) {
   background: rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+}
+
+:deep(.oracle-card-preview-dialog .q-dialog__backdrop) {
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+:deep(.oracle-card-preview-dialog .q-dialog__inner) {
+  padding: 12px;
 }
 
 :deep(.oracle-actions-dialog .q-dialog__inner) {
@@ -1394,7 +1958,7 @@ onBeforeUnmount(() => {
 
 @media (max-width: 480px) {
   .oracle-dialogue {
-    top: clamp(72px, 15vh, 120px);
+    width: min(94vw, 520px);
   }
 
   .oracle-actions {
@@ -1403,6 +1967,23 @@ onBeforeUnmount(() => {
 
   .oracle-wheel__scroll {
     height: 146px;
+  }
+
+  .oracle-spread {
+    bottom: 17%;
+    gap: 8px;
+  }
+
+  .oracle-card {
+    width: min(23vw, 92px);
+  }
+
+  .oracle-spread--1 .oracle-card {
+    width: min(38vw, 160px);
+  }
+
+  .oracle-spread--5 .oracle-card {
+    width: min(17.8vw, 82px);
   }
 
 }
@@ -1438,36 +2019,50 @@ onBeforeUnmount(() => {
 @keyframes oracle-deck-aura-breathe {
   0%,
   100% {
-    transform: translate3d(-50%, -50%, 0) scale(1.01);
+    transform: translate3d(-50%, -50%, 0) scale(1);
+    opacity: 0.86;
+    box-shadow:
+      0 0 26px rgba(242, 248, 255, 0.2),
+      0 0 70px rgba(214, 228, 248, 0.14);
   }
   50% {
-    transform: translate3d(-50%, -50%, 0) scale(1.07);
+    transform: translate3d(-50%, -50%, 0) scale(1.048);
+    opacity: 1;
+    box-shadow:
+      0 0 44px rgba(242, 248, 255, 0.32),
+      0 0 116px rgba(214, 228, 248, 0.26);
   }
 }
 
-@keyframes oracle-deck-aura-drift {
-  0% {
-    transform: scale(0.98) translate(-3%, -1%);
-    opacity: 0.44;
-  }
+@keyframes oracle-deck-aura-ring-breathe {
+  0%,
   100% {
-    transform: scale(1.05) translate(3%, 2%);
-    opacity: 0.66;
+    transform: scale(1);
+    opacity: 0.72;
+    box-shadow:
+      0 0 12px rgba(236, 244, 255, 0.22),
+      0 0 28px rgba(180, 202, 244, 0.14),
+      inset 0 0 14px rgba(236, 244, 255, 0.05);
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.96;
+    box-shadow:
+      0 0 24px rgba(236, 244, 255, 0.4),
+      0 0 54px rgba(180, 202, 244, 0.28),
+      inset 0 0 20px rgba(236, 244, 255, 0.1);
   }
 }
 
-@keyframes oracle-deck-aura-halo {
-  0% {
-    opacity: 0.18;
-    transform: scale(0.92);
+@keyframes oracle-deck-aura-halo-breathe {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: scale(0.99);
   }
   50% {
-    opacity: 0.3;
-    transform: scale(1.06);
-  }
-  100% {
-    opacity: 0.16;
-    transform: scale(1.16);
+    opacity: 0.46;
+    transform: scale(1.12);
   }
 }
 </style>

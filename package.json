@@ -21,7 +21,7 @@
     "ios:assets": "capacitor-assets generate --ios",
     "ios:sync": "npx cap sync ios",
     "ios:open": "npx cap open ios",
-    "party": "npm run build && npm run iosbuild && npm run ioscopy && npm run iossync"
+    "party": "npm run iosbuild && npm run iossync"
   },
   "dependencies": {
     "@capacitor-community/apple-sign-in": "^5.0.0",
