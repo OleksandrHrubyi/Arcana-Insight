@@ -1160,7 +1160,9 @@ onMounted(() => {
     }
     if (video.paused || video.readyState < 2) {
       ensureVideoPlayback()
-    } else {
+      return
+    }
+    if (video.currentTime > 0) {
       isVideoPlaying.value = true
     }
   }, 1200)
