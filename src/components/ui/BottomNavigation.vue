@@ -53,31 +53,13 @@
           />
         </svg>
 
-        <svg
+        <q-icon
           v-else-if="item.name === 'tarot'"
-          class="telegram-icon"
-          width="32"
-          height="32"
-          viewBox="0 0 32 32"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+          name="style"
+          size="28px"
+          class="telegram-icon telegram-icon--material"
           aria-hidden="true"
-        >
-          <path
-            d="M21 26C21 27.1046 20.1046 28 19 28H13.9991H9C7.89543 28 7 27.1046 7 26V9C7 8.73478 7.10536 8.48043 7.29289 8.29289C7.48043 8.10536 7.73478 8 8 8H20C20.2652 8 20.5196 8.10536 20.7071 8.29289C20.8946 8.48043 21 8.73478 21 9V26Z"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M11 8V5C11 4.73478 11.1054 4.48043 11.2929 4.29289C11.4804 4.10536 11.7348 4 12 4H24C24.2652 4 24.5196 4.10536 24.7071 4.29289C24.8946 4.48043 25 4.73478 25 5V22C25 23.1046 24.1046 24 23 24H21"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
+        />
 
         <svg
           v-else
@@ -89,22 +71,9 @@
           xmlns="http://www.w3.org/2000/svg"
           aria-hidden="true"
         >
-          <path
-            d="M6.53762 11.4498C6.76262 10.9748 7.02512 10.5248 7.32512 10.0873L7.27513 6.83735C7.27513 6.53735 7.40012 6.24985 7.63762 6.04985C8.80012 5.07485 10.1251 4.28735 11.5876 3.76235C11.8751 3.66235 12.1876 3.68735 12.4376 3.84985L15.2251 5.52485C15.7501 5.48735 16.2751 5.48735 16.8001 5.52485L19.5876 3.84985C19.8501 3.69985 20.1626 3.66235 20.4501 3.76235C21.8751 4.27485 23.2126 5.03735 24.4001 6.03735C24.6251 6.22485 24.7626 6.52485 24.7501 6.82485L24.7001 10.0748C25.0001 10.5123 25.2626 10.9623 25.4876 11.4373L28.3251 13.0123C28.5876 13.1623 28.7751 13.4123 28.8251 13.7123C29.0876 15.1998 29.1001 16.7498 28.8251 18.2623C28.7751 18.5623 28.5876 18.8123 28.3251 18.9623L25.4876 20.5373C25.2626 21.0123 25.0001 21.4623 24.7001 21.8998L24.7501 25.1498C24.7501 25.4498 24.6251 25.7373 24.3876 25.9373C23.2251 26.9123 21.9001 27.6998 20.4376 28.2248C20.1501 28.3248 19.8376 28.2998 19.5876 28.1373L16.8001 26.4623C16.2751 26.4998 15.7501 26.4998 15.2251 26.4623L12.4376 28.1373C12.1751 28.2873 11.8626 28.3248 11.5751 28.2248C10.1501 27.7123 8.81262 26.9498 7.62512 25.9498C7.40012 25.7623 7.26263 25.4623 7.27513 25.1623L7.32512 21.9123C7.02512 21.4748 6.76262 21.0248 6.53762 20.5498L3.70012 18.9748C3.43762 18.8248 3.25012 18.5748 3.20012 18.2748C2.93762 16.7873 2.92512 15.2373 3.20012 13.7248C3.25012 13.4248 3.43762 13.1748 3.70012 13.0248L6.53762 11.4498Z"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-miterlimit="10"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M16 22C19.3137 22 22 19.3137 22 16C22 12.6863 19.3137 10 16 10C12.6863 10 10 12.6863 10 16C10 19.3137 12.6863 22 16 22Z"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-miterlimit="10"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
+          <path d="M6 10H26" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <path d="M6 16H26" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <path d="M6 22H26" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
         </svg>
 
         <span class="telegram-label">{{ tt(item.labelKey) }}</span>
@@ -113,6 +82,7 @@
       <!-- ✅ одна плавна крапка, що їздить -->
       <span class="telegram-indicator" :style="indicatorStyle"></span>
     </nav>
+
   </q-footer>
 </template>
 
@@ -139,8 +109,9 @@ const items = [
   { name: 'arcana', labelKey: 'arcana' },
   { name: 'horoscope', labelKey: 'horoscope' },
   { name: 'tarot', labelKey: 'tarot' },
-  { name: 'settings', labelKey: 'settings' }
+  { name: 'menu', labelKey: 'nav.menu' }
 ]
+
 
 // refs на таби по name
 const tabEls = new Map()
@@ -191,7 +162,8 @@ async function onClick(name) {
 watch(
   () => route.name,
   (val) => {
-    current.value = val || 'arcana'
+    const tab = route.meta?.tab || val || 'arcana'
+    current.value = tab
   },
   { immediate: true }
 )
@@ -204,6 +176,7 @@ watch(
     updateIndicator()
   }
 )
+
 
 let ro = null
 const onResizeFallback = () => updateIndicator()
@@ -288,6 +261,10 @@ onBeforeUnmount(() => {
   transition: filter 280ms ease;
 }
 
+.telegram-icon--material {
+  color: currentColor;
+}
+
 .telegram-icon * {
   stroke: currentColor !important;
   transition: stroke 280ms ease;
@@ -351,4 +328,5 @@ onBeforeUnmount(() => {
 .telegram-item{
   gap: 6px; /* трішки компактніше */
 }
+
 </style>

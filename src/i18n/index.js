@@ -601,6 +601,7 @@ export const messages = {
     common: {
       cancel: 'Cancel',
       save: 'Save',
+      close: 'Close',
     },
 
     fields: {
@@ -629,6 +630,7 @@ export const messages = {
     auth: {
       loginAction: 'Login',
       signUpAction: 'Sign up',
+      confirmCode: 'Confirm code',
       forgotPassword: 'Forgot password?',
       welcomeBack: 'Welcome back to Arcana',
       welcomeTo: 'Welcome to Arcana',
@@ -641,8 +643,15 @@ export const messages = {
       sendCodeAgain: 'Send a new code',
       didntGetCode: "Didn't get your code?",
       codeSent: "We’ve sent a 6-digit verification code to your email",
+      codeResent: "We’ve just resent your verification code. Check your inbox again.",
+      loginHelper: "We’ll send a 6-digit code to your email.",
       wrongOrExpiredCode: 'Wrong or expired code. Try again.',
       fillAllFields: 'Please fill all fields correctly.',
+    },
+    accountPage: {
+      subtitle: 'Your profile details',
+      zodiacTitle: 'Zodiac sign',
+      zodiacEmpty: 'Add birth date',
     },
 
     getStarted: {
@@ -707,6 +716,9 @@ export const messages = {
 
     errors: {
       generic: 'Something went wrong. Please try again.',
+      invalidEmail: 'Enter a valid email address.',
+      invalidName: 'Enter at least 2 characters for your name.',
+      invalidDate: 'Enter a valid date (DD.MM.YYYY).',
       saveFailed: 'Save failed',
       noSession: 'No session returned',
       noShareText: 'Nothing to share yet',
@@ -714,6 +726,137 @@ export const messages = {
 
     nav: {
       bottom: 'Bottom navigation',
+      more: 'More',
+      menu: 'Menu',
+      compatibility: 'Compatibility',
+      cards: 'Card library',
+      soon: 'Soon',
+    },
+
+    cardsPage: {
+      title: 'Card library',
+      subtitle: 'Tap a card to open its meaning',
+      major: 'Major arcana',
+      suits: {
+        wands: 'Wands',
+        cups: 'Cups',
+        swords: 'Swords',
+        pentacles: 'Pentacles',
+      },
+      filters: {
+        all: 'All',
+        major: 'Major',
+        wands: 'Wands',
+        cups: 'Cups',
+        swords: 'Swords',
+        pentacles: 'Pentacles',
+      },
+    },
+
+    compatibilityPage: {
+      title: 'Compatibility',
+      subtitle: 'Find the resonance between two signs',
+      sections: {
+        match: 'Choose signs',
+        preview: 'Preview',
+      },
+      you: 'You',
+      partner: 'Partner',
+      pickSign: 'Pick a sign',
+      previewTitle: 'Cosmic resonance',
+      previewText: 'Select both signs to explore how your energies meet.',
+      cta: 'Show compatibility',
+      resultTitle: 'Compatibility: {a} + {b}',
+      resultSub: 'Based on elements and modalities.',
+      elementLine: '{a} meets {b}',
+      insightLabel: 'Key insight',
+      balanceLabel: 'Element balance',
+      summary: {
+        high: 'Strong resonance with natural flow and mutual support.',
+        mid: 'Good potential with a few areas that need attention.',
+        low: 'High contrast: clarity and patience make the difference.',
+      },
+      spheres: {
+        emotion: 'Emotion',
+        communication: 'Communication',
+        stability: 'Stability',
+      },
+      elements: {
+        fire: 'Fire',
+        earth: 'Earth',
+        air: 'Air',
+        water: 'Water',
+      },
+      modalities: {
+        cardinal: 'Cardinal',
+        fixed: 'Fixed',
+        mutable: 'Mutable',
+      },
+      elementTexts: {
+        air_air: 'Air with air is mental spark and constant exchange. Stay grounded to keep depth.',
+        air_earth: 'Ideas meet structure. Build a shared plan to avoid drifting apart.',
+        air_fire: 'Fire needs air, air loves fire. The pair moves quickly and inspires action.',
+        air_water: 'Thought meets feeling. Translate emotions into words for harmony.',
+        earth_earth: 'Earth with earth builds trust and stability. Give it time and it grows strong.',
+        earth_fire: 'Heat meets patience. When aligned, this duo turns desire into results.',
+        earth_water: 'Earth anchors water, water softens earth. This is steady and nurturing.',
+        fire_fire: 'Two fires amplify momentum: bold, bright, and fast. Keep rhythm to avoid burnout.',
+        fire_water: 'Steam and contrast: passion meets sensitivity. Balance pace and tone.',
+        water_water: 'Water with water is deep empathy and intuition. Boundaries keep it healthy.',
+      },
+      insights: {
+        air_air: 'Name one shared idea and act on it within 48 hours.',
+        air_earth: 'Write the plan down so inspiration meets structure.',
+        air_fire: 'Keep the pace exciting, but pause to listen.',
+        air_water: 'Translate feelings into words early.',
+        earth_earth: 'Invest in routine; it becomes your strength.',
+        earth_fire: 'Give each other room to lead at times.',
+        earth_water: 'Stability plus care is the winning formula.',
+        fire_fire: 'Channel energy into a shared goal.',
+        fire_water: 'Respect sensitivity and keep the tone gentle.',
+        water_water: 'Boundaries protect the depth you share.',
+      },
+      detailsCta: 'Details',
+      detailsTitle: 'How it is calculated',
+      details: {
+        signs: 'Signs',
+        elements: 'Elements',
+        modalities: 'Modalities',
+        elementScore: 'Element score',
+        modalityScore: 'Modality score',
+        final: 'Final score',
+        formula: 'Formula',
+        formulaText: 'Element score (65%) + Modality score (35%).',
+        modalityNote: 'Modality shows the pace of a sign: cardinal (starts), fixed (sustains), mutable (adapts).',
+        elementPair: 'Element pair',
+        modalityPair: 'Modality pair',
+        resultSummary: 'Summary',
+        resultExplain: 'This score combines element chemistry with how each sign moves through life.',
+        elementMatrix: 'Element matrix',
+        modalityMatrix: 'Modality matrix',
+        matrixHint: 'Your pair is highlighted. Values show the score for each combination.',
+        tabs: {
+          basic: 'Basic',
+          extended: 'Extended',
+          matrix: 'Matrix',
+        },
+      },
+      modalityTexts: {
+        cardinal_cardinal: 'Two initiators: high drive and fast starts. Align goals to avoid friction.',
+        fixed_fixed: 'Steady and loyal, but stubborn. Patience and respect keep it balanced.',
+        mutable_mutable: 'Flexible and curious. Needs structure to avoid drifting.',
+        cardinal_fixed: 'Starter meets keeper. Pace the relationship and share control.',
+        cardinal_mutable: 'Movement and adaptability. Works well with clear direction.',
+        fixed_mutable: 'Stability meets change. Build trust while allowing growth.',
+      },
+    },
+
+    menuPage: {
+      subtitle: 'All sections in one place',
+      sections: {
+        main: 'Explore',
+        account: 'Account',
+      },
     },
   },
 
@@ -1299,6 +1442,7 @@ export const messages = {
     common: {
       cancel: 'Скасувати',
       save: 'Зберегти',
+      close: 'Закрити',
     },
 
     fields: {
@@ -1327,6 +1471,7 @@ export const messages = {
     auth: {
       loginAction: 'Увійти',
       signUpAction: 'Зареєструватися',
+      confirmCode: 'Підтвердіть код',
       forgotPassword: 'Забули пароль?',
       welcomeBack: 'З поверненням до Arcana',
       welcomeTo: 'Ласкаво просимо до Arcana',
@@ -1339,8 +1484,15 @@ export const messages = {
       sendCodeAgain: 'Надіслати новий код',
       didntGetCode: 'Не отримали код?',
       codeSent: 'Ми надіслали 6-значний код підтвердження на вашу пошту',
+      codeResent: 'Ми щойно надіслали код повторно. Перевірте пошту ще раз.',
+      loginHelper: 'Надішлемо 6-значний код на вашу пошту.',
       wrongOrExpiredCode: 'Код неправильний або прострочений. Спробуйте ще раз.',
       fillAllFields: 'Будь ласка, заповніть усі поля правильно.',
+    },
+    accountPage: {
+      subtitle: 'Дані твого профілю',
+      zodiacTitle: 'Знак зодіаку',
+      zodiacEmpty: 'Додай дату',
     },
 
     getStarted: {
@@ -1405,6 +1557,9 @@ export const messages = {
 
     errors: {
       generic: 'Щось пішло не так. Спробуйте ще раз.',
+      invalidEmail: 'Введіть коректний email.',
+      invalidName: "Введіть ім'я (мінімум 2 символи).",
+      invalidDate: 'Введіть коректну дату (ДД.ММ.РРРР).',
       saveFailed: 'Не вдалося зберегти',
       noSession: 'Сесію не отримано',
       noShareText: 'Немає тексту для поширення',
@@ -1412,6 +1567,137 @@ export const messages = {
 
     nav: {
       bottom: 'Нижня навігація',
+      more: 'Ще',
+      menu: 'Меню',
+      compatibility: 'Сумісність',
+      cards: 'Бібліотека карт',
+      soon: 'Скоро',
+    },
+
+    cardsPage: {
+      title: 'Бібліотека карт',
+      subtitle: 'Натисни на карту, щоб відкрити значення',
+      major: 'Старші аркани',
+      suits: {
+        wands: 'Жезли',
+        cups: 'Кубки',
+        swords: 'Мечі',
+        pentacles: 'Пентаклі',
+      },
+      filters: {
+        all: 'Усі',
+        major: 'Старші',
+        wands: 'Жезли',
+        cups: 'Кубки',
+        swords: 'Мечі',
+        pentacles: 'Пентаклі',
+      },
+    },
+
+    compatibilityPage: {
+      title: 'Сумісність',
+      subtitle: 'Відчуй резонанс двох знаків',
+      sections: {
+        match: 'Обери знаки',
+        preview: 'Попередній перегляд',
+      },
+      you: 'Ти',
+      partner: 'Партнер',
+      pickSign: 'Обери знак',
+      previewTitle: 'Космічний резонанс',
+      previewText: 'Обери два знаки, щоб відкрити їх взаємодію.',
+      cta: 'Показати сумісність',
+      resultTitle: 'Сумісність: {a} + {b}',
+      resultSub: 'На основі стихій та модальностей.',
+      elementLine: '{a} зустрічає {b}',
+      insightLabel: 'Ключова порада',
+      balanceLabel: 'Баланс стихій',
+      summary: {
+        high: 'Сильний резонанс і природна підтримка одне одного.',
+        mid: 'Хороший потенціал із кількома зонами уваги.',
+        low: 'Високий контраст: ясність і терпіння вирішують.',
+      },
+      spheres: {
+        emotion: 'Емоції',
+        communication: 'Комунікація',
+        stability: 'Стабільність',
+      },
+      elements: {
+        fire: 'Вогонь',
+        earth: 'Земля',
+        air: 'Повітря',
+        water: 'Вода',
+      },
+      modalities: {
+        cardinal: 'Кардинальний',
+        fixed: 'Фіксований',
+        mutable: 'Мутабельний',
+      },
+      elementTexts: {
+        air_air: 'Повітря з повітрям — це інтелект і постійний обмін. Додавайте глибину.',
+        air_earth: 'Ідеї зустрічають структуру. Спільний план рятує від розходження.',
+        air_fire: 'Вогню потрібне повітря, повітрю подобається вогонь. Пара надихає і рухається швидко.',
+        air_water: 'Думка і почуття. Перекладайте емоції в слова для гармонії.',
+        earth_earth: 'Земля з землею будує довіру і стабільність. Дайте стосункам час.',
+        earth_fire: 'Тепло і терпіння. У парі це перетворює бажання на результат.',
+        earth_water: 'Земля заземлює воду, вода пом’якшує землю. Це турботливо і стабільно.',
+        fire_fire: 'Два вогні підсилюють темп: яскраво, сміливо й швидко. Потрібен ритм, щоб не перегоріти.',
+        fire_water: 'Контраст і пара: пристрасть зустрічає чутливість. Балансуйте темп.',
+        water_water: 'Вода з водою — глибока емпатія й інтуїція. Межі роблять це здоровим.',
+      },
+      insights: {
+        air_air: 'Окресліть спільну ідею й зробіть перший крок за 48 годин.',
+        air_earth: 'Запишіть план, щоб натхнення стало дією.',
+        air_fire: 'Тримайте темп, але знаходьте час для слухання.',
+        air_water: 'Перекладайте почуття у слова на початку.',
+        earth_earth: 'Рутина тут сила — зробіть її вашою опорою.',
+        earth_fire: 'По черзі беріть лідерство.',
+        earth_water: 'Стабільність плюс турбота — ваш козир.',
+        fire_fire: 'Спрямуйте енергію в спільну ціль.',
+        fire_water: 'Повага до чутливості знімає напругу.',
+        water_water: 'Межі захищають вашу глибину.',
+      },
+      detailsCta: 'Деталі',
+      detailsTitle: 'Як це рахується',
+      details: {
+        signs: 'Знаки',
+        elements: 'Стихії',
+        modalities: 'Модальності',
+        elementScore: 'Стихійний бал',
+        modalityScore: 'Модальний бал',
+        final: 'Підсумок',
+        formula: 'Формула',
+        formulaText: 'Стихійний бал (65%) + модальний бал (35%).',
+        modalityNote: 'Модальність показує темп знаку: кардинальний (починає), фіксований (утримує), мутабельний (адаптується).',
+        elementPair: 'Пара стихій',
+        modalityPair: 'Пара модальностей',
+        resultSummary: 'Підсумок',
+        resultExplain: 'Цей бал поєднує хімію стихій із темпом, у якому рухаються знаки.',
+        elementMatrix: 'Матриця стихій',
+        modalityMatrix: 'Матриця модальностей',
+        matrixHint: 'Твоя пара підсвічена. Значення — це бал кожної комбінації.',
+        tabs: {
+          basic: 'База',
+          extended: 'Розширено',
+          matrix: 'Матриця',
+        },
+      },
+      modalityTexts: {
+        cardinal_cardinal: 'Два ініціатори: швидкий старт і сильний імпульс. Важливо узгодити цілі.',
+        fixed_fixed: 'Стабільні й віддані, але вперті. Допомагає терпіння та повага.',
+        mutable_mutable: 'Гнучкі та допитливі. Потрібна структура, щоб не розпорошуватись.',
+        cardinal_fixed: 'Той, хто стартує, і той, хто утримує. Узгодьте темп і контроль.',
+        cardinal_mutable: 'Рух і адаптація. Працює добре з чітким напрямом.',
+        fixed_mutable: 'Стабільність зустрічає зміни. Довіра плюс простір для росту.',
+      },
+    },
+
+    menuPage: {
+      subtitle: 'Усі розділи в одному місці',
+      sections: {
+        main: 'Досліджувати',
+        account: 'Акаунт',
+      },
     },
   },
 };

@@ -18,10 +18,7 @@ export default {
 
   computed: {
     showNavigation() {
-      if (!this.authStore.isLoggedIn) {
-        return !this.$route.path.includes('/tarot/') && this.$route?.name !== 'arcana'
-      }
-      return !this.$route.path.includes('/tarot/')
+      return !this.$route.meta?.hideBottomNav
     }
   }
 }
@@ -34,7 +31,7 @@ export default {
     </q-page-container>
 
     <transition name="nav-up" appear>
-      <div class="bottom-nav-wrap">
+      <div v-if="showNavigation" class="bottom-nav-wrap">
         <BottomNavigation />
       </div>
     </transition>
@@ -54,6 +51,10 @@ export default {
   right: 0;
   bottom: 0;
   z-index: 9999;
+}
+
+:global(body.hide-bottom-nav .bottom-nav-wrap) {
+  display: none;
 }
 
 /* анімація появи знизу */

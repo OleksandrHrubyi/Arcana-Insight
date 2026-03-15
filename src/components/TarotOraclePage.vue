@@ -42,6 +42,14 @@
     </div>
 
     <div class="oracle-ui">
+      <button
+        type="button"
+        class="oracle-exit"
+        :aria-label="currentLang === 'uk' ? 'Вийти' : 'Exit'"
+        @click="onExit"
+      >
+        ←
+      </button>
       <transition name="oracle-dim-fade">
         <div v-if="isReadingActive" class="oracle-scene-dim" aria-hidden="true"></div>
       </transition>
@@ -262,6 +270,14 @@ const DECK_ANCHOR = Object.freeze({
   offsetX: 20,
   offsetY: 80,
 })
+
+function onExit() {
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    router.push('/')
+  }
+}
 const ORACLE_HEAD_ANCHOR = Object.freeze({
   x: 0.49,
   y: 0.255,
@@ -1124,6 +1140,7 @@ const confirmWheelSelection = () => {
   if (!choice || choice.disabled) {
     return
   }
+  void triggerSelectionHaptic()
   runChoice(choice)
 }
 
@@ -1390,6 +1407,25 @@ onBeforeUnmount(() => {
   z-index: 4;
   pointer-events: none;
   overflow-x: clip;
+}
+
+.oracle-exit {
+  position: fixed;
+  left: 16px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 36px);
+  z-index: 30;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(8, 12, 18, 0.52);
+  color: rgba(214, 225, 242, 0.7);
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: auto;
 }
 
 .oracle-scene-dim {

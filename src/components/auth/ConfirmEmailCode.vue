@@ -14,6 +14,9 @@ export default {
       code: '',
       loading: false,
       errorMessage: '',
+      resendCooldown: 0,
+      resendTimer: null,
+      hasResent: false,
     };
   },
 
@@ -33,6 +36,17 @@ export default {
 
     tt() {
       return (key) => t(this.locale, key);
+    },
+
+    codeSentMessage() {
+      return this.hasResent ? this.tt('auth.codeResent') : this.tt('auth.codeSent');
+    },
+
+    resendLabel() {
+      if (this.resendCooldown > 0) {
+        return `${this.tt('auth.sendCodeAgain')} (${this.resendCooldown}s)`;
+      }
+      return this.tt('auth.sendCodeAgain');
     },
 
     email() {
@@ -56,10 +70,26 @@ export default {
   },
 
   methods: {
+    startResendCooldown(seconds = 60) {
+      this.resendCooldown = seconds;
+      if (this.resendTimer) {
+        clearInterval(this.resendTimer);
+      }
+      this.resendTimer = setInterval(() => {
+        this.resendCooldown = Math.max(0, this.resendCooldown - 1);
+        if (this.resendCooldown === 0) {
+          clearInterval(this.resendTimer);
+          this.resendTimer = null;
+        }
+      }, 1000);
+    },
+
     async resendCode() {
+      if (this.resendCooldown > 0) return;
 
       try {
         this.loading = true;
+        this.startResendCooldown(60);
         const { error } = await supabase.auth.signInWithOtp({
           email: this.email,
           options: {
@@ -75,16 +105,22 @@ export default {
         });
 
         if (error) throw error;
+        this.hasResent = true;
 
       } catch (e) {
         console.error(e);
+        const message = String(e?.message || '');
+        const match = message.match(/after (\d+) seconds/i);
+        if (match) {
+          this.startResendCooldown(Number(match[1]));
+        }
         this.errorMessage = e.message || this.tt('errors.generic');
       } finally {
         this.loading = false;
       }
     },
-    goBack() {
-      this.$router.push('/');
+    goToMenu() {
+      this.$router.push('/menu');
     },
 
     async confirm() {
@@ -116,6 +152,12 @@ export default {
     }
 
   },
+
+  beforeUnmount() {
+    if (this.resendTimer) {
+      clearInterval(this.resendTimer);
+    }
+  },
 };
 </script>
 
@@ -123,49 +165,51 @@ export default {
 <template>
   <div class="login-wrap">
     <div class="login-container">
-      <p class="subtitle q-mb-md">{{ tt('auth.codeSent') }}</p>
-      <div class="email q-mb-lg">
-        {{ email }}
-        <router-link to="/login" class="row items-center q-ml-md">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13"
-              stroke="#617C97"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M18.5 2.49998C18.8978 2.10216 19.4374 1.87866 20 1.87866C20.5626 1.87866 21.1022 2.10216 21.5 2.49998C21.8978 2.89781 22.1213 3.43737 22.1213 3.99998C22.1213 4.56259 21.8978 5.10216 21.5 5.49998L12 15L8 16L9 12L18.5 2.49998Z"
-              stroke="#617C97"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </router-link>
+      <header class="auth-hero auth-hero--with-back">
+        <button type="button" class="auth-back" @click="goToMenu">
+          <q-icon name="chevron_left" size="18px" />
+        </button>
+        <div class="auth-hero__text">
+          <div class="auth-title">{{ tt('auth.confirmCode') }}</div>
+          <div class="auth-kicker">{{ codeSentMessage }}</div>
+        </div>
+      </header>
+
+      <div class="login-panel">
+        <div class="email">
+          {{ email }}
+          <router-link to="/login" class="row items-center q-ml-md email-edit">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13"
+                stroke="#617C97"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M18.5 2.49998C18.8978 2.10216 19.4374 1.87866 20 1.87866C20.5626 1.87866 21.1022 2.10216 21.5 2.49998C21.8978 2.89781 22.1213 3.43737 22.1213 3.99998C22.1213 4.56259 21.8978 5.10216 21.5 5.49998L12 15L8 16L9 12L18.5 2.49998Z"
+                stroke="#617C97"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </router-link>
+        </div>
+
+        <CodeInput v-model="code" />
+
+        <q-separator class="separator-color"/>
+
+        <p class="send-code">
+          {{ tt('auth.didntGetCode') }}
+          <q-btn flat no-caps @click="resendCode" :disable="resendCooldown > 0">
+            <span class="sent-code-btn">{{ resendLabel }}</span>
+          </q-btn>
+        </p>
       </div>
-      <CodeInput v-model="code" />
 
-      <q-separator class="separator-color"/>
-
-      <p class="send-code">
-        {{ tt('auth.didntGetCode') }}
-        <q-btn flat no-caps @click="resendCode">
-          <span class="sent-code-btn">  {{ tt('auth.sendCodeAgain') }}</span>
-        </q-btn>
-
-      </p>
-      <div class="bottom-btn-back">
-        <q-btn
-          icon="arrow_back_ios"
-          class="back-small-btn mono-text"
-          no-caps
-          flat
-          @click="goBack"
-          dense
-        />
-      </div>
     </div>
   </div>
 </template>
@@ -177,14 +221,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: stretch;
-  background: linear-gradient(
-      180deg,
-      #101721 0%,
-      #12202b 16.7%,
-      #142632 35.58%,
-      #12212b 57.35%,
-      #080c0f 96.63%
-  );
+  background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
 }
 
 .login-container {
@@ -193,71 +230,123 @@ export default {
   width: 100%;
   max-width: 440px;
   margin: 0 auto;
-  padding: 74px 16px 24px;
-  //background: rgba(8, 12, 19, 0.82);
+  padding: calc(96px + env(safe-area-inset-top)) 16px 24px;
   display: flex;
   flex-direction: column;
+  gap: 14px;
 }
 
-.subtitle {
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 24px;
-
+.auth-hero {
   text-align: center;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  padding: 4px 8px 6px;
+}
 
-  color: #D9D9D9;
+.auth-hero--with-back {
+  position: relative;
+  grid-template-columns: 1fr;
+  align-items: center;
+  justify-items: center;
+  gap: 12px;
+}
 
+.auth-hero__text {
+  text-align: center;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  padding: 0 44px;
+}
 
+.auth-back {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 14, 22, 0.7);
+  color: rgba(214, 225, 242, 0.8);
+  display: grid;
+  place-items: center;
+}
+
+.auth-title {
+  font-size: 20px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.auth-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 9px;
+  color: rgba(208, 219, 238, 0.62);
+}
+
+.login-panel {
+  background: linear-gradient(180deg, rgba(18, 24, 38, 0.82), rgba(10, 14, 22, 0.92));
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  padding: 20px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .email {
   font-style: normal;
   font-weight: 400;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 14px;
+  line-height: 20px;
   text-align: center;
 
   color: #9FD8F6;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
+}
+
+.email-edit {
+  opacity: 0.7;
 }
 
 .separator-color {
-  background-color: #7E8AA5;
-  margin-bottom: 24px;
+  background-color: rgba(255, 255, 255, 0.12);
 }
 
-.bottom-btn-back {
-  position: absolute;
-  bottom: 50px;
-  left: 16px;
-}
-
-.back-small-btn {
-  color: #7E8AA5;
-
-  background: transparent;
-  transition: background 0.2s ease, transform 0.12s ease, border-color 0.2s ease;
-
-  &:active {
-    transform: scale(0.96);
-  }
-}
 
 .send-code {
   font-style: normal;
   font-weight: 400;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 12px;
+  line-height: 18px;
   text-align: center;
-  color: #7E8AA5;
-
-
+  color: rgba(214, 225, 242, 0.68);
 }
 
 .sent-code-btn {
   text-decoration: underline;
+}
+
+@media screen and (max-height: 720px) {
+  .login-container {
+    padding-top: calc(40px + env(safe-area-inset-top));
+  }
+
+  .login-panel {
+    padding: 16px 14px 14px;
+    gap: 12px;
+  }
 }
 </style>

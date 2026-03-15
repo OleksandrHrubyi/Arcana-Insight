@@ -83,9 +83,14 @@ export default {
 // реальний інпут — невидимий, але отримує фокус і paste
 .code-hidden-input {
   position: absolute;
-  inset: 0;
+  left: 50%;
+  top: 50%;
+  width: 1px;
+  height: 1px;
+  transform: translate(-50%, -50%);
   opacity: 0;
   pointer-events: none;
+  caret-color: transparent;
 }
 
 // кожен “слот” під крапку/цифру

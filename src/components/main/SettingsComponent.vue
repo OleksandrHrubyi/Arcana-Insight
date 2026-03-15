@@ -1,9 +1,122 @@
 <template>
-  <q-page class="settings-page">
-    <div class="settings-bg" aria-hidden="true"></div>
+  <div class="settings-shell">
+    <q-page v-if="!embedded" class="settings-page">
+      <div class="settings-bg" aria-hidden="true"></div>
 
-    <div class="settings-content">
-      <header class="settings-hero">
+      <div class="settings-content">
+        <header v-if="showHero" class="settings-hero">
+          <div class="settings-title">{{ tt('settings') }}</div>
+          <div class="settings-kicker">{{ tt('settingsPage.subtitle') }}</div>
+        </header>
+
+        <section class="settings-stack">
+          <div class="settings-card">
+            <div class="settings-card__title">
+              {{ tt('settingsPage.sections.general') }}
+            </div>
+            <q-list class="settings-list">
+              <q-item
+                clickable
+                v-ripple
+                class="settings-item"
+                @click="onOpenLanguage"
+              >
+                <q-item-section avatar class="row items-center justify-center">
+                  <q-icon name="language" size="20px" class="settings-icon" />
+                </q-item-section>
+
+                <q-item-section>
+                  <q-item-label class="settings-label">{{ tt('language') }}</q-item-label>
+                </q-item-section>
+
+                <q-item-section side class="row items-center no-wrap settings-side">
+                  <div class="settings-value">{{ languageLabel }}</div>
+                  <q-icon name="chevron_right" size="18px" class="settings-chevron" />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card__title">
+              {{ tt('settingsPage.sections.notifications') }}
+            </div>
+            <q-list class="settings-list">
+              <q-item class="settings-item">
+                <q-item-section avatar class="row items-center justify-center">
+                  <q-icon name="notifications" size="20px" class="settings-icon" />
+                </q-item-section>
+
+                <q-item-section>
+                  <q-item-label class="settings-label">{{ tt('dailyPush') }}</q-item-label>
+                </q-item-section>
+
+                <q-item-section side>
+                  <q-toggle
+                    v-model="dailyPush"
+                    class="arcana-toggle"
+                    @update:model-value="onToggleHaptic"
+                  />
+                </q-item-section>
+              </q-item>
+
+              <q-item
+                v-if="dailyPush"
+                clickable
+                v-ripple
+                class="settings-item"
+                @click="onOpenTime"
+              >
+                <q-item-section avatar class="row items-center justify-center">
+                  <q-icon name="schedule" size="20px" class="settings-icon" />
+                </q-item-section>
+
+                <q-item-section>
+                  <q-item-label class="settings-label">{{ tt('optimalTime') }}</q-item-label>
+                </q-item-section>
+
+                <q-item-section side class="row items-center no-wrap settings-side">
+                  <div class="settings-value">{{ optimalTimeLabel }}</div>
+                  <q-icon name="chevron_right" size="18px" class="settings-chevron" />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card__title">
+              {{ tt('settingsPage.sections.account') }}
+            </div>
+            <q-list class="settings-list">
+              <q-item
+                clickable
+                v-ripple
+                class="settings-item"
+                @click="onAccountClickHaptic"
+              >
+                <q-item-section avatar class="row items-center justify-center">
+                  <q-icon name="person" size="20px" class="settings-icon" />
+                </q-item-section>
+
+                <q-item-section>
+                  <q-item-label class="settings-label">{{ tt('account') }}</q-item-label>
+                </q-item-section>
+
+                <q-item-section side class="row items-center no-wrap settings-side">
+                  <div v-if="!isLoggedIn" class="settings-chip">
+                    {{ tt('login') }}
+                  </div>
+                  <q-icon name="chevron_right" size="18px" class="settings-chevron settings-chevron--raised" />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </div>
+        </section>
+      </div>
+    </q-page>
+
+    <div v-else class="settings-content settings-content--embedded">
+      <header v-if="showHero" class="settings-hero">
         <div class="settings-title">{{ tt('settings') }}</div>
         <div class="settings-kicker">{{ tt('settingsPage.subtitle') }}</div>
       </header>
@@ -116,12 +229,11 @@
     <!-- Language bottom sheet -->
     <q-dialog
       v-model="languageSheet"
-      persistent
       position="bottom"
       transition-show="slide-up"
       transition-hide="slide-down"
       :transition-duration="440"
-      class="oracle-actions-dialog"
+      :class="['oracle-actions-dialog', { 'oracle-actions-dialog--opaque': opaqueSheet }]"
     >
       <section class="oracle-actions">
         <div class="sheet-handle" aria-hidden="true"></div>
@@ -156,12 +268,11 @@
     <!-- Time bottom sheet -->
     <q-dialog
       v-model="timeSheet"
-      persistent
       position="bottom"
       transition-show="slide-up"
       transition-hide="slide-down"
       :transition-duration="440"
-      class="oracle-actions-dialog"
+      :class="['oracle-actions-dialog', { 'oracle-actions-dialog--opaque': opaqueSheet }]"
     >
       <section class="oracle-actions">
         <div class="sheet-handle" aria-hidden="true"></div>
@@ -192,7 +303,7 @@
         </div>
       </section>
     </q-dialog>
-  </q-page>
+  </div>
 </template>
 
 <script>
@@ -209,7 +320,21 @@ const LS_DAILY_PUSH = 'daily_push_enabled'
 const DEFAULT_TIME = '08:00'
 
 export default defineComponent({
-  name: 'SettingsPage',
+  name: 'SettingsComponent',
+  props: {
+    embedded: {
+      type: Boolean,
+      default: false,
+    },
+    showHero: {
+      type: Boolean,
+      default: true,
+    },
+    opaqueSheet: {
+      type: Boolean,
+      default: false,
+    },
+  },
 
   data () {
     return {
@@ -574,6 +699,12 @@ export default defineComponent({
   gap: 14px;
 }
 
+.settings-content--embedded {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
 .settings-hero {
   text-align: center;
   display: grid;
@@ -612,19 +743,19 @@ export default defineComponent({
 }
 
 .settings-card__title {
-  padding: 14px 18px 6px;
-  font-size: 10px;
+  padding: 12px 16px 4px;
+  font-size: 9px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.78);
 }
 
 .settings-list {
-  padding-bottom: 6px;
+  padding-bottom: 4px;
 }
 
 .settings-item {
-  min-height: 58px;
+  min-height: 50px;
   color: var(--settings-ink);
 }
 
@@ -633,7 +764,7 @@ export default defineComponent({
 }
 
 .settings-label {
-  font-size: 14px;
+  font-size: 13px;
   letter-spacing: 0.01em;
 }
 
@@ -649,7 +780,7 @@ export default defineComponent({
 
 .settings-value {
   color: rgba(224, 234, 248, 0.7);
-  font-size: 13px;
+  font-size: 11px;
   margin-right: 6px;
   white-space: nowrap;
   overflow: hidden;
@@ -794,6 +925,10 @@ export default defineComponent({
 :deep(.oracle-actions-dialog .q-dialog__inner) {
   padding: 0;
   align-items: flex-end;
+}
+
+:global(.oracle-actions-dialog--opaque .oracle-actions) {
+  background: #050d15;
 }
 
 .oracle-actions {

@@ -2,6 +2,8 @@
 import { SignInWithApple } from '@capacitor-community/apple-sign-in';
 import { supabase } from 'boot/supabase.js';
 import { t, currentLocale } from 'src/i18n';
+import { Capacitor } from '@capacitor/core';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 export default {
   name: 'LoginView',
@@ -11,6 +13,7 @@ export default {
       email: '',
       loading: false,
       errorMessage: '',
+      reduceMotion: false,
     };
   },
 
@@ -25,8 +28,24 @@ export default {
   },
 
   methods: {
+    async hapticTap() {
+      if (!Capacitor.isNativePlatform()) return;
+      if (this.reduceMotion) return;
+      try {
+        await Haptics.impact({ style: ImpactStyle.Light });
+      } catch (e) {
+        console.error(e);
+      }
+    },
+
+    async onLoginTap() {
+      await this.hapticTap();
+      this.onLogin();
+    },
+
     async loginWithApple() {
       try {
+        await this.hapticTap();
         const result = await SignInWithApple.authorize({
           clientId: 'com.hrubyi.arcana.supabase',
           redirectURI: 'https://rgqfkdhzllhmagrcasav.supabase.co/auth/v1/callback',
@@ -58,6 +77,7 @@ export default {
 
     async loginWithGoogle() {
       try {
+        await this.hapticTap();
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
@@ -74,19 +94,27 @@ export default {
     },
 
     loginWithTelegram() {
+      this.hapticTap();
       this.errorMessage = this.tt('errors.generic');
     },
-    goBack() {
-      this.$router.push('/');
+    async goToMenu() {
+      await this.hapticTap();
+      this.$router.push('/menu');
     },
     async onLogin() {
-
       this.loading = true;
       this.errorMessage = '';
+      const emailTrimmed = this.email.trim();
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(emailTrimmed)) {
+        this.loading = false;
+        this.errorMessage = this.tt('errors.invalidEmail');
+        return;
+      }
 
       try {
         const { error } = await supabase.auth.signInWithOtp({
-          email: this.email,
+          email: emailTrimmed,
           options: {
             shouldCreateUser: true,
             emailRedirectTo: null, // важливо для OTP-коду, а не magic link
@@ -110,79 +138,74 @@ export default {
       }
     },
   },
+
+  mounted() {
+    try {
+      this.reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch (e) {
+      console.error(e);
+    }
+  },
 };
 </script>
 
 <template>
   <div class="login-wrap">
     <div class="login-container">
-      <p class="subtitle">{{ tt('auth.welcomeBack') }}</p>
+      <header class="auth-hero auth-hero--with-back">
+        <button type="button" class="auth-back" @click="goToMenu">
+          <q-icon name="chevron_left" size="18px" />
+        </button>
+        <div class="auth-hero__text">
+          <div class="auth-title">{{ tt('auth.loginAction') }}</div>
+          <div class="auth-kicker">{{ tt('auth.welcomeBack') }}</div>
+        </div>
+      </header>
 
-      <div class="field">
-        <span class="field-label q-mb-xs">{{ tt('fields.email') }}</span>
+      <div class="login-panel">
+
+        <div class="field">
+          <span class="field-label q-mb-xs">{{ tt('fields.email') }}</span>
         <input
           class="field-input"
           v-model="email"
           type="email"
           autocomplete="email"
+          inputmode="email"
+          autocapitalize="none"
+          @input="errorMessage = ''"
         />
       </div>
 
-      <div class="q-mb-md">
+      <p class="auth-helper">{{ tt('auth.loginHelper') }}</p>
+
+      <div class="q-mb-lg">
         <q-btn
           :label="tt('auth.loginAction')"
           class="no-auth-btn mono-text"
           no-caps
           flat
-          @click="onLogin"
+          @click="onLoginTap"
           :loading="loading"
         />
       </div>
 
-      <p class="bottom-text">
-        {{ tt('auth.newToArcana') }}
-        <router-link to="/sign-up" class="link">{{ tt('auth.signUpAction') }}</router-link>
+      <p class="auth-error auth-error--below" :class="{ 'auth-error--visible': !!errorMessage }">
+        {{ errorMessage }}
       </p>
 
-      <div class="divider">
-        <span class="divider-line"></span>
-        <span class="divider-text">{{ tt('auth.orContinueWith') }}</span>
-        <span class="divider-line"></span>
-      </div>
+        <p class="bottom-text">
+          {{ tt('auth.newToArcana') }}
+          <router-link to="/sign-up" class="link">{{ tt('auth.signUpAction') }}</router-link>
+        </p>
+
+        <div class="divider">
+          <span class="divider-line"></span>
+          <span class="divider-text">{{ tt('auth.orContinueWith') }}</span>
+          <span class="divider-line"></span>
+        </div>
 
       <div class="social-buttons">
-        <q-btn
-          flat
-          round
-          @click="loginWithGoogle"
-          class="social-btn google-btn"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="-3 0 262 262"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="xMidYMid"
-          >
-            <path
-              d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
-              fill="#4285F4"
-            />
-            <path
-              d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
-              fill="#34A853"
-            />
-            <path
-              d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"
-              fill="#FBBC05"
-            />
-            <path
-              d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
-              fill="#EB4335"
-            />
-          </svg>
-        </q-btn>
-
         <q-btn
           class="social-btn apple-btn"
           flat
@@ -203,36 +226,69 @@ export default {
         </q-btn>
 
         <q-btn
-          class="social-btn tg-btn"
           flat
           round
-          @click="loginWithTelegram"
+          @click="loginWithGoogle"
+          class="social-btn google-btn"
         >
           <svg
-            width="38"
-            height="38"
-            viewBox="0 0 1000 1000"
-            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+              viewBox="-3 0 262 262"
+              xmlns="http://www.w3.org/2000/svg"
+              preserveAspectRatio="xMidYMid"
+            >
+              <path
+                d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
+                fill="#4285F4"
+              />
+              <path
+                d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
+                fill="#34A853"
+              />
+              <path
+                d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"
+                fill="#FBBC05"
+              />
+              <path
+                d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
+                fill="#EB4335"
+              />
+            </svg>
+          </q-btn>
+
+        <q-btn
+          class="social-btn tg-btn"
+          flat
+            round
+            @click="loginWithTelegram"
           >
-            <defs>
-              <linearGradient
-                x1="50%"
-                y1="0%"
-                x2="50%"
-                y2="99.2583404%"
-                id="tg-grad"
-              >
-                <stop stop-color="transparent" offset="0%" />
-                <stop stop-color="#050608" offset="100%" />
-              </linearGradient>
-            </defs>
-            <circle fill="url(#tg-grad)" cx="500" cy="500" r="500" />
-            <path
-              d="M226.328419,494.722069 C372.088573,431.216685 469.284839,389.350049 517.917216,369.122161 C656.772535,311.36743 685.625481,301.334815 704.431427,301.003532 C708.567621,300.93067 717.815839,301.955743 723.806446,306.816707 C728.864797,310.92121 730.256552,316.46581 730.922551,320.357329 C731.588551,324.248848 732.417879,333.113828 731.758626,340.040666 C724.234007,419.102486 691.675104,610.964674 675.110982,699.515267 C668.10208,736.984342 654.301336,749.547532 640.940618,750.777006 C611.904684,753.448938 589.856115,731.588035 561.733393,713.153237 C517.726886,684.306416 492.866009,666.349181 450.150074,638.200013 C400.78442,605.66878 432.786119,587.789048 460.919462,558.568563 C468.282091,550.921423 596.21508,434.556479 598.691227,424.000355 C599.00091,422.680135 599.288312,417.758981 596.36474,415.160431 C593.441168,412.561881 589.126229,413.450484 586.012448,414.157198 C581.598758,415.158943 511.297793,461.625274 375.109553,553.556189 C355.154858,567.258623 337.080515,573.934908 320.886524,573.585046 C303.033948,573.199351 268.692754,563.490928 243.163606,555.192408 C211.851067,545.013936 186.964484,539.632504 189.131547,522.346309 C190.260287,513.342589 202.659244,504.134509 226.328419,494.722069 Z"
-              fill="#7B83EB"
-            />
-          </svg>
-        </q-btn>
+            <svg
+              width="38"
+              height="38"
+              viewBox="0 0 1000 1000"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient
+                  x1="50%"
+                  y1="0%"
+                  x2="50%"
+                  y2="99.2583404%"
+                  id="tg-grad"
+                >
+                  <stop stop-color="transparent" offset="0%" />
+                  <stop stop-color="#050608" offset="100%" />
+                </linearGradient>
+              </defs>
+              <circle fill="url(#tg-grad)" cx="500" cy="500" r="500" />
+              <path
+                d="M226.328419,494.722069 C372.088573,431.216685 469.284839,389.350049 517.917216,369.122161 C656.772535,311.36743 685.625481,301.334815 704.431427,301.003532 C708.567621,300.93067 717.815839,301.955743 723.806446,306.816707 C728.864797,310.92121 730.256552,316.46581 730.922551,320.357329 C731.588551,324.248848 732.417879,333.113828 731.758626,340.040666 C724.234007,419.102486 691.675104,610.964674 675.110982,699.515267 C668.10208,736.984342 654.301336,749.547532 640.940618,750.777006 C611.904684,753.448938 589.856115,731.588035 561.733393,713.153237 C517.726886,684.306416 492.866009,666.349181 450.150074,638.200013 C400.78442,605.66878 432.786119,587.789048 460.919462,558.568563 C468.282091,550.921423 596.21508,434.556479 598.691227,424.000355 C599.00091,422.680135 599.288312,417.758981 596.36474,415.160431 C593.441168,412.561881 589.126229,413.450484 586.012448,414.157198 C581.598758,415.158943 511.297793,461.625274 375.109553,553.556189 C355.154858,567.258623 337.080515,573.934908 320.886524,573.585046 C303.033948,573.199351 268.692754,563.490928 243.163606,555.192408 C211.851067,545.013936 186.964484,539.632504 189.131547,522.346309 C190.260287,513.342589 202.659244,504.134509 226.328419,494.722069 Z"
+                fill="#7B83EB"
+              />
+            </svg>
+          </q-btn>
+        </div>
       </div>
     </div>
   </div>
@@ -254,18 +310,77 @@ export default {
   width: 100%;
   max-width: 440px;
   margin: 0 auto;
-  padding: 74px 16px 24px;
-  //background: rgba(8, 12, 19, 0.82);
+  padding: calc(96px + env(safe-area-inset-top)) 16px 24px;
   display: flex;
   flex-direction: column;
+  gap: 14px;
+  justify-content: flex-start;
 }
 
-.subtitle {
-  font-weight: 400;
-  font-size: 18px;
-  line-height: 26px;
+.auth-hero {
+  text-align: center;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  padding: 4px 8px 6px;
+}
+
+.auth-hero--with-back {
+  position: relative;
+  grid-template-columns: 1fr;
+  align-items: center;
+  justify-items: center;
+  gap: 12px;
+}
+
+.auth-hero__text {
+  text-align: center;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  padding: 0 44px;
+}
+
+.auth-back {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 14, 22, 0.7);
+  color: rgba(214, 225, 242, 0.8);
+  display: grid;
+  place-items: center;
+}
+
+.auth-title {
+  font-size: 20px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
   color: #ffffff;
-  margin-bottom: 40px;
+}
+
+.auth-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 9px;
+  color: rgba(208, 219, 238, 0.62);
+}
+
+.login-panel {
+  background: linear-gradient(180deg, rgba(18, 24, 38, 0.82), rgba(10, 14, 22, 0.92));
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  padding: 20px 16px 18px;
+  display: flex;
+  flex-direction: column;
 }
 
 .field {
@@ -273,14 +388,14 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  border-bottom: 1px solid rgba(126, 138, 165, 0.65);
-  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 4px;
 }
 
 .field-label {
-  font-size: 13px;
+  font-size: 12px;
   line-height: 18px;
-  color: #D9D9D9;
+  color: rgba(214, 225, 242, 0.78);
 }
 
 .field-input {
@@ -290,9 +405,9 @@ export default {
   outline: none;
   background: transparent;
   font-family: inherit;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 22px;
-  color: #e4e8f4;
+  color: rgba(224, 234, 248, 0.9);
 }
 
 .field-input::placeholder {
@@ -302,19 +417,14 @@ export default {
 .no-auth-btn {
   height: 50px;
   width: 100%;
-  background: linear-gradient(
-      98.11deg,
-      #101218 14.75%,
-      #253042 54.07%,
-      #101218 89.76%
-  );
-  border: 1px solid #8ac7ff;
-  border-radius: 16px;
-  font-size: 15px;
+  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
+  border: 1px solid rgba(156, 184, 235, 0.36);
+  border-radius: 12px;
+  font-size: 14px;
   line-height: 21px;
   color: #ffffff;
   letter-spacing: 0.02em;
-  box-shadow: 0 0 0 rgba(138, 199, 255, 0);
+  box-shadow: none;
   transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.2s ease;
 
   &:active {
@@ -323,36 +433,65 @@ export default {
   }
 }
 
+.no-auth-btn:disabled {
+  opacity: 0.6;
+}
+
+.auth-helper {
+  margin: 4px 0 16px;
+  font-size: 12px;
+  line-height: 14px;
+  color: rgba(214, 225, 242, 0.5);
+}
+
+.auth-error {
+  margin:4px 0;
+  font-size: 12px;
+  line-height: 14px;
+  color: rgba(255, 168, 168, 0.9);
+  min-height: 14px;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.auth-error--visible {
+  opacity: 1;
+}
+
+.auth-error--below {
+  margin: 0 0 12px;
+}
+
 .bottom-text {
-  font-size: 13px;
-  color: #8891aa;
-  margin-bottom: 24px;
+  font-size: 12px;
+  color: rgba(214, 225, 242, 0.68);
+  margin-bottom: 20px;
 }
 
 .link {
   font-weight: 400;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 20px;
   text-decoration: underline;
-  color: #c1d8ff;
+  color: rgba(214, 225, 242, 0.92);
 }
 
 .divider {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
 }
 
 .divider-line {
   flex: 1;
   height: 1px;
-  background: rgba(60, 70, 92, 0.8);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .divider-text {
-  font-size: 11px;
-  color: #6f7a96;
+  font-size: 10px;
+  color: rgba(214, 225, 242, 0.5);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -365,15 +504,15 @@ export default {
 }
 
 .social-btn {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   padding: 0;
-  border-radius: 16px;
-  background: #050608;
-  border: 1px solid rgba(132, 141, 160, 0.7);
+  border-radius: 14px;
+  background: rgba(10, 12, 18, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.75) inset,
-    0 10px 25px rgba(0, 0, 0, 0.7);
+    0 10px 25px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -405,6 +544,38 @@ export default {
 
   &:active {
     transform: scale(0.96);
+  }
+}
+
+@media screen and (max-height: 720px) {
+  .login-container {
+    padding-top: calc(40px + env(safe-area-inset-top));
+  }
+
+  .login-panel {
+    padding: 16px 14px 14px;
+  }
+
+  .field {
+    margin-bottom: 12px;
+  }
+
+  .no-auth-btn {
+    height: 46px;
+  }
+
+  .bottom-text {
+    margin-bottom: 14px;
+  }
+
+  .divider {
+    margin-bottom: 12px;
+  }
+
+  .social-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
   }
 }
 </style>
