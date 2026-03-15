@@ -14,30 +14,32 @@
       </header>
 
       <section class="compat-stack">
-        <div class="compat-card">
-          <div class="compat-card__title">
+        <div class="compat-panel compat-panel--pair">
+          <div class="compat-panel__title">
             {{ tt('compatibilityPage.sections.match') }}
           </div>
 
-          <button type="button" class="compat-select" @click="openPicker('a')">
-            <span class="compat-select__label">{{ tt('compatibilityPage.you') }}</span>
-            <span class="compat-select__value">{{ selectedLabelA }}</span>
+          <button type="button" class="compat-pick" @click="openPicker('a')">
+            <span class="compat-pick__label">{{ tt('compatibilityPage.you') }}</span>
+            <span class="compat-pick__value">{{ selectedLabelA }}</span>
             <q-icon name="chevron_right" size="18px" class="compat-chevron" />
           </button>
 
-          <button type="button" class="compat-select" @click="openPicker('b')">
-            <span class="compat-select__label">{{ tt('compatibilityPage.partner') }}</span>
-            <span class="compat-select__value">{{ selectedLabelB }}</span>
+          <button type="button" class="compat-pick" @click="openPicker('b')">
+            <span class="compat-pick__label">{{ tt('compatibilityPage.partner') }}</span>
+            <span class="compat-pick__value">{{ selectedLabelB }}</span>
             <q-icon name="chevron_right" size="18px" class="compat-chevron" />
           </button>
 
-          <button type="button" class="compat-cta" :class="{ 'compat-cta--active': showResult }" @click="showCompatibility">
-            {{ showResult ? tt('compatibilityPage.ctaUpdate') : tt('compatibilityPage.cta') }}
-          </button>
+          <div class="compat-actions">
+            <button type="button" class="compat-cta" :class="{ 'compat-cta--active': showResult }" @click="showCompatibility">
+              {{ showResult ? tt('compatibilityPage.ctaUpdate') : tt('compatibilityPage.cta') }}
+            </button>
+          </div>
         </div>
 
-        <div class="compat-card compat-card--result">
-          <div class="compat-card__title">
+        <div class="compat-panel compat-panel--result">
+          <div class="compat-panel__title">
             {{ tt('compatibilityPage.sections.preview') }}
           </div>
           <div class="compat-preview" :class="{ 'compat-preview--active': showResult }">
@@ -53,38 +55,47 @@
               </span>
             </div>
 
-            <div v-if="showResult" class="compat-result compat-result--animate" :style="resultStyle">
-              <div class="compat-score">
-                <span class="compat-score__value">{{ displayScore }}</span>
-                <span class="compat-score__unit">%</span>
+            <div v-if="showResult" class="compat-report compat-report--animate" :style="resultStyle">
+              <div class="compat-report__header">
+                <div class="compat-report__meta">
+                  <div class="compat-report__line">{{ elementLine }}</div>
+                  <div class="compat-report__summary">{{ summaryText }}</div>
+                  <div class="compat-report__text">{{ resultText }}</div>
+                </div>
+                <div class="compat-report__score">
+                  <div class="compat-score">
+                    <span class="compat-score__value">{{ displayScore }}</span>
+                    <span class="compat-score__unit">%</span>
+                  </div>
+                  <div class="compat-score__meta">{{ confidenceLabel }}</div>
+                </div>
               </div>
-              <div class="compat-score__meta">{{ confidenceLabel }}</div>
+
               <div class="compat-meter">
                 <span class="compat-meter__fill" :style="{ width: `${displayScore}%` }"></span>
               </div>
-              <div class="compat-result__line">{{ elementLine }}</div>
-              <div class="compat-result__summary">{{ summaryText }}</div>
-              <div class="compat-result__text">{{ resultText }}</div>
+
               <div class="compat-tags">
                 <span class="compat-tag">{{ elementA }}</span>
                 <span class="compat-tag">{{ elementB }}</span>
                 <span class="compat-tag">{{ modalityLine }}</span>
               </div>
+
               <div class="compat-insight">
                 <div class="compat-insight__label">{{ tt('compatibilityPage.insightLabel') }}</div>
                 <div class="compat-insight__text">{{ insightText }}</div>
               </div>
 
-              <div class="compat-spheres">
-                <div class="compat-sphere" v-for="item in sphereItems" :key="item.key">
-                  <div class="compat-sphere__label">
-                    <q-icon :name="item.icon" size="14px" class="compat-sphere__icon" />
+              <div class="compat-metrics">
+                <div class="compat-metric" v-for="item in sphereItems" :key="item.key">
+                  <div class="compat-metric__label">
+                    <q-icon :name="item.icon" size="14px" class="compat-metric__icon" />
                     {{ tt(item.labelKey) }}
                   </div>
-                  <div class="compat-sphere__bar">
-                    <span class="compat-sphere__fill" :style="{ width: `${item.value}%` }"></span>
+                  <div class="compat-metric__bar">
+                    <span class="compat-metric__fill" :style="{ width: `${item.value}%` }"></span>
                   </div>
-                  <div class="compat-sphere__value">{{ item.value }}%</div>
+                  <div class="compat-metric__value">{{ item.value }}%</div>
                 </div>
               </div>
 
@@ -105,6 +116,7 @@
                   <span>{{ balanceB }}%</span>
                 </div>
               </div>
+
               <button type="button" class="compat-details-link" @click="onDetailsOpen">
                 {{ tt('compatibilityPage.detailsCta') }}
               </button>
@@ -717,29 +729,29 @@ onBeforeUnmount(() => {
   gap: 16px;
 }
 
-.compat-card {
-  padding: 16px 16px 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(11, 15, 24, 0.82);
+.compat-panel {
+  padding: 18px 16px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(160deg, rgba(14, 20, 32, 0.92), rgba(6, 10, 18, 0.98));
   box-shadow:
-    0 18px 40px rgba(2, 6, 12, 0.5),
+    0 18px 40px rgba(2, 6, 12, 0.52),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
-.compat-card__title {
+.compat-panel__title {
   font-size: 10px;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.62);
 }
 
-.compat-select {
+.compat-pick {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(10, 14, 22, 0.8);
+  background: rgba(8, 12, 20, 0.78);
   border-radius: 12px;
   padding: 12px 12px;
   display: grid;
@@ -750,8 +762,21 @@ onBeforeUnmount(() => {
   text-align: left;
 }
 
+.compat-actions {
+  margin-top: 4px;
+  padding: 8px;
+  border-radius: 16px;
+  border: 1px solid rgba(106, 126, 164, 0.22);
+  background:
+    linear-gradient(180deg, rgba(9, 13, 21, 0.88), rgba(3, 6, 11, 0.95)),
+    linear-gradient(90deg, rgba(83, 112, 170, 0.1), rgba(83, 112, 170, 0));
+  box-shadow:
+    inset 0 1px 0 rgba(186, 207, 247, 0.08),
+    0 10px 24px rgba(0, 0, 0, 0.3);
+}
+
 .compat-cta {
-  margin-top: 6px;
+  width: 100%;
   border-radius: 12px;
   border: 1px solid rgba(156, 184, 235, 0.36);
   padding: 12px 14px;
@@ -759,8 +784,8 @@ onBeforeUnmount(() => {
   color: #e9edf4;
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-transform: none;
 }
 
 .compat-cta--active {
@@ -769,14 +794,14 @@ onBeforeUnmount(() => {
   color: rgba(214, 225, 242, 0.9);
 }
 
-.compat-select__label {
+.compat-pick__label {
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.56);
 }
 
-.compat-select__value {
+.compat-pick__value {
   font-size: 14px;
   letter-spacing: 0.04em;
 }
@@ -785,13 +810,9 @@ onBeforeUnmount(() => {
   color: rgba(214, 225, 242, 0.5);
 }
 
-.compat-card--result {
-  gap: 10px;
-}
-
 .compat-preview__title {
-  font-size: 12px;
-  letter-spacing: 0.22em;
+  font-size: 13px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(235, 242, 255, 0.82);
 }
@@ -806,45 +827,51 @@ onBeforeUnmount(() => {
   padding: 2px 0 0;
 }
 
-.compat-result {
+.compat-report {
   margin-top: 12px;
   display: grid;
   gap: 10px;
   position: relative;
-  padding: 14px 14px 16px;
+  padding: 16px 16px 18px;
   border-radius: 14px;
-  background:
-    radial-gradient(140% 120% at 50% 0%, rgba(76, 112, 176, 0.22), rgba(6, 10, 16, 0.98));
-  border: 1px solid rgba(126, 162, 214, 0.2);
-  overflow: hidden;
+  background: rgba(7, 11, 18, 0.9);
+  border: 1px solid rgba(126, 162, 214, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-.compat-result::before {
-  content: '';
-  position: absolute;
-  inset: -55% 0 auto;
-  height: 140%;
-  background:
-    radial-gradient(60% 60% at 50% 0%, rgba(120, 170, 255, 0.35), rgba(120, 170, 255, 0));
-  opacity: 0.5;
-  animation: compatGlow 6s ease-in-out infinite;
-  pointer-events: none;
+.compat-report__header {
+  display: grid;
+  gap: 12px;
 }
 
-.compat-result::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.08), transparent);
-  animation: compatSweep 4.2s ease-in-out infinite;
-  pointer-events: none;
+.compat-report__meta {
+  display: grid;
+  gap: 6px;
 }
 
-.compat-result--animate .compat-score {
+.compat-report__score {
+  display: grid;
+  gap: 4px;
+  justify-items: start;
+}
+
+@media (min-width: 480px) {
+  .compat-report__header {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .compat-report__score {
+    justify-items: end;
+    text-align: right;
+  }
+}
+
+.compat-report--animate .compat-score {
   animation: scorePop 420ms ease-out;
 }
 
-.compat-result--animate .compat-meter__fill {
+.compat-report--animate .compat-meter__fill {
   animation: meterFill 520ms ease-out;
 }
 
@@ -856,8 +883,6 @@ onBeforeUnmount(() => {
   letter-spacing: 0.08em;
   font-weight: 600;
   color: rgba(235, 242, 255, 0.92);
-  position: relative;
-  z-index: 1;
 }
 
 .compat-score__meta {
@@ -865,8 +890,6 @@ onBeforeUnmount(() => {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.6);
-  position: relative;
-  z-index: 1;
 }
 
 .compat-score__unit {
@@ -882,7 +905,6 @@ onBeforeUnmount(() => {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
-  z-index: 1;
 }
 
 .compat-meter__fill {
@@ -897,37 +919,29 @@ onBeforeUnmount(() => {
   transform-origin: left center;
 }
 
-.compat-result__line {
-  font-size: 12px;
-  letter-spacing: 0.22em;
+.compat-report__line {
+  font-size: 10px;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.65);
-  position: relative;
-  z-index: 1;
+  color: rgba(214, 225, 242, 0.55);
 }
 
-.compat-result__summary {
-  font-size: 13px;
-  line-height: 1.5;
-  color: rgba(224, 234, 251, 0.85);
-  position: relative;
-  z-index: 1;
+.compat-report__summary {
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(224, 234, 251, 0.92);
 }
 
-.compat-result__text {
+.compat-report__text {
   font-size: 13px;
-  line-height: 1.5;
-  color: rgba(224, 234, 251, 0.82);
-  position: relative;
-  z-index: 1;
+  line-height: 1.55;
+  color: rgba(224, 234, 251, 0.78);
 }
 
 .compat-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  position: relative;
-  z-index: 1;
 }
 
 .compat-insight {
@@ -937,8 +951,6 @@ onBeforeUnmount(() => {
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(8, 12, 20, 0.75);
-  position: relative;
-  z-index: 1;
 }
 
 .compat-insight__label {
@@ -954,21 +966,19 @@ onBeforeUnmount(() => {
   color: rgba(224, 234, 251, 0.82);
 }
 
-.compat-spheres {
+.compat-metrics {
   display: grid;
-  gap: 8px;
-  position: relative;
-  z-index: 1;
+  gap: 10px;
 }
 
-.compat-sphere {
+.compat-metric {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 6px 10px;
   align-items: center;
 }
 
-.compat-sphere__label {
+.compat-metric__label {
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -978,11 +988,11 @@ onBeforeUnmount(() => {
   gap: 6px;
 }
 
-.compat-sphere__icon {
+.compat-metric__icon {
   color: rgba(173, 210, 255, 0.8);
 }
 
-.compat-sphere__bar {
+.compat-metric__bar {
   grid-column: 1 / -1;
   height: 6px;
   border-radius: 999px;
@@ -990,15 +1000,15 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.compat-sphere__fill {
+.compat-metric__fill {
   display: block;
   height: 100%;
   border-radius: 999px;
   background: linear-gradient(90deg, rgba(110, 166, 255, 0.9), rgba(173, 210, 255, 0.9));
-  box-shadow: 0 0 10px rgba(110, 166, 255, 0.35);
+  box-shadow: 0 0 10px rgba(110, 166, 255, 0.28);
 }
 
-.compat-sphere__value {
+.compat-metric__value {
   font-size: 11px;
   letter-spacing: 0.12em;
   color: rgba(214, 225, 242, 0.6);
@@ -1007,8 +1017,6 @@ onBeforeUnmount(() => {
 .compat-balance {
   display: grid;
   gap: 8px;
-  position: relative;
-  z-index: 1;
 }
 
 .compat-balance__label {

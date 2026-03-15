@@ -34,6 +34,15 @@
           class="cards-search__input"
           :placeholder="tt('cardsPage.searchPlaceholder')"
         />
+        <button
+          v-if="searchQuery"
+          type="button"
+          class="cards-search__clear"
+          :aria-label="tt('cardsPage.clearSearch')"
+          @click="clearSearch"
+        >
+          <q-icon name="close" size="14px" />
+        </button>
       </div>
 
       <div class="cards-count">{{ cardsCountLabel }}</div>
@@ -232,6 +241,10 @@ const setBottomNavDark = (enabled) => {
 
 const closeDetail = () => {
   detailOpen.value = false
+}
+
+const clearSearch = () => {
+  searchQuery.value = ''
 }
 
 watch(detailOpen, (value) => {
@@ -462,6 +475,15 @@ onMounted(() => {
 
 .cards-search__input::placeholder {
   color: rgba(214, 225, 242, 0.4);
+}
+
+.cards-search__clear {
+  border: none;
+  background: transparent;
+  color: rgba(214, 225, 242, 0.6);
+  display: grid;
+  place-items: center;
+  padding: 0;
 }
 
 .cards-empty {

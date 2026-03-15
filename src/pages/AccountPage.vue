@@ -718,10 +718,14 @@ export default defineComponent({
 
 .account-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) auto;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "label icon"
+    "value icon";
+  row-gap: 4px;
+  column-gap: 10px;
   align-items: center;
-  padding: 8px 4px;
+  padding: 10px 4px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -737,23 +741,28 @@ export default defineComponent({
   cursor: pointer;
 }
 
+.account-row--button:active {
+  opacity: 0.85;
+}
+
 .account-label {
+  grid-area: label;
   font-size: 12px;
   line-height: 18px;
   color: rgba(214, 225, 242, 0.78);
 }
 
 .account-value {
+  grid-area: value;
   color: rgba(224, 234, 248, 0.7);
   font-size: 13px;
-  text-align: right;
-  width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .account-row__icon {
+  grid-area: icon;
   color: rgba(214, 225, 242, 0.55);
 }
 
