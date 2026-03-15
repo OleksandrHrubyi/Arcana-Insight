@@ -120,7 +120,7 @@ const todayLabel = computed(() => {
 .daily-content {
   position: relative;
   z-index: 1;
-  padding: calc(70px + env(safe-area-inset-top)) 18px 32px;
+  padding: calc(90px + env(safe-area-inset-top)) 18px 32px;
   max-width: 520px;
   margin: 0 auto;
   display: grid;

@@ -83,6 +83,34 @@
           </q-list>
         </div>
 
+        <div class="menu-card">
+          <div class="menu-card__title">
+            {{ tt('menuPage.sections.support') }}
+          </div>
+          <q-list class="menu-list">
+            <q-item
+              v-for="item in supportItems"
+              :key="item.key"
+              clickable
+              v-ripple
+              class="menu-item"
+              @click="onItemClick(item)"
+            >
+              <q-item-section avatar class="row items-center justify-center">
+                <q-icon :name="item.icon" size="20px" class="menu-icon" />
+              </q-item-section>
+
+              <q-item-section>
+                <q-item-label class="menu-label">{{ tt(item.labelKey) }}</q-item-label>
+              </q-item-section>
+
+              <q-item-section side class="row items-center no-wrap menu-side">
+                <q-icon name="chevron_right" size="18px" class="menu-chevron" />
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </div>
+
         <SettingsComponent embedded :show-hero="false" :opaque-sheet="true" />
       </section>
     </div>
@@ -90,7 +118,7 @@
 </template>
 
 <script>
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
@@ -113,6 +141,11 @@ export default defineComponent({
       { key: 'cards', labelKey: 'nav.cards', icon: 'auto_stories', routeName: 'cards' },
     ]
 
+    const supportItems = [
+      { key: 'support', labelKey: 'nav.support', icon: 'help_outline', routeName: 'support' },
+      { key: 'privacy', labelKey: 'nav.privacy', icon: 'policy', routeName: 'privacyTerms' },
+    ]
+
     async function hapticLight() {
       try {
         await Haptics.impact({ style: ImpactStyle.Light })
@@ -127,9 +160,23 @@ export default defineComponent({
       await router.push({ name: item.routeName })
     }
 
+    const setBottomNavDark = (enabled) => {
+      if (typeof document === 'undefined') return
+      document.body.classList.toggle('cards-nav-dark', enabled)
+    }
+
+    onMounted(() => {
+      setBottomNavDark(true)
+    })
+
+    onBeforeUnmount(() => {
+      setBottomNavDark(false)
+    })
+
     return {
       tt,
       mainItems,
+      supportItems,
       onItemClick,
     }
   }
@@ -154,7 +201,7 @@ export default defineComponent({
 .menu-content {
   position: relative;
   z-index: 1;
-  padding: calc(60px + env(safe-area-inset-top)) 20px 32px;
+  padding: calc(90px + env(safe-area-inset-top)) 20px 90px;
 }
 
 .menu-hero {

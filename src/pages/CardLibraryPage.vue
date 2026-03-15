@@ -266,7 +266,7 @@ onMounted(() => {
 .cards-content {
   position: relative;
   z-index: 1;
-  padding: calc(60px + env(safe-area-inset-top)) 18px 90px;
+  padding: calc(90px + env(safe-area-inset-top)) 18px 90px;
   max-width: 520px;
   margin: 0 auto;
   display: grid;
