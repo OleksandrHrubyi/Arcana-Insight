@@ -31,8 +31,8 @@
             <q-icon name="chevron_right" size="18px" class="compat-chevron" />
           </button>
 
-          <button type="button" class="compat-cta" @click="showCompatibility">
-            {{ tt('compatibilityPage.cta') }}
+          <button type="button" class="compat-cta" :class="{ 'compat-cta--active': showResult }" @click="showCompatibility">
+            {{ showResult ? tt('compatibilityPage.ctaUpdate') : tt('compatibilityPage.cta') }}
           </button>
         </div>
 
@@ -55,11 +55,12 @@
 
             <div v-if="showResult" class="compat-result compat-result--animate" :style="resultStyle">
               <div class="compat-score">
-                <span class="compat-score__value">{{ compatibilityScore }}</span>
+                <span class="compat-score__value">{{ displayScore }}</span>
                 <span class="compat-score__unit">%</span>
               </div>
+              <div class="compat-score__meta">{{ confidenceLabel }}</div>
               <div class="compat-meter">
-                <span class="compat-meter__fill" :style="{ width: `${compatibilityScore}%` }"></span>
+                <span class="compat-meter__fill" :style="{ width: `${displayScore}%` }"></span>
               </div>
               <div class="compat-result__line">{{ elementLine }}</div>
               <div class="compat-result__summary">{{ summaryText }}</div>
@@ -104,7 +105,7 @@
                   <span>{{ balanceB }}%</span>
                 </div>
               </div>
-              <button type="button" class="compat-details-btn" @click="onDetailsOpen">
+              <button type="button" class="compat-details-link" @click="onDetailsOpen">
                 {{ tt('compatibilityPage.detailsCta') }}
               </button>
             </div>
@@ -338,6 +339,8 @@ const wheelRef = ref(null)
 const showResult = ref(false)
 const detailsOpen = ref(false)
 const detailsTab = ref('basic')
+const displayScore = ref(0)
+let scoreAnimFrame = 0
 const detailsTabs = [
   { id: 'basic', labelKey: 'compatibilityPage.details.tabs.basic' },
   { id: 'extended', labelKey: 'compatibilityPage.details.tabs.extended' },
@@ -405,6 +408,13 @@ const summaryText = computed(() => {
   if (score >= 82) return tt('compatibilityPage.summary.high')
   if (score >= 70) return tt('compatibilityPage.summary.mid')
   return tt('compatibilityPage.summary.low')
+})
+
+const confidenceLabel = computed(() => {
+  const score = compatibilityScore.value
+  if (score >= 82) return tt('compatibilityPage.confidence.high')
+  if (score >= 70) return tt('compatibilityPage.confidence.mid')
+  return tt('compatibilityPage.confidence.low')
 })
 
 const insightText = computed(() => {
@@ -529,7 +539,18 @@ function confirmWheel() {
 }
 
 function showCompatibility() {
-  showResult.value = true
+  if (showResult.value) {
+    showResult.value = false
+    if (typeof requestAnimationFrame !== 'undefined') {
+      requestAnimationFrame(() => {
+        showResult.value = true
+      })
+    } else {
+      showResult.value = true
+    }
+  } else {
+    showResult.value = true
+  }
   void hapticSelect()
 }
 
@@ -588,6 +609,29 @@ watch([selectedIndexA, selectedIndexB], () => {
   detailsOpen.value = false
   detailsTab.value = 'basic'
 })
+
+watch(
+  () => showResult.value,
+  (val) => {
+    if (!val) {
+      displayScore.value = 0
+      return
+    }
+    const target = compatibilityScore.value
+    const start = performance.now()
+    const from = 0
+    const duration = 720
+    const tick = (now) => {
+      const progress = Math.min(1, (now - start) / duration)
+      displayScore.value = Math.round(from + (target - from) * progress)
+      if (progress < 1) {
+        scoreAnimFrame = requestAnimationFrame(tick)
+      }
+    }
+    cancelAnimationFrame(scoreAnimFrame)
+    scoreAnimFrame = requestAnimationFrame(tick)
+  }
+)
 
 onBeforeUnmount(() => {
   document.body.classList.remove('hide-bottom-nav')
@@ -719,6 +763,12 @@ onBeforeUnmount(() => {
   text-transform: uppercase;
 }
 
+.compat-cta--active {
+  border-color: rgba(156, 184, 235, 0.22);
+  background: linear-gradient(180deg, rgba(16, 24, 38, 0.85), rgba(8, 12, 22, 0.92));
+  color: rgba(214, 225, 242, 0.9);
+}
+
 .compat-select__label {
   font-size: 11px;
   letter-spacing: 0.2em;
@@ -806,6 +856,15 @@ onBeforeUnmount(() => {
   letter-spacing: 0.08em;
   font-weight: 600;
   color: rgba(235, 242, 255, 0.92);
+  position: relative;
+  z-index: 1;
+}
+
+.compat-score__meta {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(214, 225, 242, 0.6);
   position: relative;
   z-index: 1;
 }
@@ -993,17 +1052,33 @@ onBeforeUnmount(() => {
   color: rgba(214, 225, 242, 0.7);
 }
 
-.compat-details-btn {
-  margin-top: 8px;
-  border-radius: 12px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  padding: 12px 14px;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: #e9edf4;
-  font-size: 13px;
+.compat-details-link {
+  margin-top: 12px;
+  justify-self: center;
+  border-radius: 0;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: rgba(173, 210, 255, 0.95);
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+.compat-details-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(180, 230, 255, 0), rgba(180, 230, 255, 0.95), rgba(180, 230, 255, 0));
+  box-shadow: 0 0 10px rgba(180, 230, 255, 0.6);
 }
 
 .details-card {

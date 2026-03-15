@@ -17,6 +17,7 @@ const routes = [
       },
 
       { path: 'menu', name: 'menu', component: () => import('src/pages/MenuPage.vue'), meta: { tab: 'menu' } },
+      { path: 'daily', name: 'daily', component: () => import('src/pages/DailyCardPage.vue') },
       { path: 'cards', name: 'cards', component: () => import('src/pages/CardLibraryPage.vue') },
       { path: 'compatibility', name: 'compatibility', component: () => import('src/pages/CompatibilityPage.vue') },
       { path: 'settings', name: 'settings', component: () => import('src/pages/SettingsPage.vue'), meta: { tab: 'menu' } },

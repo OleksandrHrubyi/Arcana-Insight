@@ -211,6 +211,23 @@ onBeforeUnmount(() => {
   box-shadow: none !important;
   border: 0;
   padding: 0 0 env(safe-area-inset-bottom);
+  height: calc(86px + env(safe-area-inset-bottom, 0px));
+  position: relative;
+  z-index: 3;
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-end;
+}
+
+:global(body.cards-nav-dark .telegram-footer)::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 86px;
+  background: linear-gradient(180deg, rgba(5, 13, 21, 0.35) 0%, rgba(5, 13, 21, 0.94) 55%, rgba(5, 13, 21, 1) 100%);
+  pointer-events: none;
 }
 
 /* контейнер: max-width, падінги */
@@ -225,6 +242,7 @@ onBeforeUnmount(() => {
   gap: 8px;
   padding: 0 16px 16px;
   position: relative;
+  pointer-events: auto;
 }
 
 /* таб як button */

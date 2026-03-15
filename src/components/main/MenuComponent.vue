@@ -108,6 +108,7 @@ export default defineComponent({
       { key: 'arcana', labelKey: 'arcana', icon: 'auto_awesome', routeName: 'arcana' },
       { key: 'horoscope', labelKey: 'horoscope', icon: 'nightlight_round', routeName: 'horoscope' },
       { key: 'tarot', labelKey: 'tarot', icon: 'style', routeName: 'tarot' },
+      { key: 'daily', labelKey: 'nav.daily', icon: 'calendar_today', routeName: 'daily' },
       { key: 'compatibility', labelKey: 'nav.compatibility', icon: 'favorite', routeName: 'compatibility' },
       { key: 'cards', labelKey: 'nav.cards', icon: 'auto_stories', routeName: 'cards' },
     ]

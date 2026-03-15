@@ -57,6 +57,7 @@ export default {
   display: none;
 }
 
+
 /* анімація появи знизу */
 .nav-up-enter-active,
 .nav-up-leave-active {
