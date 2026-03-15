@@ -4,6 +4,8 @@
 import { supabase } from 'boot/supabase.js';
 import CodeInput from 'components/ui/CodeInput.vue';
 import { t, currentLocale } from 'src/i18n';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Capacitor } from '@capacitor/core';
 
 export default {
   name: 'ConfirmEmailCode',
@@ -88,6 +90,7 @@ export default {
       if (this.resendCooldown > 0) return;
 
       try {
+        await this.hapticTap();
         this.loading = true;
         this.startResendCooldown(60);
         const { error } = await supabase.auth.signInWithOtp({
@@ -120,7 +123,17 @@ export default {
       }
     },
     goToMenu() {
+      this.hapticTap();
       this.$router.push('/menu');
+    },
+
+    async hapticTap() {
+      if (!Capacitor.isNativePlatform()) return;
+      try {
+        await Haptics.impact({ style: ImpactStyle.Light });
+      } catch (e) {
+        console.error(e);
+      }
     },
 
     async confirm() {
@@ -178,7 +191,7 @@ export default {
       <div class="login-panel">
         <div class="email">
           {{ email }}
-          <router-link to="/login" class="row items-center q-ml-md email-edit">
+          <router-link to="/login" class="row items-center q-ml-md email-edit" @click="hapticTap">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13"
@@ -202,12 +215,18 @@ export default {
 
         <q-separator class="separator-color"/>
 
-        <p class="send-code">
-          {{ tt('auth.didntGetCode') }}
-          <q-btn flat no-caps @click="resendCode" :disable="resendCooldown > 0">
+        <div class="send-code">
+          <span>{{ tt('auth.didntGetCode') }}</span>
+          <q-btn
+            flat
+            no-caps
+            class="send-code__btn"
+            @click="resendCode"
+            :disable="resendCooldown > 0"
+          >
             <span class="sent-code-btn">{{ resendLabel }}</span>
           </q-btn>
-        </p>
+        </div>
       </div>
 
     </div>
@@ -258,6 +277,7 @@ export default {
   gap: 6px;
   justify-items: center;
   padding: 0 44px;
+  min-height: 48px;
 }
 
 .auth-back {
@@ -327,6 +347,9 @@ export default {
 
 
 .send-code {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -337,6 +360,11 @@ export default {
 
 .sent-code-btn {
   text-decoration: underline;
+}
+
+.send-code__btn {
+  padding: 0;
+  min-height: auto;
 }
 
 @media screen and (max-height: 720px) {

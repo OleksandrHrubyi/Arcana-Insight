@@ -1,5 +1,5 @@
 <template>
-  <div class="code-row" @click="focusInput">
+  <div class="code-row" :class="{ 'code-row--focus': isFocused }" @click="focusInput">
     <!-- прихований “справжній” інпут -->
     <input
       ref="hiddenInput"
@@ -9,6 +9,8 @@
       autocomplete="one-time-code"
       :maxlength="length"
       @input="onInput"
+      @focus="onFocus"
+      @blur="onBlur"
     />
 
     <!-- 5 “слотів” під точки/цифри -->
@@ -26,6 +28,9 @@
 </template>
 
 <script>
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Capacitor } from '@capacitor/core';
+
 export default {
   name: 'CodeInput',
   props: {
@@ -41,6 +46,7 @@ export default {
   data() {
     return {
       code: this.modelValue,
+      isFocused: false,
     };
   },
   watch: {
@@ -56,8 +62,20 @@ export default {
       this.code = (e.target.value || '').replace(/\D/g, '').slice(0, this.length);
 
     },
-    focusInput() {
+    async focusInput() {
       this.$refs.hiddenInput?.focus();
+      if (!Capacitor.isNativePlatform()) return;
+      try {
+        await Haptics.impact({ style: ImpactStyle.Light });
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    onFocus() {
+      this.isFocused = true;
+    },
+    onBlur() {
+      this.isFocused = false;
     },
   },
 };
@@ -78,6 +96,11 @@ export default {
   border-bottom: 1px solid #142632;
   margin: 0 auto;
   position: relative;
+}
+
+.code-row--focus {
+  border-bottom-color: rgba(180, 220, 255, 0.75);
+  box-shadow: 0 10px 24px rgba(120, 170, 255, 0.12);
 }
 
 // реальний інпут — невидимий, але отримує фокус і paste

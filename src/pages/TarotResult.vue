@@ -36,6 +36,8 @@
 import { t, currentLocale } from 'src/i18n/index.js';
 import tarotData from "../../src/data/cardsV2/tarot_full.json";
 import { Share } from "@capacitor/share";
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Capacitor } from '@capacitor/core';
 
 export default {
   name: "TarotResult",
@@ -101,12 +103,21 @@ export default {
     }
   },
   methods: {
+    async hapticTap() {
+      if (!Capacitor.isNativePlatform()) return;
+      try {
+        await Haptics.impact({ style: ImpactStyle.Light });
+      } catch (e) {
+        console.error(e);
+      }
+    },
     loadCard() {
       const id = this.$route.params.id;
       this.card = (this.tarotData.cards || []).find((c) => c.id === id) || null;
     },
     async share() {
       if (!this.card) return;
+      await this.hapticTap();
 
       const title = this.card.name?.[this.locale] || this.card.name?.en || this.card.id;
       const text = this.descriptionText;
@@ -123,6 +134,7 @@ export default {
     },
 
     backRoute(){
+      this.hapticTap();
       this.$router.push('/tarot');
     }
   }

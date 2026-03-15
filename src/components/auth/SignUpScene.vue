@@ -730,6 +730,7 @@ export default {
   gap: 6px;
   justify-items: center;
   padding: 0 44px;
+  min-height: 48px;
 }
 
 .auth-back {

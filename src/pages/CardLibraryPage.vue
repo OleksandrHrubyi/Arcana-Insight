@@ -4,7 +4,7 @@
 
     <div class="cards-content">
       <header class="cards-hero cards-hero--with-back">
-        <button type="button" class="cards-back" @click="$router.back()">
+        <button type="button" class="cards-back" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
         <div class="cards-hero__text">
@@ -125,6 +125,7 @@
 
 <script setup>
 import { computed, ref, watch, onBeforeUnmount, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import tarotCardsData from 'src/data/cardsV2/tarot_full.json'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
@@ -132,6 +133,7 @@ import { Capacitor } from '@capacitor/core'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
+const router = useRouter()
 
 const filters = [
   { id: 'all', labelKey: 'cardsPage.filters.all' },
@@ -207,9 +209,7 @@ const suitAccent = {
 
 const getCardAccent = (card) => suitAccent[card?.suit] || suitAccent.major
 
-const setFilter = async (id) => {
-  if (activeFilter.value === id) return
-  activeFilter.value = id
+const hapticTap = async () => {
   if (!Capacitor.isNativePlatform()) return
   try {
     await Haptics.impact({ style: ImpactStyle.Light })
@@ -218,15 +218,16 @@ const setFilter = async (id) => {
   }
 }
 
+const setFilter = async (id) => {
+  if (activeFilter.value === id) return
+  activeFilter.value = id
+  await hapticTap()
+}
+
 const openCard = async (card) => {
   selectedCard.value = card
   detailOpen.value = true
-  if (!Capacitor.isNativePlatform()) return
-  try {
-    await Haptics.impact({ style: ImpactStyle.Light })
-  } catch (e) {
-    console.error(e)
-  }
+  await hapticTap()
 }
 
 const setBottomNavHidden = (hidden) => {
@@ -241,10 +242,17 @@ const setBottomNavDark = (enabled) => {
 
 const closeDetail = () => {
   detailOpen.value = false
+  void hapticTap()
 }
 
 const clearSearch = () => {
   searchQuery.value = ''
+  void hapticTap()
+}
+
+const onBack = async () => {
+  await hapticTap()
+  router.back()
 }
 
 watch(detailOpen, (value) => {
@@ -279,11 +287,11 @@ onMounted(() => {
 .cards-content {
   position: relative;
   z-index: 1;
-  padding: calc(90px + env(safe-area-inset-top)) 18px 90px;
+  padding: calc(90px + env(safe-area-inset-top)) 16px 84px;
   max-width: 520px;
   margin: 0 auto;
   display: grid;
-  gap: 16px;
+  gap: 14px;
 }
 
 .cards-hero {
@@ -392,7 +400,7 @@ onMounted(() => {
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .cards-item {

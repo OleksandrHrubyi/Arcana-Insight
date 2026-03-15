@@ -2,7 +2,7 @@
   <q-page class="settings-page">
 
     <div class="topbar">
-      <q-btn flat class="cancel-btn" :label="tt('common.cancel')" @click="$router.back()" />
+      <q-btn flat class="cancel-btn" :label="tt('common.cancel')" @click="onBack" />
       <div class="topbar-title">{{ tt('accountEdit.title') }}</div>
       <q-btn flat class="done-btn" :label="tt('done')" :disable="saving" @click="save" />
     </div>
@@ -23,7 +23,7 @@
       </q-item>
 
 
-      <q-item clickable v-ripple class="settings-item" @click="birthDialog = true">
+      <q-item clickable v-ripple class="settings-item" @click="openBirthDialog">
         <q-item-section class="custom-section-item">
           <q-item-label>{{ tt('fields.dateOfBirth') }}</q-item-label>
         </q-item-section>
@@ -42,7 +42,7 @@
       </q-item>
 
 
-      <q-item clickable v-ripple class="settings-item" @click="countryDialog = true">
+      <q-item clickable v-ripple class="settings-item" @click="openCountryDialog">
         <q-item-section class="custom-section-item">
           <q-item-label>{{ tt('fields.country') }}</q-item-label>
         </q-item-section>
@@ -61,10 +61,10 @@
         <div class="text-subtitle1 q-mb-sm">{{ tt('fields.dateOfBirth') }}</div>
         <q-date v-model="birthModel" mask="YYYY-MM-DD" minimal />
         <div class="row q-mt-md justify-end q-gutter-sm">
-          <q-btn flat :label="tt('common.cancel')" v-close-popup />
-          <q-btn flat :label="tt('clear')" @click="birthModel=''; form.date_of_birth=''; birthDialog=false" />
+          <q-btn flat :label="tt('common.cancel')" v-close-popup @click="hapticTap" />
+          <q-btn flat :label="tt('clear')" @click="clearBirth" />
           <q-btn unelevated color="cyan-4" text-color="black" :label="tt('common.save')"
-                 @click="form.date_of_birth=birthModel; birthDialog=false" />
+                 @click="applyBirth" />
         </div>
       </q-card>
     </q-dialog>
@@ -85,8 +85,8 @@
         />
 
         <div class="row q-mt-md justify-end q-gutter-sm">
-          <q-btn flat :label="tt('common.cancel')" v-close-popup />
-          <q-btn unelevated color="cyan-4" text-color="black" :label="tt('common.save')" v-close-popup />
+          <q-btn flat :label="tt('common.cancel')" v-close-popup @click="hapticTap" />
+          <q-btn unelevated color="cyan-4" text-color="black" :label="tt('common.save')" v-close-popup @click="hapticTap" />
         </div>
       </q-card>
     </q-dialog>
@@ -98,6 +98,8 @@
 import { defineComponent } from 'vue'
 import { supabase } from 'boot/supabase'
 import { t, currentLocale } from 'src/i18n'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
+import { Capacitor } from '@capacitor/core'
 
 export default defineComponent({
   name: 'AccountEdit',
@@ -181,10 +183,48 @@ export default defineComponent({
   },
 
   methods: {
+    async hapticTap () {
+      if (!Capacitor.isNativePlatform()) return
+      try {
+        await Haptics.impact({ style: ImpactStyle.Light })
+      } catch (e) {
+        console.error(e)
+      }
+    },
+
+    async onBack () {
+      await this.hapticTap()
+      this.$router.back()
+    },
+
+    async openBirthDialog () {
+      await this.hapticTap()
+      this.birthDialog = true
+    },
+
+    async openCountryDialog () {
+      await this.hapticTap()
+      this.countryDialog = true
+    },
+
+    async clearBirth () {
+      await this.hapticTap()
+      this.birthModel = ''
+      this.form.date_of_birth = ''
+      this.birthDialog = false
+    },
+
+    async applyBirth () {
+      await this.hapticTap()
+      this.form.date_of_birth = this.birthModel
+      this.birthDialog = false
+    },
+
     async save () {
       if (!this.userId) return
       this.saving = true
       try {
+        await this.hapticTap()
         // Зберігаємо в app_users (id = auth.uid())
         const payload = {
           id: this.userId,

@@ -652,6 +652,7 @@ export const messages = {
       subtitle: 'Your profile details',
       zodiacTitle: 'Zodiac sign',
       zodiacEmpty: 'Add birth date',
+      tapToEdit: 'Tap to edit',
     },
 
     getStarted: {
@@ -1579,6 +1580,7 @@ export const messages = {
       subtitle: 'Дані твого профілю',
       zodiacTitle: 'Знак зодіаку',
       zodiacEmpty: 'Додай дату',
+      tapToEdit: 'Натисни для редагування',
     },
 
     getStarted: {

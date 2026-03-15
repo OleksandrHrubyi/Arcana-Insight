@@ -4,7 +4,7 @@
 
     <div class="policy-content">
       <header class="policy-hero policy-hero--with-back">
-        <button type="button" class="policy-back" @click="$router.back()">
+        <button type="button" class="policy-back" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
         <div class="policy-hero__text">
@@ -37,10 +37,28 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
+import { Capacitor } from '@capacitor/core'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
+const router = useRouter()
+
+const hapticTap = async () => {
+  if (!Capacitor.isNativePlatform()) return
+  try {
+    await Haptics.impact({ style: ImpactStyle.Light })
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+const onBack = async () => {
+  await hapticTap()
+  router.back()
+}
 </script>
 
 <style scoped lang="scss">

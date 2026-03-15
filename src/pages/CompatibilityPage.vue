@@ -4,7 +4,7 @@
 
     <div class="compat-content">
       <header class="compat-hero compat-hero--with-back">
-        <button type="button" class="compat-back" @click="$router.back()">
+        <button type="button" class="compat-back" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
         <div class="compat-hero__text">
@@ -221,14 +221,12 @@
             </div>
           </div>
 
-          <div class="details-formula">
-            <div class="details-formula__title">{{ tt('compatibilityPage.details.formula') }}</div>
-            <div class="details-formula__text">
-              {{ tt('compatibilityPage.details.formulaText') }}
-            </div>
-            <div class="details-formula__note">
-              {{ tt('compatibilityPage.details.modalityNote') }}
-            </div>
+          <div class="details-notes">
+            <div class="details-notes__title">{{ tt('compatibilityPage.details.formula') }}</div>
+            <ul class="details-notes__list">
+              <li>{{ tt('compatibilityPage.details.formulaText') }}</li>
+              <li>{{ tt('compatibilityPage.details.modalityNote') }}</li>
+            </ul>
           </div>
           </div>
 
@@ -260,50 +258,6 @@
             </div>
           </div>
 
-          <div v-else class="details-matrix">
-            <div class="details-hint">{{ tt('compatibilityPage.details.matrixHint') }}</div>
-            <div class="matrix-block">
-              <div class="details-label">{{ tt('compatibilityPage.details.elementMatrix') }}</div>
-              <div class="matrix-grid matrix-grid--elements">
-                <div class="matrix-cell matrix-cell--head"></div>
-              <div v-for="el in matrixElements" :key="`eh-${el}`" class="matrix-cell matrix-cell--head">
-                {{ tt(`compatibilityPage.elements.${el}`) }}
-              </div>
-              <template v-for="row in matrixElements" :key="`row-${row}`">
-                <div class="matrix-cell matrix-cell--head">{{ tt(`compatibilityPage.elements.${row}`) }}</div>
-                <div
-                  v-for="col in matrixElements"
-                  :key="`cell-${row}-${col}`"
-                  class="matrix-cell"
-                  :class="{ 'matrix-cell--active': isElementCellActive(row, col) }"
-                >
-                  {{ getElementScore(row, col) }}
-                </div>
-              </template>
-            </div>
-            </div>
-
-            <div class="matrix-block">
-              <div class="details-label">{{ tt('compatibilityPage.details.modalityMatrix') }}</div>
-              <div class="matrix-grid matrix-grid--modalities">
-                <div class="matrix-cell matrix-cell--head"></div>
-              <div v-for="mod in matrixModalities" :key="`mh-${mod}`" class="matrix-cell matrix-cell--head">
-                {{ tt(`compatibilityPage.modalities.${mod}`) }}
-              </div>
-              <template v-for="row in matrixModalities" :key="`mrow-${row}`">
-                <div class="matrix-cell matrix-cell--head">{{ tt(`compatibilityPage.modalities.${row}`) }}</div>
-                <div
-                  v-for="col in matrixModalities"
-                  :key="`mcell-${row}-${col}`"
-                  class="matrix-cell"
-                  :class="{ 'matrix-cell--active': isModalityCellActive(row, col) }"
-                >
-                  {{ getModalityScore(row, col) }}
-                </div>
-              </template>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div class="oracle-actions__footer">
@@ -318,11 +272,14 @@
 
 <script setup>
 import { computed, ref, nextTick, watch, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
+import { Capacitor } from '@capacitor/core'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
+const router = useRouter()
 
 const signs = [
   { key: 'aries', element: 'fire', modality: 'cardinal' },
@@ -356,7 +313,6 @@ let scoreAnimFrame = 0
 const detailsTabs = [
   { id: 'basic', labelKey: 'compatibilityPage.details.tabs.basic' },
   { id: 'extended', labelKey: 'compatibilityPage.details.tabs.extended' },
-  { id: 'matrix', labelKey: 'compatibilityPage.details.tabs.matrix' },
 ]
 
 const selectedLabelA = computed(() => signLabels.value[selectedIndexA.value] || '')
@@ -498,11 +454,17 @@ const getElementBalance = () => {
 }
 
 async function hapticSelect() {
+  if (!Capacitor.isNativePlatform()) return
   try {
     await Haptics.impact({ style: ImpactStyle.Light })
   } catch (e) {
     console.error(e)
   }
+}
+
+async function onBack() {
+  await hapticSelect()
+  router.back()
 }
 
 function openPicker(which) {
@@ -579,27 +541,6 @@ function onDetailsClose() {
 function onDetailsTabClick(tabId) {
   detailsTab.value = tabId
   void hapticSelect()
-}
-
-const matrixElements = ['fire', 'earth', 'air', 'water']
-const matrixModalities = ['cardinal', 'fixed', 'mutable']
-
-const getElementScore = (a, b) => {
-  const pair = [a, b].sort().join('_')
-  return elementScoreMap[pair] ?? 70
-}
-
-const getModalityScore = (a, b) => {
-  const pair = [a, b].sort().join('_')
-  return modalityScoreMap[pair] ?? 70
-}
-
-const isElementCellActive = (a, b) => {
-  return [a, b].sort().join('_') === [elementAKey.value, elementBKey.value].sort().join('_')
-}
-
-const isModalityCellActive = (a, b) => {
-  return [a, b].sort().join('_') === [modalityAKey.value, modalityBKey.value].sort().join('_')
 }
 
 watch(
@@ -1171,85 +1112,30 @@ onBeforeUnmount(() => {
   gap: 10px;
 }
 
-.details-matrix {
-  display: grid;
-  gap: 14px;
-}
-
-.details-hint {
-  font-size: 11px;
-  line-height: 1.5;
-  color: rgba(214, 225, 242, 0.6);
-}
-
-.matrix-block {
-  display: grid;
-  gap: 8px;
-}
-
-.matrix-grid {
-  display: grid;
-  gap: 6px;
-}
-
-.matrix-grid--elements {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-}
-
-.matrix-grid--modalities {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.matrix-cell {
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(8, 12, 20, 0.85);
-  color: rgba(214, 225, 242, 0.75);
-  font-size: 10px;
-  text-align: center;
-  padding: 6px 2px;
-}
-
-.matrix-cell--head {
-  font-size: 9px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.55);
-}
-
-.matrix-cell--active {
-  border-color: rgba(159, 216, 246, 0.5);
-  color: #fff;
-  box-shadow: 0 0 10px rgba(159, 216, 246, 0.25);
-}
-.details-formula {
+.details-notes {
   margin-top: 12px;
   padding: 12px 14px 10px;
   border-radius: 14px;
-  border: 1px dashed rgba(156, 184, 235, 0.32);
+  border: 1px solid rgba(156, 184, 235, 0.2);
   background: rgba(5, 9, 15, 0.98);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-.details-formula__title {
+.details-notes__title {
   font-size: 10px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.6);
 }
 
-.details-formula__text {
-  margin-top: 6px;
+.details-notes__list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
   font-size: 12px;
   line-height: 1.5;
   color: rgba(224, 234, 251, 0.8);
-}
-
-.details-formula__note {
-  margin-top: 6px;
-  font-size: 11px;
-  line-height: 1.5;
-  color: rgba(214, 225, 242, 0.6);
 }
 
 @keyframes compatGlow {

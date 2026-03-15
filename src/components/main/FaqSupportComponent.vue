@@ -4,7 +4,7 @@
 
     <div class="faq-content">
       <header class="faq-hero faq-hero--with-back">
-        <button type="button" class="faq-back" @click="$router.back()">
+        <button type="button" class="faq-back" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
         <div class="faq-hero__text">
@@ -39,10 +39,14 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
+import { Capacitor } from '@capacitor/core'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
+const router = useRouter()
 
 const supportEmail = 'support@arcana.app'
 const mailtoLink = `mailto:${supportEmail}`
@@ -60,7 +64,16 @@ const faqItems = [
 
 const openItems = ref(new Set())
 
-const toggleItem = (key) => {
+const hapticTap = async () => {
+  if (!Capacitor.isNativePlatform()) return
+  try {
+    await Haptics.impact({ style: ImpactStyle.Light })
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+const toggleItem = async (key) => {
   const next = new Set(openItems.value)
   if (next.has(key)) {
     next.delete(key)
@@ -68,6 +81,12 @@ const toggleItem = (key) => {
     next.add(key)
   }
   openItems.value = next
+  await hapticTap()
+}
+
+const onBack = async () => {
+  await hapticTap()
+  router.back()
 }
 </script>
 

@@ -27,18 +27,21 @@
         <button type="button" class="account-row account-row--button" @click="openEdit('name')">
           <div class="account-label">{{ tt('fields.name') }}</div>
           <div class="account-value">{{ profile.name || '—' }}</div>
+          <div class="account-hint">{{ tt('accountPage.tapToEdit') }}</div>
           <q-icon name="edit" size="16px" class="account-row__icon" />
         </button>
 
         <button type="button" class="account-row account-row--button" @click="openEdit('email')">
           <div class="account-label">{{ tt('fields.email') }}</div>
           <div class="account-value">{{ profile.email || userEmail || '—' }}</div>
+          <div class="account-hint">{{ tt('accountPage.tapToEdit') }}</div>
           <q-icon name="edit" size="16px" class="account-row__icon" />
         </button>
 
         <button type="button" class="account-row account-row--button" @click="onOpenDateSheet">
           <div class="account-label">{{ tt('fields.dateOfBirth') }}</div>
           <div class="account-value">{{ profile.date_of_birth || '—' }}</div>
+          <div class="account-hint">{{ tt('accountPage.tapToEdit') }}</div>
           <q-icon name="edit" size="16px" class="account-row__icon" />
         </button>
       </section>
@@ -721,7 +724,8 @@ export default defineComponent({
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-areas:
     "label icon"
-    "value icon";
+    "value icon"
+    "hint icon";
   row-gap: 4px;
   column-gap: 10px;
   align-items: center;
@@ -764,6 +768,14 @@ export default defineComponent({
 .account-row__icon {
   grid-area: icon;
   color: rgba(214, 225, 242, 0.55);
+}
+
+.account-hint {
+  grid-area: hint;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(214, 225, 242, 0.4);
 }
 
 .account-actions {

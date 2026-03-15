@@ -4,7 +4,7 @@
 
     <div class="daily-content">
       <header class="daily-hero daily-hero--with-back">
-        <button type="button" class="daily-back" @click="$router.back()">
+        <button type="button" class="daily-back" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
         <div class="daily-hero__text">
@@ -16,7 +16,7 @@
       <section class="daily-card">
         <div class="daily-card__title">{{ tt('dailyPage.cardLabel') }}</div>
         <div class="daily-card__media">
-          <img :src="cardImage" :alt="cardTitle" />
+          <img :src="cardImage" :alt="cardTitle" :class="{ 'daily-card__media--reversed': orientation === 'reversed' }" />
         </div>
         <div class="daily-card__name">{{ cardTitle }}</div>
         <div class="daily-card__meta">{{ cardSubtitle }}</div>
@@ -42,11 +42,15 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import tarotCardsData from 'src/data/cardsV2/tarot_full.json'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
+import { Capacitor } from '@capacitor/core'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
+const router = useRouter()
 
 const cards = tarotCardsData?.cards || []
 
@@ -100,6 +104,20 @@ const todayLabel = computed(() => {
     return now.toDateString()
   }
 })
+
+const hapticTap = async () => {
+  if (!Capacitor.isNativePlatform()) return
+  try {
+    await Haptics.impact({ style: ImpactStyle.Light })
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+const onBack = async () => {
+  await hapticTap()
+  router.back()
+}
 </script>
 
 <style scoped lang="scss">
@@ -206,6 +224,9 @@ const todayLabel = computed(() => {
   background: #ffffff;
 }
 
+.daily-card__media--reversed {
+  transform: rotate(180deg);
+}
 .daily-card__media img {
   width: 100%;
   height: 100%;
