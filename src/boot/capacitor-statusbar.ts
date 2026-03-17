@@ -12,7 +12,7 @@ export default boot(() => {
           await StatusBar.setStyle({ style: Style.Light })
           await StatusBar.setBackgroundColor({ color: '#0b0d16' })
         } catch (e) {
-          // тихо ігноруємо — плагін ще не готовий/не підтримується на старих iOS
+          // тихо ігноруємо — плагін ще не готовий чи не підтримується на старих iOS
           console.warn('[statusbar]', e)
         }
       })()
