@@ -34,8 +34,8 @@
     </div>
 
     <!-- ✅ ховаємо боки -->
-    <div class="side-cover side-cover--left"></div>
-    <div class="side-cover side-cover--right"></div>
+    <div ref="sideCoverLeft" class="side-cover side-cover--left"></div>
+    <div ref="sideCoverRight" class="side-cover side-cover--right"></div>
 
     <!-- ✅ перемальована дуга -->
     <div class="arc-overlay"></div>
@@ -472,6 +472,8 @@ export default {
       const leftEl = this.$refs.lineLeft;
       const rightEl = this.$refs.lineRight;
       const centerRound = this.$refs.centerRound;
+      const sideCoverLeft = this.$refs.sideCoverLeft;
+      const sideCoverRight = this.$refs.sideCoverRight;
 
       if (!container || !leftEl || !rightEl || !centerRound) return;
 
@@ -497,6 +499,15 @@ export default {
 
       this.setLine(leftEl, leftTop.x, leftTop.y, leftBottom.x, leftBottom.y);
       this.setLine(rightEl, rightTop.x, rightTop.y, rightBottom.x, rightBottom.y);
+
+      if (sideCoverLeft) {
+        sideCoverLeft.style.clipPath =
+          'polygon(0 0, calc(var(--inset) + var(--coverBleed)) 0, calc(50% - var(--halfGap)) var(--yJoin), 0 calc(var(--yJoin) + var(--coverSlope)))';
+      }
+      if (sideCoverRight) {
+        sideCoverRight.style.clipPath =
+          'polygon(calc(100% - (var(--inset) + var(--coverBleed))) 0, 100% 0, 100% calc(var(--yJoin) + var(--coverSlope)), calc(50% + var(--halfGap)) var(--yJoin))';
+      }
     },
 
     mod(n, m) {
@@ -794,6 +805,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+/*noinspection CssInvalidPropertyValue*/
 .container {
   --s: 1;
   --vh: 1vh;
@@ -1142,13 +1154,9 @@ export default {
 }
 
 .side-cover--left {
-  /*noinspection CssInvalidPropertyValue*/
-  clip-path: polygon(0 0, calc(var(--inset) + var(--coverBleed)) 0, calc(50% - var(--halfGap)) var(--yJoin), 0 calc(var(--yJoin) + var(--coverSlope)));
 }
 
 .side-cover--right {
-  /*noinspection CssInvalidPropertyValue*/
-  clip-path: polygon(calc(100% - (var(--inset) + var(--coverBleed))) 0, 100% 0, 100% calc(var(--yJoin) + var(--coverSlope)), calc(50% + var(--halfGap)) var(--yJoin));
 }
 
 .arc-overlay {

@@ -15,16 +15,16 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style>
 /*noinspection CssUnusedSymbol*/
-:global(.route-fade-enter-active),
-:global(.route-fade-leave-active) {
+.route-fade-enter-active,
+.route-fade-leave-active {
   transition: opacity 180ms ease;
 }
 
 /*noinspection CssUnusedSymbol*/
-:global(.route-fade-enter-from),
-:global(.route-fade-leave-to) {
+.route-fade-enter-from,
+.route-fade-leave-to {
   opacity: 0;
 }
 </style>

@@ -952,7 +952,6 @@ export default defineComponent({
   width: 100vw;
   max-width: 100vw;
   margin: 0 auto;
-  margin-bottom: 0;
   border-radius: 22px 22px 0 0;
   padding: 8px 12px calc(env(safe-area-inset-bottom, 0px) + 24px);
   box-shadow: 0 -16px 46px rgba(0, 0, 0, 0.42);
