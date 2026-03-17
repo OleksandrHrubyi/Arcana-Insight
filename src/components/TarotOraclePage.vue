@@ -1809,6 +1809,7 @@ onBeforeUnmount(() => {
   position: relative;
   transform-style: preserve-3d;
   transition: transform 1120ms cubic-bezier(0.22, 1, 0.36, 1);
+  display: block;
 }
 
 .oracle-card--flipped .oracle-card__inner {
@@ -1824,6 +1825,7 @@ onBeforeUnmount(() => {
   -webkit-backface-visibility: hidden;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
+  display: block;
 }
 
 .oracle-card__face--back {
