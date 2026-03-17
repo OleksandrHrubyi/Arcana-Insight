@@ -1,5 +1,5 @@
 import { reactive, computed } from 'vue'
-import { supabase } from 'src/boot/supabase'
+import { supabase } from 'src/services/supabaseClient'
 
 const state = reactive({
   user: null,

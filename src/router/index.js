@@ -6,6 +6,7 @@ import {
   createWebHashHistory,
 } from 'vue-router'
 import routes from './routes'
+import { supabase } from 'src/services/supabaseClient'
 
 /*
  * If not building with SSR mode, you can
@@ -31,6 +32,13 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
+  })
+
+  Router.beforeEach(async (to) => {
+    if (!to.meta?.requiresAuth) return true
+    const { data } = await supabase.auth.getSession()
+    if (data?.session) return true
+    return { name: 'login' }
   })
 
   return Router

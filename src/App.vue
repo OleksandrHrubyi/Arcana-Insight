@@ -8,22 +8,23 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import { initPushListeners, touchPushDevice } from 'boot/push'
+import { initPushListeners } from 'boot/push'
 
 onMounted(() => {
   void initPushListeners()
-  void touchPushDevice()
 })
 </script>
 
 <style scoped>
-.route-fade-enter-active,
-.route-fade-leave-active {
+/*noinspection CssUnusedSymbol*/
+:global(.route-fade-enter-active),
+:global(.route-fade-leave-active) {
   transition: opacity 180ms ease;
 }
 
-.route-fade-enter-from,
-.route-fade-leave-to {
+/*noinspection CssUnusedSymbol*/
+:global(.route-fade-enter-from),
+:global(.route-fade-leave-to) {
   opacity: 0;
 }
 </style>

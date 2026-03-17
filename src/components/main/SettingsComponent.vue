@@ -308,7 +308,7 @@
 
 <script>
 import { defineComponent } from 'vue'
-import { supabase } from 'boot/supabase'
+import { supabase } from 'src/services/supabaseClient'
 import { ensureToken, syncRegisterDevice, getSavedTime, setSavedTime } from 'src/helpers/pushBackend'
 import { t, currentLocale, setLocale } from 'src/i18n'
 
@@ -349,7 +349,8 @@ export default defineComponent({
       timeOptions: [],
       selectedTimeIndex: 0,
       lastTimeHapticAt: 0,
-      selectedTimeValue: ''
+      selectedTimeValue: '',
+      authUnsubscribe: null
     }
   },
 
@@ -405,10 +406,13 @@ export default defineComponent({
             this.dailyPush = false
             return
           }
+          const chosenTime = getSavedTime() || DEFAULT_TIME
+          setSavedTime(chosenTime)
+          this.selectedTimeValue = chosenTime
 
           const res = await syncRegisterDevice({
             enabled: true,
-            timeHHMM: getSavedTime(),
+            timeHHMM: chosenTime,
             locale: this.locale
           })
           if (!res.ok) {
@@ -438,9 +442,18 @@ export default defineComponent({
 
     const { data } = await supabase.auth.getSession()
     this.isLoggedIn = !!data?.session
-    supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       this.isLoggedIn = !!session
     })
+    this.authUnsubscribe = authListener?.subscription
+  },
+
+  beforeUnmount () {
+    try {
+      this.authUnsubscribe?.unsubscribe()
+    } catch (e) {
+      console.error(e)
+    }
   },
 
   methods: {
@@ -795,16 +808,19 @@ export default defineComponent({
   align-self: center;
 }
 
+/*noinspection CssUnusedSymbol*/
 .settings-list :deep(.q-item) {
   position: relative;
 }
 
+/*noinspection CssUnusedSymbol*/
 .settings-list :deep(.q-item__section--side) {
   flex: 0 0 auto;
   min-width: 0;
   flex-direction: row !important;
 }
 
+/*noinspection CssUnusedSymbol*/
 .settings-list :deep(.q-item:not(:last-child))::after {
   content: '';
   position: absolute;
@@ -846,7 +862,6 @@ export default defineComponent({
   width: 100vw;
   max-width: 100vw;
   margin: 0 auto;
-  margin-bottom: 0;
   border-radius: 22px 22px 0 0;
   padding: 8px 12px calc(env(safe-area-inset-bottom, 0px) + 24px);
   box-shadow: 0 -16px 46px rgba(0, 0, 0, 0.42);
@@ -916,12 +931,14 @@ export default defineComponent({
   box-shadow: inset 0 1px 0 rgba(214, 229, 255, 0.08);
 }
 
+/*noinspection CssUnusedSymbol*/
 :deep(.oracle-actions-dialog .q-dialog__backdrop) {
   background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
 
+/*noinspection CssUnusedSymbol*/
 :deep(.oracle-actions-dialog .q-dialog__inner) {
   padding: 0;
   align-items: flex-end;
@@ -965,7 +982,6 @@ export default defineComponent({
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  overflow-x: hidden;
   touch-action: pan-y;
 }
 
@@ -1047,6 +1063,7 @@ export default defineComponent({
   transform: scale(1.01);
 }
 
+/*noinspection CssUnusedSymbol*/
 .oracle-wheel__item--disabled {
   color: rgba(196, 188, 173, 0.34);
 }

@@ -34,7 +34,7 @@
 
 <script>
 import { t, currentLocale } from 'src/i18n/index.js';
-import tarotData from "../../src/data/cardsV2/tarot_full.json";
+import { loadTarotData } from 'src/helpers/tarotData';
 import { Share } from "@capacitor/share";
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
@@ -43,7 +43,7 @@ export default {
   name: "TarotResult",
   data() {
     return {
-      tarotData,
+      tarotData: null,
       card: null,
     };
   },
@@ -64,11 +64,11 @@ export default {
       return String(name).toUpperCase();
     },
     badgeText() {
-      const b =
+      return (
         this.card?.ui?.badge?.[this.locale] ||
         this.card?.ui?.badge?.en ||
-        "UPR/REV";
-      return b;
+        "UPR/REV"
+      );
     },
     descriptionText() {
       if (!this.card) return "";
@@ -94,11 +94,15 @@ export default {
       return `/images/cards/${this.card.file}`;
     }
   },
-  mounted() {
+  async mounted() {
+    this.tarotData = await loadTarotData();
     this.loadCard();
   },
   watch: {
-    "$route.params.id"() {
+    async "$route.params.id"() {
+      if (!this.tarotData) {
+        this.tarotData = await loadTarotData();
+      }
       this.loadCard();
     }
   },
@@ -113,7 +117,7 @@ export default {
     },
     loadCard() {
       const id = this.$route.params.id;
-      this.card = (this.tarotData.cards || []).find((c) => c.id === id) || null;
+      this.card = (this.tarotData?.cards || []).find((c) => c.id === id) || null;
     },
     async share() {
       if (!this.card) return;
@@ -187,6 +191,7 @@ export default {
   -webkit-user-drag: none;
 }
 
+/*noinspection CssUnusedSymbol*/
 .cardImg.reversed {
   transform: rotate(180deg);
 }

@@ -2,6 +2,14 @@
 
 tarot horoscope
 
+## Environment setup
+
+```bash
+cp .env.example .env
+```
+
+Fill local `.env` values with your own keys. Do not commit `.env`.
+
 ## Install the dependencies
 
 ```bash

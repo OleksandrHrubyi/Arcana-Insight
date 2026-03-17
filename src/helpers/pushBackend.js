@@ -1,7 +1,7 @@
 // src/helpers/pushBackend.js
 import { Capacitor } from '@capacitor/core'
 import { PushNotifications } from '@capacitor/push-notifications'
-import { supabase } from 'boot/supabase'
+import { supabase } from 'src/services/supabaseClient'
 
 const LS_TOKEN = 'push_token'
 const LS_LOCALE = 'locale'

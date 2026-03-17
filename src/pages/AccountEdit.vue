@@ -96,7 +96,7 @@
 
 <script>
 import { defineComponent } from 'vue'
-import { supabase } from 'boot/supabase'
+import { supabase } from 'src/services/supabaseClient'
 import { t, currentLocale } from 'src/i18n'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
@@ -292,10 +292,6 @@ export default defineComponent({
 .settings-item {
   min-height: 54px;
   border-bottom: 1px solid #142632;
-}
-
-.settings-sep {
-  opacity: 0.12;
 }
 
 .settings-value {

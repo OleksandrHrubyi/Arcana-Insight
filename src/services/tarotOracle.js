@@ -1,4 +1,4 @@
-import { supabase } from 'src/boot/supabase'
+import { supabase } from 'src/services/supabaseClient'
 
 export async function getTarotReading(payload) {
   if (import.meta.env.VITE_ENABLE_TAROT_AI !== 'true') {

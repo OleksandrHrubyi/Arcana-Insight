@@ -127,7 +127,7 @@
 import { computed, ref, watch, onBeforeUnmount, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
-import tarotCardsData from 'src/data/cardsV2/tarot_full.json'
+import { loadTarotData } from 'src/helpers/tarotData'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
 
@@ -144,14 +144,14 @@ const filters = [
   { id: 'pentacles', labelKey: 'cardsPage.filters.pentacles' },
 ]
 
-const cards = tarotCardsData?.cards || []
+const cards = ref([])
 const activeFilter = ref('all')
 const detailOpen = ref(false)
 const selectedCard = ref(null)
 const searchQuery = ref('')
 
 const filteredCards = computed(() => {
-  let result = cards
+  let result = cards.value
   if (activeFilter.value === 'major') {
     result = result.filter((card) => card.arcana === 'major')
   } else if (activeFilter.value !== 'all') {
@@ -264,7 +264,9 @@ onBeforeUnmount(() => {
   setBottomNavDark(false)
 })
 
-onMounted(() => {
+onMounted(async () => {
+  const data = await loadTarotData()
+  cards.value = data?.cards || []
   setBottomNavDark(true)
 })
 </script>
@@ -507,7 +509,6 @@ onMounted(() => {
   width: 100vw;
   max-width: 100vw;
   margin: 0 auto;
-  margin-bottom: 0;
   border-radius: 22px 22px 0 0;
   padding: 8px 12px calc(env(safe-area-inset-bottom, 0px) + 24px);
   max-height: calc(100vh - 12px);

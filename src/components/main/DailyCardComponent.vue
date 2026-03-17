@@ -41,10 +41,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
-import tarotCardsData from 'src/data/cardsV2/tarot_full.json'
+import { loadTarotData } from 'src/helpers/tarotData'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
 
@@ -52,7 +52,12 @@ const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
 const router = useRouter()
 
-const cards = tarotCardsData?.cards || []
+const cards = ref([])
+
+onMounted(async () => {
+  const data = await loadTarotData()
+  cards.value = data?.cards || []
+})
 
 const todayKey = () => {
   const now = new Date()
@@ -71,9 +76,9 @@ const hashString = (value) => {
 }
 
 const dailyIndex = computed(() => {
-  if (!cards.length) return 0
+  if (!cards.value.length) return 0
   const hash = hashString(todayKey())
-  return hash % cards.length
+  return hash % cards.value.length
 })
 
 const orientation = computed(() => {
@@ -81,7 +86,7 @@ const orientation = computed(() => {
   return hash % 2 === 0 ? 'upright' : 'reversed'
 })
 
-const dailyCard = computed(() => cards[dailyIndex.value] || null)
+const dailyCard = computed(() => cards.value[dailyIndex.value] || null)
 const cardTitle = computed(() => dailyCard.value?.name?.[locale.value] || dailyCard.value?.name?.en || '')
 const cardSubtitle = computed(() => {
   const card = dailyCard.value

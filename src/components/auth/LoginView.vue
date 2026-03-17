@@ -1,6 +1,6 @@
 <script>
 import { SignInWithApple } from '@capacitor-community/apple-sign-in';
-import { supabase } from 'boot/supabase.js';
+import { supabase } from 'src/services/supabaseClient';
 import { t, currentLocale } from 'src/i18n';
 import { Capacitor } from '@capacitor/core';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -14,6 +14,7 @@ export default {
       loading: false,
       errorMessage: '',
       reduceMotion: false,
+      platform: 'web',
     };
   },
 
@@ -121,7 +122,10 @@ export default {
           },
         });
 
-        if (error) throw error;
+        if (error) {
+          this.errorMessage = error.message || this.tt('errors.generic');
+          return;
+        }
 
         // переходимо на екран вводу коду
         this.$router.push({
@@ -144,6 +148,11 @@ export default {
       this.reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     } catch (e) {
       console.error(e);
+    }
+    try {
+      this.platform = Capacitor.getPlatform();
+    } catch {
+      this.platform = 'web';
     }
   },
 };
@@ -207,6 +216,7 @@ export default {
 
       <div class="social-buttons">
         <q-btn
+          v-if="platform === 'ios' && Capacitor.isNativePlatform()"
           class="social-btn apple-btn"
           flat
           round
@@ -226,6 +236,7 @@ export default {
         </q-btn>
 
         <q-btn
+          v-if="platform !== 'ios' || !Capacitor.isNativePlatform()"
           flat
           round
           @click="loginWithGoogle"

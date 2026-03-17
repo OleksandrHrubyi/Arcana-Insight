@@ -9,6 +9,7 @@ const routes = [
       { path: 'confirm-code', component: () => import('src/pages/ConfirmEmailCodePage.vue'), meta: { hideBottomNav: true } },
       { path: 'horoscope', name: 'horoscope', component: () => import('src/pages/HoroscopePage.vue'), meta: { tab: 'horoscope' } },
       { path: 'tarot', name: 'tarot', component: () => import('src/pages/TarotPage.vue'), meta: { tab: 'tarot', hideBottomNav: true } },
+      { path: 'tarot-interpretation', name: 'tarotInterpretation', component: () => import('src/pages/TarotInterpretationPage.vue'), meta: { tab: 'tarot', hideBottomNav: true } },
       {
         path: "tarot/:id",
         name: "TarotResult",
@@ -29,31 +30,16 @@ const routes = [
         path: '/account',
         name: 'account',
         component: () => import('src/pages/AccountPage.vue'),
-        meta: {}
+        meta: { requiresAuth: true }
       }
 
     ]
   },
 
-
-  // {
-  //   path: '/',
-  //   component: () => import('layouts/MainLayout.vue'),
-  //   children: [
-  //     { path: '', component: () => import('pages/IndexPage.vue') },
-  //   ],
-  // },
-  // {
-  //   path: '/login',
-  //   component: () => import('pages/LoginPage.vue'),
-  // },
-
-  // Always leave this as last one,
-  // but you can also remove it
-  // {
-  //   path: '/:catchAll(.*)*',
-  //   component: () => import('pages/ErrorNotFound.vue'),
-  // },
+  {
+    path: '/:catchAll(.*)*',
+    component: () => import('src/pages/ErrorNotFound.vue'),
+  },
 ];
 
 export default routes;

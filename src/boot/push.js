@@ -1,12 +1,9 @@
 // src/boot/push.js
 import { Capacitor } from '@capacitor/core'
 import { PushNotifications } from '@capacitor/push-notifications'
-
-// ✅ Твоя Edge Function
-const REGISTER_DEVICE_URL =
-  'https://rgqfkdhzllhmagrcasav.supabase.co/functions/v1/register-device'
-const APNS_ENV = 'sandbox'
+import { getSavedTime, syncRegisterDevice } from 'src/helpers/pushBackend'
 const DEBUG_PUSH = import.meta.env.DEV
+const LS_DAILY_PUSH = 'daily_push_enabled'
 
 let listenersInited = false
 
@@ -18,31 +15,8 @@ function getLocale() {
   )
 }
 
-async function registerDeviceViaFunction(token) {
-  try {
-    const res = await fetch(REGISTER_DEVICE_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        token,
-        platform: Capacitor.getPlatform(), // 'ios'
-        locale: getLocale(),
-        enabled: true
-      })
-    })
-
-    const data = await res.json().catch(() => ({}))
-    if (!res.ok) {
-      if (DEBUG_PUSH) console.warn('[push] register-device failed', res.status, data)
-      return false
-    }
-
-    if (DEBUG_PUSH) console.info('[push] register-device ok', data)
-    return true
-  } catch (e) {
-    console.error('[push] register-device exception', e)
-    return false
-  }
+function isDailyPushEnabled() {
+  return JSON.parse(localStorage.getItem(LS_DAILY_PUSH) || 'false') === true
 }
 
 export async function initPushListeners() {
@@ -62,9 +36,6 @@ export async function initPushListeners() {
     if (!value) return
 
     localStorage.setItem('push_token', value)
-
-    // ✅ реєструємо девайс через Edge Function (RLS не заважає)
-    await registerDeviceViaFunction(value)
   })
 
   PushNotifications.addListener('registrationError', (err) => {
@@ -100,42 +71,23 @@ export async function enablePush(locale) {
 
 export async function touchPushDevice() {
   if (!Capacitor.isNativePlatform()) return
+  if (!isDailyPushEnabled()) return
 
-  const token = localStorage.getItem('push_token')
-  if (!token) return
-
-  await registerDeviceViaFunction(token)
+  const res = await syncRegisterDevice({
+    enabled: true,
+    timeHHMM: getSavedTime(),
+    locale: getLocale()
+  })
+  if (!res.ok && DEBUG_PUSH) console.warn('[push] touch sync failed', res.error)
 }
 
 export async function disablePushDevice() {
   if (!Capacitor.isNativePlatform()) return
-
-  const token = localStorage.getItem('push_token')
-  if (!token) return
-
-  try {
-    const res = await fetch(REGISTER_DEVICE_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        token,
-        platform: Capacitor.getPlatform(),
-        locale: getLocale(),
-        enabled: true,
-        apns_env: APNS_ENV
-      })
-    })
-
-    const data = await res.json().catch(() => ({}))
-    if (!res.ok) {
-      if (DEBUG_PUSH) console.warn('[push] disable via function failed', res.status, data)
-      return false
-    }
-
-    if (DEBUG_PUSH) console.info('[push] disabled ok', data)
-    return true
-  } catch (e) {
-    console.error('[push] disable via function exception', e)
-    return false
-  }
+  const res = await syncRegisterDevice({
+    enabled: false,
+    timeHHMM: '',
+    locale: getLocale()
+  })
+  if (!res.ok && DEBUG_PUSH) console.warn('[push] disable sync failed', res.error)
+  return !!res.ok
 }

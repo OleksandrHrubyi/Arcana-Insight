@@ -8,11 +8,6 @@
         muted
         loop
         playsinline
-        webkit-playsinline="true"
-        x5-playsinline="true"
-        x5-video-player-type="h5"
-        disablepictureinpicture
-        disableremoteplayback
         preload="auto"
         @loadedmetadata="applyPlaybackRate"
         @canplay="ensureVideoPlayback"
@@ -85,12 +80,12 @@
           :disabled="index >= flippedCardsCount"
           @click="onCardTap(index)"
         >
-          <div class="oracle-card__inner">
-            <div class="oracle-card__face oracle-card__face--back">
-              <div class="oracle-card__sigil">✦</div>
-            </div>
+          <span class="oracle-card__inner">
+            <span class="oracle-card__face oracle-card__face--back">
+              <span class="oracle-card__sigil">✦</span>
+            </span>
 
-            <div class="oracle-card__face oracle-card__face--front">
+            <span class="oracle-card__face oracle-card__face--front">
               <img
                 class="oracle-card__image"
                 :class="{ 'oracle-card__image--reversed': card.reversed }"
@@ -99,9 +94,34 @@
                 loading="lazy"
                 decoding="async"
               />
-            </div>
-          </div>
+            </span>
+          </span>
         </button>
+      </section>
+
+      <section
+        v-if="showInterpretationActions"
+        class="oracle-interpret"
+        aria-live="polite"
+      >
+        <div class="oracle-interpret__actions">
+          <button
+            type="button"
+            class="oracle-interpret__btn oracle-interpret__btn--ghost"
+            :disabled="interpretationLoading"
+            @click="declineInterpretation"
+          >
+            {{ noTitle }}
+          </button>
+          <button
+            type="button"
+            class="oracle-interpret__btn"
+            :disabled="interpretationLoading"
+            @click="acceptInterpretation"
+          >
+            {{ yesTitle }}
+          </button>
+        </div>
       </section>
 
       <q-dialog
@@ -132,6 +152,24 @@
             :alt="getCardTitle(previewCard)"
           />
           <p class="oracle-card-preview__title">{{ getCardTitle(previewCard) }}</p>
+          <div class="oracle-card-preview__meta">
+            {{ previewOrientationLabel }}
+          </div>
+          <div class="oracle-card-preview__text">
+            <p v-for="(line, idx) in previewDescriptionLines" :key="`preview-${idx}`">
+              {{ line }}
+            </p>
+          </div>
+          <div v-if="previewKeywords.length" class="oracle-card-preview__keywords">
+            <div class="oracle-card-preview__label">
+              {{ previewKeywordsLabel }}
+            </div>
+            <div class="oracle-card-preview__tags">
+              <span v-for="word in previewKeywords" :key="word" class="oracle-card-preview__tag">
+                {{ word }}
+              </span>
+            </div>
+          </div>
         </div>
       </q-dialog>
 
@@ -197,6 +235,7 @@
           </div>
         </section>
       </q-dialog>
+
     </div>
   </q-page>
 </template>
@@ -207,7 +246,8 @@ import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { useRouter } from 'vue-router'
 import { currentLocale, t as i18nT } from 'src/i18n'
-import tarotCardsData from 'src/data/cardsV2/tarot_full.json'
+import { loadTarotData } from 'src/helpers/tarotData'
+import { getTarotReading } from 'src/services/tarotOracle'
 
 const videoRef = ref(null)
 const sceneRef = ref(null)
@@ -243,6 +283,13 @@ const flippedCardsCount = ref(0)
 const activeCardIndex = ref(-1)
 const cardPreviewOpen = ref(false)
 const cardPreviewIndex = ref(-1)
+const interpretationChoicesVisible = ref(false)
+const interpretationDecision = ref('')
+const interpretationLoading = ref(false)
+const interpretationError = ref('')
+const interpretationData = ref(null)
+const loadingDots = ref(1)
+let loadingDotsTimer = null
 
 const timers = []
 let videoPlaybackWatchdog = null
@@ -285,21 +332,85 @@ const ORACLE_HEAD_ANCHOR = Object.freeze({
   offsetY: -48,
 })
 
-const t = computed(() => i18nT(currentLang.value, 'tarotOracle'))
+const t = computed(() => {
+  const value = i18nT(currentLang.value, 'tarotOracle')
+  if (value && typeof value === 'object') {
+    return value
+  }
+  return {
+    actionsSheetTitle: '',
+    questionInputLabel: '',
+    questionPlaceholder: '',
+    questionValidation: {
+      tooShort: '',
+      tooLong: '',
+      meaningful: '',
+    },
+    themeLabels: {},
+    subThemeLabels: {},
+    questionTemplates: {},
+    introSets: [],
+    prompts: {
+      theme: [],
+      subTheme: [],
+      questionMode: [],
+      questionInput: [],
+      spread: [],
+      ready: [],
+      started: [],
+      empty: [],
+      themeConfirm: [],
+    },
+    choices: {
+      writeMyOwn: '',
+      confirmQuestion: '',
+      back: '',
+      leaveSession: '',
+      spread1: '',
+      spread3: '',
+      spread5: '',
+      touchDeck: '',
+      changeSpread: '',
+      newQuestion: '',
+      repeatSpread: '',
+      ok: '',
+      start: '',
+    },
+  }
+})
 
 const questionPlaceholder = computed(() => t.value.questionPlaceholder)
 const questionInputLabel = computed(() => t.value.questionInputLabel)
 const actionsSheetTitle = computed(() => t.value.actionsSheetTitle)
 const subThemeLabels = computed(() => t.value.subThemeLabels)
 const questionTemplates = computed(() => t.value.questionTemplates)
-const CARD_POOL = (tarotCardsData?.cards || [])
-  .filter((card) => card && card.file)
-  .map((card) => ({
-    id: card.id,
-    titleUk: card?.name?.uk || card?.name?.en || 'Карта',
-    titleEn: card?.name?.en || card?.name?.uk || 'Card',
-    file: card.file,
-  }))
+const cardPool = ref([])
+const yesTitle = computed(() => i18nT(currentLang.value, 'yesTitle'))
+const noTitle = computed(() => i18nT(currentLang.value, 'noTitle'))
+const interpretationLoadingBase = computed(() =>
+  currentLang.value === 'uk'
+    ? 'Добре. Дай мені мить — формую тлумачення'
+    : 'All right. Give me a moment — shaping the interpretation',
+)
+const interpretationLoadingLine = computed(() => `${interpretationLoadingBase.value}${'.'.repeat(loadingDots.value)}`)
+const interpretationUnavailableLine = computed(() =>
+  i18nT(currentLang.value, 'errors.generic'),
+)
+
+const loadCardPool = async () => {
+  const data = await loadTarotData()
+  cardPool.value = (data?.cards || [])
+    .filter((card) => card && card.file)
+    .map((card) => ({
+      id: card.id,
+      titleUk: card?.name?.uk || card?.name?.en || 'Карта',
+      titleEn: card?.name?.en || card?.name?.uk || 'Card',
+      file: card.file,
+      meaning: card?.meaning || null,
+      keywords: card?.keywords || null,
+      synopsis: card?.synopsis || null,
+    }))
+}
 
 const pickVariant = (key, variants) => {
   if (!variants || variants.length === 0) {
@@ -322,7 +433,7 @@ const setPrompt = (promptKey) => {
 }
 
 const drawCards = (count) => {
-  const deck = [...CARD_POOL]
+  const deck = [...cardPool.value]
   for (let i = deck.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1))
     const temp = deck[i]
@@ -396,8 +507,8 @@ const getContainedVideoRect = () => {
   const sourceRatio = sourceWidth / sourceHeight
   const boxRatio = sceneRect.width / sceneRect.height
 
-  let renderWidth = sceneRect.width
-  let renderHeight = sceneRect.height
+  let renderWidth
+  let renderHeight
   let offsetLeft = 0
   let offsetTop = 0
 
@@ -465,6 +576,11 @@ const ensureVideoPlayback = () => {
   if (video.playbackRate !== 0.75) {
     video.playbackRate = 0.75
   }
+  video.setAttribute('webkit-playsinline', 'true')
+  video.setAttribute('x5-playsinline', 'true')
+  video.setAttribute('x5-video-player-type', 'h5')
+  video.setAttribute('disablepictureinpicture', 'true')
+  video.setAttribute('disableremoteplayback', 'true')
 
   const playPromise = video.play()
   if (playPromise && typeof playPromise.catch === 'function') {
@@ -512,6 +628,7 @@ const askThemePrimary = () => {
   activeCardIndex.value = -1
   cardPreviewOpen.value = false
   cardPreviewIndex.value = -1
+  resetInterpretationState()
   stage.value = 'theme'
   setPrompt('theme')
   revealControlsWithDelay(1400)
@@ -664,6 +781,7 @@ const setSpread = (spread) => {
   activeCardIndex.value = -1
   cardPreviewOpen.value = false
   cardPreviewIndex.value = -1
+  resetInterpretationState()
   currentPrompt.value = buildReadySummaryWithTouchPrompt(spread)
 }
 
@@ -691,6 +809,22 @@ const getCardTitle = (card) => (currentLang.value === 'uk' ? card?.titleUk : car
 
 const getCardImage = (card) => `/images/cards/${card.file}`
 const previewCard = computed(() => spreadCards.value[cardPreviewIndex.value] || null)
+const previewOrientationLabel = computed(() => {
+  if (!previewCard.value) return ''
+  const key = previewCard.value.reversed ? 'cardsPage.reversed' : 'cardsPage.upright'
+  return i18nT(currentLang.value, key)
+})
+const previewKeywordsLabel = computed(() => i18nT(currentLang.value, 'cardsPage.keywords'))
+const previewDescriptionLines = computed(() => {
+  if (!previewCard.value) return []
+  const orientation = previewCard.value.reversed ? 'reversed' : 'upright'
+  const source = previewCard.value.description?.[orientation] || previewCard.value.meaning?.[orientation]
+  return getCardText(source, currentLang.value)
+})
+const previewKeywords = computed(() => {
+  if (!previewCard.value) return []
+  return previewCard.value.keywords?.[currentLang.value] || previewCard.value.keywords?.en || []
+})
 
 const revealedCardList = computed(() =>
   spreadCards.value.slice(0, flippedCardsCount.value).map((card, index) => {
@@ -719,12 +853,73 @@ const buildCardRevealPrompt = (card, index, total) => {
   return `${role}.\n${title}${reversedTag}.`
 }
 
+const getCardText = (source, locale) => {
+  const text = source?.[locale] || source?.en || ''
+  return String(text || '').split('\n\n').filter(Boolean)
+}
+
 const buildReadingReadyPrompt = () => {
   if (currentLang.value === 'uk') {
     return 'Карти відкриті. Бажаєш, щоб я перейшла до тлумачення?'
   }
 
   return 'The cards are open. Do you want me to move to the interpretation?'
+}
+
+const resetInterpretationState = () => {
+  interpretationChoicesVisible.value = false
+  interpretationDecision.value = ''
+  interpretationLoading.value = false
+  interpretationError.value = ''
+  interpretationData.value = null
+}
+
+const getPositionKey = (index, total) => {
+  if (total === 1) return ['core'][index] || 'core'
+  if (total === 3) return ['root', 'focus', 'vector'][index] || `card_${index + 1}`
+  if (total === 5) return ['base', 'past', 'now', 'shadow', 'vector'][index] || `card_${index + 1}`
+  return `card_${index + 1}`
+}
+
+const getCardMeaningText = (card) => {
+  const orientation = card?.reversed ? 'reversed' : 'upright'
+  return (
+    card?.meaning?.[orientation]?.[currentLang.value] ||
+    card?.meaning?.[orientation]?.en ||
+    ''
+  )
+}
+
+const getCardKeywords = (card) => {
+  return card?.keywords?.[currentLang.value] || card?.keywords?.en || []
+}
+
+const buildInterpretationPayload = () => {
+  const themeLabel = t.value.themeLabels[selectedTheme.value] || t.value.themeLabels.default
+  const subThemeLabelRaw =
+    subThemeLabels.value?.[selectedTheme.value]?.[selectedSubTheme.value] ||
+    subThemeLabels.value?.default?.[selectedSubTheme.value] ||
+    selectedSubTheme.value
+  const subThemeLabel = String(subThemeLabelRaw || '').trim()
+  const total = spreadCards.value.length || selectedSpread.value || 1
+
+  return {
+    locale: currentLang.value,
+    theme: selectedTheme.value,
+    themeLabel,
+    subTheme: selectedSubTheme.value || '',
+    subThemeLabel,
+    question: selectedQuestion.value || '',
+    depth: total,
+    cards: spreadCards.value.map((card, index) => ({
+      position: getPositionKey(index, total),
+      positionLabel: getCardRole(index, total),
+      cardTitle: getCardTitle(card),
+      reversed: Boolean(card?.reversed),
+      meaning: getCardMeaningText(card),
+      keywords: getCardKeywords(card),
+    })),
+  }
 }
 
 const getCardPromptHold = (card, index, total) => {
@@ -823,6 +1018,7 @@ const touchDeck = () => {
   isDeckHotspotActive.value = false
   cardPreviewOpen.value = false
   cardPreviewIndex.value = -1
+  resetInterpretationState()
   startSpreadScene()
 }
 
@@ -904,6 +1100,13 @@ const historyRows = computed(() => {
   return rows
 })
 
+const isReadingComplete = computed(
+  () => stage.value === 'started' && spreadCards.value.length > 0 && flippedCardsCount.value >= spreadCards.value.length,
+)
+const showInterpretationActions = computed(
+  () => isReadingComplete.value && interpretationChoicesVisible.value && !interpretationLoading.value && !interpretationData.value,
+)
+
 const choices = computed(() => {
   if (stage.value === 'theme') {
     return withLeaveSession([
@@ -981,6 +1184,19 @@ const showQuestionInput = computed(() => stage.value === 'question_input')
 const showChoices = computed(() => controlsUnlocked.value && stage.value !== 'intro' && choices.value.length > 0)
 const activeBubbleText = computed(() => currentPrompt.value || narrationLine.value)
 const bubbleText = computed(() => {
+  if (isReadingComplete.value) {
+    if (interpretationLoading.value) {
+      return interpretationLoadingLine.value
+    }
+    if (interpretationDecision.value === 'no') {
+      return currentLang.value === 'uk'
+        ? 'Добре. Якщо захочеш тлумачення — просто скажи.'
+        : 'All right. If you want the interpretation, just say so.'
+    }
+    if (interpretationDecision.value === 'yes') {
+      return interpretationLoadingLine.value
+    }
+  }
   if (stage.value === 'started' && revealedCardListText.value) {
     if (flippedCardsCount.value >= spreadCards.value.length && spreadCards.value.length > 0) {
       return `${revealedCardListText.value}\n\n${buildReadingReadyPrompt()}`
@@ -1008,6 +1224,91 @@ const selectedChoice = computed(() => choices.value[selectedWheelIndex.value] ||
 const selectedChoiceDisabled = computed(
   () => isChoiceTransitioning.value || !selectedChoice.value || Boolean(selectedChoice.value.disabled),
 )
+
+watch(isReadingComplete, (ready) => {
+  if (!ready) {
+    return
+  }
+  interpretationChoicesVisible.value = true
+  void impact(ImpactStyle.Light)
+})
+
+watch(interpretationLoading, (loading) => {
+  if (loading) {
+    loadingDots.value = 1
+    if (loadingDotsTimer) {
+      window.clearInterval(loadingDotsTimer)
+    }
+    loadingDotsTimer = window.setInterval(() => {
+      loadingDots.value = loadingDots.value >= 3 ? 1 : loadingDots.value + 1
+    }, 700)
+    return
+  }
+
+  if (loadingDotsTimer) {
+    window.clearInterval(loadingDotsTimer)
+    loadingDotsTimer = null
+  }
+  loadingDots.value = 1
+})
+
+const acceptInterpretation = async () => {
+  if (interpretationLoading.value || interpretationDecision.value === 'yes') {
+    return
+  }
+  void impact(ImpactStyle.Light)
+  interpretationDecision.value = 'yes'
+  interpretationError.value = ''
+  interpretationChoicesVisible.value = false
+  interpretationLoading.value = true
+  const payload = buildInterpretationPayload()
+  try {
+    const data = await getTarotReading(payload)
+    if (!data) {
+      interpretationError.value = interpretationUnavailableLine.value
+      interpretationDecision.value = ''
+      interpretationChoicesVisible.value = true
+      return
+    }
+    interpretationData.value = data
+    try {
+      sessionStorage.setItem(
+        'tarot-interpretation-v1',
+        JSON.stringify({
+          reading: data,
+          meta: {
+            themeLabel: payload.themeLabel || '',
+            subThemeLabel: payload.subThemeLabel || '',
+            question: payload.question || '',
+          },
+          visuals: spreadCards.value.map((card) => ({
+            file: card.file,
+            reversed: Boolean(card.reversed),
+          })),
+        }),
+      )
+    } catch (error) {
+      console.error(error)
+    }
+    router.push({ name: 'tarotInterpretation' }).catch(() => {})
+  } catch (error) {
+    console.error(error)
+    interpretationError.value = interpretationUnavailableLine.value
+    interpretationDecision.value = ''
+    interpretationChoicesVisible.value = true
+  } finally {
+    interpretationLoading.value = false
+  }
+}
+
+const declineInterpretation = () => {
+  if (interpretationLoading.value) {
+    return
+  }
+  void impact(ImpactStyle.Light)
+  interpretationDecision.value = 'no'
+  interpretationChoicesVisible.value = false
+}
 
 watch(showChoices, (visible) => {
   actionsSheetOpen.value = visible
@@ -1145,6 +1446,7 @@ const confirmWheelSelection = () => {
 }
 
 onMounted(() => {
+  void loadCardPool()
   applyPlaybackRate()
   ensureVideoPlayback()
   updateDeckHotspotPosition()
@@ -1189,6 +1491,9 @@ onMounted(() => {
 })
 
 onActivated(() => {
+  if (!cardPool.value.length) {
+    void loadCardPool()
+  }
   ensureVideoPlayback()
   updateDeckHotspotPosition()
 })
@@ -1204,6 +1509,10 @@ onBeforeUnmount(() => {
     window.clearInterval(videoPlaybackWatchdog)
     videoPlaybackWatchdog = null
   }
+  if (loadingDotsTimer) {
+    window.clearInterval(loadingDotsTimer)
+    loadingDotsTimer = null
+  }
   if (Capacitor.isNativePlatform()) {
     void Haptics.selectionEnd().catch(() => {})
   }
@@ -1212,6 +1521,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+/*noinspection CssUnusedSymbol*/
 .tarot-page {
   --oracle-surface-top: rgba(18, 15, 14, 0.68);
   --oracle-surface-bottom: rgba(10, 9, 11, 0.64);
@@ -1268,13 +1578,6 @@ onBeforeUnmount(() => {
   opacity: 1;
 }
 
-.oracle-video::-webkit-media-controls-start-playback-button,
-.oracle-video::-webkit-media-controls-play-button,
-.oracle-video::-webkit-media-controls-panel {
-  display: none !important;
-  -webkit-appearance: none;
-}
-
 .oracle-smoke {
   position: absolute;
   inset: -18%;
@@ -1307,7 +1610,6 @@ onBeforeUnmount(() => {
   z-index: 5;
   width: var(--aura-size);
   height: var(--aura-size);
-  transform: translate(-50%, -50%);
   border-radius: 999px;
   pointer-events: none;
   background: transparent;
@@ -1453,7 +1755,7 @@ onBeforeUnmount(() => {
 .oracle-spread {
   position: absolute;
   left: 50%;
-  bottom: 15.5%;
+  bottom: 20%;
   transform: translateX(-50%);
   z-index: 3;
   width: 92vw;
@@ -1476,7 +1778,7 @@ onBeforeUnmount(() => {
 .oracle-card {
   --card-rot: 0deg;
   --card-rise: 0px;
-  width: min(24vw, 110px);
+  width: min(26vw, 124px);
   aspect-ratio: 0.62;
   border: 0;
   padding: 0;
@@ -1520,6 +1822,8 @@ onBeforeUnmount(() => {
   overflow: hidden;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .oracle-card__face--back {
@@ -1573,10 +1877,15 @@ onBeforeUnmount(() => {
   height: 100%;
   object-fit: cover;
   display: block;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .oracle-card__image--reversed {
-  transform: rotate(180deg);
+  transform: translateZ(0) rotate(180deg);
+  -webkit-transform: translateZ(0) rotate(180deg);
 }
 
 .oracle-card--active .oracle-card__face--front {
@@ -1584,11 +1893,59 @@ onBeforeUnmount(() => {
 }
 
 .oracle-spread--1 .oracle-card {
-  width: min(34vw, 156px);
+  width: min(36vw, 170px);
 }
 
 .oracle-spread--5 .oracle-card {
-  width: min(17.4vw, 84px);
+  width: min(18.2vw, 90px);
+}
+
+.oracle-interpret {
+  position: absolute;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 14%);
+  transform: translateX(-50%);
+  z-index: 6;
+  width: min(92vw, 420px);
+  display: grid;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.oracle-interpret__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.oracle-interpret__btn {
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(156, 184, 235, 0.36);
+  padding: 10px 12px;
+  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
+  color: var(--oracle-text-main);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.oracle-interpret__btn--ghost {
+  background: rgba(8, 12, 18, 0.62);
+  border-color: rgba(156, 184, 235, 0.18);
+  color: rgba(214, 225, 242, 0.88);
+}
+
+.oracle-interpret__btn:disabled {
+  opacity: 0.5;
+}
+
+.oracle-interpret__error {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  color: rgba(255, 180, 180, 0.92);
 }
 
 .oracle-dialogue {
@@ -1599,7 +1956,7 @@ onBeforeUnmount(() => {
   color: var(--oracle-text-muted);
   display: flex;
   justify-content: flex-end;
-  transform: translate(-50%, -100%);
+  transform: translate(-50%, -108%);
   pointer-events: none;
   z-index: 7;
 }
@@ -1619,9 +1976,9 @@ onBeforeUnmount(() => {
 
 .oracle-history__item {
   margin: 0;
-  font-size: 11px;
-  line-height: 1.25;
-  color: var(--oracle-text-soft);
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(210, 222, 238, 0.78);
 }
 
 .oracle-dialogue__prompt {
@@ -1647,17 +2004,17 @@ onBeforeUnmount(() => {
   min-height: 52px;
   padding: 8px 18px;
   background:
-    radial-gradient(120% 180% at 16% 0%, rgba(82, 108, 160, 0.1), rgba(82, 108, 160, 0)),
-    linear-gradient(180deg, rgba(6, 10, 17, 0.95), rgba(1, 3, 8, 0.97));
+    radial-gradient(120% 180% at 16% 0%, rgba(90, 120, 170, 0.08), rgba(90, 120, 170, 0)),
+    linear-gradient(180deg, rgba(6, 10, 17, 0.78), rgba(3, 6, 12, 0.82));
   line-height: 1.32;
   white-space: pre-line;
   overflow: visible;
   box-shadow:
-    0 14px 30px rgba(0, 0, 0, 0.52),
-    0 0 14px rgba(62, 90, 146, 0.08),
-    inset 0 1px 0 rgba(176, 196, 232, 0.1),
-    inset 0 -1px 0 rgba(44, 64, 102, 0.18),
-    inset 0 0 0 1px rgba(68, 92, 142, 0.12);
+    0 10px 24px rgba(0, 0, 0, 0.42),
+    0 0 12px rgba(72, 100, 156, 0.06),
+    inset 0 1px 0 rgba(176, 196, 232, 0.08),
+    inset 0 -1px 0 rgba(44, 64, 102, 0.12),
+    inset 0 0 0 1px rgba(68, 92, 142, 0.1);
   backdrop-filter: blur(8px) saturate(120%);
   -webkit-backdrop-filter: blur(8px) saturate(120%);
 }
@@ -1668,8 +2025,8 @@ onBeforeUnmount(() => {
   inset: 1px;
   border-radius: 18px;
   background:
-    radial-gradient(120% 140% at 50% -20%, rgba(146, 171, 224, 0.09), rgba(146, 171, 224, 0) 56%),
-    linear-gradient(165deg, rgba(162, 183, 220, 0.06), rgba(162, 183, 220, 0) 45%);
+    radial-gradient(120% 140% at 50% -20%, rgba(146, 171, 224, 0.05), rgba(146, 171, 224, 0) 56%),
+    linear-gradient(165deg, rgba(162, 183, 220, 0.04), rgba(162, 183, 220, 0) 45%);
   pointer-events: none;
 }
 
@@ -1974,6 +2331,53 @@ onBeforeUnmount(() => {
   text-transform: uppercase;
 }
 
+.oracle-card-preview__meta {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(200, 210, 226, 0.7);
+  text-align: center;
+}
+
+.oracle-card-preview__text {
+  width: 100%;
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(214, 225, 242, 0.88);
+  text-align: left;
+}
+
+.oracle-card-preview__text p {
+  margin: 0 0 8px;
+}
+
+.oracle-card-preview__label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(200, 210, 226, 0.64);
+  margin-bottom: 6px;
+}
+
+.oracle-card-preview__keywords {
+  width: 100%;
+}
+
+.oracle-card-preview__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.oracle-card-preview__tag {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(12, 16, 24, 0.82);
+  border: 1px solid rgba(156, 184, 235, 0.18);
+  color: rgba(232, 236, 244, 0.86);
+}
+
 :deep(.oracle-actions-dialog .q-dialog__backdrop) {
   background: rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(8px);
@@ -1994,6 +2398,7 @@ onBeforeUnmount(() => {
   padding: 0;
 }
 
+
 @media (max-width: 480px) {
   .oracle-dialogue {
     width: min(94vw, 520px);
@@ -2008,20 +2413,24 @@ onBeforeUnmount(() => {
   }
 
   .oracle-spread {
-    bottom: 17%;
+    bottom: 22%;
     gap: 8px;
   }
 
   .oracle-card {
-    width: min(23vw, 92px);
+    width: min(25vw, 104px);
   }
 
   .oracle-spread--1 .oracle-card {
-    width: min(38vw, 160px);
+    width: min(40vw, 172px);
   }
 
   .oracle-spread--5 .oracle-card {
-    width: min(17.8vw, 82px);
+    width: min(18.6vw, 88px);
+  }
+
+  .oracle-interpret {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 12.5%);
   }
 
 }
@@ -2103,4 +2512,5 @@ onBeforeUnmount(() => {
     transform: scale(1.12);
   }
 }
+
 </style>

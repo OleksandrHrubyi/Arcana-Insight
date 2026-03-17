@@ -25,23 +25,23 @@
 
       <section class="account-panel">
         <button type="button" class="account-row account-row--button" @click="openEdit('name')">
-          <div class="account-label">{{ tt('fields.name') }}</div>
-          <div class="account-value">{{ profile.name || '—' }}</div>
-          <div class="account-hint">{{ tt('accountPage.tapToEdit') }}</div>
+          <span class="account-label">{{ tt('fields.name') }}</span>
+          <span class="account-value">{{ profile.name || '—' }}</span>
+          <span class="account-hint">{{ tt('accountPage.tapToEdit') }}</span>
           <q-icon name="edit" size="16px" class="account-row__icon" />
         </button>
 
         <button type="button" class="account-row account-row--button" @click="openEdit('email')">
-          <div class="account-label">{{ tt('fields.email') }}</div>
-          <div class="account-value">{{ profile.email || userEmail || '—' }}</div>
-          <div class="account-hint">{{ tt('accountPage.tapToEdit') }}</div>
+          <span class="account-label">{{ tt('fields.email') }}</span>
+          <span class="account-value">{{ profile.email || userEmail || '—' }}</span>
+          <span class="account-hint">{{ tt('accountPage.tapToEdit') }}</span>
           <q-icon name="edit" size="16px" class="account-row__icon" />
         </button>
 
         <button type="button" class="account-row account-row--button" @click="onOpenDateSheet">
-          <div class="account-label">{{ tt('fields.dateOfBirth') }}</div>
-          <div class="account-value">{{ profile.date_of_birth || '—' }}</div>
-          <div class="account-hint">{{ tt('accountPage.tapToEdit') }}</div>
+          <span class="account-label">{{ tt('fields.dateOfBirth') }}</span>
+          <span class="account-value">{{ profile.date_of_birth || '—' }}</span>
+          <span class="account-hint">{{ tt('accountPage.tapToEdit') }}</span>
           <q-icon name="edit" size="16px" class="account-row__icon" />
         </button>
       </section>
@@ -53,6 +53,13 @@
           :label="tt('logout')"
           no-caps
           @click="logout"
+        />
+        <q-btn
+          flat
+          class="ghost-btn ghost-btn--danger"
+          :label="tt('accountPage.deleteAccount')"
+          no-caps
+          @click="openDeleteDialog"
         />
       </div>
     </div>
@@ -168,11 +175,38 @@
       </div>
     </section>
   </q-dialog>
+
+  <q-dialog v-model="deleteDialog">
+    <section class="delete-dialog">
+      <div class="delete-dialog__title">{{ tt('accountPage.deleteAccountTitle') }}</div>
+      <p class="delete-dialog__text">{{ tt('accountPage.deleteAccountBody') }}</p>
+      <p class="delete-dialog__hint">{{ tt('accountPage.deleteAccountHint') }}</p>
+      <div class="delete-dialog__actions">
+        <q-btn
+          flat
+          class="delete-dialog__btn delete-dialog__btn--cancel"
+          :label="tt('common.cancel')"
+          no-caps
+          :disable="deletingAccount"
+          @click="closeDeleteDialog"
+        />
+        <q-btn
+          flat
+          class="delete-dialog__btn delete-dialog__btn--delete"
+          :label="tt('accountPage.deleteAccountConfirm')"
+          no-caps
+          :loading="deletingAccount"
+          :disable="deletingAccount"
+          @click="deleteAccount"
+        />
+      </div>
+    </section>
+  </q-dialog>
 </template>
 
 <script>
 import { defineComponent } from 'vue'
-import { supabase } from 'boot/supabase'
+import { supabase } from 'src/services/supabaseClient'
 import { t, currentLocale } from 'src/i18n'
 import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
@@ -193,6 +227,8 @@ export default defineComponent({
       editField: '',
       editError: '',
       draftValue: '',
+      deleteDialog: false,
+      deletingAccount: false,
       dateSheet: false,
       dayOptions: [],
       monthOptions: [],
@@ -409,6 +445,49 @@ export default defineComponent({
       await this.hapticTap()
       await supabase.auth.signOut()
       this.$router.replace('/menu')
+    },
+
+    async openDeleteDialog () {
+      await this.hapticTap()
+      this.deleteDialog = true
+    },
+
+    async closeDeleteDialog () {
+      if (this.deletingAccount) return
+      await this.hapticTap()
+      this.deleteDialog = false
+    },
+
+    async deleteAccount () {
+      if (this.deletingAccount) return
+
+      await this.hapticTap()
+      this.deletingAccount = true
+      try {
+        const { error } = await supabase.functions.invoke('delete-account', {
+          body: { confirm: true }
+        })
+
+        if (error) {
+          console.error(error)
+          this.$q?.notify({ type: 'negative', message: this.tt('accountPage.deleteAccountFailed') })
+          return
+        }
+
+        localStorage.removeItem('push_token')
+        localStorage.removeItem('daily_push_enabled')
+        localStorage.removeItem('daily_push_time')
+
+        await supabase.auth.signOut().catch(() => {})
+        this.deleteDialog = false
+        this.$q?.notify({ type: 'positive', message: this.tt('accountPage.deleteAccountSuccess') })
+        this.$router.replace('/menu')
+      } catch (err) {
+        console.error(err)
+        this.$q?.notify({ type: 'negative', message: this.tt('accountPage.deleteAccountFailed') })
+      } finally {
+        this.deletingAccount = false
+      }
     },
 
     async onBack () {
@@ -754,6 +833,7 @@ export default defineComponent({
   font-size: 12px;
   line-height: 18px;
   color: rgba(214, 225, 242, 0.78);
+  display: block;
 }
 
 .account-value {
@@ -763,6 +843,7 @@ export default defineComponent({
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: block;
 }
 
 .account-row__icon {
@@ -776,6 +857,7 @@ export default defineComponent({
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.4);
+  display: block;
 }
 
 .account-actions {
@@ -794,11 +876,69 @@ export default defineComponent({
   background: rgba(32, 12, 16, 0.6);
 }
 
+.ghost-btn--danger {
+  border-color: rgba(255, 96, 96, 0.52);
+  color: rgba(255, 106, 106, 0.95);
+  background: rgba(42, 8, 12, 0.6);
+}
+
+.delete-dialog {
+  width: min(420px, calc(100vw - 24px));
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(180deg, rgba(18, 24, 38, 0.95), rgba(10, 14, 22, 0.98));
+  box-shadow:
+    0 14px 36px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.delete-dialog__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.delete-dialog__text {
+  margin: 10px 0 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(224, 234, 248, 0.82);
+}
+
+.delete-dialog__hint {
+  margin: 0 0 14px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(255, 173, 173, 0.88);
+}
+
+.delete-dialog__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.delete-dialog__btn {
+  min-height: 40px;
+  border-radius: 10px;
+}
+
+.delete-dialog__btn--cancel {
+  border: 1px solid rgba(156, 184, 235, 0.28);
+  color: rgba(214, 225, 242, 0.84);
+}
+
+.delete-dialog__btn--delete {
+  border: 1px solid rgba(255, 96, 96, 0.52);
+  color: rgba(255, 106, 106, 0.95);
+  background: rgba(42, 8, 12, 0.5);
+}
+
 .oracle-actions {
   width: 100vw;
   max-width: 100vw;
   margin: 0 auto;
-  margin-bottom: 0;
   border-radius: 22px 22px 0 0;
   padding: 8px 12px calc(env(safe-area-inset-bottom, 0px) + 24px);
   box-shadow: 0 -16px 46px rgba(0, 0, 0, 0.42);
@@ -902,7 +1042,6 @@ export default defineComponent({
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  overflow-x: hidden;
   touch-action: pan-y;
 }
 

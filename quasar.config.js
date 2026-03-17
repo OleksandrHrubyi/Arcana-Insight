@@ -22,7 +22,6 @@ export default defineConfig((/* ctx */) => {
       'i18n',
       'theme',
       'supabase',
-      'pixi'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css

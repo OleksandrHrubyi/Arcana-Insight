@@ -134,7 +134,7 @@ import { localISODate } from 'src/helpers/date.js';
 import { saveLocal, loadLocal } from 'src/helpers/localStorageSaver.js';
 import { t, currentLocale } from 'src/i18n';
 import { Share } from '@capacitor/share';
-import { supabase } from 'boot/supabase';
+import { supabase } from 'src/services/supabaseClient';
 
 const DESIGN_W = 440;
 const DESIGN_TOP_INSET = 30;
@@ -667,8 +667,7 @@ export default {
       this.desiredRotation = this.rotation;
       this.omega = 0;
 
-      const now = performance.now();
-      this.lastMoveTs = now;
+      this.lastMoveTs = performance.now();
       this.lastMoveAngle = this.startAngle;
 
       if (this.activePointerId != null && drag.setPointerCapture) {
@@ -1143,21 +1142,13 @@ export default {
 }
 
 .side-cover--left {
-  clip-path: polygon(
-      0 0,
-      calc(var(--inset) + var(--coverBleed)) 0,
-      calc(50% - var(--halfGap)) var(--yJoin),
-      0 calc(var(--yJoin) + var(--coverSlope))
-  );
+  /*noinspection CssInvalidPropertyValue*/
+  clip-path: polygon(0 0, calc(var(--inset) + var(--coverBleed)) 0, calc(50% - var(--halfGap)) var(--yJoin), 0 calc(var(--yJoin) + var(--coverSlope)));
 }
 
 .side-cover--right {
-  clip-path: polygon(
-      calc(100% - (var(--inset) + var(--coverBleed))) 0,
-      100% 0,
-      100% calc(var(--yJoin) + var(--coverSlope)),
-      calc(50% + var(--halfGap)) var(--yJoin)
-  );
+  /*noinspection CssInvalidPropertyValue*/
+  clip-path: polygon(calc(100% - (var(--inset) + var(--coverBleed))) 0, 100% 0, 100% calc(var(--yJoin) + var(--coverSlope)), calc(50% + var(--halfGap)) var(--yJoin));
 }
 
 .arc-overlay {
@@ -1165,6 +1156,7 @@ export default {
   inset: 0;
   z-index: 150;
   pointer-events: none;
+  /*noinspection CssInvalidPropertyValue*/
   clip-path: inset(
       calc(var(--yJoin) - var(--arcBand)) 0 calc(100% - (var(--yJoin) + var(--arcBand))) 0
   );

@@ -1,0 +1,6 @@
+{
+  "name": "delete-account",
+  "entrypoint": "index.ts",
+  "env": ["URL", "ANON_KEY", "SERVICE_ROLE_KEY"],
+  "verify_jwt": true
+}

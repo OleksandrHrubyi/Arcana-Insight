@@ -1,5 +1,5 @@
 <script>
-import { supabase } from 'src/boot/supabase';
+import { supabase } from 'src/services/supabaseClient';
 import { SignInWithApple } from '@capacitor-community/apple-sign-in';
 import { t, currentLocale } from 'src/i18n';
 import { Capacitor } from '@capacitor/core';
@@ -24,6 +24,7 @@ export default {
       selectedMonthIndex: 0,
       selectedYearIndex: 0,
       lastDateHapticAt: 0,
+      platform: 'web',
     };
   },
 
@@ -87,6 +88,11 @@ export default {
     } catch (e) {
       console.error(e);
     }
+    try {
+      this.platform = Capacitor.getPlatform();
+    } catch {
+      this.platform = 'web';
+    }
     this.fillForm();
     this.buildDateOptions();
   },
@@ -148,7 +154,10 @@ export default {
           },
         });
 
-        if (error) throw error;
+        if (error) {
+          this.errorMessage = error.message || this.tt('errors.generic');
+          return;
+        }
 
         // переходимо на екран вводу коду
         this.$router.push({
@@ -211,7 +220,6 @@ export default {
 
         if (error) {
           console.error('Google login error', error);
-          return;
         }
       } catch (err) {
         console.error('Google OAuth error', err);
@@ -220,7 +228,7 @@ export default {
 
 
     loginWithTelegram() {
-      this.hapticTap();
+      void this.hapticTap();
       // TODO: логін через Telegram
     },
     async goToMenu() {
@@ -492,7 +500,7 @@ export default {
 
         <p class="terms-link terms-link-wrap terms-block">
           {{ tt('auth.byCreatingAccount') }}
-          <router-link to="/" class="terms-link">{{ tt('auth.terms') }}</router-link>
+          <router-link to="/privacy-terms" class="terms-link">{{ tt('auth.terms') }}</router-link>
         </p>
 
         <div class="q-mb-md">
@@ -522,6 +530,7 @@ export default {
 
         <div class="social-buttons">
           <q-btn
+            v-if="platform === 'ios' && Capacitor.isNativePlatform()"
             class="social-btn apple-btn"
             flat
             round
@@ -541,6 +550,7 @@ export default {
           </q-btn>
 
           <q-btn
+            v-if="platform !== 'ios' || !Capacitor.isNativePlatform()"
             flat
             round
             @click="loginWithGoogle"
@@ -1021,7 +1031,6 @@ export default {
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  overflow-x: hidden;
   touch-action: pan-y;
 }
 

@@ -1,7 +1,7 @@
 <script>
-//import { supabase } from 'src/boot/supabase'
+//import { supabase } from 'src/services/supabaseClient'
 
-import { supabase } from 'boot/supabase.js';
+import { supabase } from 'src/services/supabaseClient';
 import CodeInput from 'components/ui/CodeInput.vue';
 import { t, currentLocale } from 'src/i18n';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -107,7 +107,10 @@ export default {
           },
         });
 
-        if (error) throw error;
+        if (error) {
+          this.errorMessage = error.message || this.tt('errors.generic');
+          return;
+        }
         this.hasResent = true;
 
       } catch (e) {
@@ -148,11 +151,13 @@ export default {
         });
 
         if (error) {
-          throw error;
+          this.errorMessage = error.message || this.tt('errors.generic');
+          return;
         }
 
         if (!data?.session) {
-          throw new Error(this.tt('errors.noSession'));
+          this.errorMessage = this.tt('errors.noSession');
+          return;
         }
 
         this.$router.push('/'); // або '/home' – куди веде твій "апп-скрін"

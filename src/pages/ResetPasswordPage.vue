@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { supabase } from 'src/boot/supabase'
+import { supabase } from 'src/services/supabaseClient'
 import { t, currentLocale } from 'src/i18n'
 
 function parseHashParams() {
@@ -69,8 +69,12 @@ export default {
         const { access_token, refresh_token } = parseHashParams()
         if (access_token && refresh_token) {
           const { error } = await supabase.auth.setSession({ access_token, refresh_token })
-          if (error) throw error
-          sessionOk = true
+          if (error) {
+            this.error = this.tt('errors.generic')
+            sessionOk = false
+          } else {
+            sessionOk = true
+          }
         }
       }
 
@@ -86,8 +90,11 @@ export default {
     async onUpdate () {
       this.error = ''; this.ok = false; this.saving = true
       try {
-        const { error } = await supabase.auth.updateUser({ password: this.password })
-        if (error) throw error
+      const { error } = await supabase.auth.updateUser({ password: this.password })
+      if (error) {
+        this.error = error.message || this.tt('errors.generic')
+        return
+      }
         this.ok = true
       } catch (e) {
         this.error = e.message || String(e)
