@@ -24,6 +24,7 @@ const routes = [
       { path: 'onboarding', name: 'onboarding', component: () => import('src/pages/OnboardingPage.vue'), meta: { hideBottomNav: true } },
       { path: 'cards', name: 'cards', component: () => import('src/pages/CardLibraryPage.vue') },
       { path: 'compatibility', name: 'compatibility', component: () => import('src/pages/CompatibilityPage.vue') },
+      { path: 'readings', name: 'readings', component: () => import('src/pages/SavedReadingsPage.vue') },
       { path: 'settings', name: 'settings', component: () => import('src/pages/SettingsPage.vue'), meta: { tab: 'menu' } },
       { path: 'reset-password', component: () => import('src/pages/ResetPasswordPage.vue') },
       {

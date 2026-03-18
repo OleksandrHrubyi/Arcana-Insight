@@ -14,26 +14,44 @@
       </header>
 
       <section class="daily-card">
-        <div class="daily-card__title">{{ tt('dailyPage.cardLabel') }}</div>
-        <div class="daily-card__media">
-          <img :src="cardImage" :alt="cardTitle" :class="{ 'daily-card__media--reversed': orientation === 'reversed' }" />
+        <div class="daily-card__header">
+          <div class="daily-card__label">{{ tt('dailyPage.cardLabel') }}</div>
         </div>
-        <div class="daily-card__name">{{ cardTitle }}</div>
-        <div class="daily-card__meta">{{ cardSubtitle }}</div>
 
-        <div class="daily-card__tags">
-          <span class="daily-tag">{{ orientationLabel }}</span>
-          <span v-for="word in cardKeywords" :key="word" class="daily-tag">{{ word }}</span>
+        <div class="daily-card__body">
+          <div class="daily-card__media">
+            <img :src="cardImage" :alt="cardTitle" :class="{ 'daily-card__img--reversed': orientation === 'reversed' }" />
+          </div>
+
+          <div class="daily-card__info">
+            <div class="daily-card__name">{{ cardTitle }}</div>
+            <div class="daily-card__meta">{{ cardSubtitle }}</div>
+
+            <div class="daily-card__tags">
+              <span class="daily-tag daily-tag--primary">{{ orientationLabel }}</span>
+              <span v-for="word in cardKeywords" :key="word" class="daily-tag">{{ word }}</span>
+            </div>
+          </div>
         </div>
       </section>
 
       <section class="daily-panel">
-        <div class="daily-panel__title">{{ tt('dailyPage.meaningLabel') }}</div>
+        <div class="daily-panel__header">
+          <div class="daily-panel__icon">
+            <q-icon name="auto_awesome" size="16px" />
+          </div>
+          <div class="daily-panel__title">{{ tt('dailyPage.meaningLabel') }}</div>
+        </div>
         <div class="daily-panel__text">{{ cardMeaning }}</div>
       </section>
 
-      <section class="daily-panel daily-panel--soft">
-        <div class="daily-panel__title">{{ tt('dailyPage.guidanceLabel') }}</div>
+      <section class="daily-panel daily-panel--guidance">
+        <div class="daily-panel__header">
+          <div class="daily-panel__icon">
+            <q-icon name="wb_twilight" size="16px" />
+          </div>
+          <div class="daily-panel__title">{{ tt('dailyPage.guidanceLabel') }}</div>
+        </div>
         <div class="daily-panel__text">{{ cardDescription }}</div>
       </section>
     </div>
@@ -143,16 +161,16 @@ const onBack = async () => {
 .daily-content {
   position: relative;
   z-index: 1;
-  padding: calc(90px + env(safe-area-inset-top)) 18px 32px;
-  max-width: 520px;
+  padding: calc(90px + env(safe-area-inset-top)) 18px calc(100px + env(safe-area-inset-bottom));
+  max-width: 540px;
   margin: 0 auto;
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .daily-hero {
   display: grid;
-  gap: 3px;
+  gap: 6px;
 }
 
 .daily-hero--with-back {
@@ -160,28 +178,30 @@ const onBack = async () => {
   grid-template-columns: 1fr;
   align-items: center;
   justify-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .daily-hero__text {
   text-align: center;
   display: grid;
-  gap: 3px;
+  gap: 4px;
   justify-items: center;
   padding: 0 44px;
 }
 
 .daily-title {
-  font-size: 18px;
-  letter-spacing: 0.12em;
+  font-size: 20px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  font-weight: 600;
+  color: rgba(235, 242, 255, 0.96);
 }
 
 .daily-kicker {
-  font-size: 9px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: capitalize;
+  color: rgba(214, 225, 242, 0.68);
 }
 
 .daily-back {
@@ -200,38 +220,48 @@ const onBack = async () => {
 }
 
 .daily-card {
-  padding: 16px 16px 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(11, 15, 24, 0.82);
+  padding: 0;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(160deg, rgba(14, 20, 32, 0.92), rgba(6, 10, 18, 0.98));
   box-shadow:
-    0 18px 40px rgba(2, 6, 12, 0.5),
+    0 18px 40px rgba(2, 6, 12, 0.52),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  display: grid;
-  gap: 10px;
+  overflow: hidden;
+}
+
+.daily-card__header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   text-align: center;
 }
 
-.daily-card__title {
+.daily-card__label {
   font-size: 10px;
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.62);
+  font-weight: 600;
+}
+
+.daily-card__body {
+  padding: 24px 20px;
+  display: grid;
+  gap: 18px;
+  text-align: center;
 }
 
 .daily-card__media {
-  width: min(190px, 58vw);
-  height: min(310px, 46vh);
+  width: min(200px, 60vw);
+  height: min(330px, 48vh);
   margin: 0 auto;
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background: #ffffff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
 }
 
-.daily-card__media--reversed {
-  transform: rotate(180deg);
-}
 .daily-card__media img {
   width: 100%;
   height: 100%;
@@ -239,60 +269,101 @@ const onBack = async () => {
   display: block;
 }
 
+.daily-card__img--reversed {
+  transform: rotate(180deg);
+}
+
+.daily-card__info {
+  display: grid;
+  gap: 10px;
+}
+
 .daily-card__name {
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  font-weight: 600;
+  color: rgba(235, 242, 255, 0.94);
 }
 
 .daily-card__meta {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
+  color: rgba(214, 225, 242, 0.64);
 }
 
 .daily-card__tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   justify-content: center;
 }
 
 .daily-tag {
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(8, 12, 20, 0.7);
-  font-size: 9px;
-  letter-spacing: 0.14em;
+  font-size: 10px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.7);
+  color: rgba(214, 225, 242, 0.75);
+  font-weight: 500;
+}
+
+.daily-tag--primary {
+  border-color: rgba(173, 210, 255, 0.24);
+  background: rgba(110, 166, 255, 0.12);
+  color: rgba(173, 210, 255, 0.9);
 }
 
 .daily-panel {
-  padding: 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(10, 14, 22, 0.8);
+  padding: 18px 20px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(160deg, rgba(14, 20, 32, 0.92), rgba(6, 10, 18, 0.98));
+  box-shadow:
+    0 18px 40px rgba(2, 6, 12, 0.52),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
   display: grid;
-  gap: 8px;
+  gap: 14px;
 }
 
-.daily-panel--soft {
-  background: rgba(8, 12, 20, 0.7);
+.daily-panel--guidance {
+  background: linear-gradient(160deg, rgba(12, 16, 28, 0.88), rgba(5, 8, 16, 0.95));
+}
+
+.daily-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.daily-panel__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(110, 166, 255, 0.1);
+  border: 1px solid rgba(173, 210, 255, 0.16);
+  color: rgba(173, 210, 255, 0.9);
 }
 
 .daily-panel__title {
-  font-size: 10px;
-  letter-spacing: 0.2em;
+  font-size: 11px;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
+  color: rgba(214, 225, 242, 0.7);
+  font-weight: 600;
 }
 
 .daily-panel__text {
-  font-size: 13px;
-  line-height: 1.5;
-  color: rgba(224, 234, 251, 0.86);
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(224, 234, 251, 0.88);
+  padding: 0 2px;
 }
 </style>

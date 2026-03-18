@@ -1,9 +1,9 @@
 <script>
-import { SignInWithApple } from '@capacitor-community/apple-sign-in';
-import { supabase } from 'src/services/supabaseClient';
-import { t, currentLocale } from 'src/i18n';
-import { Capacitor } from '@capacitor/core';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { SignInWithApple } from '@capacitor-community/apple-sign-in'
+import { supabase } from 'src/services/supabaseClient'
+import { t, currentLocale } from 'src/i18n'
+import { Capacitor } from '@capacitor/core'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
 
 export default {
   name: 'LoginView',
@@ -15,102 +15,127 @@ export default {
       errorMessage: '',
       reduceMotion: false,
       platform: 'web',
-    };
+    }
   },
 
   computed: {
     locale() {
-      return currentLocale.value || 'en';
+      return currentLocale.value || 'en'
     },
 
     tt() {
-      return (key) => t(this.locale, key);
-    }
+      return (key) => t(this.locale, key)
+    },
+
+    isNativePlatform() {
+      return Capacitor.isNativePlatform()
+    },
+
+    isIOSNative() {
+      return this.platform === 'ios' && this.isNativePlatform
+    },
+
+    showGoogleLogin() {
+      return !this.isIOSNative
+    },
   },
 
   methods: {
     async hapticTap() {
-      if (!Capacitor.isNativePlatform()) return;
-      if (this.reduceMotion) return;
+      if (!Capacitor.isNativePlatform()) return
+      if (this.reduceMotion) return
+
       try {
-        await Haptics.impact({ style: ImpactStyle.Light });
+        await Haptics.impact({ style: ImpactStyle.Light })
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
     },
 
     async onLoginTap() {
-      await this.hapticTap();
-      this.onLogin();
+      await this.hapticTap()
+      await this.onLogin()
     },
 
     async loginWithApple() {
       try {
-        await this.hapticTap();
+        await this.hapticTap()
+
         const result = await SignInWithApple.authorize({
           clientId: 'com.hrubyi.arcana.supabase',
           redirectURI: 'https://rgqfkdhzllhmagrcasav.supabase.co/auth/v1/callback',
           scopes: 'email name',
-        });
+        })
 
-        const idToken = result?.response?.identityToken;
+        const idToken = result?.response?.identityToken
 
         if (!idToken) {
-          console.error('No identity token from Apple', result);
-          return;
+          console.error('No identity token from Apple', result)
+          return
         }
 
         const { error } = await supabase.auth.signInWithIdToken({
           provider: 'apple',
           token: idToken,
-        });
+        })
 
         if (error) {
-          console.error('Supabase Apple login error', error, error.message, error.status, error.error_description);
-          return;
+          console.error(
+            'Supabase Apple login error',
+            error,
+            error.message,
+            error.status,
+            error.error_description,
+          )
+          return
         }
 
-        this.$router.push('/');
+        this.$router.push('/')
       } catch (err) {
-        console.error('Apple login failed', err);
+        console.error('Apple login failed', err)
       }
     },
 
     async loginWithGoogle() {
       try {
-        await this.hapticTap();
+        await this.hapticTap()
+
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
             redirectTo: window.location.origin + '/',
           },
-        });
+        })
 
         if (error) {
-          console.error('Google login error', error);
+          console.error('Google login error', error)
         }
       } catch (err) {
-        console.error('Google OAuth error', err);
+        console.error('Google OAuth error', err)
       }
     },
 
-    loginWithTelegram() {
-      this.hapticTap();
-      this.errorMessage = this.tt('errors.generic');
+    async loginWithTelegram() {
+      await this.hapticTap()
+      this.errorMessage = this.tt('errors.generic')
     },
+
     async goToMenu() {
-      await this.hapticTap();
-      this.$router.push('/menu');
+      await this.hapticTap()
+      this.$router.push('/menu')
     },
+
     async onLogin() {
-      this.loading = true;
-      this.errorMessage = '';
-      const emailTrimmed = this.email.trim();
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      this.loading = true
+      this.errorMessage = ''
+
+      const emailTrimmed = this.email.trim()
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
       if (!emailPattern.test(emailTrimmed)) {
-        this.loading = false;
-        this.errorMessage = this.tt('errors.invalidEmail');
-        return;
+        this.loading = false
+        this.errorMessage = this.tt('errors.invalidEmail')
+        return
       }
 
       try {
@@ -118,44 +143,36 @@ export default {
           email: emailTrimmed,
           options: {
             shouldCreateUser: true,
-            emailRedirectTo: null, // важливо для OTP-коду, а не magic link
+            emailRedirectTo: null,
           },
-        });
+        })
 
         if (error) {
-          this.errorMessage = error.message || this.tt('errors.generic');
-          return;
+          this.errorMessage = error.message || this.tt('errors.generic')
+          return
         }
 
-        // переходимо на екран вводу коду
         this.$router.push({
           path: '/confirm-code',
           query: {
             email: this.email,
           },
-        });
+        })
       } catch (e) {
-        console.error(e);
-        this.errorMessage = e.message || this.tt('errors.generic');
+        console.error(e)
+        this.errorMessage = e.message || this.tt('errors.generic')
       } finally {
-        this.loading = false;
+        this.loading = false
       }
     },
   },
 
   mounted() {
-    try {
-      this.reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    } catch (e) {
-      console.error(e);
-    }
-    try {
-      this.platform = Capacitor.getPlatform();
-    } catch {
-      this.platform = 'web';
-    }
+    const win = typeof window !== 'undefined' ? window : null
+    this.reduceMotion = !!win?.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+    this.platform = Capacitor.getPlatform()
   },
-};
+}
 </script>
 
 <template>
@@ -165,6 +182,7 @@ export default {
         <button type="button" class="auth-back" @click="goToMenu">
           <q-icon name="chevron_left" size="18px" />
         </button>
+
         <div class="auth-hero__text">
           <div class="auth-title">{{ tt('auth.loginAction') }}</div>
           <div class="auth-kicker">{{ tt('auth.welcomeBack') }}</div>
@@ -172,36 +190,41 @@ export default {
       </header>
 
       <div class="login-panel">
+        <div class="login-form">
+          <div class="field">
+            <label class="field-label q-mb-xs" for="login-email">{{ tt('fields.email') }}</label>
+            <input
+              id="login-email"
+              v-model="email"
+              class="field-input"
+              type="email"
+              autocomplete="email"
+              inputmode="email"
+              autocapitalize="none"
+              @input="errorMessage = ''"
+            />
+          </div>
 
-        <div class="field">
-          <span class="field-label q-mb-xs">{{ tt('fields.email') }}</span>
-        <input
-          class="field-input"
-          v-model="email"
-          type="email"
-          autocomplete="email"
-          inputmode="email"
-          autocapitalize="none"
-          @input="errorMessage = ''"
-        />
-      </div>
+          <p class="auth-helper">{{ tt('auth.loginHelper') }}</p>
 
-      <p class="auth-helper">{{ tt('auth.loginHelper') }}</p>
+          <q-btn
+            :label="tt('auth.loginAction')"
+            class="no-auth-btn"
+            no-caps
+            flat
+            :loading="loading"
+            :disable="loading"
+            @click="onLoginTap"
+          >
+            <template v-slot:loading>
+              <q-spinner-dots size="24px" color="white" />
+            </template>
+          </q-btn>
 
-      <div class="q-mb-lg">
-        <q-btn
-          :label="tt('auth.loginAction')"
-          class="no-auth-btn mono-text"
-          no-caps
-          flat
-          @click="onLoginTap"
-          :loading="loading"
-        />
-      </div>
-
-      <p class="auth-error auth-error--below" :class="{ 'auth-error--visible': !!errorMessage }">
-        {{ errorMessage }}
-      </p>
+          <p class="auth-error" :class="{ 'auth-error--visible': !!errorMessage }">
+            {{ errorMessage }}
+          </p>
+        </div>
 
         <p class="bottom-text">
           {{ tt('auth.newToArcana') }}
@@ -214,37 +237,31 @@ export default {
           <span class="divider-line"></span>
         </div>
 
-      <div class="social-buttons">
-        <q-btn
-          v-if="platform === 'ios' && Capacitor.isNativePlatform()"
-          class="social-btn apple-btn"
-          flat
-          round
-          @click="loginWithApple"
-        >
-          <svg
-            fill="#fff"
-            width="24"
-            height="24"
-            viewBox="-52.01 0 560.035 560.035"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M380.844 297.529c.787 84.752 74.349 112.955 75.164 113.314-.622 1.988-11.754 40.191-38.756 79.652-23.343 34.117-47.568 68.107-85.731 68.811-37.499.691-49.557-22.236-92.429-22.236-42.859 0-56.256 21.533-91.753 22.928-36.837 1.395-64.889-36.891-88.424-70.883-48.093-69.53-84.846-196.475-35.496-282.165 24.516-42.554 68.328-69.501 115.882-70.192 36.173-.69 70.315 24.336 92.429 24.336 22.1 0 63.59-30.096 107.208-25.676 18.26.76 69.517 7.376 102.429 55.552-2.652 1.644-61.159 35.704-60.523 106.559M310.369 89.418C329.926 65.745 343.089 32.79 339.498 0 311.308 1.133 277.22 18.785 257 42.445c-18.121 20.952-33.991 54.487-29.709 86.628 31.421 2.431 63.52-15.967 83.078-39.655"
-            />
-          </svg>
-        </q-btn>
+        <div class="social-buttons">
+          <q-btn v-if="isIOSNative" class="social-btn apple-btn" flat round @click="loginWithApple">
+            <svg
+              fill="#fff"
+              width="24"
+              height="24"
+              viewBox="-52.01 0 560.035 560.035"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M380.844 297.529c.787 84.752 74.349 112.955 75.164 113.314-.622 1.988-11.754 40.191-38.756 79.652-23.343 34.117-47.568 68.107-85.731 68.811-37.499.691-49.557-22.236-92.429-22.236-42.859 0-56.256 21.533-91.753 22.928-36.837 1.395-64.889-36.891-88.424-70.883-48.093-69.53-84.846-196.475-35.496-282.165 24.516-42.554 68.328-69.501 115.882-70.192 36.173-.69 70.315 24.336 92.429 24.336 22.1 0 63.59-30.096 107.208-25.676 18.26.76 69.517 7.376 102.429 55.552-2.652 1.644-61.159 35.704-60.523 106.559M310.369 89.418C329.926 65.745 343.089 32.79 339.498 0 311.308 1.133 277.22 18.785 257 42.445c-18.121 20.952-33.991 54.487-29.709 86.628 31.421 2.431 63.52-15.967 83.078-39.655"
+              />
+            </svg>
+          </q-btn>
 
-        <q-btn
-          v-if="platform !== 'ios' || !Capacitor.isNativePlatform()"
-          flat
-          round
-          @click="loginWithGoogle"
-          class="social-btn google-btn"
-        >
-          <svg
-            width="24"
-            height="24"
+          <q-btn
+            v-if="showGoogleLogin"
+            class="social-btn google-btn"
+            flat
+            round
+            @click="loginWithGoogle"
+          >
+            <svg
+              width="24"
+              height="24"
               viewBox="-3 0 262 262"
               xmlns="http://www.w3.org/2000/svg"
               preserveAspectRatio="xMidYMid"
@@ -268,26 +285,10 @@ export default {
             </svg>
           </q-btn>
 
-        <q-btn
-          class="social-btn tg-btn"
-          flat
-            round
-            @click="loginWithTelegram"
-          >
-            <svg
-              width="38"
-              height="38"
-              viewBox="0 0 1000 1000"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+          <q-btn class="social-btn tg-btn" flat round @click="loginWithTelegram">
+            <svg width="38" height="38" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
               <defs>
-                <linearGradient
-                  x1="50%"
-                  y1="0%"
-                  x2="50%"
-                  y2="99.2583404%"
-                  id="tg-grad"
-                >
+                <linearGradient id="tg-grad" x1="50%" y1="0%" x2="50%" y2="99.2583404%">
                   <stop stop-color="transparent" offset="0%" />
                   <stop stop-color="#050608" offset="100%" />
                 </linearGradient>
@@ -307,7 +308,9 @@ export default {
 
 <style scoped lang="scss">
 .login-wrap {
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -317,15 +320,16 @@ export default {
 
 .login-container {
   position: relative;
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
   width: 100%;
-  max-width: 440px;
+  max-width: 460px;
   margin: 0 auto;
-  padding: calc(96px + env(safe-area-inset-top)) 16px 24px;
+  padding: calc(96px + env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  justify-content: flex-start;
+  gap: 16px;
 }
 
 .auth-hero {
@@ -383,163 +387,194 @@ export default {
 }
 
 .login-panel {
-  background: linear-gradient(180deg, rgba(18, 24, 38, 0.82), rgba(10, 14, 22, 0.92));
-  border-radius: 12px;
+  background: linear-gradient(160deg, rgba(14, 20, 32, 0.92), rgba(6, 10, 18, 0.98));
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   box-shadow:
-    0 8px 18px rgba(0, 0, 0, 0.18),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-  padding: 20px 16px 18px;
+    0 18px 40px rgba(2, 6, 12, 0.52),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  padding: 24px 20px 20px;
   display: flex;
   flex-direction: column;
+  gap: 18px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .field {
-  padding-bottom: 4px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  margin-bottom: 4px;
+  gap: 6px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(8, 12, 20, 0.78);
+  transition: all 180ms ease;
+}
+
+.field:focus-within {
+  border-color: rgba(156, 184, 235, 0.28);
+  background: rgba(12, 16, 26, 0.85);
 }
 
 .field-label {
-  font-size: 12px;
-  line-height: 18px;
-  color: rgba(214, 225, 242, 0.78);
+  font-size: 11px;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: rgba(214, 225, 242, 0.68);
+  font-weight: 500;
 }
 
 .field-input {
-  padding: 2px 0 0;
+  padding: 0;
   margin: 0;
   border: none;
   outline: none;
   background: transparent;
   font-family: inherit;
   font-size: 15px;
-  line-height: 22px;
-  color: rgba(224, 234, 248, 0.9);
+  line-height: 1.4;
+  color: rgba(235, 242, 255, 0.94);
 }
 
 .field-input::placeholder {
-  color: #5f6a84;
+  color: rgba(214, 225, 242, 0.4);
+}
+
+.auth-helper {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(214, 225, 242, 0.56);
 }
 
 .no-auth-btn {
-  height: 50px;
+  height: 52px;
   width: 100%;
   background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
   border: 1px solid rgba(156, 184, 235, 0.36);
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 14px;
-  line-height: 21px;
-  color: #ffffff;
-  letter-spacing: 0.02em;
+  line-height: 1.4;
+  font-weight: 600;
+  color: rgba(235, 242, 255, 0.96);
+  letter-spacing: 0.04em;
   box-shadow: none;
-  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.2s ease;
+  transition: all 180ms ease;
 
-  &:active {
-    opacity: 0.9;
+  &:active:not(:disabled) {
     transform: scale(0.98);
+    background: linear-gradient(180deg, rgba(32, 42, 62, 0.95), rgba(14, 19, 31, 1));
   }
 }
 
 .no-auth-btn:disabled {
-  opacity: 0.6;
-}
-
-.auth-helper {
-  margin: 4px 0 16px;
-  font-size: 12px;
-  line-height: 14px;
-  color: rgba(214, 225, 242, 0.5);
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .auth-error {
-  margin:4px 0;
+  margin: 0;
+  padding: 10px 12px;
   font-size: 12px;
-  line-height: 14px;
-  color: rgba(255, 168, 168, 0.9);
-  min-height: 14px;
+  line-height: 1.5;
+  color: rgba(255, 180, 180, 0.94);
+  background: rgba(255, 80, 80, 0.08);
+  border: 1px solid rgba(255, 100, 100, 0.16);
+  border-radius: 12px;
+  min-height: 0;
+  max-height: 0;
+  overflow: hidden;
   opacity: 0;
-  transition: opacity 180ms ease;
+  transition: all 240ms ease;
 }
 
 .auth-error--visible {
   opacity: 1;
-}
-
-.auth-error--below {
-  margin: 0 0 12px;
+  max-height: 100px;
+  min-height: 38px;
 }
 
 .bottom-text {
-  font-size: 12px;
-  color: rgba(214, 225, 242, 0.68);
-  margin-bottom: 20px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(214, 225, 242, 0.72);
+  margin: 0;
+  text-align: center;
 }
 
 .link {
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 20px;
-  text-decoration: underline;
-  color: rgba(214, 225, 242, 0.92);
+  font-weight: 500;
+  font-size: 13px;
+  text-decoration: none;
+  color: rgba(173, 210, 255, 0.95);
+  border-bottom: 1px solid rgba(173, 210, 255, 0.3);
+  transition: all 180ms ease;
+}
+
+.link:hover {
+  color: rgba(173, 210, 255, 1);
+  border-bottom-color: rgba(173, 210, 255, 0.6);
 }
 
 .divider {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 18px;
+  gap: 12px;
 }
 
 .divider-line {
   flex: 1;
   height: 1px;
-  background: rgba(255, 255, 255, 0.12);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
 }
 
 .divider-text {
   font-size: 10px;
   color: rgba(214, 225, 242, 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.16em;
+  font-weight: 500;
 }
 
 .social-buttons {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .social-btn {
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   padding: 0;
-  border-radius: 14px;
-  background: rgba(10, 12, 18, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: rgba(8, 12, 20, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.75) inset,
-    0 10px 25px rgba(0, 0, 0, 0.4);
+    0 0 0 1px rgba(0, 0, 0, 0.6) inset,
+    0 8px 20px rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.12s ease, opacity 0.15s ease, border-color 0.2s ease;
+  transition: all 180ms ease;
 
   &:active {
     transform: scale(0.94);
-    opacity: 0.9;
+    border-color: rgba(156, 184, 235, 0.2);
   }
 }
 
 .google-btn,
 .apple-btn,
 .tg-btn {
-  background: #050608;
+  background: rgba(5, 6, 8, 0.95);
 }
 
 .bottom-btn-back {
@@ -549,10 +584,13 @@ export default {
 }
 
 .back-small-btn {
-  color: #7E8AA5;
+  color: #7e8aa5;
 
   background: transparent;
-  transition: background 0.2s ease, transform 0.12s ease, border-color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.12s ease,
+    border-color 0.2s ease;
 
   &:active {
     transform: scale(0.96);

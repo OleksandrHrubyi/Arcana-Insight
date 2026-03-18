@@ -240,7 +240,9 @@ export default {
 
 <style scoped lang="scss">
 .login-wrap {
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -250,7 +252,9 @@ export default {
 
 .login-container {
   position: relative;
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
   width: 100%;
   max-width: 440px;
   margin: 0 auto;

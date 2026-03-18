@@ -248,6 +248,7 @@ import { useRouter } from 'vue-router'
 import { currentLocale, t as i18nT } from 'src/i18n'
 import { loadTarotData } from 'src/helpers/tarotData'
 import { getTarotReading } from 'src/services/tarotOracle'
+import { supabase } from 'src/services/supabaseClient'
 
 const videoRef = ref(null)
 const sceneRef = ref(null)
@@ -1252,6 +1253,41 @@ watch(interpretationLoading, (loading) => {
   loadingDots.value = 1
 })
 
+const saveReadingToDatabase = async (interpretationData, payload) => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      console.log('User not logged in, skipping save to database')
+      return
+    }
+
+    const cardsData = spreadCards.value.map((card) => ({
+      id: card.id,
+      reversed: Boolean(card.reversed),
+    }))
+
+    const { error } = await supabase
+      .from('tarot_readings')
+      .insert({
+        user_id: user.id,
+        spread_type: selectedSpread.value || spreadCards.value.length,
+        cards: cardsData,
+        question: payload.question || null,
+        interpretation: interpretationData.interpretation || null,
+      })
+
+    if (error) {
+      console.error('Supabase insert error:', error)
+      throw error
+    }
+
+    console.log('Reading saved successfully')
+  } catch (error) {
+    console.error('Error saving reading to database:', error)
+    throw error
+  }
+}
+
 const acceptInterpretation = async () => {
   if (interpretationLoading.value || interpretationDecision.value === 'yes') {
     return
@@ -1290,6 +1326,14 @@ const acceptInterpretation = async () => {
     } catch (error) {
       console.error(error)
     }
+
+    // Save reading to Supabase
+    try {
+      await saveReadingToDatabase(data, payload)
+    } catch (error) {
+      console.error('Failed to save reading to database:', error)
+    }
+
     router.push({ name: 'tarotInterpretation' }).catch(() => {})
   } catch (error) {
     console.error(error)
@@ -1989,7 +2033,7 @@ onBeforeUnmount(() => {
   width: fit-content;
   max-width: min(92vw, 540px);
   margin: 22px 0 0 auto;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
 }
 
 .oracle-bubble--normal {
@@ -1997,38 +2041,38 @@ onBeforeUnmount(() => {
 }
 
 .oracle-bubble {
-  --oracle-bubble-border: rgba(112, 136, 178, 0.16);
+  --oracle-bubble-border: rgba(100, 120, 160, 0.18);
   position: relative;
   display: flex;
   align-items: center;
   border: 1px solid var(--oracle-bubble-border);
-  border-radius: 20px;
-  min-height: 52px;
-  padding: 8px 18px;
+  border-radius: 24px;
+  min-height: 56px;
+  padding: 14px 22px;
   background:
-    radial-gradient(120% 180% at 16% 0%, rgba(90, 120, 170, 0.08), rgba(90, 120, 170, 0)),
-    linear-gradient(180deg, rgba(6, 10, 17, 0.78), rgba(3, 6, 12, 0.82));
-  line-height: 1.32;
+    radial-gradient(140% 200% at 20% 0%, rgba(60, 80, 120, 0.08), rgba(50, 70, 100, 0)),
+    linear-gradient(165deg, rgba(8, 12, 20, 0.98), rgba(4, 6, 12, 0.99));
+  line-height: 1.5;
   white-space: pre-line;
   overflow: visible;
   box-shadow:
-    0 10px 24px rgba(0, 0, 0, 0.42),
-    0 0 12px rgba(72, 100, 156, 0.06),
-    inset 0 1px 0 rgba(176, 196, 232, 0.08),
-    inset 0 -1px 0 rgba(44, 64, 102, 0.12),
-    inset 0 0 0 1px rgba(68, 92, 142, 0.1);
-  backdrop-filter: blur(8px) saturate(120%);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
+    0 16px 36px rgba(0, 0, 0, 0.7),
+    0 2px 12px rgba(60, 90, 140, 0.1),
+    inset 0 1px 0 rgba(140, 160, 200, 0.1),
+    inset 0 -1px 0 rgba(30, 45, 75, 0.2),
+    inset 0 0 0 1px rgba(80, 105, 150, 0.12);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
 }
 
 .oracle-bubble::before {
   content: '';
   position: absolute;
   inset: 1px;
-  border-radius: 18px;
+  border-radius: 23px;
   background:
-    radial-gradient(120% 140% at 50% -20%, rgba(146, 171, 224, 0.05), rgba(146, 171, 224, 0) 56%),
-    linear-gradient(165deg, rgba(162, 183, 220, 0.04), rgba(162, 183, 220, 0) 45%);
+    radial-gradient(130% 150% at 50% -24%, rgba(120, 145, 195, 0.06), rgba(110, 135, 180, 0) 60%),
+    linear-gradient(170deg, rgba(130, 155, 200, 0.04), rgba(120, 145, 190, 0) 50%);
   pointer-events: none;
 }
 
@@ -2040,9 +2084,12 @@ onBeforeUnmount(() => {
   width: 12px;
   height: 12px;
   transform: translateX(-50%) rotate(45deg);
-  background: rgba(2, 4, 10, 0.97);
+  background: linear-gradient(135deg, rgba(6, 9, 16, 0.99), rgba(4, 6, 12, 0.99));
   border-right: 1px solid var(--oracle-bubble-border);
   border-bottom: 1px solid var(--oracle-bubble-border);
+  box-shadow:
+    2px 2px 8px rgba(0, 0, 0, 0.5),
+    inset -1px -1px 0 rgba(80, 105, 150, 0.1);
 }
 
 .oracle-bubble-fade-enter-active,
@@ -2276,47 +2323,57 @@ onBeforeUnmount(() => {
 }
 
 .oracle-card-preview {
-  width: min(82vw, 340px);
+  width: min(86vw, 360px);
   display: grid;
-  gap: 12px;
+  gap: 16px;
   justify-items: center;
   transform: translateY(-40px);
-  padding: 14px 14px 18px;
-  border-radius: 24px;
+  padding: 20px 18px 24px;
+  border-radius: 28px;
   background:
-    radial-gradient(140% 180% at 50% 0%, rgba(42, 54, 83, 0.34), rgba(42, 54, 83, 0)),
-    linear-gradient(180deg, rgba(8, 11, 18, 0.94), rgba(3, 5, 10, 0.98));
-  border: 1px solid rgba(188, 204, 235, 0.18);
+    radial-gradient(150% 200% at 50% -10%, rgba(60, 80, 120, 0.12), rgba(50, 70, 100, 0)),
+    linear-gradient(165deg, rgba(8, 12, 20, 0.98), rgba(4, 6, 12, 0.99));
+  border: 1px solid rgba(130, 156, 200, 0.22);
   box-shadow:
-    0 26px 64px rgba(0, 0, 0, 0.52),
-    inset 0 1px 0 rgba(223, 233, 255, 0.12);
+    0 32px 72px rgba(0, 0, 0, 0.7),
+    0 4px 16px rgba(60, 90, 140, 0.12),
+    inset 0 1px 0 rgba(186, 207, 247, 0.14),
+    inset 0 -1px 0 rgba(44, 64, 102, 0.18);
 }
 
 .oracle-card-preview__close {
   justify-self: end;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   display: grid;
   place-items: center;
   padding: 0;
-  border: 1px solid rgba(188, 204, 235, 0.18);
+  border: 1px solid rgba(130, 156, 200, 0.22);
   border-radius: 999px;
-  background: rgba(6, 10, 18, 0.86);
-  color: rgba(244, 238, 227, 0.92);
+  background: linear-gradient(165deg, rgba(8, 12, 20, 0.95), rgba(4, 6, 12, 0.98));
+  color: rgba(235, 242, 255, 0.94);
   font-size: 24px;
   line-height: 1;
-  box-shadow: inset 0 1px 0 rgba(223, 233, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(186, 207, 247, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: all 180ms ease;
+}
+
+.oracle-card-preview__close:active {
+  transform: scale(0.95);
 }
 
 .oracle-card-preview__image {
   display: block;
-  width: min(72vw, 300px);
+  width: min(74vw, 310px);
   aspect-ratio: 0.62;
   object-fit: cover;
-  border-radius: 20px;
+  border-radius: 22px;
   box-shadow:
-    0 20px 44px rgba(0, 0, 0, 0.48),
-    0 0 0 1px rgba(228, 236, 255, 0.08);
+    0 24px 52px rgba(0, 0, 0, 0.6),
+    0 2px 8px rgba(60, 90, 140, 0.15),
+    0 0 0 1px rgba(156, 184, 235, 0.12);
 }
 
 .oracle-card-preview__image--reversed {
@@ -2326,39 +2383,43 @@ onBeforeUnmount(() => {
 .oracle-card-preview__title {
   margin: 0;
   text-align: center;
-  color: rgba(244, 238, 227, 0.94);
-  font-size: 14px;
-  line-height: 1.25;
-  letter-spacing: 0.04em;
+  color: rgba(235, 242, 255, 0.96);
+  font-size: 16px;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  font-weight: 600;
 }
 
 .oracle-card-preview__meta {
   font-size: 11px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(200, 210, 226, 0.7);
+  color: rgba(214, 225, 242, 0.68);
   text-align: center;
+  font-weight: 500;
 }
 
 .oracle-card-preview__text {
   width: 100%;
-  font-size: 13px;
-  line-height: 1.6;
-  color: rgba(214, 225, 242, 0.88);
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(224, 234, 251, 0.88);
   text-align: left;
+  padding: 0 2px;
 }
 
 .oracle-card-preview__text p {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
 }
 
 .oracle-card-preview__label {
   font-size: 10px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(200, 210, 226, 0.64);
-  margin-bottom: 6px;
+  color: rgba(214, 225, 242, 0.62);
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 .oracle-card-preview__keywords {
@@ -2368,16 +2429,18 @@ onBeforeUnmount(() => {
 .oracle-card-preview__tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
 .oracle-card-preview__tag {
   font-size: 11px;
-  padding: 4px 8px;
+  padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(12, 16, 24, 0.82);
-  border: 1px solid rgba(156, 184, 235, 0.18);
-  color: rgba(232, 236, 244, 0.86);
+  background: rgba(8, 12, 20, 0.7);
+  border: 1px solid rgba(130, 156, 200, 0.2);
+  color: rgba(235, 242, 255, 0.88);
+  font-weight: 500;
+  letter-spacing: 0.04em;
 }
 
 :deep(.oracle-actions-dialog .q-dialog__backdrop) {

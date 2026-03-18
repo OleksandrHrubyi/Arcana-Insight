@@ -11,56 +11,69 @@
         </div>
       </header>
 
-      <section class="account-panel account-panel--status">
+      <section v-if="zodiacLabel" class="account-panel account-panel--status">
         <div class="account-status">
-          <div>
+          <div class="account-status__content">
             <div class="account-status__title">{{ tt('accountPage.zodiacTitle') }}</div>
             <div class="account-status__subtitle">{{ zodiacLabel }}</div>
           </div>
-          <div class="account-badge" :class="{ 'account-badge--muted': !zodiacLabel }">
-            {{ zodiacBadge }}
+          <div class="account-badge">
+            {{ zodiacEmoji }}
           </div>
         </div>
       </section>
 
-      <section class="account-panel">
+      <section class="account-panel account-panel--fields">
+        <div class="account-panel__title">{{ tt('accountPage.profileInfo') }}</div>
+
         <button type="button" class="account-row account-row--button" @click="openEdit('name')">
-          <span class="account-label">{{ tt('fields.name') }}</span>
-          <span class="account-value">{{ profile.name || '—' }}</span>
-          <span class="account-hint">{{ tt('accountPage.tapToEdit') }}</span>
-          <q-icon name="edit" size="16px" class="account-row__icon" />
+          <div class="account-row__content">
+            <span class="account-label">{{ tt('fields.name') }}</span>
+            <span class="account-value">{{ profile.name || '—' }}</span>
+          </div>
+          <q-icon name="edit" size="18px" class="account-row__icon" />
         </button>
 
         <button type="button" class="account-row account-row--button" @click="openEdit('email')">
-          <span class="account-label">{{ tt('fields.email') }}</span>
-          <span class="account-value">{{ profile.email || userEmail || '—' }}</span>
-          <span class="account-hint">{{ tt('accountPage.tapToEdit') }}</span>
-          <q-icon name="edit" size="16px" class="account-row__icon" />
+          <div class="account-row__content">
+            <span class="account-label">{{ tt('fields.email') }}</span>
+            <span class="account-value">{{ profile.email || userEmail || '—' }}</span>
+          </div>
+          <q-icon name="edit" size="18px" class="account-row__icon" />
         </button>
 
         <button type="button" class="account-row account-row--button" @click="onOpenDateSheet">
-          <span class="account-label">{{ tt('fields.dateOfBirth') }}</span>
-          <span class="account-value">{{ profile.date_of_birth || '—' }}</span>
-          <span class="account-hint">{{ tt('accountPage.tapToEdit') }}</span>
-          <q-icon name="edit" size="16px" class="account-row__icon" />
+          <div class="account-row__content">
+            <span class="account-label">{{ tt('fields.dateOfBirth') }}</span>
+            <span class="account-value">{{ profile.date_of_birth || '—' }}</span>
+          </div>
+          <q-icon name="edit" size="18px" class="account-row__icon" />
         </button>
       </section>
 
       <div class="account-actions">
         <q-btn
           flat
-          class="ghost-btn"
-          :label="tt('logout')"
+          class="account-btn account-btn--logout"
           no-caps
           @click="logout"
-        />
+        >
+          <q-icon name="logout" size="18px" class="account-btn__icon" />
+          <span>{{ tt('logout') }}</span>
+        </q-btn>
+      </div>
+
+      <div class="account-danger-zone">
+        <div class="account-danger-zone__title">{{ tt('accountPage.dangerZone') }}</div>
         <q-btn
           flat
-          class="ghost-btn ghost-btn--danger"
-          :label="tt('accountPage.deleteAccount')"
+          class="account-btn account-btn--danger"
           no-caps
           @click="openDeleteDialog"
-        />
+        >
+          <q-icon name="delete_outline" size="18px" class="account-btn__icon" />
+          <span>{{ tt('accountPage.deleteAccount') }}</span>
+        </q-btn>
       </div>
     </div>
   </div>
@@ -309,6 +322,24 @@ export default defineComponent({
 
     zodiacBadge () {
       return this.zodiacLabel || this.tt('accountPage.zodiacEmpty')
+    },
+
+    zodiacEmoji () {
+      const emojiMap = {
+        aries: '♈',
+        taurus: '♉',
+        gemini: '♊',
+        cancer: '♋',
+        leo: '♌',
+        virgo: '♍',
+        libra: '♎',
+        scorpio: '♏',
+        sagittarius: '♐',
+        capricorn: '♑',
+        aquarius: '♒',
+        pisces: '♓',
+      }
+      return emojiMap[this.zodiacKey] || '✦'
     }
   },
 
@@ -682,13 +713,14 @@ export default defineComponent({
   position: relative;
   height: 100dvh;
   width: 100%;
-  max-width: 440px;
+  max-width: 520px;
   margin: 0 auto;
-  padding: calc(96px + env(safe-area-inset-top)) 16px 24px;
+  padding: calc(80px + env(safe-area-inset-top)) 16px calc(90px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   justify-content: flex-start;
+  overflow-y: auto;
 }
 
 .auth-hero {
@@ -746,75 +778,84 @@ export default defineComponent({
 
 .account-panel {
   background: linear-gradient(180deg, rgba(18, 24, 38, 0.82), rgba(10, 14, 22, 0.92));
-  border-radius: 12px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-shadow:
-    0 8px 18px rgba(0, 0, 0, 0.18),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-  padding: 12px;
+    0 8px 24px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  padding: 16px;
   display: grid;
-  gap: 6px;
+  gap: 2px;
 }
 
 .account-panel--status {
-  padding: 14px 16px;
-  min-height: 70px;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, rgba(18, 24, 38, 0.9), rgba(12, 18, 28, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.account-panel--fields {
+  gap: 0;
+}
+
+.account-panel__title {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(214, 225, 242, 0.56);
+  padding: 0 4px 12px;
 }
 
 .account-status {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
+}
+
+.account-status__content {
+  flex: 1;
 }
 
 .account-status__title {
-  font-size: 12px;
-  letter-spacing: 0.2em;
+  font-size: 11px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.68);
+  color: rgba(214, 225, 242, 0.64);
+  margin-bottom: 6px;
 }
 
 .account-status__subtitle {
-  margin-top: 4px;
-  font-size: 13px;
-  color: rgba(224, 234, 251, 0.75);
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(234, 244, 255, 0.92);
 }
 
 .account-badge {
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  background: rgba(12, 18, 28, 0.7);
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.75);
-}
-
-.account-badge--muted {
-  color: rgba(214, 225, 242, 0.45);
-  border-color: rgba(156, 184, 235, 0.2);
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid rgba(156, 184, 235, 0.24);
+  background: linear-gradient(135deg, rgba(28, 38, 58, 0.6), rgba(12, 18, 28, 0.8));
+  font-size: 28px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .account-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    "label icon"
-    "value icon"
-    "hint icon";
-  row-gap: 4px;
-  column-gap: 10px;
+  display: flex;
   align-items: center;
-  padding: 10px 4px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.2s ease;
 }
 
 .account-row:last-child {
   border-bottom: 0;
-  padding-bottom: 0;
 }
 
 .account-row--button {
@@ -822,64 +863,100 @@ export default defineComponent({
   border: 0;
   text-align: left;
   cursor: pointer;
+  width: 100%;
+}
+
+.account-row--button:hover {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
 }
 
 .account-row--button:active {
-  opacity: 0.85;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.account-row__content {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 5px;
 }
 
 .account-label {
-  grid-area: label;
-  font-size: 12px;
-  line-height: 18px;
-  color: rgba(214, 225, 242, 0.78);
-  display: block;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(214, 225, 242, 0.68);
 }
 
 .account-value {
-  grid-area: value;
-  color: rgba(224, 234, 248, 0.7);
-  font-size: 13px;
+  color: rgba(234, 244, 255, 0.88);
+  font-size: 14px;
+  font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  display: block;
 }
 
 .account-row__icon {
-  grid-area: icon;
-  color: rgba(214, 225, 242, 0.55);
-}
-
-.account-hint {
-  grid-area: hint;
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.4);
-  display: block;
+  color: rgba(214, 225, 242, 0.45);
+  flex-shrink: 0;
 }
 
 .account-actions {
   display: grid;
-  gap: 10px;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 8px;
 }
 
-.ghost-btn {
-  height: 48px;
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 122, 122, 0.32);
-  color: rgba(255, 138, 138, 0.9);
-  letter-spacing: 0.14em;
+.account-danger-zone {
+  display: grid;
+  gap: 8px;
+}
+
+.account-danger-zone__title {
+  font-size: 10px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  background: rgba(32, 12, 16, 0.6);
+  color: rgba(255, 120, 120, 0.7);
+  padding: 0 4px;
 }
 
-.ghost-btn--danger {
-  border-color: rgba(255, 96, 96, 0.52);
-  color: rgba(255, 106, 106, 0.95);
-  background: rgba(42, 8, 12, 0.6);
+.account-btn {
+  min-height: 50px;
+  width: 100%;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.account-btn__icon {
+  opacity: 0.9;
+}
+
+.account-btn--logout {
+  border: 1px solid rgba(156, 184, 235, 0.28);
+  color: rgba(214, 225, 242, 0.9);
+  background: linear-gradient(180deg, rgba(18, 24, 38, 0.7), rgba(10, 14, 22, 0.8));
+}
+
+.account-btn--logout:hover {
+  background: linear-gradient(180deg, rgba(22, 28, 42, 0.8), rgba(12, 16, 24, 0.9));
+}
+
+.account-btn--danger {
+  border: 1px solid rgba(255, 96, 96, 0.4);
+  color: rgba(255, 120, 120, 0.92);
+  background: linear-gradient(180deg, rgba(42, 8, 12, 0.5), rgba(32, 6, 10, 0.7));
+}
+
+.account-btn--danger:hover {
+  background: linear-gradient(180deg, rgba(52, 10, 14, 0.6), rgba(38, 7, 11, 0.8));
 }
 
 .delete-dialog {

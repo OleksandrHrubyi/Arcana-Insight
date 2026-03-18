@@ -289,16 +289,16 @@ onMounted(async () => {
 .cards-content {
   position: relative;
   z-index: 1;
-  padding: calc(90px + env(safe-area-inset-top)) 16px 84px;
-  max-width: 520px;
+  padding: calc(90px + env(safe-area-inset-top)) 18px calc(32px + env(safe-area-inset-bottom) + 84px);
+  max-width: 540px;
   margin: 0 auto;
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 .cards-hero {
   display: grid;
-  gap: 3px;
+  gap: 6px;
 }
 
 .cards-hero--with-back {
@@ -312,22 +312,24 @@ onMounted(async () => {
 .cards-hero__text {
   text-align: center;
   display: grid;
-  gap: 3px;
+  gap: 4px;
   justify-items: center;
   padding: 0 44px;
 }
 
 .cards-title {
-  font-size: 18px;
-  letter-spacing: 0.12em;
+  font-size: 20px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  font-weight: 600;
+  color: rgba(235, 242, 255, 0.96);
 }
 
 .cards-kicker {
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
+  color: rgba(214, 225, 242, 0.62);
 }
 
 .cards-back {
@@ -364,20 +366,22 @@ onMounted(async () => {
 
 .cards-filter {
   border-radius: 999px;
-  padding: 4px 2px;
+  padding: 6px 4px;
   border: none;
   background: transparent;
   color: rgba(214, 225, 242, 0.7);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   white-space: nowrap;
   position: relative;
+  font-weight: 500;
+  transition: all 180ms ease;
 }
 
 .cards-filter--active {
-  color: #fff;
-  text-shadow: 0 0 10px rgba(159, 216, 246, 0.35);
+  color: rgba(235, 242, 255, 0.96);
+  text-shadow: 0 0 12px rgba(173, 210, 255, 0.4);
 }
 
 .cards-filter--active::after {
@@ -385,55 +389,110 @@ onMounted(async () => {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -6px;
-  height: 3px;
+  bottom: -2px;
+  height: 2px;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(180, 230, 255, 0), rgba(180, 230, 255, 1), rgba(180, 230, 255, 0));
-  box-shadow: 0 0 10px rgba(180, 230, 255, 0.7);
+  background: linear-gradient(90deg, rgba(173, 210, 255, 0), rgba(173, 210, 255, 1), rgba(173, 210, 255, 0));
+  box-shadow: 0 0 10px rgba(173, 210, 255, 0.6);
+}
+
+.cards-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(130, 156, 200, 0.16);
+  background: linear-gradient(165deg, rgba(8, 12, 20, 0.85), rgba(4, 6, 12, 0.9));
+  color: rgba(214, 225, 242, 0.75);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(186, 207, 247, 0.06);
+  transition: all 180ms ease;
+}
+
+.cards-search:focus-within {
+  border-color: rgba(173, 210, 255, 0.24);
+  background: rgba(8, 12, 20, 0.9);
+}
+
+.cards-search__icon {
+  color: rgba(173, 210, 255, 0.7);
+}
+
+.cards-search__input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: rgba(235, 242, 255, 0.94);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  outline: none;
+}
+
+.cards-search__input::placeholder {
+  color: rgba(214, 225, 242, 0.4);
+  text-transform: none;
+}
+
+.cards-search__clear {
+  border: none;
+  background: transparent;
+  color: rgba(214, 225, 242, 0.6);
+  display: grid;
+  place-items: center;
+  padding: 2px;
+  transition: all 180ms ease;
+}
+
+.cards-search__clear:active {
+  transform: scale(0.9);
 }
 
 .cards-count {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.52);
+  color: rgba(214, 225, 242, 0.56);
+  font-weight: 500;
 }
 
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
 }
 
 .cards-item {
   position: relative;
-  border-radius: 16px;
-  padding: 12px;
-  background: rgba(10, 14, 22, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 14px;
+  background: linear-gradient(165deg, rgba(8, 12, 20, 0.85), rgba(4, 6, 12, 0.9));
+  border: 1px solid rgba(130, 156, 200, 0.16);
   box-shadow:
-    0 14px 26px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 16px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(186, 207, 247, 0.06);
   display: grid;
-  gap: 8px;
+  gap: 10px;
   text-align: center;
-  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  transition: all 180ms ease;
 }
 
 .cards-item:active {
-  transform: translateY(1px);
-  border-color: color-mix(in srgb, var(--accent) 50%, rgba(255, 255, 255, 0.2));
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.28);
+  transform: translateY(2px) scale(0.98);
+  border-color: rgba(173, 210, 255, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
 }
 
 .cards-thumb {
   width: 100%;
   aspect-ratio: 3 / 5;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   background: #ffffff;
   display: grid;
   place-items: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 .cards-thumb img {
@@ -444,81 +503,49 @@ onMounted(async () => {
 }
 
 .cards-name {
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   position: relative;
+  font-weight: 500;
+  color: rgba(235, 242, 255, 0.92);
 }
 
 .cards-meta {
   font-size: 10px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
-}
-
-.cards-search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(9, 13, 21, 0.72);
-  color: rgba(214, 225, 242, 0.75);
-}
-
-.cards-search__icon {
-  color: rgba(214, 225, 242, 0.6);
-}
-
-.cards-search__input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  color: #e9edf4;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  outline: none;
-}
-
-.cards-search__input::placeholder {
-  color: rgba(214, 225, 242, 0.4);
-}
-
-.cards-search__clear {
-  border: none;
-  background: transparent;
-  color: rgba(214, 225, 242, 0.6);
-  display: grid;
-  place-items: center;
-  padding: 0;
+  color: rgba(214, 225, 242, 0.64);
+  font-weight: 500;
 }
 
 .cards-empty {
   text-align: center;
-  font-size: 12px;
-  letter-spacing: 0.08em;
+  font-size: 13px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.55);
-  padding: 12px 6px;
+  color: rgba(214, 225, 242, 0.6);
+  padding: 32px 16px;
+  font-weight: 500;
 }
 
 .oracle-actions {
   width: 100vw;
   max-width: 100vw;
   margin: 0 auto;
-  border-radius: 22px 22px 0 0;
-  padding: 8px 12px calc(env(safe-area-inset-bottom, 0px) + 24px);
+  border-radius: 28px 28px 0 0;
+  padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 24px);
   max-height: calc(100vh - 12px);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 -16px 46px rgba(0, 0, 0, 0.42);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 -24px 56px rgba(0, 0, 0, 0.6),
+    0 -4px 16px rgba(60, 90, 140, 0.12),
+    inset 0 1px 0 rgba(186, 207, 247, 0.08);
+  border: 1px solid rgba(130, 156, 200, 0.22);
   color: #ffffff;
   pointer-events: auto;
-  background: #050d15;
+  background: linear-gradient(165deg, rgba(8, 12, 20, 0.98), rgba(4, 6, 12, 0.99));
 }
 
 .oracle-actions--full {
@@ -569,70 +596,80 @@ onMounted(async () => {
 
 .card-detail {
   display: grid;
-  gap: 12px;
+  gap: 16px;
   overflow: auto;
   flex: 1;
   min-height: 0;
-  padding-bottom: 12px;
+  padding-bottom: 16px;
 }
 
 .card-detail__media {
-  width: min(180px, 52vw);
-  height: min(300px, 42vh);
+  width: min(200px, 56vw);
+  height: min(330px, 46vh);
   margin: 0 auto;
-  border-radius: 14px;
+  border-radius: 22px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(130, 156, 200, 0.2);
   background: #ffffff;
+  box-shadow:
+    0 24px 52px rgba(0, 0, 0, 0.6),
+    0 2px 8px rgba(60, 90, 140, 0.15);
 }
 
 .card-detail__media img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  border-radius: 12px;
   display: block;
 }
 
 .card-detail__title {
   text-align: center;
-  font-size: 15px;
-  letter-spacing: 0.1em;
+  font-size: 16px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  font-weight: 600;
+  color: rgba(235, 242, 255, 0.96);
 }
 
 .card-detail__meta {
   text-align: center;
-  font-size: 10px;
-  letter-spacing: 0.18em;
+  font-size: 11px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
+  color: rgba(214, 225, 242, 0.68);
+  font-weight: 500;
 }
 
 .card-detail__block {
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(10, 14, 22, 0.72);
-  padding: 10px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(130, 156, 200, 0.16);
+  background: linear-gradient(165deg, rgba(8, 12, 20, 0.85), rgba(4, 6, 12, 0.9));
+  padding: 14px 16px;
   display: grid;
-  gap: 6px;
+  gap: 10px;
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(186, 207, 247, 0.06);
 }
 
 .card-detail__label {
   font-size: 10px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
+  color: rgba(214, 225, 242, 0.62);
+  font-weight: 600;
 }
 
 .card-detail__text {
-  font-size: 13px;
-  line-height: 1.5;
-  color: rgba(224, 234, 251, 0.82);
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(224, 234, 251, 0.88);
+  padding: 0 2px;
 }
 
 .card-detail__text p {
-  margin: 0 0 6px;
+  margin: 0 0 10px;
 }
 
 .card-detail__text p:last-child {
@@ -641,28 +678,28 @@ onMounted(async () => {
 
 .card-detail__keywords {
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
 .card-detail__tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 8px;
 }
 
 .card-detail__tag {
-  padding: 0 10px;
-  min-height: 20px;
+  padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(10, 14, 22, 0.6);
-  font-size: 9px;
-  letter-spacing: 0.12em;
+  border: 1px solid rgba(130, 156, 200, 0.2);
+  background: rgba(8, 12, 20, 0.7);
+  font-size: 11px;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.7);
+  color: rgba(235, 242, 255, 0.88);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-weight: 500;
 }
 
 .oracle-actions__footer {

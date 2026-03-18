@@ -513,9 +513,9 @@ export default defineComponent({
       this.hapticLight()
     },
 
-    onAccountClickHaptic () {
-      this.hapticSelect()
-      this.onAccountClick()
+    async onAccountClickHaptic () {
+      await this.hapticSelect()
+      await this.onAccountClick()
     },
 
     selectLanguageHaptic (val) {
@@ -529,9 +529,9 @@ export default defineComponent({
       this.hapticSelectionEnd()
     },
 
-    onAccountClick () {
-      if (this.isLoggedIn) this.go('/account')
-      else this.go('/login')
+    async onAccountClick () {
+      const path = this.isLoggedIn ? '/account' : '/login'
+      await this.$router.push(path)
     },
 
     onLanguageWheelScroll () {
