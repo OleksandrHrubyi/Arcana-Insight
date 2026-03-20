@@ -7,6 +7,7 @@ import {
 } from 'vue-router'
 import routes from './routes'
 import { supabase } from 'src/services/supabaseClient'
+import { analytics } from 'src/services/analytics'
 
 /*
  * If not building with SSR mode, you can
@@ -44,6 +45,11 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     const { data } = await supabase.auth.getSession()
     if (data?.session) return true
     return { name: 'login' }
+  })
+
+  Router.afterEach((to) => {
+    const screenName = to.name || to.path
+    analytics.logScreenView(screenName, to.meta?.analyticsClass || screenName)
   })
 
   return Router

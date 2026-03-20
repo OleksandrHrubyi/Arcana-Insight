@@ -52,12 +52,7 @@
       </section>
 
       <div class="account-actions">
-        <q-btn
-          flat
-          class="account-btn account-btn--logout"
-          no-caps
-          @click="logout"
-        >
+        <q-btn flat class="account-btn account-btn--logout" no-caps @click="logout">
           <q-icon name="logout" size="18px" class="account-btn__icon" />
           <span>{{ tt('logout') }}</span>
         </q-btn>
@@ -65,12 +60,7 @@
 
       <div class="account-danger-zone">
         <div class="account-danger-zone__title">{{ tt('accountPage.dangerZone') }}</div>
-        <q-btn
-          flat
-          class="account-btn account-btn--danger"
-          no-caps
-          @click="openDeleteDialog"
-        >
+        <q-btn flat class="account-btn account-btn--danger" no-caps @click="openDeleteDialog">
           <q-icon name="delete_outline" size="18px" class="account-btn__icon" />
           <span>{{ tt('accountPage.deleteAccount') }}</span>
         </q-btn>
@@ -146,7 +136,11 @@
 
         <div class="oracle-wheel">
           <div class="oracle-wheel__window" aria-hidden="true"></div>
-          <div ref="monthWheelRef" class="oracle-wheel__scroll" @scroll.passive="onMonthWheelScroll">
+          <div
+            ref="monthWheelRef"
+            class="oracle-wheel__scroll"
+            @scroll.passive="onMonthWheelScroll"
+          >
             <div class="oracle-wheel__spacer"></div>
             <button
               v-for="(month, index) in monthOptions"
@@ -189,32 +183,12 @@
     </section>
   </q-dialog>
 
-  <q-dialog v-model="deleteDialog">
-    <section class="delete-dialog">
-      <div class="delete-dialog__title">{{ tt('accountPage.deleteAccountTitle') }}</div>
-      <p class="delete-dialog__text">{{ tt('accountPage.deleteAccountBody') }}</p>
-      <p class="delete-dialog__hint">{{ tt('accountPage.deleteAccountHint') }}</p>
-      <div class="delete-dialog__actions">
-        <q-btn
-          flat
-          class="delete-dialog__btn delete-dialog__btn--cancel"
-          :label="tt('common.cancel')"
-          no-caps
-          :disable="deletingAccount"
-          @click="closeDeleteDialog"
-        />
-        <q-btn
-          flat
-          class="delete-dialog__btn delete-dialog__btn--delete"
-          :label="tt('accountPage.deleteAccountConfirm')"
-          no-caps
-          :loading="deletingAccount"
-          :disable="deletingAccount"
-          @click="deleteAccount"
-        />
-      </div>
-    </section>
-  </q-dialog>
+  <DeleteAccountDialog
+    v-model="deleteDialog"
+    :loading="deletingAccount"
+    @confirm="deleteAccount"
+    @cancel="closeDeleteDialog"
+  />
 </template>
 
 <script>
@@ -223,11 +197,16 @@ import { supabase } from 'src/services/supabaseClient'
 import { t, currentLocale } from 'src/i18n'
 import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
+import DeleteAccountDialog from 'src/components/DeleteAccountDialog.vue'
 
 export default defineComponent({
   name: 'AccountPage',
 
-  data () {
+  components: {
+    DeleteAccountDialog,
+  },
+
+  data() {
     return {
       profile: {
         name: '',
@@ -250,20 +229,20 @@ export default defineComponent({
       selectedMonthIndex: 0,
       selectedYearIndex: 0,
       lastDateHapticAt: 0,
-      reduceMotion: false
+      reduceMotion: false,
     }
   },
 
   computed: {
-    locale () {
+    locale() {
       return currentLocale.value || 'en'
     },
 
-    tt () {
+    tt() {
       return (key) => t(this.locale, key)
     },
 
-    editTitle () {
+    editTitle() {
       const map = {
         name: 'fields.name',
         email: 'fields.email',
@@ -272,28 +251,28 @@ export default defineComponent({
       return this.tt(map[this.editField] || 'account')
     },
 
-    editPlaceholder () {
+    editPlaceholder() {
       if (this.editField === 'date_of_birth') return 'DD.MM.YYYY'
       return ''
     },
 
-    editType () {
+    editType() {
       if (this.editField === 'email') return 'email'
       return 'text'
     },
 
-    editInputMode () {
+    editInputMode() {
       if (this.editField === 'email') return 'email'
       return 'text'
     },
 
-    editAutocomplete () {
+    editAutocomplete() {
       if (this.editField === 'email') return 'email'
       if (this.editField === 'name') return 'name'
       return 'off'
     },
 
-    zodiacKey () {
+    zodiacKey() {
       const raw = this.profile.date_of_birth || ''
       const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(raw)
       if (!match) return ''
@@ -315,16 +294,16 @@ export default defineComponent({
       return ''
     },
 
-    zodiacLabel () {
+    zodiacLabel() {
       if (!this.zodiacKey) return ''
       return this.tt(`zodiac.${this.zodiacKey}`)
     },
 
-    zodiacBadge () {
+    zodiacBadge() {
       return this.zodiacLabel || this.tt('accountPage.zodiacEmpty')
     },
 
-    zodiacEmoji () {
+    zodiacEmoji() {
       const emojiMap = {
         aries: '♈',
         taurus: '♉',
@@ -340,25 +319,27 @@ export default defineComponent({
         pisces: '♓',
       }
       return emojiMap[this.zodiacKey] || '✦'
-    }
+    },
   },
 
   watch: {
-    editOpen () {
+    editOpen() {
       this.syncBottomNav()
     },
-    dateSheet () {
+    dateSheet() {
       this.syncBottomNav()
-    }
+    },
   },
 
-  async mounted () {
+  async mounted() {
     const { data } = await supabase.auth.getUser()
     const user = data?.user
+
     if (!user) {
       this.$router.replace('/login')
       return
     }
+
     this.userId = user.id
     this.userEmail = user.email || ''
 
@@ -371,22 +352,24 @@ export default defineComponent({
     if (row) {
       this.profile = { ...this.profile, ...row }
     }
+
     this.buildDateOptions()
   },
 
-  beforeUnmount () {
+  beforeUnmount() {
     document.body.classList.remove('hide-bottom-nav')
   },
 
   methods: {
-    syncBottomNav () {
+    syncBottomNav() {
       const open = this.editOpen || this.dateSheet
       document.body.classList.toggle('hide-bottom-nav', open)
     },
 
-    async hapticTap () {
+    async hapticTap() {
       if (!Capacitor.isNativePlatform()) return
       if (this.reduceMotion) return
+
       try {
         await Haptics.impact({ style: ImpactStyle.Light })
       } catch (e) {
@@ -394,9 +377,10 @@ export default defineComponent({
       }
     },
 
-    async hapticSelectionStart () {
+    async hapticSelectionStart() {
       if (!Capacitor.isNativePlatform()) return
       if (this.reduceMotion) return
+
       try {
         await Haptics.selectionStart()
       } catch (e) {
@@ -404,9 +388,10 @@ export default defineComponent({
       }
     },
 
-    async hapticSelectionEnd () {
+    async hapticSelectionEnd() {
       if (!Capacitor.isNativePlatform()) return
       if (this.reduceMotion) return
+
       try {
         await Haptics.selectionEnd()
       } catch (e) {
@@ -414,9 +399,10 @@ export default defineComponent({
       }
     },
 
-    async hapticSelect () {
+    async hapticSelect() {
       if (!Capacitor.isNativePlatform()) return
       if (this.reduceMotion) return
+
       try {
         await Haptics.impact({ style: ImpactStyle.Light })
       } catch (e) {
@@ -424,7 +410,7 @@ export default defineComponent({
       }
     },
 
-    openEdit (field) {
+    openEdit(field) {
       this.hapticTap()
       this.editField = field
       this.draftValue = this.profile[field] || (field === 'email' ? this.userEmail : '')
@@ -432,8 +418,9 @@ export default defineComponent({
       this.editOpen = true
     },
 
-    async saveEdit () {
+    async saveEdit() {
       if (!this.userId || !this.editField) return
+
       const value = (this.draftValue || '').trim()
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -441,10 +428,12 @@ export default defineComponent({
         this.editError = this.tt('errors.invalidName')
         return
       }
+
       if (this.editField === 'email' && !emailPattern.test(value)) {
         this.editError = this.tt('errors.invalidEmail')
         return
       }
+
       if (this.editField === 'date_of_birth' && value) {
         const ok = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value)
         if (!ok) {
@@ -455,121 +444,172 @@ export default defineComponent({
 
       try {
         await this.hapticTap()
+
         const payload = { id: this.userId, [this.editField]: value || null }
-        const { error } = await supabase
-          .from('app_users')
-          .upsert(payload, { onConflict: 'id' })
+        const { error } = await supabase.from('app_users').upsert(payload, { onConflict: 'id' })
+
         if (error) {
           console.error(error)
           this.$q?.notify({ type: 'negative', message: this.tt('errors.saveFailed') })
           return
         }
+
         this.profile = { ...this.profile, [this.editField]: value }
-        if (this.editField === 'email') this.userEmail = value
+
+        if (this.editField === 'email') {
+          this.userEmail = value
+        }
+
         this.editOpen = false
       } catch (err) {
         console.error(err)
       }
     },
 
-    async logout () {
+    async logout() {
       await this.hapticTap()
       await supabase.auth.signOut()
       this.$router.replace('/menu')
     },
 
-    async openDeleteDialog () {
+    async openDeleteDialog() {
+      console.log('[OpenDeleteDialog] Opening dialog...')
       await this.hapticTap()
       this.deleteDialog = true
+      console.log('[OpenDeleteDialog] deleteDialog state:', this.deleteDialog)
     },
 
-    async closeDeleteDialog () {
+    async closeDeleteDialog() {
+      console.log('[Cancel] Clicked')
       if (this.deletingAccount) return
       await this.hapticTap()
       this.deleteDialog = false
     },
 
-    async deleteAccount () {
+    async deleteAccount() {
+      console.log('[Delete] Button clicked')
+
       if (this.deletingAccount) return
 
       await this.hapticTap()
       this.deletingAccount = true
+
       try {
-        const { error } = await supabase.functions.invoke('delete-account', {
-          body: { confirm: true }
+        console.log('[DeleteAccount] Starting account deletion...')
+        const { data: sessionData } = await supabase.auth.getSession()
+        console.log('session access token555--------5555:', sessionData?.session?.access_token)
+        const result = await supabase.functions.invoke('delete-account', {
+          body: { confirm: true },
         })
 
-        if (error) {
-          console.error(error)
-          this.$q?.notify({ type: 'negative', message: this.tt('accountPage.deleteAccountFailed') })
+        console.log('[DeleteAccount] Function result:', result)
+
+        if (result.error) {
+          console.error('[DeleteAccount] Function error:', result.error)
+          this.$q?.notify({
+            type: 'negative',
+            message:
+              this.tt('accountPage.deleteAccountFailed') +
+              ': ' +
+              (result.error.message || 'Unknown error'),
+          })
           return
         }
 
+        console.log('[DeleteAccount] Cleaning up local storage...')
         localStorage.removeItem('push_token')
         localStorage.removeItem('daily_push_enabled')
         localStorage.removeItem('daily_push_time')
 
-        await supabase.auth.signOut().catch(() => {})
+        console.log('[DeleteAccount] Signing out...')
+        await supabase.auth.signOut().catch((e) => {
+          console.warn('[DeleteAccount] Sign out error (ignoring):', e)
+        })
+
         this.deleteDialog = false
-        this.$q?.notify({ type: 'positive', message: this.tt('accountPage.deleteAccountSuccess') })
-        this.$router.replace('/menu')
+
+        console.log('[DeleteAccount] Success! Redirecting to menu...')
+
+        this.$q?.notify({
+          type: 'positive',
+          message: this.tt('accountPage.deleteAccountSuccess'),
+        })
+
+        await this.$router.replace('/menu')
+        console.log('[DeleteAccount] Redirected to menu')
       } catch (err) {
-        console.error(err)
-        this.$q?.notify({ type: 'negative', message: this.tt('accountPage.deleteAccountFailed') })
+        console.error('[DeleteAccount] Unexpected error:', err)
+        console.error('[DeleteAccount] Error details:', {
+          message: err.message,
+          stack: err.stack,
+          error: err,
+        })
+
+        this.$q?.notify({
+          type: 'negative',
+          message:
+            this.tt('accountPage.deleteAccountFailed') + ': ' + (err.message || 'Unexpected error'),
+        })
       } finally {
         this.deletingAccount = false
+        console.log('[DeleteAccount] Cleanup complete')
       }
     },
 
-    async onBack () {
+    async onBack() {
       await this.hapticTap()
       this.$router.back()
     },
 
-    onOpenDateSheet () {
+    onOpenDateSheet() {
       this.hapticTap()
       this.syncDateSelectionFromValue()
       this.dateSheet = true
       this.hapticSelectionStart()
+
       this.$nextTick(() => {
         this.scrollDateWheels(false)
       })
     },
 
-    confirmDateWheel () {
+    confirmDateWheel() {
       const day = this.dayOptions[this.selectedDayIndex] || 1
       const month = this.monthOptions[this.selectedMonthIndex]?.value || 1
       const year = this.yearOptions[this.selectedYearIndex] || new Date().getFullYear()
+
       const dd = String(day).padStart(2, '0')
       const mm = String(month).padStart(2, '0')
       const value = `${dd}.${mm}.${year}`
+
       this.saveDateOfBirth(value)
       this.dateSheet = false
       this.hapticSelectionEnd()
     },
 
-    async saveDateOfBirth (value) {
+    async saveDateOfBirth(value) {
       if (!this.userId) return
+
       try {
         const payload = { id: this.userId, date_of_birth: value || null }
-        const { error } = await supabase
-          .from('app_users')
-          .upsert(payload, { onConflict: 'id' })
+        const { error } = await supabase.from('app_users').upsert(payload, { onConflict: 'id' })
+
         if (error) {
           console.error(error)
           this.$q?.notify({ type: 'negative', message: this.tt('errors.saveFailed') })
           return
         }
+
         this.profile = { ...this.profile, date_of_birth: value }
       } catch (err) {
         console.error(err)
       }
     },
 
-    buildDateOptions () {
+    buildDateOptions() {
       const currentYear = new Date().getFullYear()
       const minYear = currentYear - 120
       const maxYear = currentYear
+
       this.yearOptions = []
       for (let y = maxYear; y >= minYear; y -= 1) {
         this.yearOptions.push(y)
@@ -581,6 +621,7 @@ export default defineComponent({
         const label = new Intl.DateTimeFormat(this.locale === 'uk' ? 'uk-UA' : 'en-US', {
           month: 'short',
         }).format(date)
+
         return { value, label }
       })
 
@@ -588,15 +629,19 @@ export default defineComponent({
       this.syncDateSelectionFromValue()
     },
 
-    syncDateSelectionFromValue () {
+    syncDateSelectionFromValue() {
       const fallbackYear = this.yearOptions[0] || new Date().getFullYear()
       const raw = this.profile.date_of_birth || ''
+
       let day = 1
       let month = 1
       let year = fallbackYear
+
       const parts = raw.includes('.') ? raw.split('.') : raw.split('-')
+
       if (parts.length === 3) {
         const [a, b, c] = parts.map((p) => parseInt(p, 10))
+
         if (raw.includes('.')) {
           day = a || day
           month = b || month
@@ -607,95 +652,129 @@ export default defineComponent({
           day = c || day
         }
       }
-      this.selectedYearIndex = Math.max(0, this.yearOptions.findIndex((y) => y === year))
-      this.selectedMonthIndex = Math.max(0, this.monthOptions.findIndex((m) => m.value === month))
+
+      this.selectedYearIndex = Math.max(
+        0,
+        this.yearOptions.findIndex((y) => y === year),
+      )
+
+      this.selectedMonthIndex = Math.max(
+        0,
+        this.monthOptions.findIndex((m) => m.value === month),
+      )
+
       const maxDay = this.getDaysInMonth(year, month)
       day = Math.min(day, maxDay)
-      this.selectedDayIndex = Math.max(0, this.dayOptions.findIndex((d) => d === day))
+
+      this.selectedDayIndex = Math.max(
+        0,
+        this.dayOptions.findIndex((d) => d === day),
+      )
     },
 
-    getDaysInMonth (year, month) {
+    getDaysInMonth(year, month) {
       return new Date(year, month, 0).getDate()
     },
 
-    onDayWheelScroll () {
+    onDayWheelScroll() {
       const wheel = this.$refs.dayWheelRef
       if (!wheel) return
-      const nextIndex = Math.min(this.dayOptions.length - 1, Math.max(0, Math.round(wheel.scrollTop / 44)))
+
+      const nextIndex = Math.min(
+        this.dayOptions.length - 1,
+        Math.max(0, Math.round(wheel.scrollTop / 44)),
+      )
+
       if (nextIndex === this.selectedDayIndex) return
+
       this.selectedDayIndex = nextIndex
       this.hapticSelectThrottled()
     },
 
-    onMonthWheelScroll () {
+    onMonthWheelScroll() {
       const wheel = this.$refs.monthWheelRef
       if (!wheel) return
-      const nextIndex = Math.min(this.monthOptions.length - 1, Math.max(0, Math.round(wheel.scrollTop / 44)))
+
+      const nextIndex = Math.min(
+        this.monthOptions.length - 1,
+        Math.max(0, Math.round(wheel.scrollTop / 44)),
+      )
+
       if (nextIndex === this.selectedMonthIndex) return
+
       this.selectedMonthIndex = nextIndex
       this.syncDayForMonth()
       this.hapticSelectThrottled()
     },
 
-    onYearWheelScroll () {
+    onYearWheelScroll() {
       const wheel = this.$refs.yearWheelRef
       if (!wheel) return
-      const nextIndex = Math.min(this.yearOptions.length - 1, Math.max(0, Math.round(wheel.scrollTop / 44)))
+
+      const nextIndex = Math.min(
+        this.yearOptions.length - 1,
+        Math.max(0, Math.round(wheel.scrollTop / 44)),
+      )
+
       if (nextIndex === this.selectedYearIndex) return
+
       this.selectedYearIndex = nextIndex
       this.syncDayForMonth()
       this.hapticSelectThrottled()
     },
 
-    onDayWheelItemTap (index) {
+    onDayWheelItemTap(index) {
       this.selectedDayIndex = index
       this.scrollWheel(this.$refs.dayWheelRef, index, true)
       this.hapticSelect()
     },
 
-    onMonthWheelItemTap (index) {
+    onMonthWheelItemTap(index) {
       this.selectedMonthIndex = index
       this.syncDayForMonth()
       this.scrollWheel(this.$refs.monthWheelRef, index, true)
       this.hapticSelect()
     },
 
-    onYearWheelItemTap (index) {
+    onYearWheelItemTap(index) {
       this.selectedYearIndex = index
       this.syncDayForMonth()
       this.scrollWheel(this.$refs.yearWheelRef, index, true)
       this.hapticSelect()
     },
 
-    syncDayForMonth () {
+    syncDayForMonth() {
       const year = this.yearOptions[this.selectedYearIndex] || new Date().getFullYear()
       const month = this.monthOptions[this.selectedMonthIndex]?.value || 1
       const maxDay = this.getDaysInMonth(year, month)
+
       if (this.dayOptions[this.selectedDayIndex] > maxDay) {
         this.selectedDayIndex = maxDay - 1
         this.scrollWheel(this.$refs.dayWheelRef, this.selectedDayIndex, true)
       }
     },
 
-    scrollDateWheels (smooth) {
+    scrollDateWheels(smooth) {
       this.scrollWheel(this.$refs.dayWheelRef, this.selectedDayIndex, smooth)
       this.scrollWheel(this.$refs.monthWheelRef, this.selectedMonthIndex, smooth)
       this.scrollWheel(this.$refs.yearWheelRef, this.selectedYearIndex, smooth)
     },
 
-    scrollWheel (wheel, index, smooth) {
+    scrollWheel(wheel, index, smooth) {
       if (!wheel) return
+
       const top = index * 44
       wheel.scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' })
     },
 
-    hapticSelectThrottled () {
+    hapticSelectThrottled() {
       const now = Date.now()
       if (now - this.lastDateHapticAt < 80) return
+
       this.lastDateHapticAt = now
       this.hapticSelect()
-    }
-  }
+    },
+  },
 })
 </script>
 
@@ -959,59 +1038,6 @@ export default defineComponent({
   background: linear-gradient(180deg, rgba(52, 10, 14, 0.6), rgba(38, 7, 11, 0.8));
 }
 
-.delete-dialog {
-  width: min(420px, calc(100vw - 24px));
-  border-radius: 16px;
-  padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: linear-gradient(180deg, rgba(18, 24, 38, 0.95), rgba(10, 14, 22, 0.98));
-  box-shadow:
-    0 14px 36px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-.delete-dialog__title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #ffffff;
-}
-
-.delete-dialog__text {
-  margin: 10px 0 6px;
-  font-size: 13px;
-  line-height: 1.5;
-  color: rgba(224, 234, 248, 0.82);
-}
-
-.delete-dialog__hint {
-  margin: 0 0 14px;
-  font-size: 12px;
-  line-height: 1.45;
-  color: rgba(255, 173, 173, 0.88);
-}
-
-.delete-dialog__actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.delete-dialog__btn {
-  min-height: 40px;
-  border-radius: 10px;
-}
-
-.delete-dialog__btn--cancel {
-  border: 1px solid rgba(156, 184, 235, 0.28);
-  color: rgba(214, 225, 242, 0.84);
-}
-
-.delete-dialog__btn--delete {
-  border: 1px solid rgba(255, 96, 96, 0.52);
-  color: rgba(255, 106, 106, 0.95);
-  background: rgba(42, 8, 12, 0.5);
-}
-
 .oracle-actions {
   width: 100vw;
   max-width: 100vw;
@@ -1192,7 +1218,9 @@ export default defineComponent({
   font-size: 15px;
   line-height: 1.2;
   scroll-snap-align: center;
-  transition: color 140ms ease, transform 140ms ease;
+  transition:
+    color 140ms ease,
+    transform 140ms ease;
 }
 
 .oracle-wheel__item--active {

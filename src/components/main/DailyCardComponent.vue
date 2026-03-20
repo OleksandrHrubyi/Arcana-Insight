@@ -14,13 +14,17 @@
       </header>
 
       <section class="daily-card">
-        <div class="daily-card__header">
-          <div class="daily-card__label">{{ tt('dailyPage.cardLabel') }}</div>
-        </div>
+<!--        <div class="daily-card__header">-->
+<!--          <div class="daily-card__label">{{ tt('dailyPage.cardLabel') }}</div>-->
+<!--        </div>-->
 
         <div class="daily-card__body">
           <div class="daily-card__media">
-            <img :src="cardImage" :alt="cardTitle" :class="{ 'daily-card__img--reversed': orientation === 'reversed' }" />
+            <img
+              :src="cardImage"
+              :alt="cardTitle"
+              :class="{ 'daily-card__img--reversed': orientation === 'reversed' }"
+            />
           </div>
 
           <div class="daily-card__info">
@@ -105,7 +109,9 @@ const orientation = computed(() => {
 })
 
 const dailyCard = computed(() => cards.value[dailyIndex.value] || null)
-const cardTitle = computed(() => dailyCard.value?.name?.[locale.value] || dailyCard.value?.name?.en || '')
+const cardTitle = computed(
+  () => dailyCard.value?.name?.[locale.value] || dailyCard.value?.name?.en || '',
+)
 const cardSubtitle = computed(() => {
   const card = dailyCard.value
   if (!card) return ''
@@ -113,17 +119,35 @@ const cardSubtitle = computed(() => {
   return tt(`cardsPage.suits.${card.suit}`)
 })
 const cardImage = computed(() => `/images/cards/${dailyCard.value?.file || ''}`)
-const cardKeywords = computed(() => dailyCard.value?.keywords?.[locale.value] || dailyCard.value?.keywords?.en || [])
-const cardMeaning = computed(() => dailyCard.value?.meaning?.[orientation.value]?.[locale.value] || dailyCard.value?.meaning?.[orientation.value]?.en || '')
-const cardDescription = computed(() => dailyCard.value?.description?.[orientation.value]?.[locale.value] || dailyCard.value?.description?.[orientation.value]?.en || '')
-const orientationLabel = computed(() => (orientation.value === 'upright' ? tt('cardsPage.upright') : tt('cardsPage.reversed')))
+const cardKeywords = computed(
+  () => dailyCard.value?.keywords?.[locale.value] || dailyCard.value?.keywords?.en || [],
+)
+const cardMeaning = computed(
+  () =>
+    dailyCard.value?.meaning?.[orientation.value]?.[locale.value] ||
+    dailyCard.value?.meaning?.[orientation.value]?.en ||
+    '',
+)
+const cardDescription = computed(
+  () =>
+    dailyCard.value?.description?.[orientation.value]?.[locale.value] ||
+    dailyCard.value?.description?.[orientation.value]?.en ||
+    '',
+)
+const orientationLabel = computed(() =>
+  orientation.value === 'upright' ? tt('cardsPage.upright') : tt('cardsPage.reversed'),
+)
 
 const todayLabel = computed(() => {
   const now = new Date()
   try {
-    return new Intl.DateTimeFormat(locale.value, { weekday: 'long', month: 'long', day: 'numeric' }).format(now)
+    return new Intl.DateTimeFormat(locale.value, {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    }).format(now)
   } catch (e) {
-    console.log(e);
+    console.log(e)
     return now.toDateString()
   }
 })
@@ -161,11 +185,13 @@ const onBack = async () => {
 .daily-content {
   position: relative;
   z-index: 1;
-  padding: calc(90px + env(safe-area-inset-top)) 18px calc(100px + env(safe-area-inset-bottom));
+  padding: calc(clamp(64px, 10vh, 90px) + env(safe-area-inset-top)) 18px
+    calc(clamp(56px, 9vh, 80px) + env(safe-area-inset-bottom));
   max-width: 540px;
   margin: 0 auto;
   display: grid;
-  gap: 18px;
+  gap: clamp(12px, 2.6vh, 18px);
+  min-height: 100svh;
 }
 
 .daily-hero {
@@ -221,12 +247,6 @@ const onBack = async () => {
 
 .daily-card {
   padding: 0;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: linear-gradient(160deg, rgba(14, 20, 32, 0.92), rgba(6, 10, 18, 0.98));
-  box-shadow:
-    0 18px 40px rgba(2, 6, 12, 0.52),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
   overflow: hidden;
 }
 
@@ -245,15 +265,15 @@ const onBack = async () => {
 }
 
 .daily-card__body {
-  padding: 24px 20px;
   display: grid;
   gap: 18px;
   text-align: center;
 }
 
 .daily-card__media {
-  width: min(200px, 60vw);
-  height: min(330px, 48vh);
+  width: min(42vw, 180px, 19vh);
+  aspect-ratio: 3 / 5;
+  height: auto;
   margin: 0 auto;
   border-radius: 16px;
   overflow: hidden;
@@ -319,7 +339,7 @@ const onBack = async () => {
 }
 
 .daily-panel {
-  padding: 18px 20px 20px;
+  padding: 10px 20px;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   background: linear-gradient(160deg, rgba(14, 20, 32, 0.92), rgba(6, 10, 18, 0.98));
@@ -347,7 +367,7 @@ const onBack = async () => {
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  background: rgba(110, 166, 255, 0.1);
+  background: rgba(8, 12, 20, 0.78);
   border: 1px solid rgba(173, 210, 255, 0.16);
   color: rgba(173, 210, 255, 0.9);
 }
@@ -365,5 +385,67 @@ const onBack = async () => {
   line-height: 1.65;
   color: rgba(224, 234, 251, 0.88);
   padding: 0 2px;
+}
+
+@media (max-height: 720px) {
+  .daily-card__body {
+    gap: 14px;
+  }
+
+  .daily-card__name {
+    font-size: 14px;
+  }
+
+  .daily-card__meta {
+    font-size: 10px;
+  }
+
+  .daily-panel {
+    padding: 14px 16px 16px;
+    gap: 10px;
+  }
+
+  .daily-panel__title {
+    font-size: 10px;
+  }
+
+  .daily-panel__text {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+}
+
+@media (max-height: 680px) {
+  .daily-content {
+    gap: 10px;
+  }
+
+  .daily-card__media {
+    width: min(38vw, 160px, 16.5vh);
+  }
+
+  .daily-card__info {
+    gap: 8px;
+  }
+
+  .daily-tag {
+    padding: 4px 10px;
+    font-size: 9px;
+  }
+
+  .daily-panel {
+    padding: 12px 14px 14px;
+    gap: 8px;
+  }
+
+  .daily-panel__icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .daily-panel__text {
+    font-size: 12px;
+    line-height: 1.5;
+  }
 }
 </style>

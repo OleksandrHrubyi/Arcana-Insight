@@ -160,7 +160,37 @@ export default {
           return;
         }
 
-        this.$router.push('/'); // або '/home' – куди веде твій "апп-скрін"
+        console.log('[ConfirmCode] OTP verified, creating user profile...')
+
+        // Create or update user profile in app_users table
+        const userId = data.session.user.id
+        const userEmail = data.session.user.email
+
+        const profileData = {
+          id: userId,
+          email: userEmail || this.email,
+        }
+
+        // Add optional fields only if they exist
+        if (this.name) profileData.name = this.name
+        if (this.dateOfBirth) profileData.date_of_birth = this.dateOfBirth
+
+        const { error: profileError } = await supabase
+          .from('app_users')
+          .upsert(profileData, {
+            onConflict: 'id'
+          })
+
+        if (profileError) {
+          console.error('[ConfirmCode] Failed to create profile:', profileError)
+          // Don't block login if profile creation fails
+        } else {
+          console.log('[ConfirmCode] User profile created successfully')
+        }
+
+        // Small delay to ensure session is propagated
+        await new Promise(resolve => setTimeout(resolve, 100))
+        this.$router.push('/')
       } catch (e) {
         console.error(e);
         this.errorMessage = this.tt('auth.wrongOrExpiredCode');

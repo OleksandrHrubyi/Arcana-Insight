@@ -18,7 +18,6 @@
       </div>
 
       <div v-else-if="emptyStateText" class="readings-empty">
-        <div class="readings-empty__icon">✦</div>
         <div class="readings-empty__title">{{ emptyStateText }}</div>
         <div class="readings-empty__text">
           {{ isLoggedIn ? tt('readingsPage.emptyHint') : tt('readingsPage.emptyHintNotLoggedIn') }}

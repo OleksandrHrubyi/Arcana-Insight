@@ -14,10 +14,14 @@ Deno.serve(async (req: Request) => {
     return json({ error: 'Method Not Allowed' }, 405)
   }
 
-  const authHeader = req.headers.get('Authorization')
+  let authHeader = req.headers.get('Authorization')
   if (!authHeader) {
     return json({ error: 'Missing Authorization header' }, 401)
   }
+
+  // Clean up the auth header - remove newlines and extra whitespace from the token
+  authHeader = authHeader.replace(/\n/g, '').replace(/\r/g, '').trim()
+  console.log('[DeleteAccount] Original header had newlines, cleaned')
 
   const url = Deno.env.get('URL')
   const anon = Deno.env.get('ANON_KEY')
@@ -28,8 +32,18 @@ Deno.serve(async (req: Request) => {
 
   const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2')
 
+  // Extract just the token from "Bearer <token>"
+  const token = authHeader.replace('Bearer ', '').trim()
+
+  console.log('[DeleteAccount] Token length:', token.length)
+
+  // Create user client with cleaned token
   const userClient = createClient(url, anon, {
-    global: { headers: { Authorization: authHeader } }
+    global: {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
   })
 
   const {
@@ -42,11 +56,38 @@ Deno.serve(async (req: Request) => {
 
   const admin = createClient(url, serviceRole)
 
-  const { error } = await admin.auth.admin.deleteUser(user.id)
-  if (error) {
-    return json({ error: error.message || 'Failed to delete user' }, 400)
+  console.log(`[DeleteAccount] Deleting user data for: ${user.id}`)
+
+  // Delete user profile data first
+  const { error: profileError } = await admin
+    .from('app_users')
+    .delete()
+    .eq('id', user.id)
+
+  if (profileError) {
+    console.error('[DeleteAccount] Failed to delete profile:', profileError)
+    // Continue anyway - auth deletion is more important
   }
 
+  // Delete saved readings
+  const { error: readingsError } = await admin
+    .from('saved_readings')
+    .delete()
+    .eq('user_id', user.id)
+
+  if (readingsError) {
+    console.error('[DeleteAccount] Failed to delete readings:', readingsError)
+    // Continue anyway
+  }
+
+  // Delete auth user (this will cascade to other tables if configured)
+  const { error: authError } = await admin.auth.admin.deleteUser(user.id)
+  if (authError) {
+    console.error('[DeleteAccount] Failed to delete auth user:', authError)
+    return json({ error: authError.message || 'Failed to delete user' }, 400)
+  }
+
+  console.log(`[DeleteAccount] Successfully deleted user: ${user.id}`)
   return json({ ok: true })
 })
 
