@@ -1,0 +1,39 @@
+name: Send push notifications
+
+on:
+  schedule:
+    # Запускати кожну годину
+    - cron: "0 * * * *"
+  workflow_dispatch: {} # Можна запустити вручну
+
+jobs:
+  send_push:
+    name: Send push notifications
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call push-worker Edge Function
+        shell: bash
+        run: |
+          set -e
+          echo "Triggering push-worker..."
+
+          HTTP_CODE=$(curl --retry 3 --retry-delay 2 --retry-all-errors \
+            -sS -L -X POST "https://rgqfkdhzllhmagrcasav.functions.supabase.co/push-worker" \
+            -H "x-push-secret: ${{ secrets.ADMIN_PUSH_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -d "{}" \
+            -o response.json \
+            -w "%{http_code}")
+
+          echo "HTTP $HTTP_CODE"
+          echo "Response:"
+          cat response.json || true
+          echo ""
+
+          if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+            echo "Error: push-worker returned $HTTP_CODE"
+            exit 1
+          fi
+
+          echo "Push notifications sent successfully"
