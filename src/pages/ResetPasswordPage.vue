@@ -18,6 +18,7 @@
 
 <script>
 import { supabase } from 'src/services/supabaseClient'
+import { setSessionFromTokens, updateUserPasswordNative } from 'src/services/supabaseNative'
 import { t, currentLocale } from 'src/i18n'
 
 function parseHashParams() {
@@ -57,9 +58,11 @@ export default {
       // 1) спроба PKCE (коли у URL ?code=...)
       let sessionOk = false
       try {
-        await supabase.auth.exchangeCodeForSession(window.location.href)
-        const { data: { session } } = await supabase.auth.getSession()
-        sessionOk = !!session?.access_token
+        await Promise.race([
+          supabase.auth.exchangeCodeForSession(window.location.href),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('exchange timeout')), 6000))
+        ])
+        sessionOk = true
       } catch {
         sessionOk = false
       }
@@ -68,13 +71,8 @@ export default {
       if (!sessionOk) {
         const { access_token, refresh_token } = parseHashParams()
         if (access_token && refresh_token) {
-          const { error } = await supabase.auth.setSession({ access_token, refresh_token })
-          if (error) {
-            this.error = this.tt('errors.generic')
-            sessionOk = false
-          } else {
-            sessionOk = true
-          }
+          await setSessionFromTokens({ access_token, refresh_token })
+          sessionOk = true
         }
       }
 
@@ -90,9 +88,9 @@ export default {
     async onUpdate () {
       this.error = ''; this.ok = false; this.saving = true
       try {
-      const { error } = await supabase.auth.updateUser({ password: this.password })
+      const { error } = await updateUserPasswordNative(this.password, 8000)
       if (error) {
-        this.error = error.message || this.tt('errors.generic')
+        this.error = this.tt('errors.generic')
         return
       }
         this.ok = true

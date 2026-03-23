@@ -6,6 +6,11 @@ const CORS = {
 }
 
 Deno.serve(async (req: Request) => {
+  console.log('[DeleteAccount] request', {
+    method: req.method,
+    hasAuth: !!req.headers.get('Authorization'),
+    ua: req.headers.get('User-Agent')
+  })
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: CORS })
   }
@@ -47,11 +52,16 @@ Deno.serve(async (req: Request) => {
   })
 
   const {
-    data: { user }
+    data: { user },
+    error: userErr
   } = await userClient.auth.getUser()
 
+  if (userErr) {
+    console.error('[DeleteAccount] getUser error:', userErr)
+  }
+
   if (!user) {
-    return json({ error: 'Unauthorized' }, 401)
+    return json({ error: 'Unauthorized', detail: userErr?.message || null }, 401)
   }
 
   const admin = createClient(url, serviceRole)

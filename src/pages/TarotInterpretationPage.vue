@@ -50,9 +50,9 @@
           <div class="interpret-card__content">
             <div class="interpret-card__role">{{ card.positionLabel || card.position }}</div>
             <div class="interpret-card__name">{{ card.cardTitle }}</div>
-            <div class="interpret-card__text">{{ card.message }}</div>
-            <div class="interpret-card__text interpret-card__text--soft">{{ card.detail }}</div>
-            <div class="interpret-card__question">{{ card.question }}</div>
+            <div v-if="card.message" class="interpret-card__text">{{ card.message }}</div>
+            <div v-if="card.detail" class="interpret-card__text interpret-card__text--soft">{{ card.detail }}</div>
+            <div v-if="card.question" class="interpret-card__question">{{ card.question }}</div>
           </div>
         </article>
         </div>

@@ -2,7 +2,11 @@
   <q-page class="daily-page">
     <div class="daily-bg" aria-hidden="true"></div>
 
-    <div class="daily-content">
+    <section
+      ref="oracleActionsRef"
+      class="oracle-actions oracle-actions--full"
+      :style="{ '--card-scale': cardScale }"
+    >
       <header class="daily-hero daily-hero--with-back">
         <button type="button" class="daily-back" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
@@ -13,57 +17,56 @@
         </div>
       </header>
 
-      <section class="daily-card">
-<!--        <div class="daily-card__header">-->
-<!--          <div class="daily-card__label">{{ tt('dailyPage.cardLabel') }}</div>-->
-<!--        </div>-->
+      <div ref="dailyMainRef" class="daily-main">
+        <section class="daily-card">
+          <div class="daily-card__body">
+            <div class="daily-card__media">
+              <img
+                :src="cardImage"
+                :alt="cardTitle"
+                :class="{ 'daily-card__img--reversed': orientation === 'reversed' }"
+              />
+            </div>
 
-        <div class="daily-card__body">
-          <div class="daily-card__media">
-            <img
-              :src="cardImage"
-              :alt="cardTitle"
-              :class="{ 'daily-card__img--reversed': orientation === 'reversed' }"
-            />
-          </div>
+            <div class="daily-card__info">
+              <div class="daily-card__name">{{ cardTitle }}</div>
+              <div class="daily-card__meta">{{ cardSubtitle }}</div>
 
-          <div class="daily-card__info">
-            <div class="daily-card__name">{{ cardTitle }}</div>
-            <div class="daily-card__meta">{{ cardSubtitle }}</div>
+              <div class="daily-card__tags">
+                <span class="daily-tag daily-tag--primary">{{ orientationLabel }}</span>
+                <span v-for="word in cardKeywordsPreview" :key="word" class="daily-tag">{{ word }}</span>
+              </div>
+            </div>
 
-            <div class="daily-card__tags">
-              <span class="daily-tag daily-tag--primary">{{ orientationLabel }}</span>
-              <span v-for="word in cardKeywords" :key="word" class="daily-tag">{{ word }}</span>
+            <div class="daily-meaning">
+              <div class="daily-meaning__label">{{ tt('dailyPage.meaningLabel') }}</div>
+              <div class="daily-meaning__text">{{ cardMeaning }}</div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="daily-panel">
-        <div class="daily-panel__header">
-          <div class="daily-panel__icon">
-            <q-icon name="auto_awesome" size="16px" />
+        <section class="daily-panel daily-panel--guidance">
+          <div class="daily-panel__header">
+            <div class="daily-panel__icon">
+              <q-icon name="wb_twilight" size="16px" />
+            </div>
+            <div class="daily-panel__title">{{ tt('dailyPage.guidanceLabel') }}</div>
           </div>
-          <div class="daily-panel__title">{{ tt('dailyPage.meaningLabel') }}</div>
-        </div>
-        <div class="daily-panel__text">{{ cardMeaning }}</div>
-      </section>
+          <div class="daily-panel__text">{{ cardDescription }}</div>
+        </section>
+      </div>
 
-      <section class="daily-panel daily-panel--guidance">
-        <div class="daily-panel__header">
-          <div class="daily-panel__icon">
-            <q-icon name="wb_twilight" size="16px" />
-          </div>
-          <div class="daily-panel__title">{{ tt('dailyPage.guidanceLabel') }}</div>
-        </div>
-        <div class="daily-panel__text">{{ cardDescription }}</div>
-      </section>
-    </div>
+      <div class="oracle-actions__footer">
+        <button type="button" class="oracle-actions__ok" @click="onClose">
+          {{ tt('common.close') }}
+        </button>
+      </div>
+    </section>
   </q-page>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import { loadTarotData } from 'src/helpers/tarotData'
@@ -74,11 +77,21 @@ const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
 const router = useRouter()
 
+const oracleActionsRef = ref(null)
+const dailyMainRef = ref(null)
+const cardScale = ref(1)
 const cards = ref([])
 
 onMounted(async () => {
   const data = await loadTarotData()
   cards.value = data?.cards || []
+  await nextTick()
+  fitCardToContent()
+  window.addEventListener('resize', fitCardToContent, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', fitCardToContent)
 })
 
 const todayKey = () => {
@@ -122,6 +135,7 @@ const cardImage = computed(() => `/images/cards/${dailyCard.value?.file || ''}`)
 const cardKeywords = computed(
   () => dailyCard.value?.keywords?.[locale.value] || dailyCard.value?.keywords?.en || [],
 )
+const cardKeywordsPreview = computed(() => cardKeywords.value.slice(0, 3))
 const cardMeaning = computed(
   () =>
     dailyCard.value?.meaning?.[orientation.value]?.[locale.value] ||
@@ -165,11 +179,46 @@ const onBack = async () => {
   await hapticTap()
   router.back()
 }
+
+const onClose = async () => {
+  await onBack()
+}
+
+const fitCardToContent = async () => {
+  const dailyMainEl = dailyMainRef.value
+  if (!dailyMainEl) return
+
+  cardScale.value = 1
+  await nextTick()
+
+  let scale = 1
+  for (let i = 0; i < 14; i += 1) {
+    const overflow = dailyMainEl.scrollHeight - dailyMainEl.clientHeight
+    if (overflow <= 0) return
+
+    const nextScale = Math.max(0.34, Number((scale - 0.05).toFixed(2)))
+    if (nextScale === scale) return
+
+    scale = nextScale
+    cardScale.value = scale
+    await nextTick()
+  }
+}
+
+watch(
+  [cardMeaning, cardDescription, cardTitle, cardSubtitle, locale],
+  async () => {
+    await nextTick()
+    fitCardToContent()
+  },
+  { flush: 'post' },
+)
 </script>
 
 <style scoped lang="scss">
 .daily-page {
-  min-height: 100vh;
+  min-height: 100svh;
+  height: 100svh;
   color: #e9edf4;
   position: relative;
   overflow: hidden;
@@ -182,16 +231,32 @@ const onBack = async () => {
   z-index: 0;
 }
 
-.daily-content {
+.oracle-actions {
   position: relative;
   z-index: 1;
-  padding: calc(clamp(64px, 10vh, 90px) + env(safe-area-inset-top)) 18px
-    calc(clamp(56px, 9vh, 80px) + env(safe-area-inset-bottom));
-  max-width: 540px;
-  margin: 0 auto;
-  display: grid;
-  gap: clamp(12px, 2.6vh, 18px);
+  width: 100vw;
+  max-width: 100vw;
   min-height: 100svh;
+  height: 100svh;
+  margin: 0 auto;
+  border-radius: 0;
+  padding: calc(90px + env(safe-area-inset-top, 0px)) 18px calc(env(safe-area-inset-bottom, 0px) + 18px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  box-shadow:
+    0 -24px 56px rgba(0, 0, 0, 0.6),
+    0 -4px 16px rgba(60, 90, 140, 0.12),
+    inset 0 1px 0 rgba(186, 207, 247, 0.08);
+  border: 1px solid rgba(130, 156, 200, 0.22);
+  color: #ffffff;
+  pointer-events: auto;
+  overflow: hidden;
+  background: linear-gradient(165deg, rgba(8, 12, 20, 0.98), rgba(4, 6, 12, 0.99));
+}
+
+.oracle-actions--full {
+  border-radius: 0;
 }
 
 .daily-hero {
@@ -216,16 +281,16 @@ const onBack = async () => {
 }
 
 .daily-title {
-  font-size: 20px;
-  letter-spacing: 0.1em;
+  font-size: 22px;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   font-weight: 600;
   color: rgba(235, 242, 255, 0.96);
 }
 
 .daily-kicker {
-  font-size: 11px;
-  letter-spacing: 0.2em;
+  font-size: 12px;
+  letter-spacing: 0.04em;
   text-transform: capitalize;
   color: rgba(214, 225, 242, 0.68);
 }
@@ -245,41 +310,35 @@ const onBack = async () => {
   place-items: center;
 }
 
-.daily-card {
-  padding: 0;
+.daily-main {
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto;
+  align-content: start;
+  gap: 12px;
   overflow: hidden;
 }
 
-.daily-card__header {
-  padding: 18px 20px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  text-align: center;
-}
-
-.daily-card__label {
-  font-size: 10px;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.62);
-  font-weight: 600;
+.daily-card {
+  padding: 0;
 }
 
 .daily-card__body {
   display: grid;
-  gap: 18px;
+  gap: 14px;
   text-align: center;
 }
 
 .daily-card__media {
-  width: min(42vw, 180px, 19vh);
+  width: calc(min(44vw, 186px, 23vh) * var(--card-scale));
   aspect-ratio: 3 / 5;
-  height: auto;
   margin: 0 auto;
-  border-radius: 16px;
+  border-radius: 14px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: #ffffff;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.42);
 }
 
 .daily-card__media img {
@@ -298,17 +357,62 @@ const onBack = async () => {
   gap: 10px;
 }
 
+.daily-meaning {
+  border-radius: 14px;
+  border: 1px solid rgba(173, 210, 255, 0.2);
+  background:
+    linear-gradient(120deg, rgba(110, 166, 255, 0.12) 0%, rgba(110, 166, 255, 0.04) 45%, rgba(8, 12, 20, 0.7) 100%);
+  padding: 12px 13px 12px 14px;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-meaning::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 999px;
+  background: rgba(173, 210, 255, 0.8);
+}
+
+.daily-meaning__label {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(186, 208, 240, 0.84);
+  font-weight: 600;
+  margin-left: 8px;
+  margin-bottom: 5px;
+}
+
+.daily-meaning__text {
+  margin-left: 8px;
+  font-size: 15px;
+  line-height: 1.55;
+  text-transform: none;
+  color: rgba(224, 234, 251, 0.92);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
 .daily-card__name {
   font-size: 16px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   font-weight: 600;
   color: rgba(235, 242, 255, 0.94);
+  line-height: 1.3;
 }
 
 .daily-card__meta {
-  font-size: 11px;
-  letter-spacing: 0.18em;
+  font-size: 13px;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.64);
 }
@@ -316,17 +420,17 @@ const onBack = async () => {
 .daily-card__tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   justify-content: center;
 }
 
 .daily-tag {
-  padding: 6px 12px;
+  padding: 5px 11px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(8, 12, 20, 0.7);
   font-size: 10px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.75);
   font-weight: 500;
@@ -339,15 +443,16 @@ const onBack = async () => {
 }
 
 .daily-panel {
-  padding: 10px 20px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   background: linear-gradient(160deg, rgba(14, 20, 32, 0.92), rgba(6, 10, 18, 0.98));
   box-shadow:
-    0 18px 40px rgba(2, 6, 12, 0.52),
+    0 10px 24px rgba(2, 6, 12, 0.42),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
   display: grid;
-  gap: 14px;
+  grid-template-rows: auto auto;
+  gap: 10px;
 }
 
 .daily-panel--guidance {
@@ -357,95 +462,136 @@ const onBack = async () => {
 .daily-panel__header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .daily-panel__icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
   background: rgba(8, 12, 20, 0.78);
   border: 1px solid rgba(173, 210, 255, 0.16);
   color: rgba(173, 210, 255, 0.9);
 }
 
 .daily-panel__title {
-  font-size: 11px;
-  letter-spacing: 0.22em;
+  font-size: 13px;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.7);
+  color: rgba(214, 225, 242, 0.74);
   font-weight: 600;
 }
 
 .daily-panel__text {
-  font-size: 14px;
-  line-height: 1.65;
-  color: rgba(224, 234, 251, 0.88);
-  padding: 0 2px;
+  font-size: 15px;
+  line-height: 1.55;
+  text-transform: none;
+  color: rgba(224, 234, 251, 0.9);
 }
 
-@media (max-height: 720px) {
-  .daily-card__body {
-    gap: 14px;
+.oracle-actions__footer {
+  margin-top: auto;
+  padding: 8px;
+  border-radius: 16px;
+  border: 1px solid rgba(106, 126, 164, 0.22);
+  background:
+    linear-gradient(180deg, rgba(9, 13, 21, 0.88), rgba(3, 6, 11, 0.95)),
+    linear-gradient(90deg, rgba(83, 112, 170, 0.1), rgba(83, 112, 170, 0));
+  box-shadow:
+    inset 0 1px 0 rgba(186, 207, 247, 0.08),
+    0 10px 24px rgba(0, 0, 0, 0.3);
+}
+
+.oracle-actions__ok {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 12px;
+  border: 1px solid rgba(156, 184, 235, 0.36);
+  padding: 12px 14px;
+  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
+  color: #e9edf4;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  box-shadow: none;
+}
+
+.oracle-actions__ok:active {
+  transform: translateY(1px);
+  border-color: rgba(156, 184, 235, 0.28);
+  filter: saturate(0.92);
+}
+
+@media (max-height: 760px) {
+  .daily-main {
+    gap: 10px;
+  }
+
+  .daily-card__media {
+    width: calc(min(40vw, 164px, 20vh) * var(--card-scale));
+  }
+
+  .daily-panel__text {
+    font-size: 15px;
+  }
+
+  .daily-meaning__text {
+    -webkit-line-clamp: 3;
+  }
+}
+
+@media (max-height: 680px) {
+  .daily-title {
+    font-size: 19px;
+  }
+
+  .daily-kicker {
+    font-size: 13px;
+    letter-spacing: 0.04em;
   }
 
   .daily-card__name {
     font-size: 14px;
   }
 
-  .daily-card__meta {
-    font-size: 10px;
-  }
-
-  .daily-panel {
-    padding: 14px 16px 16px;
-    gap: 10px;
-  }
-
-  .daily-panel__title {
-    font-size: 10px;
-  }
-
-  .daily-panel__text {
-    font-size: 13px;
-    line-height: 1.55;
-  }
-}
-
-@media (max-height: 680px) {
-  .daily-content {
-    gap: 10px;
-  }
-
   .daily-card__media {
-    width: min(38vw, 160px, 16.5vh);
-  }
-
-  .daily-card__info {
-    gap: 8px;
+    width: calc(min(36vw, 146px, 18vh) * var(--card-scale));
   }
 
   .daily-tag {
-    padding: 4px 10px;
     font-size: 9px;
+    padding: 4px 9px;
   }
 
   .daily-panel {
-    padding: 12px 14px 14px;
-    gap: 8px;
+    padding: 8px 10px;
+    gap: 6px;
   }
 
-  .daily-panel__icon {
-    width: 28px;
-    height: 28px;
+  .daily-panel__title {
+    font-size: 9px;
   }
 
   .daily-panel__text {
-    font-size: 12px;
-    line-height: 1.5;
+    font-size: 15px;
+  }
+
+  .daily-meaning {
+    padding: 8px 9px 8px 10px;
+  }
+
+  .daily-meaning__label {
+    font-size: 9px;
+    margin-bottom: 3px;
+  }
+
+  .daily-meaning__text {
+    font-size: 15px;
+    -webkit-line-clamp: 2;
   }
 }
 </style>

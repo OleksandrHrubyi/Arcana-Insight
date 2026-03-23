@@ -4,7 +4,7 @@
     <div class="topbar">
       <q-btn flat class="cancel-btn" :label="tt('common.cancel')" @click="onBack" />
       <div class="topbar-title">{{ tt('accountEdit.title') }}</div>
-      <q-btn flat class="done-btn" :label="tt('done')" :disable="saving" @click="save" />
+      <q-btn flat class="done-btn" :label="tt('done')" :disable="saving" :loading="saving" @click="save" />
     </div>
 
     <q-list class="settings-list">
@@ -96,7 +96,7 @@
 
 <script>
 import { defineComponent } from 'vue'
-import { supabase } from 'src/services/supabaseClient'
+import { getUserNative, selectAppUser, upsertAppUser } from 'src/services/supabaseNative'
 import { t, currentLocale } from 'src/i18n'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
@@ -159,19 +159,18 @@ export default defineComponent({
   },
 
   async mounted () {
-    const { data } = await supabase.auth.getUser()
-    const user = data?.user
+    const { data: user } = await getUserNative(8000)
     if (!user) {
       this.$router.replace('/auth')
       return
     }
     this.userId = user.id
 
-    const { data: row } = await supabase
-    .from('app_users')
-    .select('name,email,date_of_birth,city_of_birth,country')
-    .eq('id', user.id)
-    .maybeSingle()
+    const { data: row } = await selectAppUser(
+      user.id,
+      8000,
+      'name,email,date_of_birth,city_of_birth,country'
+    )
 
     if (row) {
       this.form = { ...this.form, ...row }
@@ -235,9 +234,7 @@ export default defineComponent({
           country: this.form.country || null
         }
 
-        const { error } = await supabase
-        .from('app_users')
-        .upsert(payload, { onConflict: 'id' })
+        const { error } = await upsertAppUser(payload, 8000)
 
         if (error) {
           console.error(error)

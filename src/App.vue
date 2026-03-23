@@ -9,9 +9,24 @@
 <script setup>
 import { onMounted } from 'vue'
 import { initPushListeners } from 'boot/push'
+import { getBillingPremiumStatus } from 'src/services/premiumBilling'
+import { usePremiumAccess } from 'src/stores/premiumAccess'
+
+const { applyPremiumAccessStatus } = usePremiumAccess()
+
+const syncPremiumStatus = async () => {
+  const status = await getBillingPremiumStatus()
+  if (!status.ok || !status.available) return
+  applyPremiumAccessStatus({
+    active: status.hasPremium,
+    plan: status.plan,
+    source: 'billing',
+  })
+}
 
 onMounted(() => {
   void initPushListeners()
+  void syncPremiumStatus()
 })
 </script>
 

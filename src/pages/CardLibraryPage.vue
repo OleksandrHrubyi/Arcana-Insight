@@ -370,7 +370,7 @@ onMounted(async () => {
   border: none;
   background: transparent;
   color: rgba(214, 225, 242, 0.7);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -450,7 +450,7 @@ onMounted(async () => {
 }
 
 .cards-count {
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.56);
@@ -564,7 +564,7 @@ onMounted(async () => {
 
 .sheet-title {
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.74);
@@ -634,7 +634,7 @@ onMounted(async () => {
 
 .card-detail__meta {
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.68);
@@ -692,7 +692,7 @@ onMounted(async () => {
   border-radius: 999px;
   border: 1px solid rgba(130, 156, 200, 0.2);
   background: rgba(8, 12, 20, 0.7);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: rgba(235, 242, 255, 0.88);

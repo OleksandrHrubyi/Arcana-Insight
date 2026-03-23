@@ -77,28 +77,6 @@
             swipeable
             class="bg-transparent horoscope-panels"
           >
-            <q-tab-panel name="love" class="q-pa-none">
-              <div class="panel-inner">
-                <div class="horoscope-info-title">{{ tt('love') }}</div>
-                <div class="horoscope-divider"></div>
-
-                <div class="horoscope-info-style">
-                  {{ horoscope[activeZodiac.key]?.love?.detailed || '' }}
-                </div>
-              </div>
-            </q-tab-panel>
-
-            <q-tab-panel name="career" class="q-pa-none">
-              <div class="panel-inner">
-                <div class="horoscope-info-title">{{ tt('career') }}</div>
-                <div class="horoscope-divider"></div>
-
-                <div class="horoscope-info-style">
-                  {{ horoscope[activeZodiac.key]?.career?.detailed || '' }}
-                </div>
-              </div>
-            </q-tab-panel>
-
             <q-tab-panel name="energy" class="q-pa-none">
               <div class="panel-inner">
                 <div class="horoscope-info-title">{{ tt('energy') }}</div>
@@ -109,12 +87,56 @@
                 </div>
               </div>
             </q-tab-panel>
+
+            <q-tab-panel name="love" class="q-pa-none">
+              <div class="panel-inner">
+                <div class="horoscope-info-title">{{ tt('love') }}</div>
+                <div class="horoscope-divider"></div>
+
+                <div class="horoscope-text-wrap">
+                  <div class="horoscope-info-style" :class="{ 'horoscope-info-style--blurred': isThemeLocked('love') }">
+                    {{ horoscope[activeZodiac.key]?.love?.detailed || '' }}
+                  </div>
+                  <button
+                    v-if="isThemeLocked('love')"
+                    type="button"
+                    class="horoscope-lock-overlay"
+                    @click="openPremiumPaywall"
+                  >
+                    <span>{{ getThemeLockText('love') }}</span>
+                    <span class="horoscope-lock-overlay__cta">{{ tt('premiumAccess.cta') }}</span>
+                  </button>
+                </div>
+              </div>
+            </q-tab-panel>
+
+            <q-tab-panel name="career" class="q-pa-none">
+              <div class="panel-inner">
+                <div class="horoscope-info-title">{{ tt('career') }}</div>
+                <div class="horoscope-divider"></div>
+
+                <div class="horoscope-text-wrap">
+                  <div class="horoscope-info-style" :class="{ 'horoscope-info-style--blurred': isThemeLocked('career') }">
+                    {{ horoscope[activeZodiac.key]?.career?.detailed || '' }}
+                  </div>
+                  <button
+                    v-if="isThemeLocked('career')"
+                    type="button"
+                    class="horoscope-lock-overlay"
+                    @click="openPremiumPaywall"
+                  >
+                    <span>{{ getThemeLockText('career') }}</span>
+                    <span class="horoscope-lock-overlay__cta">{{ tt('premiumAccess.cta') }}</span>
+                  </button>
+                </div>
+              </div>
+            </q-tab-panel>
           </q-tab-panels>
           <div class="horoscope-controls">
             <div class="dots">
-              <button class="dot" :class="{ active: themeTab === 'love' }" @click="setTheme('love')"></button>
-              <button class="dot" :class="{ active: themeTab === 'career' }" @click="setTheme('career')"></button>
-              <button class="dot" :class="{ active: themeTab === 'energy' }" @click="setTheme('energy')"></button>
+              <button class="dot" :class="{ active: themeTab === 'energy', 'dot--locked': isThemeLocked('energy') }" @click="setTheme('energy')"></button>
+              <button class="dot" :class="{ active: themeTab === 'love', 'dot--locked': isThemeLocked('love') }" @click="setTheme('love')"></button>
+              <button class="dot" :class="{ active: themeTab === 'career', 'dot--locked': isThemeLocked('career') }" @click="setTheme('career')"></button>
             </div>
 
 <!--            <q-btn size="12px" round class="share-wrap" icon="share" @click="handleShare" />-->
@@ -134,7 +156,8 @@ import { localISODate } from 'src/helpers/date.js';
 import { saveLocal, loadLocal } from 'src/helpers/localStorageSaver.js';
 import { t, currentLocale } from 'src/i18n';
 import { Share } from '@capacitor/share';
-import { supabase } from 'src/services/supabaseClient';
+import { selectHoroscopes } from 'src/services/supabaseNative';
+import { usePremiumAccess } from 'src/stores/premiumAccess';
 
 const DESIGN_W = 440;
 const DESIGN_TOP_INSET = 30;
@@ -159,6 +182,8 @@ const THEME_META = {
   career: { emoji: '💼', label: 'Кар’єра' },
   energy: { emoji: '⚡️', label: 'Енергія' },
 };
+const FREE_HOROSCOPE_THEME = 'energy';
+const premiumAccessStore = usePremiumAccess();
 
 export default {
   name: 'HoroscopeComponent',
@@ -219,11 +244,15 @@ export default {
       horoscope: {},
 
       midnightTimer: null,
-      themeTab: 'love',
+      themeTab: FREE_HOROSCOPE_THEME,
     };
   },
 
   computed: {
+    hasPremiumAccess() {
+      return premiumAccessStore.hasPremiumAccess.value;
+    },
+
     locale() {
       return currentLocale.value || 'en';
     },
@@ -255,6 +284,7 @@ export default {
   },
 
   mounted() {
+    this.themeTab = FREE_HOROSCOPE_THEME;
     this.setVh();
     this.applyScale();
     this.loadHoroscopesForDay();
@@ -295,7 +325,36 @@ export default {
     }
   },
 
+  watch: {
+    hasPremiumAccess(next) {
+      if (!next && this.themeTab !== FREE_HOROSCOPE_THEME) {
+        this.themeTab = FREE_HOROSCOPE_THEME;
+      }
+    },
+  },
+
   methods: {
+    isThemeLocked(tab) {
+      if (this.hasPremiumAccess) return false;
+      return tab !== FREE_HOROSCOPE_THEME;
+    },
+
+    getThemeLockText(tab) {
+      const title = this.tt(tab).toLowerCase();
+      return this.locale === 'uk'
+        ? `Для розділу «${title}» потрібен Premium`
+        : `Premium access is required for ${title}.`;
+    },
+
+    async openPremiumPaywall() {
+      try {
+        await Haptics.impact({ style: ImpactStyle.Light });
+      } catch (e) {
+        console.error(e);
+      }
+      this.$router.push({ name: 'premium' }).catch(() => {});
+    },
+
     // ✅ генерація “реальних” летючих частинок
     buildParticles() {
       const count = 36; // 20–40
@@ -390,11 +449,7 @@ export default {
       }
 
       const fetchByDate = async (date) => {
-        const {
-          data,
-          error,
-        } = await supabase.from('horoscopes').select('sign, theme, summary, detailed').eq('date', date).eq('locale', locale);
-
+        const { data, error } = await selectHoroscopes(date, locale, 8000);
         if (error) throw error;
         return data ?? [];
       };
@@ -1318,13 +1373,13 @@ export default {
 }
 
 .active-zodiac-name {
-  font-size: calc(12px * var(--s));
-  letter-spacing: 0.14em;
+  font-size: calc(16px * var(--s));
+  letter-spacing: 0.04em;
   color: rgba(255, 255, 255, 0.92);
 }
 
 .active-zodiac-dates {
-  font-size: calc(12px * var(--s));
+  font-size: calc(14px * var(--s));
   color: rgba(159, 216, 246, 0.75);
 }
 
@@ -1333,7 +1388,7 @@ export default {
   font-size: calc(18px * var(--s));
   line-height: 22px;
   margin-bottom: 10px;
-  letter-spacing: 0.10em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.92);
 }
@@ -1341,7 +1396,7 @@ export default {
 .horoscope-divider {
   width: 46px;
   height: 1px;
-  margin: 0 auto 12px;
+  margin: 0 auto 6px;
   background: linear-gradient(
       90deg,
       transparent 0%,
@@ -1385,21 +1440,27 @@ export default {
   min-height: 0;
 }
 
+.horoscope-text-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
 .horoscope-info-style {
   flex: 1;
   min-height: 0;
-
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 
   font-weight: 400;
-  font-size: calc(14.5px * var(--s));
-  line-height: 175%;
+  font-size: max(15px, calc(15px * var(--s)));
+  line-height: 1.55;
   letter-spacing: 0.01em;
+  text-transform: none;
   color: rgba(225, 235, 250, 0.78);
 
-  padding: 0 clamp(14px, 4vw, 22px);
+  padding: 3px clamp(14px, 4vw, 22px);
 
   scrollbar-width: none;
   text-wrap: pretty;
@@ -1419,6 +1480,45 @@ export default {
       #000 calc(100% - 18px),
       transparent 100%
   );
+}
+
+.horoscope-info-style--blurred {
+  filter: blur(3.5px);
+  opacity: 0.75;
+  pointer-events: none;
+  user-select: none;
+}
+
+.horoscope-lock-overlay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: min(88%, 300px);
+  width: min(88%, 300px);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 229, 177, 0.34);
+  background: rgba(10, 16, 26, 0.84);
+  color: rgba(244, 236, 216, 0.95);
+  font-size: max(14px, calc(14px * var(--s)));
+  line-height: 1.4;
+  text-align: center;
+  padding: 10px 14px;
+  backdrop-filter: blur(8px);
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  border-radius: 14px;
+}
+
+.horoscope-lock-overlay__cta {
+  border-radius: 12px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 229, 177, 0.4);
+  background: rgba(255, 224, 156, 0.08);
+  color: rgba(255, 238, 204, 0.94);
+  font-size: max(12px, calc(12px * var(--s)));
+  letter-spacing: 0.04em;
 }
 
 .horoscope-info-style::-webkit-scrollbar {
@@ -1468,6 +1568,10 @@ export default {
   transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
 }
 
+.dot--locked::after {
+  background: rgba(255, 219, 148, 0.35);
+}
+
 .dot.active::after {
   background: rgba(255, 255, 255, 0.72);
   transform: scale(1.15);
@@ -1511,7 +1615,7 @@ export default {
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.04em;
   color: #fff;
   margin-bottom: 8px;
 }
@@ -1545,7 +1649,7 @@ export default {
   }
 
   .horoscope-info-style {
-    font-size: 12px;
+    font-size: 15px;
   }
 
   .bottom-wrapper {

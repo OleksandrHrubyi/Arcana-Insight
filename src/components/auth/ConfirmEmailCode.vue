@@ -2,6 +2,7 @@
 //import { supabase } from 'src/services/supabaseClient'
 
 import { supabase } from 'src/services/supabaseClient';
+import { upsertAppUser } from 'src/services/supabaseNative';
 import CodeInput from 'components/ui/CodeInput.vue';
 import { t, currentLocale } from 'src/i18n';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -175,11 +176,7 @@ export default {
         if (this.name) profileData.name = this.name
         if (this.dateOfBirth) profileData.date_of_birth = this.dateOfBirth
 
-        const { error: profileError } = await supabase
-          .from('app_users')
-          .upsert(profileData, {
-            onConflict: 'id'
-          })
+        const { error: profileError } = await upsertAppUser(profileData, 8000)
 
         if (profileError) {
           console.error('[ConfirmCode] Failed to create profile:', profileError)
@@ -188,8 +185,6 @@ export default {
           console.log('[ConfirmCode] User profile created successfully')
         }
 
-        // Small delay to ensure session is propagated
-        await new Promise(resolve => setTimeout(resolve, 100))
         this.$router.push('/')
       } catch (e) {
         console.error(e);
@@ -257,8 +252,12 @@ export default {
             no-caps
             class="send-code__btn"
             @click="resendCode"
-            :disable="resendCooldown > 0"
+            :loading="loading"
+            :disable="loading || resendCooldown > 0"
           >
+            <template v-slot:loading>
+              <q-spinner-dots size="18px" color="#617C97" />
+            </template>
             <span class="sent-code-btn">{{ resendLabel }}</span>
           </q-btn>
         </div>

@@ -119,58 +119,98 @@
             :disabled="interpretationLoading"
             @click="acceptInterpretation"
           >
-            {{ yesTitle }}
+            <q-spinner-dots v-if="interpretationLoading" size="18px" color="white" />
+            <span v-else>{{ yesTitle }}</span>
+          </button>
+        </div>
+      </section>
+
+      <section
+        v-if="showInterpretationFinishActions"
+        class="oracle-interpret oracle-interpret--finish"
+        aria-live="polite"
+      >
+        <div class="oracle-interpret__actions">
+          <button
+            type="button"
+            class="oracle-interpret__btn oracle-interpret__btn--ghost"
+            @click="onExit"
+          >
+            {{ t.choices.leaveSession }}
+          </button>
+          <button
+            type="button"
+            class="oracle-interpret__btn"
+            @click="acceptInterpretation"
+          >
+            {{ t.choices.newInterpretation }}
           </button>
         </div>
       </section>
 
       <q-dialog
         v-model="cardPreviewOpen"
-        transition-show="scale"
-        transition-hide="scale"
+        maximized
+        transition-show="slide-up"
+        transition-hide="slide-down"
+        :transition-duration="440"
         class="oracle-card-preview-dialog"
       >
-        <div
+        <section
           v-if="previewCard"
           class="oracle-card-preview"
           role="dialog"
           :aria-label="getCardTitle(previewCard)"
           @click.stop
         >
-          <button
-            type="button"
-            class="oracle-card-preview__close"
-            :aria-label="currentLang === 'uk' ? 'Закрити карту' : 'Close card'"
-            @click="cardPreviewOpen = false"
-          >
-            ×
-          </button>
-          <img
-            class="oracle-card-preview__image"
-            :class="{ 'oracle-card-preview__image--reversed': previewCard.reversed }"
-            :src="getCardImage(previewCard)"
-            :alt="getCardTitle(previewCard)"
-          />
-          <p class="oracle-card-preview__title">{{ getCardTitle(previewCard) }}</p>
-          <div class="oracle-card-preview__meta">
-            {{ previewOrientationLabel }}
+          <div class="oracle-card-preview__header">
+            <button
+              type="button"
+              class="oracle-card-preview__back"
+              :aria-label="currentLang === 'uk' ? 'Назад' : 'Back'"
+              @click="cardPreviewOpen = false"
+            >
+              <q-icon name="chevron_left" size="18px" />
+            </button>
+            <div class="sheet-title">{{ currentLang === 'uk' ? 'Карта' : 'Card' }}</div>
           </div>
-          <div class="oracle-card-preview__text">
-            <p v-for="(line, idx) in previewDescriptionLines" :key="`preview-${idx}`">
-              {{ line }}
-            </p>
-          </div>
-          <div v-if="previewKeywords.length" class="oracle-card-preview__keywords">
-            <div class="oracle-card-preview__label">
-              {{ previewKeywordsLabel }}
+
+          <div class="oracle-card-preview__content">
+            <div class="oracle-card-preview__media">
+              <img
+                class="oracle-card-preview__image"
+                :class="{ 'oracle-card-preview__image--reversed': previewCard.reversed }"
+                :src="getCardImage(previewCard)"
+                :alt="getCardTitle(previewCard)"
+              />
             </div>
-            <div class="oracle-card-preview__tags">
-              <span v-for="word in previewKeywords" :key="word" class="oracle-card-preview__tag">
-                {{ word }}
-              </span>
+            <p class="oracle-card-preview__title">{{ getCardTitle(previewCard) }}</p>
+            <div class="oracle-card-preview__meta">
+              {{ previewOrientationLabel }}
+            </div>
+            <div class="oracle-card-preview__text">
+              <p v-for="(line, idx) in previewDescriptionLines" :key="`preview-${idx}`">
+                {{ line }}
+              </p>
+            </div>
+            <div v-if="previewKeywords.length" class="oracle-card-preview__keywords">
+              <div class="oracle-card-preview__label">
+                {{ previewKeywordsLabel }}
+              </div>
+              <div class="oracle-card-preview__tags">
+                <span v-for="word in previewKeywords" :key="word" class="oracle-card-preview__tag">
+                  {{ word }}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+
+          <div class="oracle-actions__footer">
+            <button type="button" class="oracle-actions__ok" @click="cardPreviewOpen = false">
+              {{ currentLang === 'uk' ? 'Закрити' : 'Close' }}
+            </button>
+          </div>
+        </section>
       </q-dialog>
 
       <q-dialog
@@ -245,10 +285,12 @@ import { computed, onActivated, onBeforeUnmount, onMounted, ref, watch } from 'v
 import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
 import { currentLocale, t as i18nT } from 'src/i18n'
 import { loadTarotData } from 'src/helpers/tarotData'
 import { getTarotReading } from 'src/services/tarotOracle'
-import { supabase } from 'src/services/supabaseClient'
+import { getUserNative, insertTarotReading } from 'src/services/supabaseNative'
+import { usePremiumAccess } from 'src/stores/premiumAccess'
 
 const videoRef = ref(null)
 const sceneRef = ref(null)
@@ -266,6 +308,8 @@ const currentLang = computed(() => {
   return locale.startsWith('uk') ? 'uk' : 'en'
 })
 const router = useRouter()
+const $q = useQuasar()
+const { hasPremiumAccess } = usePremiumAccess()
 
 const stage = ref('intro')
 const selectedTheme = ref('')
@@ -310,6 +354,7 @@ const DEAL_START_DELAY = 680
 const DEAL_REVEAL_DELAY = 620
 const DEAL_FLIP_DELAY = 620
 const DEAL_FINISH_DELAY = 1100
+const FREE_TAROT_DAILY_KEY = 'arcana_free_tarot_daily_v1'
 let controlsRevealToken = 0
 const DECK_ANCHOR = Object.freeze({
   x: 0.728,
@@ -320,11 +365,61 @@ const DECK_ANCHOR = Object.freeze({
 })
 
 function onExit() {
-  if (window.history.length > 1) {
-    router.back()
-  } else {
-    router.push('/')
+  void impact(ImpactStyle.Light)
+  router.push('/')
+}
+
+const getTodayKey = () => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+const readFreeTarotUsage = () => {
+  try {
+    const raw = localStorage.getItem(FREE_TAROT_DAILY_KEY)
+    if (!raw) return ''
+    const parsed = JSON.parse(raw)
+    return String(parsed?.date || '')
+  } catch {
+    return ''
   }
+}
+
+const hasUsedFreeTarotToday = () => {
+  if (hasPremiumAccess.value) return false
+  return readFreeTarotUsage() === getTodayKey()
+}
+
+const markFreeTarotUsedToday = () => {
+  try {
+    localStorage.setItem(
+      FREE_TAROT_DAILY_KEY,
+      JSON.stringify({
+        date: getTodayKey(),
+        usedAt: new Date().toISOString(),
+      }),
+    )
+  } catch {
+    // ignore storage errors
+  }
+}
+
+const notifyFreeTarotDailyLimit = () => {
+  const message =
+    currentLang.value === 'uk'
+      ? 'Безкоштовний розклад уже використано сьогодні. Новий буде завтра, або відкрий Premium без ліміту.'
+      : 'Your free tarot reading is already used for today. Come back tomorrow or unlock Premium for unlimited access.'
+
+  $q.notify({
+    message,
+    color: 'dark',
+    textColor: 'white',
+    position: 'bottom',
+    timeout: 2200,
+  })
 }
 const ORACLE_HEAD_ANCHOR = Object.freeze({
   x: 0.49,
@@ -410,6 +505,7 @@ const loadCardPool = async () => {
       meaning: card?.meaning || null,
       keywords: card?.keywords || null,
       synopsis: card?.synopsis || null,
+      description: card?.description || null,
     }))
 }
 
@@ -786,6 +882,32 @@ const setSpread = (spread) => {
   currentPrompt.value = buildReadySummaryWithTouchPrompt(spread)
 }
 
+const selectSpreadWithAccess = async (spread) => {
+  if (spread === 1 && !hasPremiumAccess.value && hasUsedFreeTarotToday()) {
+    notifyFreeTarotDailyLimit()
+    await router.push({ name: 'premium' })
+    return
+  }
+
+  if (spread === 1 || hasPremiumAccess.value) {
+    setSpread(spread)
+    return
+  }
+
+  const message = i18nT(currentLang.value, 'premiumAccess.spreads.notify')
+  if (message) {
+    $q.notify({
+      message,
+      color: 'dark',
+      textColor: 'white',
+      position: 'bottom',
+      timeout: 1800,
+    })
+  }
+
+  await router.push({ name: 'premium' })
+}
+
 const getCardRole = (index, total) => {
   const isUk = currentLang.value === 'uk'
   if (total === 1) {
@@ -895,6 +1017,17 @@ const getCardKeywords = (card) => {
   return card?.keywords?.[currentLang.value] || card?.keywords?.en || []
 }
 
+const getCardDetailText = (card) => {
+  const orientation = card?.reversed ? 'reversed' : 'upright'
+  return (
+    card?.description?.[orientation]?.[currentLang.value] ||
+    card?.description?.[orientation]?.en ||
+    card?.synopsis?.[currentLang.value] ||
+    card?.synopsis?.en ||
+    ''
+  )
+}
+
 const buildInterpretationPayload = () => {
   const themeLabel = t.value.themeLabels[selectedTheme.value] || t.value.themeLabels.default
   const subThemeLabelRaw =
@@ -921,6 +1054,66 @@ const buildInterpretationPayload = () => {
       keywords: getCardKeywords(card),
     })),
   }
+}
+
+const buildBasicInterpretation = (payload) => {
+  const isUk = currentLang.value === 'uk'
+  const total = spreadCards.value.length || selectedSpread.value || 1
+  const cards = spreadCards.value.map((card, index) => {
+    const message = String(getCardMeaningText(card) || '').trim()
+    const detail = String(getCardDetailText(card) || '').trim()
+
+    return {
+      position: getPositionKey(index, total),
+      positionLabel: getCardRole(index, total),
+      cardTitle: getCardTitle(card),
+      message: message || detail || getCardTitle(card),
+      detail: detail && detail !== message ? detail : '',
+      question: '',
+    }
+  })
+
+  return {
+    summaryTitle: isUk ? 'Базове тлумачення' : 'Basic interpretation',
+    opening: isUk
+      ? 'Тлумачення нижче побудоване на значеннях карт із бібліотеки.'
+      : 'The interpretation below is based on card meanings from the library.',
+    summary: payload?.question
+      ? (isUk ? `Фокус цього розкладу: ${payload.question}` : `Focus of this spread: ${payload.question}`)
+      : '',
+    advice: '',
+    cards,
+  }
+}
+
+const persistInterpretationAndOpen = async (data, payload) => {
+  interpretationData.value = data
+  try {
+    sessionStorage.setItem(
+      'tarot-interpretation-v1',
+      JSON.stringify({
+        reading: data,
+        meta: {
+          themeLabel: payload.themeLabel || '',
+          subThemeLabel: payload.subThemeLabel || '',
+          question: payload.question || '',
+        },
+        visuals: spreadCards.value.map((card) => ({
+          file: card.file,
+          reversed: Boolean(card.reversed),
+        })),
+      }),
+    )
+  } catch (error) {
+    console.error(error)
+  }
+
+  router.push({ name: 'tarotInterpretation' }).catch(() => {})
+
+  // Save in background so DB hiccups never block navigation to interpretation.
+  void saveReadingToDatabase(data, payload).catch((error) => {
+    console.error('Failed to save reading to database:', error)
+  })
 }
 
 const getCardPromptHold = (card, index, total) => {
@@ -1011,6 +1204,17 @@ const touchDeck = () => {
   if (stage.value !== 'ready' || !isDeckHotspotActive.value) {
     return
   }
+
+  if (!hasPremiumAccess.value && hasUsedFreeTarotToday()) {
+    notifyFreeTarotDailyLimit()
+    void router.push({ name: 'premium' })
+    return
+  }
+
+  if (!hasPremiumAccess.value && (selectedSpread.value || 1) === 1) {
+    markFreeTarotUsedToday()
+  }
+
   void impact(ImpactStyle.Light)
   stage.value = 'started'
   currentPrompt.value = ''
@@ -1107,6 +1311,13 @@ const isReadingComplete = computed(
 const showInterpretationActions = computed(
   () => isReadingComplete.value && interpretationChoicesVisible.value && !interpretationLoading.value && !interpretationData.value,
 )
+const showInterpretationFinishActions = computed(
+  () =>
+    isReadingComplete.value &&
+    interpretationDecision.value === 'no' &&
+    !interpretationLoading.value &&
+    !interpretationData.value,
+)
 
 const choices = computed(() => {
   if (stage.value === 'theme') {
@@ -1162,10 +1373,14 @@ const choices = computed(() => {
   }
 
   if (stage.value === 'spread_primary') {
+    const premiumLabel = i18nT(currentLang.value, 'premiumAccess.badge')
+    const spread3Label = hasPremiumAccess.value ? t.value.choices.spread3 : `${t.value.choices.spread3} · ${premiumLabel}`
+    const spread5Label = hasPremiumAccess.value ? t.value.choices.spread5 : `${t.value.choices.spread5} · ${premiumLabel}`
+
     return withLeaveSession([
-      { label: t.value.choices.spread1, action: () => setSpread(1) },
-      { label: t.value.choices.spread3, action: () => setSpread(3) },
-      { label: t.value.choices.spread5, action: () => setSpread(5) },
+      { label: t.value.choices.spread1, action: () => selectSpreadWithAccess(1) },
+      { label: spread3Label, action: () => selectSpreadWithAccess(3) },
+      { label: spread5Label, action: () => selectSpreadWithAccess(5) },
       { label: t.value.choices.back, action: toQuestionMode },
     ])
   }
@@ -1255,7 +1470,7 @@ watch(interpretationLoading, (loading) => {
 
 const saveReadingToDatabase = async (interpretationData, payload) => {
   try {
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: user } = await getUserNative(8000)
     if (!user) {
       console.log('User not logged in, skipping save to database')
       return
@@ -1266,15 +1481,13 @@ const saveReadingToDatabase = async (interpretationData, payload) => {
       reversed: Boolean(card.reversed),
     }))
 
-    const { error } = await supabase
-      .from('tarot_readings')
-      .insert({
-        user_id: user.id,
-        spread_type: selectedSpread.value || spreadCards.value.length,
-        cards: cardsData,
-        question: payload.question || null,
-        interpretation: interpretationData.interpretation || null,
-      })
+    const { error } = await insertTarotReading({
+      user_id: user.id,
+      spread_type: selectedSpread.value || spreadCards.value.length,
+      cards: cardsData,
+      question: payload.question || null,
+      interpretation: interpretationData.interpretation || null,
+    }, 8000)
 
     if (error) {
       console.error('Supabase insert error:', error)
@@ -1299,44 +1512,51 @@ const acceptInterpretation = async () => {
   interpretationLoading.value = true
   const payload = buildInterpretationPayload()
   try {
-    const data = await getTarotReading(payload)
-    if (!data) {
-      interpretationError.value = interpretationUnavailableLine.value
-      interpretationDecision.value = ''
-      interpretationChoicesVisible.value = true
+    if (!hasPremiumAccess.value) {
+      const data = buildBasicInterpretation(payload)
+      await persistInterpretationAndOpen(data, payload)
       return
     }
-    interpretationData.value = data
-    try {
-      sessionStorage.setItem(
-        'tarot-interpretation-v1',
-        JSON.stringify({
-          reading: data,
-          meta: {
-            themeLabel: payload.themeLabel || '',
-            subThemeLabel: payload.subThemeLabel || '',
-            question: payload.question || '',
-          },
-          visuals: spreadCards.value.map((card) => ({
-            file: card.file,
-            reversed: Boolean(card.reversed),
-          })),
-        }),
-      )
-    } catch (error) {
-      console.error(error)
+
+    const data = await getTarotReading(payload)
+    if (!data) {
+      const fallbackData = buildBasicInterpretation(payload)
+      const fallbackMessage =
+        currentLang.value === 'uk'
+          ? 'AI-інтерпретація тимчасово недоступна. Показую базове тлумачення.'
+          : 'AI interpretation is temporarily unavailable. Showing the basic card meaning.'
+      $q.notify({
+        message: fallbackMessage,
+        color: 'dark',
+        textColor: 'white',
+        position: 'bottom',
+      })
+      await persistInterpretationAndOpen(fallbackData, payload)
+      return
     }
 
-    // Save reading to Supabase
-    try {
-      await saveReadingToDatabase(data, payload)
-    } catch (error) {
-      console.error('Failed to save reading to database:', error)
-    }
-
-    router.push({ name: 'tarotInterpretation' }).catch(() => {})
+    await persistInterpretationAndOpen(data, payload)
   } catch (error) {
     console.error(error)
+    if (hasPremiumAccess.value) {
+      try {
+        const fallbackData = buildBasicInterpretation(payload)
+        const fallbackMessage =
+          currentLang.value === 'uk'
+            ? 'AI-інтерпретація тимчасово недоступна. Показую базове тлумачення.'
+            : 'AI interpretation is temporarily unavailable. Showing the basic card meaning.'
+        $q.notify({
+          message: fallbackMessage,
+          color: 'dark',
+          textColor: 'white',
+          position: 'bottom',
+        })
+        await persistInterpretationAndOpen(fallbackData, payload)
+        return
+      } catch (fallbackError) {
+        console.error(fallbackError)
+      }
+    }
     interpretationError.value = interpretationUnavailableLine.value
     interpretationDecision.value = ''
     interpretationChoicesVisible.value = true
@@ -1958,6 +2178,10 @@ onBeforeUnmount(() => {
   pointer-events: auto;
 }
 
+.oracle-interpret--finish {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
+}
+
 .oracle-interpret__actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2127,7 +2351,7 @@ onBeforeUnmount(() => {
 
 .sheet-title {
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.74);
@@ -2169,7 +2393,7 @@ onBeforeUnmount(() => {
 .oracle-question__error {
   margin: 0;
   padding-left: 2px;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.2;
   color: rgba(255, 168, 168, 0.9);
 }
@@ -2323,57 +2547,77 @@ onBeforeUnmount(() => {
 }
 
 .oracle-card-preview {
-  width: min(86vw, 360px);
-  display: grid;
+  width: 100vw;
+  max-width: 100vw;
+  margin: 0 auto;
+  border-radius: 0;
+  padding: calc(env(safe-area-inset-top, 0px) + 70px) 16px
+    calc(env(safe-area-inset-bottom, 0px) + 24px);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
-  justify-items: center;
-  transform: translateY(-40px);
-  padding: 20px 18px 24px;
-  border-radius: 28px;
-  background:
-    radial-gradient(150% 200% at 50% -10%, rgba(60, 80, 120, 0.12), rgba(50, 70, 100, 0)),
-    linear-gradient(165deg, rgba(8, 12, 20, 0.98), rgba(4, 6, 12, 0.99));
-  border: 1px solid rgba(130, 156, 200, 0.22);
   box-shadow:
-    0 32px 72px rgba(0, 0, 0, 0.7),
-    0 4px 16px rgba(60, 90, 140, 0.12),
-    inset 0 1px 0 rgba(186, 207, 247, 0.14),
-    inset 0 -1px 0 rgba(44, 64, 102, 0.18);
+    0 -24px 56px rgba(0, 0, 0, 0.6),
+    0 -4px 16px rgba(60, 90, 140, 0.12),
+    inset 0 1px 0 rgba(186, 207, 247, 0.08);
+  border: 1px solid rgba(130, 156, 200, 0.22);
+  color: #ffffff;
+  pointer-events: auto;
+  background: linear-gradient(165deg, rgba(8, 12, 20, 0.98), rgba(4, 6, 12, 0.99));
 }
 
-.oracle-card-preview__close {
-  justify-self: end;
-  width: 40px;
-  height: 40px;
+.oracle-card-preview__header {
+  position: relative;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  padding: 0 44px;
+  margin-bottom: 4px;
+}
+
+.oracle-card-preview__back {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 14, 22, 0.7);
+  color: rgba(214, 225, 242, 0.8);
   display: grid;
   place-items: center;
-  padding: 0;
-  border: 1px solid rgba(130, 156, 200, 0.22);
-  border-radius: 999px;
-  background: linear-gradient(165deg, rgba(8, 12, 20, 0.95), rgba(4, 6, 12, 0.98));
-  color: rgba(235, 242, 255, 0.94);
-  font-size: 24px;
-  line-height: 1;
-  box-shadow:
-    inset 0 1px 0 rgba(186, 207, 247, 0.12),
-    0 4px 12px rgba(0, 0, 0, 0.4);
-  transition: all 180ms ease;
 }
 
-.oracle-card-preview__close:active {
-  transform: scale(0.95);
+.oracle-card-preview__content {
+  display: grid;
+  gap: 16px;
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 16px;
+}
+
+.oracle-card-preview__media {
+  width: min(200px, 56vw);
+  height: min(330px, 46vh);
+  margin: 0 auto;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(130, 156, 200, 0.2);
+  background: #ffffff;
+  box-shadow:
+    0 24px 52px rgba(0, 0, 0, 0.6),
+    0 2px 8px rgba(60, 90, 140, 0.15);
 }
 
 .oracle-card-preview__image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   display: block;
-  width: min(74vw, 310px);
-  aspect-ratio: 0.62;
-  object-fit: cover;
-  border-radius: 22px;
-  box-shadow:
-    0 24px 52px rgba(0, 0, 0, 0.6),
-    0 2px 8px rgba(60, 90, 140, 0.15),
-    0 0 0 1px rgba(156, 184, 235, 0.12);
 }
 
 .oracle-card-preview__image--reversed {
@@ -2386,13 +2630,13 @@ onBeforeUnmount(() => {
   color: rgba(235, 242, 255, 0.96);
   font-size: 16px;
   line-height: 1.3;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   font-weight: 600;
 }
 
 .oracle-card-preview__meta {
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.68);
@@ -2423,7 +2667,8 @@ onBeforeUnmount(() => {
 }
 
 .oracle-card-preview__keywords {
-  width: 100%;
+  display: grid;
+  gap: 10px;
 }
 
 .oracle-card-preview__tags {
@@ -2433,7 +2678,7 @@ onBeforeUnmount(() => {
 }
 
 .oracle-card-preview__tag {
-  font-size: 11px;
+  font-size: 13px;
   padding: 6px 12px;
   border-radius: 999px;
   background: rgba(8, 12, 20, 0.7);
@@ -2441,6 +2686,14 @@ onBeforeUnmount(() => {
   color: rgba(235, 242, 255, 0.88);
   font-weight: 500;
   letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.oracle-card-preview .oracle-actions__footer {
+  margin-top: auto;
 }
 
 :deep(.oracle-actions-dialog .q-dialog__backdrop) {
@@ -2456,7 +2709,7 @@ onBeforeUnmount(() => {
 }
 
 :deep(.oracle-card-preview-dialog .q-dialog__inner) {
-  padding: 12px;
+  padding: 0;
 }
 
 :deep(.oracle-actions-dialog .q-dialog__inner) {

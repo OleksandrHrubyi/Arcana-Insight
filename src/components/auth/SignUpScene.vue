@@ -1,5 +1,6 @@
 <script>
 import { supabase } from 'src/services/supabaseClient'
+import { getUserNative, upsertAppUser } from 'src/services/supabaseNative'
 import { SignInWithApple } from '@capacitor-community/apple-sign-in'
 import { t, currentLocale } from 'src/i18n'
 import { Capacitor } from '@capacitor/core'
@@ -15,6 +16,8 @@ export default {
       email: '',
       dateOfBirth: '',
       loading: false,
+      appleLoading: false,
+      googleLoading: false,
       errorMessage: '',
       reduceMotion: false,
       dateSheet: false,
@@ -89,6 +92,10 @@ export default {
     showGoogleLogin() {
       return !this.isIOSNative
     },
+
+    anyLoading() {
+      return this.loading || this.appleLoading || this.googleLoading
+    },
   },
 
   watch: {
@@ -101,11 +108,35 @@ export default {
     const win = typeof window !== 'undefined' ? window : null
     this.reduceMotion = !!win?.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
     this.platform = Capacitor.getPlatform()
+    this.logAuth('mounted', { platform: this.platform, isNative: this.isNativePlatform })
     this.fillForm()
     this.buildDateOptions()
   },
 
   methods: {
+    logAuth(step, payload) {
+      if (payload !== undefined) {
+        console.log(`[Auth][SignUp] ${step}`, payload)
+      } else {
+        console.log(`[Auth][SignUp] ${step}`)
+      }
+    },
+
+    async withTimeout(promise, ms, label) {
+      let timer
+      const timeout = new Promise((_, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error(`Timeout after ${ms}ms: ${label}`))
+        }, ms)
+      })
+
+      try {
+        return await Promise.race([promise, timeout])
+      } finally {
+        clearTimeout(timer)
+      }
+    },
+
     async hapticSelect() {
       if (!Capacitor.isNativePlatform()) return
       if (this.reduceMotion) return
@@ -134,23 +165,28 @@ export default {
     },
 
     async onSignUp() {
+      if (this.anyLoading) return
       if (!this.isNameValid) {
         this.errorMessage = this.tt('errors.invalidName')
+        this.logAuth('invalid_name', { name: this.trimmedName })
         return
       }
 
       if (!this.isEmailValid) {
         this.errorMessage = this.tt('errors.invalidEmail')
+        this.logAuth('invalid_email', { email: this.trimmedEmail })
         return
       }
 
       if (!this.isDateValid) {
         this.errorMessage = this.tt('errors.invalidDate')
+        this.logAuth('invalid_date', { dateOfBirth: this.trimmedDateOfBirth })
         return
       }
 
       this.loading = true
       this.errorMessage = ''
+      this.logAuth('email_signup_start')
 
       try {
         const { error } = await supabase.auth.signInWithOtp({
@@ -164,13 +200,16 @@ export default {
             },
           },
         })
+        this.logAuth('email_otp_requested', { error: error?.message || null })
 
         if (error) {
           this.errorMessage = error.message || this.tt('errors.generic')
           return
         }
 
-        await analytics.logSignUp('email')
+        analytics.logEvent('signup_email_sent', { method: 'email' })
+        this.logAuth('email_otp_success')
+
         this.$router.push({
           path: '/confirm-code',
           query: {
@@ -182,34 +221,56 @@ export default {
       } catch (e) {
         console.error(e)
         this.errorMessage = e.message || this.tt('errors.generic')
+        this.logAuth('email_exception', e?.message || e?.toString())
       } finally {
         this.loading = false
       }
     },
 
     async loginWithApple() {
+      if (this.anyLoading) return
+      this.appleLoading = true
       try {
         await this.hapticTap()
+        this.errorMessage = ''
+        this.logAuth('apple_start')
 
         const result = await SignInWithApple.authorize({
           clientId: 'com.hrubyi.arcana.supabase',
           redirectURI: 'https://rgqfkdhzllhmagrcasav.supabase.co/auth/v1/callback',
           scopes: 'email name',
         })
+        this.logAuth('apple_authorize_result', {
+          hasResponse: !!result?.response,
+          hasIdentityToken: !!result?.response?.identityToken,
+          hasUser: !!result?.response?.user,
+        })
 
         const idToken = result?.response?.identityToken
 
         if (!idToken) {
+          this.errorMessage = 'No identity token from Apple'
           console.error('No identity token from Apple', result)
+          this.logAuth('apple_missing_id_token')
           return
         }
 
-        const { data: authData, error } = await supabase.auth.signInWithIdToken({
-          provider: 'apple',
-          token: idToken,
+        const { data: authData, error } = await this.withTimeout(
+          supabase.auth.signInWithIdToken({
+            provider: 'apple',
+            token: idToken,
+          }),
+          8000,
+          'supabase.signInWithIdToken',
+        )
+        this.logAuth('apple_supabase_signin', {
+          hasSession: !!authData?.session,
+          hasUser: !!authData?.user,
+          error: error?.message || error?.error_description || null,
         })
 
         if (error) {
+          this.errorMessage = `Apple signup error: ${error.message || error.error_description || 'Unknown error'}`
           console.error(
             'Supabase Apple login error',
             error,
@@ -221,41 +282,60 @@ export default {
         }
 
         // Wait for session to be established
+        let user = authData?.user || null
         if (!authData?.session) {
-          console.error('[SignUpScene] No session created after Apple login')
-          return
-        }
-
-        // Create user profile in app_users
-        if (authData.user) {
-          const { error: profileError } = await supabase.from('app_users').upsert({
-            id: authData.user.id,
-            email: authData.user.email,
-            name: authData.user.user_metadata?.name || authData.user.user_metadata?.full_name || null
-          }, { onConflict: 'id' })
-
-          if (profileError) {
-            console.error('[SignUpScene] Profile creation error:', profileError)
+          const { data: nativeUser } = await getUserNative(4000)
+          user = nativeUser || user
+          if (!user) {
+            this.errorMessage = 'No session created after Apple signup. Please try again.'
+            console.error('[SignUpScene] No session created after Apple login')
+            this.logAuth('apple_no_session')
+            return
           }
         }
 
-        try {
-          await analytics.logSignUp('apple')
-        } catch (e) {
-          console.error('[SignUpScene] Analytics error:', e)
+        // Create user profile in app_users
+        if (user) {
+          const { error: profileError } = await this.withTimeout(
+            upsertAppUser({
+              id: user.id,
+              email: user.email,
+              name: user.user_metadata?.name || user.user_metadata?.full_name || null
+            }, 8000),
+            8000,
+            'supabase.app_users.upsert',
+          )
+          this.logAuth('apple_profile_upsert', {
+            error: profileError?.message || null,
+          })
+
+          if (profileError) {
+            this.errorMessage = `Profile error: ${profileError.message}`
+            console.error('[SignUpScene] Profile creation error:', profileError)
+            return
+          }
         }
 
-        // Small delay to ensure session is propagated
-        await new Promise(resolve => setTimeout(resolve, 100))
+        this.logAuth('apple_before_redirect')
+        analytics.logSignUp('apple')
+        this.logAuth('apple_success_redirect')
         this.$router.push('/')
       } catch (err) {
+        this.errorMessage = `Apple signup failed: ${err.message || err.toString()}`
         console.error('Apple login failed', err)
+        this.logAuth('apple_exception', err?.message || err?.toString())
+      } finally {
+        this.appleLoading = false
       }
     },
 
     async loginWithGoogle() {
+      if (this.anyLoading) return
+      this.googleLoading = true
       try {
         await this.hapticTap()
+        this.errorMessage = ''
+        this.logAuth('google_start')
 
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
@@ -263,14 +343,20 @@ export default {
             redirectTo: window.location.origin + '/',
           },
         })
+        this.logAuth('google_oauth_called', { error: error?.message || null })
 
         if (error) {
+          this.errorMessage = `Google signup error: ${error.message}`
           console.error('Google login error', error)
         } else {
-          await analytics.logSignUp('google')
+          analytics.logSignUp('google')
         }
       } catch (err) {
+        this.errorMessage = `Google OAuth error: ${err.message || err.toString()}`
         console.error('Google OAuth error', err)
+        this.logAuth('google_exception', err?.message || err?.toString())
+      } finally {
+        this.googleLoading = false
       }
     },
 
@@ -594,14 +680,14 @@ export default {
           </p>
 
           <q-btn
-            :label="tt('auth.signUpAction')"
-            class="no-auth-btn"
-            no-caps
-            flat
-            :loading="loading"
-            :disable="loading"
-            @click="onSignUpTap"
-          >
+          :label="tt('auth.signUpAction')"
+          class="no-auth-btn"
+          no-caps
+          flat
+          :loading="loading"
+          :disable="anyLoading"
+          @click="onSignUpTap"
+        >
             <template v-slot:loading>
               <q-spinner-dots size="24px" color="white" />
             </template>
@@ -624,7 +710,18 @@ export default {
         </div>
 
         <div class="social-buttons">
-          <q-btn v-if="isIOSNative" class="social-btn apple-btn" flat round @click="loginWithApple">
+          <q-btn
+            v-if="isIOSNative"
+            class="social-btn apple-btn"
+            flat
+            round
+            :loading="appleLoading"
+            :disable="anyLoading"
+            @click="loginWithApple"
+          >
+            <template v-slot:loading>
+              <q-spinner-dots size="18px" color="white" />
+            </template>
             <svg
               fill="#fff"
               width="24"
@@ -644,7 +741,12 @@ export default {
             round
             @click="loginWithGoogle"
             class="social-btn google-btn"
+            :loading="googleLoading"
+            :disable="anyLoading"
           >
+            <template v-slot:loading>
+              <q-spinner-dots size="18px" color="white" />
+            </template>
             <svg
               width="24"
               height="24"
@@ -881,7 +983,7 @@ export default {
 }
 
 .field-label {
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.3;
   letter-spacing: 0.02em;
   color: rgba(214, 225, 242, 0.68);
@@ -1135,7 +1237,7 @@ export default {
 
 .sheet-title {
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.74);

@@ -52,7 +52,7 @@
       </section>
 
       <div class="account-actions">
-        <q-btn flat class="account-btn account-btn--logout" no-caps @click="logout">
+        <q-btn flat class="account-btn account-btn--logout" no-caps :loading="logoutLoading" :disable="logoutLoading" @click="logout">
           <q-icon name="logout" size="18px" class="account-btn__icon" />
           <span>{{ tt('logout') }}</span>
         </q-btn>
@@ -96,8 +96,9 @@
       </div>
 
       <div class="oracle-actions__footer">
-        <button type="button" class="oracle-actions__ok" @click="saveEdit">
-          {{ tt('common.save') }}
+        <button type="button" class="oracle-actions__ok" :disabled="editSaving" @click="saveEdit">
+          <q-spinner-dots v-if="editSaving" size="18px" color="white" />
+          <span v-else>{{ tt('common.save') }}</span>
         </button>
       </div>
     </section>
@@ -176,8 +177,9 @@
       </div>
 
       <div class="oracle-actions__footer">
-        <button type="button" class="oracle-actions__ok" @click="confirmDateWheel">
-          {{ tt('common.save') }}
+        <button type="button" class="oracle-actions__ok" :disabled="dateSaving" @click="confirmDateWheel">
+          <q-spinner-dots v-if="dateSaving" size="18px" color="white" />
+          <span v-else>{{ tt('common.save') }}</span>
         </button>
       </div>
     </section>
@@ -193,11 +195,15 @@
 
 <script>
 import { defineComponent } from 'vue'
-import { supabase } from 'src/services/supabaseClient'
+import { supabase, clearStoredSession } from 'src/services/supabaseClient'
+import { selectAppUser, invokeFunction } from 'src/services/supabaseNative'
 import { t, currentLocale } from 'src/i18n'
 import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import DeleteAccountDialog from 'src/components/DeleteAccountDialog.vue'
+import { useAuthStore } from 'stores/authStore.js'
+import { Preferences } from '@capacitor/preferences'
+import { useAppEpoch } from 'stores/appEpoch'
 
 export default defineComponent({
   name: 'AccountPage',
@@ -208,6 +214,8 @@ export default defineComponent({
 
   data() {
     return {
+      authStore: useAuthStore(),
+      appEpoch: useAppEpoch(),
       profile: {
         name: '',
         email: '',
@@ -219,9 +227,12 @@ export default defineComponent({
       editField: '',
       editError: '',
       draftValue: '',
+      editSaving: false,
       deleteDialog: false,
       deletingAccount: false,
+      logoutLoading: false,
       dateSheet: false,
+      dateSaving: false,
       dayOptions: [],
       monthOptions: [],
       yearOptions: [],
@@ -230,6 +241,7 @@ export default defineComponent({
       selectedYearIndex: 0,
       lastDateHapticAt: 0,
       reduceMotion: false,
+      profileLoaded: false,
     }
   },
 
@@ -332,8 +344,11 @@ export default defineComponent({
   },
 
   async mounted() {
-    const { data } = await supabase.auth.getUser()
-    const user = data?.user
+    let user = this.authStore.state.user
+    if (!user) {
+      await this.authStore.syncSession({ refresh: false })
+      user = this.authStore.state.user
+    }
 
     if (!user) {
       this.$router.replace('/login')
@@ -342,16 +357,14 @@ export default defineComponent({
 
     this.userId = user.id
     this.userEmail = user.email || ''
+    this.profile.name = this.profile.name || user.user_metadata?.name || user.user_metadata?.full_name || ''
 
-    const { data: row } = await supabase
-      .from('app_users')
-      .select('name,email,date_of_birth')
-      .eq('id', user.id)
-      .maybeSingle()
-
-    if (row) {
-      this.profile = { ...this.profile, ...row }
+    const cached = await this.loadCachedProfile()
+    if (cached) {
+      this.profile = { ...this.profile, ...cached }
     }
+
+    await this.loadProfile(user)
 
     this.buildDateOptions()
   },
@@ -361,6 +374,95 @@ export default defineComponent({
   },
 
   methods: {
+    async loadCachedProfile() {
+      try {
+        const { value } = await Preferences.get({ key: 'profile_cache_v1' })
+        if (!value) return null
+        return JSON.parse(value)
+      } catch {
+        return null
+      }
+    },
+
+    async saveCachedProfile(payload) {
+      try {
+        await Preferences.set({
+          key: 'profile_cache_v1',
+          value: JSON.stringify(payload),
+        })
+      } catch {
+        // ignore cache errors
+      }
+    },
+
+    async loadProfile(user) {
+      const currentUser = user || this.authStore.state.user || null
+
+      this.profileLoaded = false
+
+      try {
+        const { data: row, error } = await selectAppUser(this.userId, 6000)
+        if (error) throw error
+        if (row) {
+          const fallbackName = this.profile.name || currentUser?.user_metadata?.name || currentUser?.user_metadata?.full_name || ''
+          const fallbackEmail = this.userEmail || currentUser?.email || ''
+          this.profile = {
+            ...this.profile,
+            ...row,
+            name: row.name || fallbackName,
+            email: row.email || fallbackEmail,
+          }
+          await this.saveCachedProfile(this.profile)
+        }
+        this.profileLoaded = true
+        return
+      } catch (err) {
+        console.warn('[AccountPage] profile load failed, retrying:', err)
+      }
+
+      // Retry once after syncing session
+      await this.authStore.syncSession({ refresh: false })
+      const refreshedUser = this.authStore.state.user || currentUser
+      try {
+        const { data: row, error } = await selectAppUser(this.userId, 6000)
+        if (error) throw error
+        if (row) {
+          const fallbackName = this.profile.name || refreshedUser?.user_metadata?.name || refreshedUser?.user_metadata?.full_name || ''
+          const fallbackEmail = this.userEmail || refreshedUser?.email || ''
+          this.profile = {
+            ...this.profile,
+            ...row,
+            name: row.name || fallbackName,
+            email: row.email || fallbackEmail,
+          }
+          await this.saveCachedProfile(this.profile)
+        }
+        this.profileLoaded = true
+      } catch (err) {
+        console.warn('[AccountPage] profile load failed окончательно:', err)
+        this.profileLoaded = true
+      }
+    },
+
+    async ensureUser() {
+      if (this.userId) return true
+
+      let user = this.authStore.state.user
+      if (!user) {
+        await this.authStore.syncSession({ refresh: false })
+        user = this.authStore.state.user
+      }
+
+      if (!user) {
+        this.$router.replace('/login')
+        return false
+      }
+
+      this.userId = user.id
+      this.userEmail = user.email || ''
+      return true
+    },
+
     syncBottomNav() {
       const open = this.editOpen || this.dateSheet
       document.body.classList.toggle('hide-bottom-nav', open)
@@ -419,18 +521,26 @@ export default defineComponent({
     },
 
     async saveEdit() {
-      if (!this.userId || !this.editField) return
+      if (!this.editField) return
+      if (!await this.ensureUser()) {
+        this.editError = this.tt('errors.generic')
+        return
+      }
 
+      if (this.editSaving) return
+      this.editSaving = true
       const value = (this.draftValue || '').trim()
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
       if (this.editField === 'name' && value.length < 2) {
         this.editError = this.tt('errors.invalidName')
+        this.editSaving = false
         return
       }
 
       if (this.editField === 'email' && !emailPattern.test(value)) {
         this.editError = this.tt('errors.invalidEmail')
+        this.editSaving = false
         return
       }
 
@@ -438,6 +548,7 @@ export default defineComponent({
         const ok = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value)
         if (!ok) {
           this.editError = this.tt('errors.invalidDate')
+          this.editSaving = false
           return
         }
       }
@@ -445,114 +556,125 @@ export default defineComponent({
       try {
         await this.hapticTap()
 
-        const payload = { id: this.userId, [this.editField]: value || null }
-        const { error } = await supabase.from('app_users').upsert(payload, { onConflict: 'id' })
-
-        if (error) {
-          console.error(error)
-          this.$q?.notify({ type: 'negative', message: this.tt('errors.saveFailed') })
-          return
-        }
-
         this.profile = { ...this.profile, [this.editField]: value }
+        await this.saveCachedProfile(this.profile)
+        this.editOpen = false
+        await this.authStore.queueProfileUpdate({ [this.editField]: value || null })
+        await Promise.race([
+          this.authStore.flushProfileQueue(),
+          new Promise((resolve) => setTimeout(resolve, 8000)),
+        ])
 
         if (this.editField === 'email') {
           this.userEmail = value
         }
 
-        this.editOpen = false
+        this.profileLoaded = true
       } catch (err) {
-        console.error(err)
+        console.error('[AccountPage] saveEdit unexpected error:', err)
+        this.editError = this.tt('errors.saveFailed')
+      } finally {
+        this.editSaving = false
       }
     },
 
     async logout() {
+      if (this.logoutLoading) return
+      this.logoutLoading = true
       await this.hapticTap()
-      await supabase.auth.signOut()
-      this.$router.replace('/menu')
+      try {
+        const signOut = supabase.auth.signOut({ scope: 'local' })
+        await Promise.race([
+          signOut,
+          new Promise((_, reject) => setTimeout(() => reject(new Error('signOut timeout')), 1500)),
+        ])
+      } catch (err) {
+        console.warn('[AccountPage] signOut failed:', err)
+      } finally {
+        await clearStoredSession()
+        this.authStore.clearUser()
+        this.$router.replace('/menu')
+        this.logoutLoading = false
+      }
     },
 
     async openDeleteDialog() {
-      console.log('[OpenDeleteDialog] Opening dialog...')
       await this.hapticTap()
       this.deleteDialog = true
-      console.log('[OpenDeleteDialog] deleteDialog state:', this.deleteDialog)
     },
 
     async closeDeleteDialog() {
-      console.log('[Cancel] Clicked')
       if (this.deletingAccount) return
       await this.hapticTap()
       this.deleteDialog = false
     },
 
     async deleteAccount() {
-      console.log('[Delete] Button clicked')
-
       if (this.deletingAccount) return
-
       await this.hapticTap()
       this.deletingAccount = true
 
       try {
-        console.log('[DeleteAccount] Starting account deletion...')
-        const { data: sessionData } = await supabase.auth.getSession()
-        console.log('session access token555--------5555:', sessionData?.session?.access_token)
-        const result = await supabase.functions.invoke('delete-account', {
-          body: { confirm: true },
-        })
+        await this.ensureUser()
+        const elapsed = Date.now() - (this.appEpoch.lastBackgroundAt.value || 0)
+        if (elapsed < 5000) {
+          await new Promise((r) => setTimeout(r, 5000 - elapsed))
+        }
 
-        console.log('[DeleteAccount] Function result:', result)
+        const attemptDelete = async (attempt) => {
+          try {
+            const res = await invokeFunction('delete-account', { confirm: true }, 8000)
+            if (res.error) throw res.error
+            return res
+          } catch (err) {
+            if (attempt >= 1) throw err
+            await new Promise((r) => setTimeout(r, 1500))
+            return attemptDelete(attempt + 1)
+          }
+        }
+
+        const result = await attemptDelete(0)
 
         if (result.error) {
-          console.error('[DeleteAccount] Function error:', result.error)
-          this.$q?.notify({
-            type: 'negative',
-            message:
-              this.tt('accountPage.deleteAccountFailed') +
-              ': ' +
-              (result.error.message || 'Unknown error'),
-          })
+          return
+        }
+        if (result.data?.error) {
           return
         }
 
-        console.log('[DeleteAccount] Cleaning up local storage...')
-        localStorage.removeItem('push_token')
-        localStorage.removeItem('daily_push_enabled')
-        localStorage.removeItem('daily_push_time')
+        const runCleanup = async () => {
+          try {
+            localStorage.removeItem('push_token')
+            localStorage.removeItem('daily_push_enabled')
+            localStorage.removeItem('daily_push_time')
+            await Preferences.remove({ key: 'profile_cache_v1' })
+            await this.authStore.clearProfileQueue()
+            await clearStoredSession()
+          } catch {
+            // ignore cleanup errors
+          }
 
-        console.log('[DeleteAccount] Signing out...')
-        await supabase.auth.signOut().catch((e) => {
-          console.warn('[DeleteAccount] Sign out error (ignoring):', e)
-        })
+          void supabase.auth.signOut({ scope: 'local' }).catch(() => {
+            // ignore sign out errors
+          })
+        }
 
         this.deleteDialog = false
+        this.authStore.clearUser()
 
-        console.log('[DeleteAccount] Success! Redirecting to menu...')
+        try {
+          await this.$router.replace('/menu')
+        } catch {
+          // ignore navigation errors
+        }
 
-        this.$q?.notify({
-          type: 'positive',
-          message: this.tt('accountPage.deleteAccountSuccess'),
-        })
-
-        await this.$router.replace('/menu')
-        console.log('[DeleteAccount] Redirected to menu')
-      } catch (err) {
-        console.error('[DeleteAccount] Unexpected error:', err)
-        console.error('[DeleteAccount] Error details:', {
-          message: err.message,
-          stack: err.stack,
-          error: err,
-        })
-
-        this.$q?.notify({
-          type: 'negative',
-          message:
-            this.tt('accountPage.deleteAccountFailed') + ': ' + (err.message || 'Unexpected error'),
-        })
+        // Let cleanup continue in background.
+        void runCleanup()
+      } catch {
+        // ignore delete errors (UI is already handled)
       } finally {
         this.deletingAccount = false
-        console.log('[DeleteAccount] Cleanup complete')
+        this.deleteDialog = false
       }
     },
 
@@ -587,21 +709,24 @@ export default defineComponent({
     },
 
     async saveDateOfBirth(value) {
-      if (!this.userId) return
+      if (!await this.ensureUser()) {
+        return
+      }
 
       try {
-        const payload = { id: this.userId, date_of_birth: value || null }
-        const { error } = await supabase.from('app_users').upsert(payload, { onConflict: 'id' })
-
-        if (error) {
-          console.error(error)
-          this.$q?.notify({ type: 'negative', message: this.tt('errors.saveFailed') })
-          return
-        }
-
+        if (this.dateSaving) return
+        this.dateSaving = true
         this.profile = { ...this.profile, date_of_birth: value }
+        await this.saveCachedProfile(this.profile)
+        await this.authStore.queueProfileUpdate({ date_of_birth: value || null })
+        await Promise.race([
+          this.authStore.flushProfileQueue(),
+          new Promise((resolve) => setTimeout(resolve, 8000)),
+        ])
       } catch (err) {
         console.error(err)
+      } finally {
+        this.dateSaving = false
       }
     },
 
@@ -898,7 +1023,7 @@ export default defineComponent({
 }
 
 .account-status__title {
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.64);
@@ -962,7 +1087,7 @@ export default defineComponent({
 }
 
 .account-label {
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.08em;
   color: rgba(214, 225, 242, 0.68);
 }
@@ -1061,7 +1186,7 @@ export default defineComponent({
 
 .sheet-title {
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.74);

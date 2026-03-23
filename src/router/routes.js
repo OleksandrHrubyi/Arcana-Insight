@@ -18,13 +18,15 @@ const routes = [
       },
 
       { path: 'menu', name: 'menu', component: () => import('src/pages/MenuPage.vue'), meta: { tab: 'menu' } },
-      { path: 'daily', name: 'daily', component: () => import('src/pages/DailyCardPage.vue') },
+      { path: 'daily', name: 'daily', component: () => import('src/pages/DailyCardPage.vue'), meta: { hideBottomNav: true } },
       { path: 'support', name: 'support', component: () => import('src/pages/FaqSupportPage.vue') },
       { path: 'privacy-terms', name: 'privacyTerms', component: () => import('src/pages/PrivacyTermsPage.vue') },
       { path: 'onboarding', name: 'onboarding', component: () => import('src/pages/OnboardingPage.vue'), meta: { hideBottomNav: true } },
       { path: 'cards', name: 'cards', component: () => import('src/pages/CardLibraryPage.vue') },
+      { path: 'zodiac-guide', name: 'zodiacGuide', component: () => import('src/pages/ZodiacGuidePage.vue'), meta: { tab: 'menu' } },
       { path: 'compatibility', name: 'compatibility', component: () => import('src/pages/CompatibilityPage.vue') },
       { path: 'readings', name: 'readings', component: () => import('src/pages/SavedReadingsPage.vue') },
+      { path: 'premium', name: 'premium', component: () => import('src/pages/PremiumPage.vue'), meta: { tab: 'menu', hideBottomNav: true } },
       { path: 'settings', name: 'settings', component: () => import('src/pages/SettingsPage.vue'), meta: { tab: 'menu' } },
       { path: 'reset-password', component: () => import('src/pages/ResetPasswordPage.vue') },
       {

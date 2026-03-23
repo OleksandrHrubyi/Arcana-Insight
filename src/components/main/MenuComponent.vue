@@ -173,7 +173,9 @@ export default defineComponent({
         routeName: 'compatibility',
       },
       { key: 'cards', labelKey: 'nav.cards', icon: 'auto_stories', routeName: 'cards' },
+      { key: 'zodiacGuide', labelKey: 'nav.zodiacGuide', icon: 'stars', routeName: 'zodiacGuide' },
       { key: 'readings', labelKey: 'nav.readings', icon: 'history', routeName: 'readings' },
+      { key: 'premium', labelKey: 'nav.premium', icon: 'workspace_premium', routeName: 'premium' },
     ]
 
     const supportItems = [
@@ -254,16 +256,16 @@ export default defineComponent({
 }
 
 .menu-title {
-  font-size: 20px;
-  letter-spacing: 0.1em;
+  font-size: 22px;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   font-weight: 600;
   color: rgba(235, 242, 255, 0.96);
 }
 
 .menu-kicker {
-  font-size: 10px;
-  letter-spacing: 0.24em;
+  font-size: 12px;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.62);
 }
@@ -293,7 +295,7 @@ export default defineComponent({
 
 .menu-card__title {
   font-size: 10px;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.62);
   font-weight: 600;
@@ -383,7 +385,7 @@ export default defineComponent({
 
 .menu-badge {
   font-size: 10px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.5);
   padding: 4px 10px;

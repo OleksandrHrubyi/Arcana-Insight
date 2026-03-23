@@ -22,6 +22,7 @@ export default defineConfig((/* ctx */) => {
       'i18n',
       'theme',
       'supabase',
+      'auth',
       'analytics',
     ],
 

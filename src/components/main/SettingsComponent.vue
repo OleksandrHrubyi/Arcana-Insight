@@ -52,9 +52,16 @@
                 </q-item-section>
 
                 <q-item-section side>
+                  <q-spinner
+                    v-if="busy"
+                    size="16px"
+                    color="white"
+                    class="q-mr-sm"
+                  />
                   <q-toggle
                     v-model="dailyPush"
                     class="arcana-toggle"
+                    :disable="busy"
                     @update:model-value="onToggleHaptic"
                   />
                 </q-item-section>
@@ -163,13 +170,20 @@
                 <q-item-label class="settings-label">{{ tt('dailyPush') }}</q-item-label>
               </q-item-section>
 
-              <q-item-section side>
-                <q-toggle
-                  v-model="dailyPush"
-                  class="arcana-toggle"
-                  @update:model-value="onToggleHaptic"
-                />
-              </q-item-section>
+                <q-item-section side>
+                  <q-spinner
+                    v-if="busy"
+                    size="16px"
+                    color="white"
+                    class="q-mr-sm"
+                  />
+                  <q-toggle
+                    v-model="dailyPush"
+                    class="arcana-toggle"
+                    :disable="busy"
+                    @update:model-value="onToggleHaptic"
+                  />
+                </q-item-section>
             </q-item>
 
             <q-item
@@ -297,8 +311,9 @@
         </div>
 
         <div class="oracle-actions__footer">
-          <button type="button" class="oracle-actions__ok" @click="confirmTimeWheel">
-            Apply
+          <button type="button" class="oracle-actions__ok" :disabled="busy" @click="confirmTimeWheel">
+            <q-spinner-dots v-if="busy" size="18px" color="white" />
+            <span v-else>Apply</span>
           </button>
         </div>
       </section>
@@ -308,9 +323,9 @@
 
 <script>
 import { defineComponent } from 'vue'
-import { supabase } from 'src/services/supabaseClient'
 import { ensureToken, syncRegisterDevice, getSavedTime, setSavedTime } from 'src/helpers/pushBackend'
 import { t, currentLocale, setLocale } from 'src/i18n'
+import { useAuthStore } from 'stores/authStore.js'
 
 // Capacitor Haptics (safe import)
 import { Capacitor } from '@capacitor/core'
@@ -338,7 +353,7 @@ export default defineComponent({
 
   data () {
     return {
-      isLoggedIn: false,
+      authStore: useAuthStore(),
       dailyPush: JSON.parse(localStorage.getItem(LS_DAILY_PUSH) || 'false'),
       busy: false,
       languageSheet: false,
@@ -350,13 +365,16 @@ export default defineComponent({
       selectedTimeIndex: 0,
       lastTimeHapticAt: 0,
       selectedTimeValue: '',
-      authUnsubscribe: null
     }
   },
 
   computed: {
     locale () {
       return currentLocale.value || 'en'
+    },
+
+    isLoggedIn () {
+      return !!this.authStore.state.user
     },
 
     tt () {
@@ -440,20 +458,11 @@ export default defineComponent({
     this.selectedTimeValue = getSavedTime() || DEFAULT_TIME
     this.buildTimeOptions()
 
-    const { data } = await supabase.auth.getSession()
-    this.isLoggedIn = !!data?.session
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      this.isLoggedIn = !!session
-    })
-    this.authUnsubscribe = authListener?.subscription
+    this.authStore.initAuth()
   },
 
   beforeUnmount () {
-    try {
-      this.authUnsubscribe?.unsubscribe()
-    } catch (e) {
-      console.error(e)
-    }
+    // no-op
   },
 
   methods: {
@@ -530,8 +539,24 @@ export default defineComponent({
     },
 
     async onAccountClick () {
-      const path = this.isLoggedIn ? '/account' : '/login'
-      await this.$router.push(path)
+      try {
+        console.log('[Settings] onAccountClick start')
+        void this.authStore.syncSession({ refresh: false })
+        const isAuthed = this.isLoggedIn
+        console.log('[Settings] onAccountClick session', { isAuthed })
+        const target = isAuthed ? { name: 'account' } : { name: 'login' }
+        await this.$router.push(target)
+        console.log('[Settings] onAccountClick push ok', target)
+      } catch (err) {
+        console.warn('[Settings] onAccountClick navigation failed:', err)
+        try {
+          const target = this.isLoggedIn ? { name: 'account' } : { name: 'login' }
+          await this.$router.replace(target)
+          console.log('[Settings] onAccountClick replace ok', target)
+        } catch (e) {
+          console.error('[Settings] onAccountClick replace failed:', e)
+        }
+      }
     },
 
     onLanguageWheelScroll () {
@@ -595,6 +620,7 @@ export default defineComponent({
     },
 
     async confirmTimeWheel () {
+      if (this.busy) return
       const opt = this.timeOptions[this.selectedTimeIndex]
       if (!opt) return
       const hhmm = opt.value
@@ -602,12 +628,17 @@ export default defineComponent({
       this.selectedTimeValue = hhmm || DEFAULT_TIME
 
       if (this.dailyPush) {
-        const res = await syncRegisterDevice({
-          enabled: true,
-          timeHHMM: hhmm,
-          locale: this.locale
-        })
-        if (!res.ok) console.error(res.error)
+        this.busy = true
+        try {
+          const res = await syncRegisterDevice({
+            enabled: true,
+            timeHHMM: hhmm,
+            locale: this.locale
+          })
+          if (!res.ok) console.error(res.error)
+        } finally {
+          this.busy = false
+        }
       }
 
       this.timeSheet = false
@@ -793,7 +824,7 @@ export default defineComponent({
 
 .settings-value {
   color: rgba(224, 234, 248, 0.7);
-  font-size: 11px;
+  font-size: 13px;
   margin-right: 6px;
   white-space: nowrap;
   overflow: hidden;
@@ -970,7 +1001,7 @@ export default defineComponent({
 
 .sheet-title {
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.74);

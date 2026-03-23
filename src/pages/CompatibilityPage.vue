@@ -13,7 +13,7 @@
         </div>
       </header>
 
-      <section class="compat-stack">
+      <section v-if="hasPremiumAccess" class="compat-stack">
         <div class="compat-panel compat-panel--pair">
           <div class="compat-panel__title">
             {{ tt('compatibilityPage.sections.match') }}
@@ -142,6 +142,24 @@
             </div>
           </div>
         </div>
+      </section>
+
+      <section v-else class="compat-lock">
+        <div class="compat-lock__badge">{{ tt('premiumAccess.badge') }}</div>
+        <div class="compat-lock__title">{{ tt('premiumAccess.compatibility.title') }}</div>
+        <p class="compat-lock__text">{{ tt('premiumAccess.compatibility.text') }}</p>
+        <div class="compat-lock__preview">
+          <div class="compat-lock__preview-line">{{ tt('compatibilityPage.spheres.emotion') }} · 82%</div>
+          <div class="compat-lock__preview-line">{{ tt('compatibilityPage.spheres.communication') }} · 76%</div>
+          <div class="compat-lock__preview-line">{{ tt('compatibilityPage.spheres.stability') }} · 71%</div>
+          <div class="compat-lock__meter" aria-hidden="true">
+            <span class="compat-lock__meter-fill"></span>
+          </div>
+        </div>
+        <button type="button" class="compat-lock__cta" @click="goPremium">
+          <q-icon name="workspace_premium" size="16px" />
+          <span>{{ tt('premiumAccess.cta') }}</span>
+        </button>
       </section>
     </div>
 
@@ -295,10 +313,12 @@ import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
+import { usePremiumAccess } from 'src/stores/premiumAccess'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
 const router = useRouter()
+const { hasPremiumAccess } = usePremiumAccess()
 
 const signs = [
   { key: 'aries', element: 'fire', modality: 'cardinal' },
@@ -484,6 +504,11 @@ async function hapticSelect() {
 async function onBack() {
   await hapticSelect()
   router.back()
+}
+
+async function goPremium() {
+  await hapticSelect()
+  await router.push({ name: 'premium' })
 }
 
 function openPicker(which) {
@@ -689,6 +714,117 @@ onBeforeUnmount(() => {
   gap: 16px;
 }
 
+.compat-lock {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(112, 156, 255, 0.18) 0%, rgba(12, 18, 30, 0.12) 42%, transparent 100%),
+    linear-gradient(160deg, rgba(14, 20, 32, 0.92), rgba(6, 10, 18, 0.98));
+  box-shadow:
+    0 18px 40px rgba(2, 6, 12, 0.52),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  padding: 22px 18px 20px;
+  display: grid;
+  gap: 12px;
+}
+
+.compat-lock::before {
+  content: '';
+  position: absolute;
+  inset: -140% auto auto -50%;
+  width: 240px;
+  height: 240px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(145, 188, 255, 0.28) 0%, rgba(145, 188, 255, 0) 70%);
+  pointer-events: none;
+}
+
+.compat-lock__badge {
+  justify-self: start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(186, 207, 247, 0.34);
+  background: rgba(87, 123, 190, 0.2);
+  color: rgba(226, 236, 255, 0.95);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.compat-lock__title {
+  font-size: 18px;
+  line-height: 1.25;
+  letter-spacing: 0.03em;
+  color: rgba(238, 244, 255, 0.96);
+  font-weight: 600;
+}
+
+.compat-lock__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(216, 228, 247, 0.78);
+}
+
+.compat-lock__preview {
+  border-radius: 14px;
+  border: 1px solid rgba(165, 196, 245, 0.22);
+  background: rgba(7, 12, 20, 0.62);
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.compat-lock__preview-line {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(221, 232, 250, 0.72);
+}
+
+.compat-lock__meter {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.compat-lock__meter-fill {
+  display: block;
+  height: 100%;
+  width: 78%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(121, 181, 255, 0.95), rgba(255, 216, 152, 0.92));
+  box-shadow: 0 0 12px rgba(134, 186, 255, 0.45);
+}
+
+.compat-lock__cta {
+  width: 100%;
+  margin-top: 6px;
+  border-radius: 14px;
+  border: 1px solid rgba(156, 184, 235, 0.36);
+  padding: 14px 16px;
+  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
+  color: #e9edf4;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 180ms ease;
+}
+
+.compat-lock__cta:active {
+  transform: scale(0.98);
+}
+
 .compat-panel {
   padding: 20px 18px 18px;
   border-radius: 20px;
@@ -840,7 +976,7 @@ onBeforeUnmount(() => {
 }
 
 .compat-result-header__subtitle {
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.6);
@@ -961,7 +1097,7 @@ onBeforeUnmount(() => {
 .compat-tag {
   padding: 6px 12px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   font-weight: 500;
@@ -1033,7 +1169,7 @@ onBeforeUnmount(() => {
 }
 
 .compat-metric__label {
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.7);
@@ -1100,7 +1236,7 @@ onBeforeUnmount(() => {
 }
 
 .compat-balance__name {
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: rgba(224, 234, 251, 0.8);
@@ -1124,7 +1260,7 @@ onBeforeUnmount(() => {
 }
 
 .compat-balance__percent {
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.08em;
   color: rgba(214, 225, 242, 0.7);
   font-weight: 600;
@@ -1323,7 +1459,7 @@ onBeforeUnmount(() => {
 
 .sheet-title {
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.74);

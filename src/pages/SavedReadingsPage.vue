@@ -13,7 +13,29 @@
         </div>
       </header>
 
-      <div v-if="loading" class="readings-loading">
+      <section v-if="!hasPremiumAccess" class="readings-lock">
+        <div class="readings-lock__badge">{{ tt('premiumAccess.badge') }}</div>
+        <div class="readings-lock__title">{{ tt('premiumAccess.readings.title') }}</div>
+        <p class="readings-lock__text">{{ tt('premiumAccess.readings.text') }}</p>
+        <div class="readings-lock__preview">
+          <div class="readings-lock__stack" aria-hidden="true">
+            <span class="readings-lock__thumb"></span>
+            <span class="readings-lock__thumb"></span>
+            <span class="readings-lock__thumb"></span>
+          </div>
+          <div class="readings-lock__meta">
+            <span>{{ tt('readingsPage.spread1') }}</span>
+            <span>{{ tt('readingsPage.spread3') }}</span>
+            <span>{{ tt('readingsPage.spread5') }}</span>
+          </div>
+        </div>
+        <button type="button" class="readings-lock__cta" @click="goPremium">
+          <q-icon name="workspace_premium" size="16px" />
+          <span>{{ tt('premiumAccess.cta') }}</span>
+        </button>
+      </section>
+
+      <div v-else-if="loading" class="readings-loading">
         <q-spinner color="white" size="32px" />
       </div>
 
@@ -171,14 +193,16 @@
 import { computed, ref, watch, onBeforeUnmount, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
-import { supabase } from 'src/services/supabaseClient'
+import { getUserNative, selectTarotReadingsByUser, deleteTarotReading } from 'src/services/supabaseNative'
 import { loadTarotData } from 'src/helpers/tarotData'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
+import { usePremiumAccess } from 'src/stores/premiumAccess'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
 const router = useRouter()
+const { hasPremiumAccess } = usePremiumAccess()
 
 const readings = ref([])
 const tarotData = ref(null)
@@ -188,6 +212,7 @@ const selectedReading = ref(null)
 const deleteDialog = ref(false)
 const deleting = ref(false)
 const isLoggedIn = ref(false)
+const userId = ref('')
 
 const emptyStateText = computed(() => {
   if (loading.value) return ''
@@ -276,10 +301,7 @@ const deleteReading = async () => {
   deleting.value = true
 
   try {
-    const { error } = await supabase
-      .from('tarot_readings')
-      .delete()
-      .eq('id', selectedReading.value.id)
+    const { error } = await deleteTarotReading(selectedReading.value.id, 8000)
 
     if (error) {
       console.error('Delete error:', error)
@@ -307,6 +329,11 @@ const goToLogin = async () => {
   router.push({ name: 'login' })
 }
 
+const goPremium = async () => {
+  await hapticTap()
+  router.push({ name: 'premium' })
+}
+
 const onBack = async () => {
   await hapticTap()
   router.back()
@@ -323,11 +350,15 @@ const setBottomNavDark = (enabled) => {
 }
 
 const loadReadings = async () => {
+  if (!hasPremiumAccess.value) {
+    loading.value = false
+    readings.value = []
+    return
+  }
+
   loading.value = true
   try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const { data: user } = await getUserNative(8000)
     if (!user) {
       isLoggedIn.value = false
       loading.value = false
@@ -335,12 +366,9 @@ const loadReadings = async () => {
     }
 
     isLoggedIn.value = true
+    userId.value = user.id
 
-    const { data, error } = await supabase
-      .from('tarot_readings')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
+    const { data, error } = await selectTarotReadingsByUser(user.id, 8000)
 
     if (error) {
       console.error('Load readings error:', error)
@@ -370,8 +398,10 @@ onBeforeUnmount(() => {
 })
 
 onMounted(async () => {
-  const data = await loadTarotData()
-  tarotData.value = data
+  if (hasPremiumAccess.value) {
+    const data = await loadTarotData()
+    tarotData.value = data
+  }
   await loadReadings()
   setBottomNavDark(true)
 })
@@ -458,6 +488,135 @@ onMounted(async () => {
   min-height: 200px;
 }
 
+.readings-lock {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(112, 156, 255, 0.18) 0%, rgba(12, 18, 30, 0.12) 42%, transparent 100%),
+    linear-gradient(160deg, rgba(14, 20, 32, 0.92), rgba(6, 10, 18, 0.98));
+  box-shadow:
+    0 18px 40px rgba(2, 6, 12, 0.52),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  padding: 22px 18px 20px;
+  display: grid;
+  gap: 12px;
+}
+
+.readings-lock::before {
+  content: '';
+  position: absolute;
+  inset: -140% auto auto -48%;
+  width: 220px;
+  height: 220px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(145, 188, 255, 0.25) 0%, rgba(145, 188, 255, 0) 70%);
+  pointer-events: none;
+}
+
+.readings-lock__badge {
+  justify-self: start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(186, 207, 247, 0.34);
+  background: rgba(87, 123, 190, 0.2);
+  color: rgba(226, 236, 255, 0.95);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.readings-lock__title {
+  font-size: 18px;
+  line-height: 1.25;
+  letter-spacing: 0.03em;
+  color: rgba(238, 244, 255, 0.96);
+  font-weight: 600;
+}
+
+.readings-lock__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(216, 228, 247, 0.78);
+}
+
+.readings-lock__preview {
+  border-radius: 14px;
+  border: 1px solid rgba(165, 196, 245, 0.22);
+  background: rgba(7, 12, 20, 0.62);
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.readings-lock__stack {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.readings-lock__thumb {
+  width: 52px;
+  height: 82px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background:
+    linear-gradient(160deg, rgba(127, 165, 235, 0.26), rgba(25, 38, 62, 0.8)),
+    linear-gradient(180deg, rgba(12, 18, 30, 0.96), rgba(5, 10, 18, 0.98));
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.readings-lock__thumb:nth-child(2) {
+  transform: translateY(-6px);
+}
+
+.readings-lock__meta {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.readings-lock__meta span {
+  border-radius: 999px;
+  padding: 6px 10px;
+  border: 1px solid rgba(176, 206, 252, 0.26);
+  background: rgba(95, 140, 214, 0.12);
+  color: rgba(223, 235, 254, 0.78);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.readings-lock__cta {
+  width: 100%;
+  margin-top: 6px;
+  border-radius: 14px;
+  border: 1px solid rgba(156, 184, 235, 0.36);
+  padding: 14px 16px;
+  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
+  color: #e9edf4;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 180ms ease;
+}
+
+.readings-lock__cta:active {
+  transform: scale(0.98);
+}
+
 .readings-empty {
   text-align: center;
   padding: 40px 20px;
@@ -533,7 +692,7 @@ onMounted(async () => {
 }
 
 .reading-card__date {
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.7);
@@ -701,7 +860,7 @@ onMounted(async () => {
 }
 
 .reading-detail__card-name {
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.06em;
   color: rgba(224, 234, 251, 0.84);
 }
@@ -728,7 +887,7 @@ onMounted(async () => {
   border: 1px solid rgba(255, 96, 96, 0.42);
   background: rgba(42, 8, 12, 0.5);
   color: rgba(255, 106, 106, 0.9);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -783,7 +942,7 @@ onMounted(async () => {
 
 .sheet-title {
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.74);

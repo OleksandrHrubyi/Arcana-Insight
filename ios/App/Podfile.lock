@@ -1,10 +1,14 @@
 PODS:
   - Capacitor (5.7.8):
     - CapacitorCordova
+  - CapacitorApp (5.0.8):
+    - Capacitor
   - CapacitorCommunityAppleSignIn (5.0.0):
     - Capacitor
   - CapacitorCordova (5.7.8)
   - CapacitorDevice (5.0.8):
+    - Capacitor
+  - CapacitorFilesystem (5.2.2):
     - Capacitor
   - CapacitorFirebaseAnalytics (5.4.1):
     - Capacitor
@@ -110,9 +114,11 @@ PODS:
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorCommunityAppleSignIn (from `../../node_modules/@capacitor-community/apple-sign-in`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
+  - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
   - "CapacitorFirebaseAnalytics (from `../../node_modules/@capacitor-firebase/analytics`)"
   - "CapacitorFirebaseAnalytics/Analytics (from `../../node_modules/@capacitor-firebase/analytics`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
@@ -135,12 +141,16 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Capacitor:
     :path: "../../node_modules/@capacitor/ios"
+  CapacitorApp:
+    :path: "../../node_modules/@capacitor/app"
   CapacitorCommunityAppleSignIn:
     :path: "../../node_modules/@capacitor-community/apple-sign-in"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorDevice:
     :path: "../../node_modules/@capacitor/device"
+  CapacitorFilesystem:
+    :path: "../../node_modules/@capacitor/filesystem"
   CapacitorFirebaseAnalytics:
     :path: "../../node_modules/@capacitor-firebase/analytics"
   CapacitorHaptics:
@@ -156,9 +166,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Capacitor: 9686e5711b48a1aa84671ede795d0175848abcba
+  CapacitorApp: 8026f7ce1ac72780258d05a90c07deb5c724c0fa
   CapacitorCommunityAppleSignIn: 72676596c6ff57fce8f687365dfc5d8395bb45ac
   CapacitorCordova: 31ab98dca2ddcee051027a1afe7e8c85c82f7297
   CapacitorDevice: 4aceb502ce1142ea45a2aece603169d7479cd271
+  CapacitorFilesystem: afe2c055f1e379385c80eafdece32751926b2910
   CapacitorFirebaseAnalytics: 1023995c4b63c90e7dcd12f658375df38da1665d
   CapacitorHaptics: acd823c6ed0ec2cd968a09316768144b0495a1e7
   CapacitorPreferences: 5331d7a33044d252dcb2f7fee712f0322c04bae7
@@ -174,6 +186,6 @@ SPEC CHECKSUMS:
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
 
-PODFILE CHECKSUM: a2370440f2b8276882c9c6fd23c4168a674ba7c7
+PODFILE CHECKSUM: b056b18be0ca802f23bd40963d3b79a8bd813f0d
 
 COCOAPODS: 1.16.2

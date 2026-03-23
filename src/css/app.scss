@@ -1,30 +1,59 @@
-@font-face {
-    font-family: 'JetBrains Mono';
-    src: url('../assets/fonts/ttf/JetBrainsMono-Regular.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'JetBrains Mono';
-    src: url('../assets/fonts/ttf/JetBrainsMono-Bold.ttf') format('truetype');
-    font-weight: 700;
-    font-style: normal;
-    font-display: swap;
+:root {
+  --font-ui: 'Manrope', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-accent: 'Forum', 'Times New Roman', serif;
 }
 
 body {
-    font-family: 'JetBrains Mono', monospace;
-    //font-family: "Montserrat", sans-serif;
-    font-weight: 600;
-    background: linear-gradient(180deg, #101721 0%, #12202b 16.7%, #142632 35.58%, #12212b 57.35%, #080c0f 96.63%);
+  font-family: var(--font-ui);
+  font-weight: 400;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background: linear-gradient(180deg, #101721 0%, #12202b 16.7%, #142632 35.58%, #12212b 57.35%, #080c0f 96.63%);
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+/* Акцентний шрифт: великі заголовки, назви карт і знаків */
+.font-accent,
+.main-title,
+.auth-title,
+.menu-title,
+.daily-title,
+.zodiac-title,
+.cards-title,
+.compat-title,
+.readings-title,
+.premium-title,
+.policy-title,
+.faq-title,
+.settings-title,
+.onboarding-title,
+.sheet-title,
+.active-zodiac-name,
+.sign-head__name,
+.cards-name,
+.daily-card__name,
+.card-detail__title,
+.oracle-card-preview__title,
+.reading-detail__card-name,
+.interpret-title,
+.interpret-card__name,
+.horoscope-info-title {
+  font-family: var(--font-accent);
+  font-weight: 400;
+  letter-spacing: 0.04em;
 }
 
 body.settings-sheet-open .bottom-nav-wrap {
-    display: none !important;
+  display: none !important;
 }
 
 body.oracle-sheet-open .bottom-nav-wrap {
-    display: none !important;
+  display: none !important;
 }

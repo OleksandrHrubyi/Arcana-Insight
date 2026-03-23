@@ -4,7 +4,16 @@ on:
   schedule:
     # Запускати кожну годину
     - cron: "0 * * * *"
-  workflow_dispatch: {} # Можна запустити вручну
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Run mode"
+        required: true
+        type: choice
+        default: push-worker
+        options:
+          - push-worker
+          - broadcast-test
 
 jobs:
   send_push:
@@ -16,13 +25,22 @@ jobs:
         shell: bash
         run: |
           set -e
-          echo "Triggering push-worker..."
+          MODE="${{ github.event.inputs.mode || 'push-worker' }}"
+          if [ "$MODE" = "broadcast-test" ]; then
+            ENDPOINT="send-broadcast"
+            BODY='{"title":"Arcana test","body":"Manual GitHub test","platform":"ios","limit":50}'
+          else
+            ENDPOINT="push-worker"
+            BODY='{}'
+          fi
+
+          echo "Triggering $ENDPOINT (mode=$MODE)..."
 
           HTTP_CODE=$(curl --retry 3 --retry-delay 2 --retry-all-errors \
-            -sS -L -X POST "https://rgqfkdhzllhmagrcasav.functions.supabase.co/push-worker" \
+            -sS -L -X POST "https://rgqfkdhzllhmagrcasav.functions.supabase.co/$ENDPOINT" \
             -H "x-push-secret: ${{ secrets.ADMIN_PUSH_SECRET }}" \
             -H "Content-Type: application/json" \
-            -d "{}" \
+            -d "$BODY" \
             -o response.json \
             -w "%{http_code}")
 

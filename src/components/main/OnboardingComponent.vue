@@ -188,7 +188,7 @@ const skip = async () => {
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(9, 13, 21, 0.7);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(214, 225, 242, 0.7);

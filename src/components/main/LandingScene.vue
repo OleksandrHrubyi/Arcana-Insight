@@ -396,7 +396,7 @@ export default {
 .main-title {
   max-width: 300px;
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 20px;
   color: #ffffff;
   margin: 24px auto;
@@ -577,7 +577,7 @@ export default {
 }
 .main-title {
   letter-spacing: 0.08em;
-  font-size: 11px;
+  font-size: 13px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

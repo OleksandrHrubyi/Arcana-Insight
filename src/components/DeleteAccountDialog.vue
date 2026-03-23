@@ -16,7 +16,6 @@
           no-caps
           class="delete-card-btn delete-card-btn--cancel"
           :label="tt('common.cancel')"
-          :disable="loading"
           @click="onCancel"
         />
         <q-btn
