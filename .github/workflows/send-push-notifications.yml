@@ -28,7 +28,7 @@ jobs:
           MODE="${{ github.event.inputs.mode || 'push-worker' }}"
           if [ "$MODE" = "broadcast-test" ]; then
             ENDPOINT="send-broadcast"
-            BODY='{"title":"Arcana test","body":"Manual GitHub test","platform":"ios","limit":50}'
+            BODY='{"title":"Arcana","body":"Ваша карта дня вже готова. Натисніть, щоб відкрити.","platform":"ios","route":"daily","path":"/daily","limit":50}'
           else
             ENDPOINT="push-worker"
             BODY='{}'

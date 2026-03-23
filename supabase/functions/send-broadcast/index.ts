@@ -7,6 +7,8 @@ type ReqBody = {
   locale?: string // optional filter
   platform?: string // default "ios"
   apns?: 'sandbox' | 'production' // OPTIONAL: якщо не вкажеш — пошле в обидва
+  route?: 'horoscope' | 'daily' | 'menu'
+  path?: string
   limit?: number
   dryRun?: boolean
 }
@@ -375,6 +377,9 @@ Deno.serve(async (req) => {
     const title = body.title ?? 'Arcana'
     const msg = body.body ?? 'Гороскоп дня вже готовий ✨'
     const date = body.date ?? new Date().toISOString().slice(0, 10)
+    const route = body.route ?? 'horoscope'
+    const path =
+      body.path ?? (route === 'daily' ? '/daily' : route === 'menu' ? '/menu' : '/horoscope')
     const locale = body.locale
     const platform = body.platform ?? 'ios'
     const limit = body.limit ?? 0
@@ -399,7 +404,8 @@ Deno.serve(async (req) => {
         alert: { title, body: msg },
         sound: 'default',
       },
-      route: 'horoscope',
+      route,
+      path,
       date,
     }
 

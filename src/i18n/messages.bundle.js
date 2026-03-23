@@ -131,9 +131,9 @@ export const messages = {
           'What exactly inside this theme needs clarity?',
         ],
         questionMode: [
-          'Now - one sentence: what\'s the question?',
+          "Now - one sentence: what's the question?",
           'Say the main thing in one sentence.',
-          'Briefly: what\'s the core of your question?',
+          "Briefly: what's the core of your question?",
           'One sentence. Make it as clear as you can.',
           'Clear and short: what do you want to understand?',
           'Give it shape - one sentence.',
@@ -223,7 +223,10 @@ export const messages = {
             { label: 'Next step', text: 'What is the best next step?' },
             { label: 'Block', text: 'What could block this connection from growing?' },
             { label: 'Blind spot', text: 'What am I not noticing in this dynamic?' },
-            { label: 'Next 30 days', text: 'How might this connection unfold over the next 30 days?' },
+            {
+              label: 'Next 30 days',
+              text: 'How might this connection unfold over the next 30 days?',
+            },
           ],
           partner: [
             { label: 'Core', text: 'What matters most in our relationship right now?' },
@@ -231,7 +234,10 @@ export const messages = {
             { label: 'Next step', text: 'What step will bring the most clarity?' },
             { label: 'Block', text: 'What is getting in the way of us right now?' },
             { label: 'Resource', text: 'What resource can support us?' },
-            { label: 'Next 30 days', text: 'What is the outlook for our relationship over the next 30 days?' },
+            {
+              label: 'Next 30 days',
+              text: 'What is the outlook for our relationship over the next 30 days?',
+            },
           ],
           ex: [
             { label: 'Core', text: 'Why is this story returning now?' },
@@ -315,7 +321,10 @@ export const messages = {
             { label: 'Next step', text: 'What step stabilizes my budget fastest?' },
             { label: 'Habit', text: 'What habit harms my finances the most?' },
             { label: 'Resource', text: 'What helps me keep balance gently?' },
-            { label: 'Next 30 days', text: 'What financial state is possible in the next 30 days?' },
+            {
+              label: 'Next 30 days',
+              text: 'What financial state is possible in the next 30 days?',
+            },
           ],
           debt: [
             { label: 'Core', text: 'What do I need to understand about this debt?' },
@@ -391,7 +400,10 @@ export const messages = {
             { label: 'Drain', text: 'What drains me the most?' },
             { label: 'Next step', text: 'What step will restore my strength?' },
             { label: 'Avoid', text: 'What should I avoid in the next few days?' },
-            { label: 'Next 30 days', text: 'What state is possible in 30 days if I protect myself?' },
+            {
+              label: 'Next 30 days',
+              text: 'What state is possible in 30 days if I protect myself?',
+            },
           ],
           anxiety: [
             { label: 'Root cause', text: 'What is the root of my anxiety?' },
@@ -627,9 +639,9 @@ export const messages = {
       terms: 'Terms and Conditions',
       sendCodeAgain: 'Send a new code',
       didntGetCode: "Didn't get your code?",
-      codeSent: "We’ve sent a 6-digit verification code to your email",
-      codeResent: "We’ve just resent your verification code. Check your inbox again.",
-      loginHelper: "We’ll send a 6-digit code to your email.",
+      codeSent: 'We’ve sent a 6-digit verification code to your email',
+      codeResent: 'We’ve just resent your verification code. Check your inbox again.',
+      loginHelper: 'We’ll send a 6-digit code to your email.',
       wrongOrExpiredCode: 'Wrong or expired code. Try again.',
       fillAllFields: 'Please fill all fields correctly.',
     },
@@ -742,7 +754,6 @@ export const messages = {
       guidanceLabel: 'Guidance',
     },
 
-
     cardsPage: {
       title: 'Card library',
       subtitle: 'Tap a card to open its meaning',
@@ -822,10 +833,12 @@ export const messages = {
         air_earth: 'Ideas meet structure. Build a shared plan to avoid drifting apart.',
         air_fire: 'Fire needs air, air loves fire. The pair moves quickly and inspires action.',
         air_water: 'Thought meets feeling. Translate emotions into words for harmony.',
-        earth_earth: 'Earth with earth builds trust and stability. Give it time and it grows strong.',
+        earth_earth:
+          'Earth with earth builds trust and stability. Give it time and it grows strong.',
         earth_fire: 'Heat meets patience. When aligned, this duo turns desire into results.',
         earth_water: 'Earth anchors water, water softens earth. This is steady and nurturing.',
-        fire_fire: 'Two fires amplify momentum: bold, bright, and fast. Keep rhythm to avoid burnout.',
+        fire_fire:
+          'Two fires amplify momentum: bold, bright, and fast. Keep rhythm to avoid burnout.',
         fire_water: 'Steam and contrast: passion meets sensitivity. Balance pace and tone.',
         water_water: 'Water with water is deep empathy and intuition. Boundaries keep it healthy.',
       },
@@ -852,23 +865,26 @@ export const messages = {
         final: 'Final score',
         formula: 'Formula',
         formulaText: 'Element score (65%) + Modality score (35%).',
-        modalityNote: 'Modality shows the pace of a sign: cardinal (starts), fixed (sustains), mutable (adapts).',
+        modalityNote:
+          'Modality shows the pace of a sign: cardinal (starts), fixed (sustains), mutable (adapts).',
         elementPair: 'Element pair',
         modalityPair: 'Modality pair',
         resultSummary: 'Summary',
-      resultExplain: 'This score combines element chemistry with how each sign moves through life.',
-      elementMatrix: 'Element matrix',
-      modalityMatrix: 'Modality matrix',
-      matrixHint: 'Your pair is highlighted. Values show the score for each combination.',
-      tabs: {
-        basic: 'Basic',
-        extended: 'Extended',
-        matrix: 'Matrix',
+        resultExplain:
+          'This score combines element chemistry with how each sign moves through life.',
+        elementMatrix: 'Element matrix',
+        modalityMatrix: 'Modality matrix',
+        matrixHint: 'Your pair is highlighted. Values show the score for each combination.',
+        tabs: {
+          basic: 'Basic',
+          extended: 'Extended',
+          matrix: 'Matrix',
+        },
+        pairLabel: 'Selected pair',
       },
-      pairLabel: 'Selected pair',
-    },
       modalityTexts: {
-        cardinal_cardinal: 'Two initiators: high drive and fast starts. Align goals to avoid friction.',
+        cardinal_cardinal:
+          'Two initiators: high drive and fast starts. Align goals to avoid friction.',
         fixed_fixed: 'Steady and loyal, but stubborn. Patience and respect keep it balanced.',
         mutable_mutable: 'Flexible and curious. Needs structure to avoid drifting.',
         cardinal_fixed: 'Starter meets keeper. Pace the relationship and share control.',
@@ -910,8 +926,10 @@ export const messages = {
       },
       status: 'Current access model',
       heroBadge: 'Premium preview',
-      heroLead: 'Free gives you a daily ritual. Premium adds deeper context and more personalized reflection.',
-      whyLead: 'If you open the app regularly, Premium helps you build a more consistent and meaningful self-reflection practice.',
+      heroLead:
+        'Free gives you a daily ritual. Premium adds deeper context and more personalized reflection.',
+      whyLead:
+        'If you open the app regularly, Premium helps you build a more consistent and meaningful self-reflection practice.',
       sections: {
         free: 'Included in free',
         premium: 'Included in Premium',
@@ -926,7 +944,8 @@ export const messages = {
         freeTitle: 'Free access',
         freeSubtitle: 'Basic daily value to stay in touch with your rhythm.',
         premiumTitle: 'Premium access',
-        premiumSubtitle: 'If you use the app regularly, Premium gives more depth and a clearer personal track.',
+        premiumSubtitle:
+          'If you use the app regularly, Premium gives more depth and a clearer personal track.',
         premiumRibbon: 'Most value',
       },
       free: {
@@ -1026,7 +1045,8 @@ export const messages = {
         patternHints: {
           one: 'You are balancing between emotional response and practical structure.',
           two: 'There is a repeated theme of overthinking followed by delayed action.',
-          three: 'You are in a transition phase where clarity grows through small consistent steps.',
+          three:
+            'You are in a transition phase where clarity grows through small consistent steps.',
         },
         focusHints: {
           one: 'Choose one priority and protect time for it daily.',
@@ -1062,7 +1082,8 @@ export const messages = {
         button: 'Continue with Premium',
         selectedLabel: 'Selected plan',
         restore: 'Restore purchases',
-        footnote: 'Subscription renews automatically unless canceled at least 24 hours before renewal.',
+        footnote:
+          'Subscription renews automatically unless canceled at least 24 hours before renewal.',
         includesTitle: 'Every plan includes:',
         includes: {
           unlimitedReadings: 'Unlimited tarot sessions',
@@ -1097,7 +1118,8 @@ export const messages = {
       title: 'Zodiac signs',
       subtitle: 'Guide for all 12 signs',
       introTitle: 'How to use',
-      introText: 'Open your sign and read it as a short self-check: core energy, strengths, and where to keep balance.',
+      introText:
+        'Open your sign and read it as a short self-check: core energy, strengths, and where to keep balance.',
       mySign: {
         title: 'Your sign',
         ready: 'Based on your birth date',
@@ -1126,18 +1148,29 @@ export const messages = {
         showLess: 'Hide details',
       },
       signs: {
-        aries: 'Direct, energetic, and fast in action. Works best with clear goals and physical movement.',
-        taurus: 'Steady, practical, and grounded. Builds strong results through rhythm, patience, and consistency.',
-        gemini: 'Curious, social, and mentally quick. Thrives on variety, communication, and new ideas.',
-        cancer: 'Sensitive, caring, and protective. Needs emotional safety and close, trusted connections.',
+        aries:
+          'Direct, energetic, and fast in action. Works best with clear goals and physical movement.',
+        taurus:
+          'Steady, practical, and grounded. Builds strong results through rhythm, patience, and consistency.',
+        gemini:
+          'Curious, social, and mentally quick. Thrives on variety, communication, and new ideas.',
+        cancer:
+          'Sensitive, caring, and protective. Needs emotional safety and close, trusted connections.',
         leo: 'Warm, expressive, and confident. Shines when creating, leading, and inspiring others.',
-        virgo: 'Precise, thoughtful, and observant. Grows through useful systems and small daily improvements.',
-        libra: 'Balanced, diplomatic, and relational. Strong in partnerships, harmony, and fair decisions.',
-        scorpio: 'Deep, intense, and transformative. Sees hidden motives and commits fully to what matters.',
-        sagittarius: 'Freedom-loving, honest, and future-oriented. Expands through learning, travel, and big vision.',
-        capricorn: 'Disciplined, strategic, and reliable. Reaches long-term goals with structure and persistence.',
-        aquarius: 'Independent, unconventional, and idea-driven. Brings fresh perspectives and systemic thinking.',
-        pisces: 'Intuitive, empathic, and imaginative. Needs creative expression and healthy emotional boundaries.',
+        virgo:
+          'Precise, thoughtful, and observant. Grows through useful systems and small daily improvements.',
+        libra:
+          'Balanced, diplomatic, and relational. Strong in partnerships, harmony, and fair decisions.',
+        scorpio:
+          'Deep, intense, and transformative. Sees hidden motives and commits fully to what matters.',
+        sagittarius:
+          'Freedom-loving, honest, and future-oriented. Expands through learning, travel, and big vision.',
+        capricorn:
+          'Disciplined, strategic, and reliable. Reaches long-term goals with structure and persistence.',
+        aquarius:
+          'Independent, unconventional, and idea-driven. Brings fresh perspectives and systemic thinking.',
+        pisces:
+          'Intuitive, empathic, and imaginative. Needs creative expression and healthy emotional boundaries.',
       },
     },
 
@@ -1147,7 +1180,8 @@ export const messages = {
       emptyTitle: 'No readings yet',
       emptyNotLoggedIn: 'Sign in to see your readings',
       emptyHint: 'Your tarot readings will appear here after you complete a spread.',
-      emptyHintNotLoggedIn: 'Create an account to save your tarot readings and access them anytime.',
+      emptyHintNotLoggedIn:
+        'Create an account to save your tarot readings and access them anytime.',
       emptyCta: 'Start a reading',
       loginCta: 'Sign in',
       detailTitle: 'Reading details',
@@ -1169,7 +1203,7 @@ export const messages = {
       sectionSupport: 'Support',
       supportText: 'If you need help, write to us and we will reply within 24 hours.',
       q1: 'How is the daily card chosen?',
-      a1: 'It is a deterministic draw that changes once per day and stays consistent for that date.',
+      a1: 'It is a deterministic draw per user that changes once per day and stays consistent for that date.',
       q2: 'What does an upside-down (reversed) card mean?',
       a2: 'A reversed card reflects the inverse or blocked aspect of the same archetype.',
       q3: 'Can I change the language or notification time?',
@@ -1191,7 +1225,8 @@ export const messages = {
       subtitle: 'How we handle your data',
       privacyTitle: 'Privacy',
       privacyText1: 'We collect only essential information required to provide the app experience.',
-      privacyText2: 'Your readings and preferences are stored locally on your device unless you sign in.',
+      privacyText2:
+        'Your readings and preferences are stored locally on your device unless you sign in.',
       privacyText3: 'We do not sell personal data. You can request deletion at any time.',
       termsTitle: 'Terms',
       termsText1: 'Arcana Insight provides spiritual and informational content for personal use.',
@@ -1961,7 +1996,6 @@ export const messages = {
       guidanceLabel: 'Пояснення',
     },
 
-
     cardsPage: {
       title: 'Бібліотека карт',
       subtitle: 'Натисни на карту, щоб відкрити значення',
@@ -2039,12 +2073,14 @@ export const messages = {
       elementTexts: {
         air_air: 'Повітря з повітрям — це інтелект і постійний обмін. Додавайте глибину.',
         air_earth: 'Ідеї зустрічають структуру. Спільний план рятує від розходження.',
-        air_fire: 'Вогню потрібне повітря, повітрю подобається вогонь. Пара надихає і рухається швидко.',
+        air_fire:
+          'Вогню потрібне повітря, повітрю подобається вогонь. Пара надихає і рухається швидко.',
         air_water: 'Думка і почуття. Перекладайте емоції в слова для гармонії.',
         earth_earth: 'Земля з землею будує довіру і стабільність. Дайте стосункам час.',
         earth_fire: 'Тепло і терпіння. У парі це перетворює бажання на результат.',
         earth_water: 'Земля заземлює воду, вода пом’якшує землю. Це турботливо і стабільно.',
-        fire_fire: 'Два вогні підсилюють темп: яскраво, сміливо й швидко. Потрібен ритм, щоб не перегоріти.',
+        fire_fire:
+          'Два вогні підсилюють темп: яскраво, сміливо й швидко. Потрібен ритм, щоб не перегоріти.',
         fire_water: 'Контраст і пара: пристрасть зустрічає чутливість. Балансуйте темп.',
         water_water: 'Вода з водою — глибока емпатія й інтуїція. Межі роблять це здоровим.',
       },
@@ -2071,23 +2107,25 @@ export const messages = {
         final: 'Підсумок',
         formula: 'Формула',
         formulaText: 'Стихійний бал (65%) + модальний бал (35%).',
-        modalityNote: 'Модальність показує темп знаку: кардинальний (починає), фіксований (утримує), мутабельний (адаптується).',
+        modalityNote:
+          'Модальність показує темп знаку: кардинальний (починає), фіксований (утримує), мутабельний (адаптується).',
         elementPair: 'Пара стихій',
         modalityPair: 'Пара модальностей',
         resultSummary: 'Підсумок',
-      resultExplain: 'Цей бал поєднує хімію стихій із темпом, у якому рухаються знаки.',
-      elementMatrix: 'Матриця стихій',
-      modalityMatrix: 'Матриця модальностей',
-      matrixHint: 'Твоя пара підсвічена. Значення — це бал кожної комбінації.',
-      tabs: {
-        basic: 'База',
-        extended: 'Розширено',
-        matrix: 'Матриця',
+        resultExplain: 'Цей бал поєднує хімію стихій із темпом, у якому рухаються знаки.',
+        elementMatrix: 'Матриця стихій',
+        modalityMatrix: 'Матриця модальностей',
+        matrixHint: 'Твоя пара підсвічена. Значення — це бал кожної комбінації.',
+        tabs: {
+          basic: 'База',
+          extended: 'Розширено',
+          matrix: 'Матриця',
+        },
+        pairLabel: 'Обрана пара',
       },
-      pairLabel: 'Обрана пара',
-    },
       modalityTexts: {
-        cardinal_cardinal: 'Два ініціатори: швидкий старт і сильний імпульс. Важливо узгодити цілі.',
+        cardinal_cardinal:
+          'Два ініціатори: швидкий старт і сильний імпульс. Важливо узгодити цілі.',
         fixed_fixed: 'Стабільні й віддані, але вперті. Допомагає терпіння та повага.',
         mutable_mutable: 'Гнучкі та допитливі. Потрібна структура, щоб не розпорошуватись.',
         cardinal_fixed: 'Той, хто стартує, і той, хто утримує. Узгодьте темп і контроль.',
@@ -2129,8 +2167,10 @@ export const messages = {
       },
       status: 'Поточна модель доступу',
       heroBadge: 'Попередній перегляд Premium',
-      heroLead: 'Безкоштовно ти отримуєш щоденний ритуал. Premium додає глибший контекст і більш персональну рефлексію.',
-      whyLead: 'Якщо ти регулярно користуєшся застосунком, Premium допомагає перетворити розклади на стабільну практику самоспостереження.',
+      heroLead:
+        'Безкоштовно ти отримуєш щоденний ритуал. Premium додає глибший контекст і більш персональну рефлексію.',
+      whyLead:
+        'Якщо ти регулярно користуєшся застосунком, Premium допомагає перетворити розклади на стабільну практику самоспостереження.',
       sections: {
         free: 'У вільному доступі',
         premium: 'У підписці Premium',
@@ -2145,7 +2185,8 @@ export const messages = {
         freeTitle: 'Безкоштовний доступ',
         freeSubtitle: 'Базова щоденна цінність, щоб тримати контакт із власним ритмом.',
         premiumTitle: 'Преміум доступ',
-        premiumSubtitle: 'Якщо ти користуєшся застосунком регулярно, Premium дає більше глибини та ясніший особистий трек.',
+        premiumSubtitle:
+          'Якщо ти користуєшся застосунком регулярно, Premium дає більше глибини та ясніший особистий трек.',
         premiumRibbon: 'Найбільша цінність',
       },
       free: {
@@ -2188,7 +2229,8 @@ export const messages = {
         clarityTitle: 'Більше контексту, менше випадковості',
         clarityText: 'Ти бачиш не лише момент, а цілісну картину ситуації.',
         consistencyTitle: 'Стабільна особиста практика',
-        consistencyText: 'Історія допомагає зв’язати сьогоднішній стан із тим, що вже повторюється.',
+        consistencyText:
+          'Історія допомагає зв’язати сьогоднішній стан із тим, що вже повторюється.',
         depthTitle: 'Глибше самоспостереження',
         depthText: 'Більше деталей дає якісніші підказки для спокійної та усвідомленої рефлексії.',
       },
@@ -2281,7 +2323,8 @@ export const messages = {
         button: 'Продовжити з Premium',
         selectedLabel: 'Обраний план',
         restore: 'Відновити покупки',
-        footnote: 'Підписка продовжується автоматично, якщо не скасувати щонайменше за 24 години до продовження.',
+        footnote:
+          'Підписка продовжується автоматично, якщо не скасувати щонайменше за 24 години до продовження.',
         includesTitle: 'У кожному плані ти отримуєш:',
         includes: {
           unlimitedReadings: 'Необмежені розклади таро',
@@ -2307,7 +2350,8 @@ export const messages = {
       notifications: {
         comingSoon: 'Екран оплати Premium скоро буде доступний.',
         billingPlaceholder: 'Кнопка оплати вже готова. Наступний крок — підключення StoreKit.',
-        restorePlaceholder: 'Кнопка відновлення вже готова. Наступний крок — підключення StoreKit restore.',
+        restorePlaceholder:
+          'Кнопка відновлення вже готова. Наступний крок — підключення StoreKit restore.',
       },
       note: 'Це інформаційна сторінка. Екран оплати буде додано окремо.',
     },
@@ -2316,7 +2360,8 @@ export const messages = {
       title: 'Знаки зодіаку',
       subtitle: 'Гід по всіх 12 знаках',
       introTitle: 'Як користуватись',
-      introText: 'Відкрий свій знак і читай як короткий self-check: базова енергія, сильні сторони та де тримати баланс.',
+      introText:
+        'Відкрий свій знак і читай як короткий self-check: базова енергія, сильні сторони та де тримати баланс.',
       mySign: {
         title: 'Твій знак',
         ready: 'На основі твоєї дати народження',
@@ -2346,17 +2391,25 @@ export const messages = {
       },
       signs: {
         aries: 'Прямий, енергійний і швидкий у діях. Найкраще працює з чіткою ціллю та рухом.',
-        taurus: 'Стабільний, практичний і заземлений. Дає результат через ритм, терпіння та послідовність.',
-        gemini: 'Допитливий, комунікабельний і швидкий у думках. Розкривається у різноманітті та нових ідеях.',
-        cancer: 'Чутливий, турботливий і захисний. Потребує емоційної безпеки та близьких звʼязків.',
+        taurus:
+          'Стабільний, практичний і заземлений. Дає результат через ритм, терпіння та послідовність.',
+        gemini:
+          'Допитливий, комунікабельний і швидкий у думках. Розкривається у різноманітті та нових ідеях.',
+        cancer:
+          'Чутливий, турботливий і захисний. Потребує емоційної безпеки та близьких звʼязків.',
         leo: 'Теплий, виразний і впевнений. Сяє там, де можна творити, вести та надихати.',
-        virgo: 'Точний, уважний і системний. Росте через корисні звички та невеликі щоденні покращення.',
-        libra: 'Гармонійний, дипломатичний і партнерський. Сильний у балансі, стосунках і чесних рішеннях.',
+        virgo:
+          'Точний, уважний і системний. Росте через корисні звички та невеликі щоденні покращення.',
+        libra:
+          'Гармонійний, дипломатичний і партнерський. Сильний у балансі, стосунках і чесних рішеннях.',
         scorpio: 'Глибокий, інтенсивний і трансформаційний. Бачить приховані мотиви й іде до суті.',
-        sagittarius: 'Вільнолюбний, чесний і орієнтований у майбутнє. Розвивається через знання та широкий горизонт.',
-        capricorn: 'Дисциплінований, стратегічний і надійний. Досягає довгих цілей через структуру та витримку.',
+        sagittarius:
+          'Вільнолюбний, чесний і орієнтований у майбутнє. Розвивається через знання та широкий горизонт.',
+        capricorn:
+          'Дисциплінований, стратегічний і надійний. Досягає довгих цілей через структуру та витримку.',
         aquarius: 'Незалежний, нестандартний і ідейний. Приносить новий погляд і мислить системно.',
-        pisces: 'Інтуїтивний, емпатичний і творчий. Потребує простору для уяви та здорових емоційних меж.',
+        pisces:
+          'Інтуїтивний, емпатичний і творчий. Потребує простору для уяви та здорових емоційних меж.',
       },
     },
 
@@ -2365,8 +2418,9 @@ export const messages = {
       subtitle: 'Історія твоїх розкладів Таро',
       emptyTitle: 'Розкладів ще немає',
       emptyNotLoggedIn: 'Увійди, щоб побачити свої розклади',
-      emptyHint: 'Твої розклади Таро з\'являться тут після завершення.',
-      emptyHintNotLoggedIn: 'Створи акаунт, щоб зберігати свої розклади та мати доступ до них завжди.',
+      emptyHint: "Твої розклади Таро з'являться тут після завершення.",
+      emptyHintNotLoggedIn:
+        'Створи акаунт, щоб зберігати свої розклади та мати доступ до них завжди.',
       emptyCta: 'Почати розклад',
       loginCta: 'Увійти',
       detailTitle: 'Деталі розкладу',
@@ -2388,7 +2442,7 @@ export const messages = {
       sectionSupport: 'Підтримка',
       supportText: 'Якщо потрібна допомога — напиши нам, відповімо протягом 24 годин.',
       q1: 'Як обирається карта дня?',
-      a1: 'Це детермінований витяг, що змінюється раз на день і є сталим для цієї дати.',
+      a1: 'Це детермінований персональний витяг, що змінюється раз на день і є сталим для цієї дати.',
       q2: 'Що означає перевернута карта?',
       a2: 'Перевернута карта показує інверсний або заблокований аспект архетипу.',
       q3: 'Чи можна змінити мову або час нотифікацій?',
@@ -2413,7 +2467,8 @@ export const messages = {
       privacyText2: 'Твої читання і налаштування зберігаються локально, доки ти не увійдеш.',
       privacyText3: 'Ми не продаємо персональні дані. Видалення доступне за запитом.',
       termsTitle: 'Умови',
-      termsText1: 'Arcana Insight надає духовний та інформаційний контент для особистого використання.',
+      termsText1:
+        'Arcana Insight надає духовний та інформаційний контент для особистого використання.',
       termsText2: 'Відповідальність за інтерпретацію контенту лежить на користувачі.',
       termsText3: 'Підписки оплачуються через ваш акаунт у магазині застосунків.',
       contactTitle: 'Контакт',
@@ -2438,4 +2493,4 @@ export const messages = {
       },
     },
   },
-};
+}

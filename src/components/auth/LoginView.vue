@@ -172,12 +172,15 @@ export default {
 
         // Create user profile in app_users
         if (user) {
+          const profilePayload = {
+            id: user.id,
+            email: user.email,
+          }
+          const metadataName = (user.user_metadata?.name || user.user_metadata?.full_name || '').trim()
+          if (metadataName) profilePayload.name = metadataName
+
           void this.withTimeout(
-            upsertAppUser({
-              id: user.id,
-              email: user.email,
-              name: user.user_metadata?.name || user.user_metadata?.full_name || null
-            }, 8000),
+            upsertAppUser(profilePayload, 8000),
             8000,
             'supabase.app_users.upsert',
           ).then(({ error: profileError }) => {

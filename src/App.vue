@@ -8,11 +8,13 @@
 
 <script setup>
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { initPushListeners } from 'boot/push'
 import { getBillingPremiumStatus } from 'src/services/premiumBilling'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
 
 const { applyPremiumAccessStatus } = usePremiumAccess()
+const router = useRouter()
 
 const syncPremiumStatus = async () => {
   const status = await getBillingPremiumStatus()
@@ -24,8 +26,12 @@ const syncPremiumStatus = async () => {
   })
 }
 
+const navigateFromPush = async (target) => {
+  await router.push(target)
+}
+
 onMounted(() => {
-  void initPushListeners()
+  void initPushListeners({ navigate: navigateFromPush })
   void syncPremiumStatus()
 })
 </script>

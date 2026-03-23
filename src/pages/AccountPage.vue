@@ -357,7 +357,9 @@ export default defineComponent({
 
     this.userId = user.id
     this.userEmail = user.email || ''
-    this.profile.name = this.profile.name || user.user_metadata?.name || user.user_metadata?.full_name || ''
+    this.profile.name = this.normalizeProfileName(
+      this.profile.name || user.user_metadata?.name || user.user_metadata?.full_name || '',
+    )
 
     const cached = await this.loadCachedProfile()
     if (cached) {
@@ -374,6 +376,27 @@ export default defineComponent({
   },
 
   methods: {
+    normalizeProfileName(value) {
+      if (typeof value !== 'string') return ''
+      return value.trim()
+    },
+
+    async backfillMissingName(rowName, fallbackName) {
+      const normalizedRowName = this.normalizeProfileName(rowName)
+      const normalizedFallbackName = this.normalizeProfileName(fallbackName)
+      if (normalizedRowName || !normalizedFallbackName) return
+
+      try {
+        await this.authStore.queueProfileUpdate({ name: normalizedFallbackName })
+        await Promise.race([
+          this.authStore.flushProfileQueue(),
+          new Promise((resolve) => setTimeout(resolve, 8000)),
+        ])
+      } catch (err) {
+        console.warn('[AccountPage] name backfill failed:', err)
+      }
+    },
+
     async loadCachedProfile() {
       try {
         const { value } = await Preferences.get({ key: 'profile_cache_v1' })
@@ -404,15 +427,19 @@ export default defineComponent({
         const { data: row, error } = await selectAppUser(this.userId, 6000)
         if (error) throw error
         if (row) {
-          const fallbackName = this.profile.name || currentUser?.user_metadata?.name || currentUser?.user_metadata?.full_name || ''
+          const rowName = this.normalizeProfileName(row.name || '')
+          const fallbackName = this.normalizeProfileName(
+            this.profile.name || currentUser?.user_metadata?.name || currentUser?.user_metadata?.full_name || '',
+          )
           const fallbackEmail = this.userEmail || currentUser?.email || ''
           this.profile = {
             ...this.profile,
             ...row,
-            name: row.name || fallbackName,
+            name: rowName || fallbackName,
             email: row.email || fallbackEmail,
           }
           await this.saveCachedProfile(this.profile)
+          await this.backfillMissingName(rowName, fallbackName)
         }
         this.profileLoaded = true
         return
@@ -427,15 +454,19 @@ export default defineComponent({
         const { data: row, error } = await selectAppUser(this.userId, 6000)
         if (error) throw error
         if (row) {
-          const fallbackName = this.profile.name || refreshedUser?.user_metadata?.name || refreshedUser?.user_metadata?.full_name || ''
+          const rowName = this.normalizeProfileName(row.name || '')
+          const fallbackName = this.normalizeProfileName(
+            this.profile.name || refreshedUser?.user_metadata?.name || refreshedUser?.user_metadata?.full_name || '',
+          )
           const fallbackEmail = this.userEmail || refreshedUser?.email || ''
           this.profile = {
             ...this.profile,
             ...row,
-            name: row.name || fallbackName,
+            name: rowName || fallbackName,
             email: row.email || fallbackEmail,
           }
           await this.saveCachedProfile(this.profile)
+          await this.backfillMissingName(rowName, fallbackName)
         }
         this.profileLoaded = true
       } catch (err) {

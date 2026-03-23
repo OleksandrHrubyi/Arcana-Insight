@@ -224,15 +224,21 @@ export default defineComponent({
       this.saving = true
       try {
         await this.hapticTap()
+        const normalizedName = (this.form.name || '').trim()
+        const normalizedEmail = (this.form.email || '').trim()
+        const normalizedDateOfBirth = (this.form.date_of_birth || '').trim()
+        const normalizedCity = (this.form.city_of_birth || '').trim()
+        const normalizedCountry = (this.form.country || '').trim()
+
         // Зберігаємо в app_users (id = auth.uid())
         const payload = {
           id: this.userId,
-          name: this.form.name || null,
-          email: this.form.email || null,
-          date_of_birth: this.form.date_of_birth || null,
-          city_of_birth: this.form.city_of_birth || null,
-          country: this.form.country || null
+          email: normalizedEmail || null,
+          date_of_birth: normalizedDateOfBirth || null,
+          city_of_birth: normalizedCity || null,
+          country: normalizedCountry || null
         }
+        if (normalizedName) payload.name = normalizedName
 
         const { error } = await upsertAppUser(payload, 8000)
 

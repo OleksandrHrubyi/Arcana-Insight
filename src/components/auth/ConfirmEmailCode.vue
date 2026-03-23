@@ -53,20 +53,20 @@ export default {
     },
 
     email() {
-      return (this.$route.query.email || '').toString();
+      return (this.$route.query.email || '').toString().trim();
     },
 
     name() {
-      return (this.$route.query.name || '').toString();
+      return (this.$route.query.name || '').toString().trim();
     },
     dateOfBirth() {
-      return (this.$route.query.dateOfBirth || '').toString();
+      return (this.$route.query.dateOfBirth || '').toString().trim();
     },
     cityOfBirth() {
-      return (this.$route.query.cityOfBirth || '').toString();
+      return (this.$route.query.cityOfBirth || '').toString().trim();
     },
     country() {
-      return (this.$route.query.country || '').toString();
+      return (this.$route.query.country || '').toString().trim();
     },
 
 

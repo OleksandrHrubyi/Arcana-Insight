@@ -54,7 +54,11 @@
           <p
             v-if="bubbleText"
             :key="bubbleKey"
-            :class="['oracle-dialogue__prompt', 'oracle-bubble', isSummaryBubble ? 'oracle-bubble--summary' : 'oracle-bubble--normal']"
+            :class="[
+              'oracle-dialogue__prompt',
+              'oracle-bubble',
+              isSummaryBubble ? 'oracle-bubble--summary' : 'oracle-bubble--normal',
+            ]"
           >
             {{ bubbleText }}
           </p>
@@ -99,11 +103,7 @@
         </button>
       </section>
 
-      <section
-        v-if="showInterpretationActions"
-        class="oracle-interpret"
-        aria-live="polite"
-      >
+      <section v-if="showInterpretationActions" class="oracle-interpret" aria-live="polite">
         <div class="oracle-interpret__actions">
           <button
             type="button"
@@ -138,11 +138,7 @@
           >
             {{ t.choices.leaveSession }}
           </button>
-          <button
-            type="button"
-            class="oracle-interpret__btn"
-            @click="acceptInterpretation"
-          >
+          <button type="button" class="oracle-interpret__btn" @click="acceptInterpretation">
             {{ t.choices.newInterpretation }}
           </button>
         </div>
@@ -238,7 +234,9 @@
               rows="2"
               :placeholder="questionPlaceholder"
             ></textarea>
-            <p v-if="questionValidationError" class="oracle-question__error">{{ questionValidationError }}</p>
+            <p v-if="questionValidationError" class="oracle-question__error">
+              {{ questionValidationError }}
+            </p>
           </div>
 
           <div class="oracle-wheel">
@@ -275,7 +273,6 @@
           </div>
         </section>
       </q-dialog>
-
     </div>
   </q-page>
 </template>
@@ -488,10 +485,10 @@ const interpretationLoadingBase = computed(() =>
     ? 'Добре. Дай мені мить — формую тлумачення'
     : 'All right. Give me a moment — shaping the interpretation',
 )
-const interpretationLoadingLine = computed(() => `${interpretationLoadingBase.value}${'.'.repeat(loadingDots.value)}`)
-const interpretationUnavailableLine = computed(() =>
-  i18nT(currentLang.value, 'errors.generic'),
+const interpretationLoadingLine = computed(
+  () => `${interpretationLoadingBase.value}${'.'.repeat(loadingDots.value)}`,
 )
+const interpretationUnavailableLine = computed(() => i18nT(currentLang.value, 'errors.generic'))
 
 const loadCardPool = async () => {
   const data = await loadTarotData()
@@ -509,13 +506,33 @@ const loadCardPool = async () => {
     }))
 }
 
+const cryptoRandomFloat = () => {
+  const cryptoObj =
+    (typeof globalThis !== 'undefined' && globalThis.crypto) ||
+    (typeof window !== 'undefined' && window.crypto) ||
+    null
+
+  if (cryptoObj && typeof cryptoObj.getRandomValues === 'function') {
+    const bytes = new Uint32Array(1)
+    cryptoObj.getRandomValues(bytes)
+    return bytes[0] / 4294967296
+  }
+
+  return Math.random()
+}
+
+const randomInt = (maxExclusive) => {
+  if (!Number.isFinite(maxExclusive) || maxExclusive <= 0) return 0
+  return Math.floor(cryptoRandomFloat() * maxExclusive)
+}
+
 const pickVariant = (key, variants) => {
   if (!variants || variants.length === 0) {
     return ''
   }
 
   const prev = lastVariantByKey.value[key]
-  let nextIndex = Math.floor(Math.random() * variants.length)
+  let nextIndex = randomInt(variants.length)
 
   if (variants.length > 1 && nextIndex === prev) {
     nextIndex = (nextIndex + 1) % variants.length
@@ -532,14 +549,14 @@ const setPrompt = (promptKey) => {
 const drawCards = (count) => {
   const deck = [...cardPool.value]
   for (let i = deck.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1))
+    const j = randomInt(i + 1)
     const temp = deck[i]
     deck[i] = deck[j]
     deck[j] = temp
   }
   return deck.slice(0, Math.max(1, count)).map((card) => ({
     ...card,
-    reversed: Math.random() < 0.24,
+    reversed: cryptoRandomFloat() < 0.24,
   }))
 }
 
@@ -635,7 +652,10 @@ const updateDeckHotspotPosition = () => {
 
   const centerX = rect.left + rect.width * DECK_ANCHOR.x + DECK_ANCHOR.offsetX
   const centerY = rect.top + rect.height * DECK_ANCHOR.y + DECK_ANCHOR.offsetY
-  const size = Math.max(72, Math.min(136, Math.round(Math.min(rect.width, rect.height) * DECK_ANCHOR.size)))
+  const size = Math.max(
+    72,
+    Math.min(136, Math.round(Math.min(rect.width, rect.height) * DECK_ANCHOR.size)),
+  )
 
   deckAuraStyle.value = {
     left: `${centerX}px`,
@@ -710,7 +730,10 @@ const leaveSession = () => {
   router.push({ name: 'arcana' }).catch(() => {})
 }
 
-const withLeaveSession = (items) => [...items, { label: t.value.choices.leaveSession, action: leaveSession }]
+const withLeaveSession = (items) => [
+  ...items,
+  { label: t.value.choices.leaveSession, action: leaveSession },
+]
 
 const askThemePrimary = () => {
   selectedTheme.value = ''
@@ -788,7 +811,10 @@ const pickTemplate = (template) => {
   revealControlsWithDelay(850)
 }
 
-const normalizeQuestionDraft = (value) => String(value || '').replace(/\s+/g, ' ').trim()
+const normalizeQuestionDraft = (value) =>
+  String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim()
 
 const getQuestionValidationError = (value) => {
   const text = normalizeQuestionDraft(value)
@@ -848,7 +874,9 @@ const buildReadySummaryWithTouchPrompt = (spread) => {
     selectedSubTheme.value
   const subThemeLabel = String(subThemeLabelRaw || '').trim()
   const question = clampText(selectedQuestion.value, 46)
-  const spreadLabel = isUk ? { 1: '1 карта', 3: '3 карти', 5: '5 карт' }[spread] : { 1: '1 card', 3: '3 cards', 5: '5 cards' }[spread]
+  const spreadLabel = isUk
+    ? { 1: '1 карта', 3: '3 карти', 5: '5 карт' }[spread]
+    : { 1: '1 card', 3: '3 cards', 5: '5 cards' }[spread]
   const touchPrompt = pickVariant('ready', t.value.prompts.ready)
   const subThemeLineUk = subThemeLabel ? `Підтема: «${subThemeLabel}»\n` : ''
   const subThemeLineEn = subThemeLabel ? `Subtheme: “${subThemeLabel}”\n` : ''
@@ -921,14 +949,20 @@ const getCardRole = (index, total) => {
   }
   if (total === 5) {
     return (
-      (isUk ? ['Основа', 'Минуле', 'Тепер', 'Тінь', 'Вектор'] : ['Base', 'Past', 'Now', 'Shadow', 'Vector'])[index] ||
+      (isUk
+        ? ['Основа', 'Минуле', 'Тепер', 'Тінь', 'Вектор']
+        : ['Base', 'Past', 'Now', 'Shadow', 'Vector'])[index] ||
       (isUk ? `Карта ${index + 1}` : `Card ${index + 1}`)
     )
   }
   return isUk ? `Карта ${index + 1}` : `Card ${index + 1}`
 }
 
-const getCardTitle = (card) => (currentLang.value === 'uk' ? card?.titleUk : card?.titleEn) || card?.titleEn || card?.titleUk || 'Card'
+const getCardTitle = (card) =>
+  (currentLang.value === 'uk' ? card?.titleUk : card?.titleEn) ||
+  card?.titleEn ||
+  card?.titleUk ||
+  'Card'
 
 const getCardImage = (card) => `/images/cards/${card.file}`
 const previewCard = computed(() => spreadCards.value[cardPreviewIndex.value] || null)
@@ -941,7 +975,8 @@ const previewKeywordsLabel = computed(() => i18nT(currentLang.value, 'cardsPage.
 const previewDescriptionLines = computed(() => {
   if (!previewCard.value) return []
   const orientation = previewCard.value.reversed ? 'reversed' : 'upright'
-  const source = previewCard.value.description?.[orientation] || previewCard.value.meaning?.[orientation]
+  const source =
+    previewCard.value.description?.[orientation] || previewCard.value.meaning?.[orientation]
   return getCardText(source, currentLang.value)
 })
 const previewKeywords = computed(() => {
@@ -952,7 +987,11 @@ const previewKeywords = computed(() => {
 const revealedCardList = computed(() =>
   spreadCards.value.slice(0, flippedCardsCount.value).map((card, index) => {
     const title = getCardTitle(card)
-    const reversedSuffix = card?.reversed ? (currentLang.value === 'uk' ? ' (перевернута)' : ' (reversed)') : ''
+    const reversedSuffix = card?.reversed
+      ? currentLang.value === 'uk'
+        ? ' (перевернута)'
+        : ' (reversed)'
+      : ''
 
     return {
       index,
@@ -962,12 +1001,18 @@ const revealedCardList = computed(() =>
   }),
 )
 
-const revealedCardListText = computed(() => revealedCardList.value.map((item) => item.label).join('\n'))
+const revealedCardListText = computed(() =>
+  revealedCardList.value.map((item) => item.label).join('\n'),
+)
 
 const buildCardRevealPrompt = (card, index, total) => {
   const role = getCardRole(index, total)
   const title = getCardTitle(card)
-  const reversedTag = card?.reversed ? (currentLang.value === 'uk' ? ', перевернута' : ', reversed') : ''
+  const reversedTag = card?.reversed
+    ? currentLang.value === 'uk'
+      ? ', перевернута'
+      : ', reversed'
+    : ''
 
   if (currentLang.value === 'uk') {
     return `${role}.\n${title}${reversedTag}.`
@@ -978,7 +1023,9 @@ const buildCardRevealPrompt = (card, index, total) => {
 
 const getCardText = (source, locale) => {
   const text = source?.[locale] || source?.en || ''
-  return String(text || '').split('\n\n').filter(Boolean)
+  return String(text || '')
+    .split('\n\n')
+    .filter(Boolean)
 }
 
 const buildReadingReadyPrompt = () => {
@@ -1006,11 +1053,7 @@ const getPositionKey = (index, total) => {
 
 const getCardMeaningText = (card) => {
   const orientation = card?.reversed ? 'reversed' : 'upright'
-  return (
-    card?.meaning?.[orientation]?.[currentLang.value] ||
-    card?.meaning?.[orientation]?.en ||
-    ''
-  )
+  return card?.meaning?.[orientation]?.[currentLang.value] || card?.meaning?.[orientation]?.en || ''
 }
 
 const getCardKeywords = (card) => {
@@ -1079,7 +1122,9 @@ const buildBasicInterpretation = (payload) => {
       ? 'Тлумачення нижче побудоване на значеннях карт із бібліотеки.'
       : 'The interpretation below is based on card meanings from the library.',
     summary: payload?.question
-      ? (isUk ? `Фокус цього розкладу: ${payload.question}` : `Focus of this spread: ${payload.question}`)
+      ? isUk
+        ? `Фокус цього розкладу: ${payload.question}`
+        : `Focus of this spread: ${payload.question}`
       : '',
     advice: '',
     cards,
@@ -1126,7 +1171,11 @@ const getSpreadCardStyle = (index, total) => {
   const fallback = { rotate: 0, rise: 0 }
   const map = {
     1: [{ rotate: 0, rise: 0 }],
-    3: [{ rotate: -8, rise: 2 }, { rotate: 0, rise: -6 }, { rotate: 8, rise: 2 }],
+    3: [
+      { rotate: -8, rise: 2 },
+      { rotate: 0, rise: -6 },
+      { rotate: 8, rise: 2 },
+    ],
     5: [
       { rotate: -13, rise: 7 },
       { rotate: -6, rise: 2 },
@@ -1239,7 +1288,11 @@ const onCardTap = (index) => {
 
   activeCardIndex.value = index
   void impact(ImpactStyle.Light)
-  currentPrompt.value = buildCardRevealPrompt(spreadCards.value[index], index, spreadCards.value.length)
+  currentPrompt.value = buildCardRevealPrompt(
+    spreadCards.value[index],
+    index,
+    spreadCards.value.length,
+  )
   cardPreviewIndex.value = index
   cardPreviewOpen.value = true
 }
@@ -1282,7 +1335,9 @@ const historyRows = computed(() => {
     : { 1: '1 card', 3: '3 cards', 5: '5 cards' }
 
   if (selectedTheme.value) {
-    rows.push(`${labelTheme}: ${t.value.themeLabels[selectedTheme.value] || t.value.themeLabels.default}`)
+    rows.push(
+      `${labelTheme}: ${t.value.themeLabels[selectedTheme.value] || t.value.themeLabels.default}`,
+    )
   }
 
   if (selectedTheme.value && selectedSubTheme.value) {
@@ -1294,7 +1349,10 @@ const historyRows = computed(() => {
   }
 
   if (selectedQuestion.value) {
-    const cut = selectedQuestion.value.length > 72 ? `${selectedQuestion.value.slice(0, 72)}…` : selectedQuestion.value
+    const cut =
+      selectedQuestion.value.length > 72
+        ? `${selectedQuestion.value.slice(0, 72)}…`
+        : selectedQuestion.value
     rows.push(`${labelQuestion}: ${cut}`)
   }
 
@@ -1306,10 +1364,17 @@ const historyRows = computed(() => {
 })
 
 const isReadingComplete = computed(
-  () => stage.value === 'started' && spreadCards.value.length > 0 && flippedCardsCount.value >= spreadCards.value.length,
+  () =>
+    stage.value === 'started' &&
+    spreadCards.value.length > 0 &&
+    flippedCardsCount.value >= spreadCards.value.length,
 )
 const showInterpretationActions = computed(
-  () => isReadingComplete.value && interpretationChoicesVisible.value && !interpretationLoading.value && !interpretationData.value,
+  () =>
+    isReadingComplete.value &&
+    interpretationChoicesVisible.value &&
+    !interpretationLoading.value &&
+    !interpretationData.value,
 )
 const showInterpretationFinishActions = computed(
   () =>
@@ -1336,7 +1401,8 @@ const choices = computed(() => {
   }
 
   if (stage.value === 'subtheme') {
-    const labels = subThemeLabels.value?.[selectedTheme.value] ?? subThemeLabels.value?.default ?? {}
+    const labels =
+      subThemeLabels.value?.[selectedTheme.value] ?? subThemeLabels.value?.default ?? {}
     return withLeaveSession([
       ...Object.entries(labels).map(([key, label]) => ({
         label,
@@ -1347,11 +1413,10 @@ const choices = computed(() => {
   }
 
   if (stage.value === 'question_mode') {
-    const themeTemplates = questionTemplates.value?.[selectedTheme.value] ?? questionTemplates.value?.default ?? {}
+    const themeTemplates =
+      questionTemplates.value?.[selectedTheme.value] ?? questionTemplates.value?.default ?? {}
     const templates =
-      themeTemplates?.[selectedSubTheme.value] ??
-      questionTemplates.value?.default?.unknown ??
-      []
+      themeTemplates?.[selectedSubTheme.value] ?? questionTemplates.value?.default?.unknown ?? []
     return withLeaveSession([
       ...templates.map((template) => ({
         label: template.label,
@@ -1374,8 +1439,12 @@ const choices = computed(() => {
 
   if (stage.value === 'spread_primary') {
     const premiumLabel = i18nT(currentLang.value, 'premiumAccess.badge')
-    const spread3Label = hasPremiumAccess.value ? t.value.choices.spread3 : `${t.value.choices.spread3} · ${premiumLabel}`
-    const spread5Label = hasPremiumAccess.value ? t.value.choices.spread5 : `${t.value.choices.spread5} · ${premiumLabel}`
+    const spread3Label = hasPremiumAccess.value
+      ? t.value.choices.spread3
+      : `${t.value.choices.spread3} · ${premiumLabel}`
+    const spread5Label = hasPremiumAccess.value
+      ? t.value.choices.spread5
+      : `${t.value.choices.spread5} · ${premiumLabel}`
 
     return withLeaveSession([
       { label: t.value.choices.spread1, action: () => selectSpreadWithAccess(1) },
@@ -1397,7 +1466,9 @@ const choices = computed(() => {
 })
 
 const showQuestionInput = computed(() => stage.value === 'question_input')
-const showChoices = computed(() => controlsUnlocked.value && stage.value !== 'intro' && choices.value.length > 0)
+const showChoices = computed(
+  () => controlsUnlocked.value && stage.value !== 'intro' && choices.value.length > 0,
+)
 const activeBubbleText = computed(() => currentPrompt.value || narrationLine.value)
 const bubbleText = computed(() => {
   if (isReadingComplete.value) {
@@ -1438,7 +1509,8 @@ const isQuestionInputValid = computed(() => {
 })
 const selectedChoice = computed(() => choices.value[selectedWheelIndex.value] || null)
 const selectedChoiceDisabled = computed(
-  () => isChoiceTransitioning.value || !selectedChoice.value || Boolean(selectedChoice.value.disabled),
+  () =>
+    isChoiceTransitioning.value || !selectedChoice.value || Boolean(selectedChoice.value.disabled),
 )
 
 watch(isReadingComplete, (ready) => {
@@ -1481,13 +1553,16 @@ const saveReadingToDatabase = async (interpretationData, payload) => {
       reversed: Boolean(card.reversed),
     }))
 
-    const { error } = await insertTarotReading({
-      user_id: user.id,
-      spread_type: selectedSpread.value || spreadCards.value.length,
-      cards: cardsData,
-      question: payload.question || null,
-      interpretation: interpretationData.interpretation || null,
-    }, 8000)
+    const { error } = await insertTarotReading(
+      {
+        user_id: user.id,
+        spread_type: selectedSpread.value || spreadCards.value.length,
+        cards: cardsData,
+        question: payload.question || null,
+        interpretation: interpretationData.interpretation || null,
+      },
+      8000,
+    )
 
     if (error) {
       console.error('Supabase insert error:', error)
@@ -1689,7 +1764,10 @@ const onWheelScroll = async (event) => {
     return
   }
 
-  const index = Math.max(0, Math.min(Math.round(target.scrollTop / WHEEL_ITEM_HEIGHT), choices.value.length - 1))
+  const index = Math.max(
+    0,
+    Math.min(Math.round(target.scrollTop / WHEEL_ITEM_HEIGHT), choices.value.length - 1),
+  )
   if (index !== selectedWheelIndex.value) {
     selectedWheelIndex.value = index
     await triggerSelectionHaptic()
@@ -1734,7 +1812,9 @@ onMounted(() => {
   }, 1200)
 
   const introSet = pickVariant('introSet', t.value.introSets)
-  const introLines = Array.isArray(introSet) ? introSet.filter(Boolean).slice(0, INTRO_LINES_TO_SHOW) : []
+  const introLines = Array.isArray(introSet)
+    ? introSet.filter(Boolean).slice(0, INTRO_LINES_TO_SHOW)
+    : []
 
   if (!introLines.length) {
     askThemePrimary()
@@ -1747,7 +1827,8 @@ onMounted(() => {
     })
   })
 
-  const introEndDelay = INTRO_LINE_START_DELAY + introLines.length * INTRO_LINE_STEP_DELAY + INTRO_TO_THEME_DELAY
+  const introEndDelay =
+    INTRO_LINE_START_DELAY + introLines.length * INTRO_LINE_STEP_DELAY + INTRO_TO_THEME_DELAY
   schedule(introEndDelay, () => {
     narrationLine.value = ''
     askThemePrimary()
@@ -2103,7 +2184,9 @@ onBeforeUnmount(() => {
     inset 0 1px 0 rgba(226, 237, 255, 0.22),
     inset 0 -1px 0 rgba(88, 118, 174, 0.2);
   opacity: 0.88;
-  transition: opacity 320ms ease, box-shadow 420ms ease;
+  transition:
+    opacity 320ms ease,
+    box-shadow 420ms ease;
 }
 
 .oracle-card__face--front {
@@ -2230,7 +2313,6 @@ onBeforeUnmount(() => {
   pointer-events: none;
   z-index: 7;
 }
-
 
 .oracle-dialogue__prompt {
   margin: 0 0 6px;
@@ -2486,7 +2568,9 @@ onBeforeUnmount(() => {
   font-size: 15px;
   line-height: 1.2;
   scroll-snap-align: center;
-  transition: color 140ms ease, transform 140ms ease;
+  transition:
+    color 140ms ease,
+    transform 140ms ease;
 }
 
 .oracle-wheel__item--active {
@@ -2528,7 +2612,11 @@ onBeforeUnmount(() => {
   letter-spacing: 0.02em;
   text-transform: none;
   box-shadow: none;
-  transition: transform 120ms ease, box-shadow 160ms ease, border-color 160ms ease, filter 160ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    filter 160ms ease;
 }
 
 .oracle-actions__ok:active:not(:disabled) {
@@ -2541,8 +2629,7 @@ onBeforeUnmount(() => {
 .oracle-actions__ok:disabled {
   opacity: 0.42;
   border-color: rgba(120, 146, 194, 0.18);
-  background:
-    linear-gradient(180deg, rgba(20, 29, 46, 0.72), rgba(6, 10, 19, 0.82));
+  background: linear-gradient(180deg, rgba(20, 29, 46, 0.72), rgba(6, 10, 19, 0.82));
   box-shadow: inset 0 1px 0 rgba(214, 229, 255, 0.08);
 }
 
@@ -2716,7 +2803,6 @@ onBeforeUnmount(() => {
   padding: 0;
 }
 
-
 @media (max-width: 480px) {
   .oracle-dialogue {
     width: min(94vw, 520px);
@@ -2750,7 +2836,6 @@ onBeforeUnmount(() => {
   .oracle-interpret {
     bottom: calc(env(safe-area-inset-bottom, 0px) + 12.5%);
   }
-
 }
 
 @keyframes oracle-smoke-drift-a {
@@ -2830,5 +2915,4 @@ onBeforeUnmount(() => {
     transform: scale(1.12);
   }
 }
-
 </style>

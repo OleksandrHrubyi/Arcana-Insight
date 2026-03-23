@@ -13,6 +13,11 @@ let syncInFlight = null
 const PROFILE_QUEUE_KEY = 'profile_pending_v1'
 const AUTH_TIMEOUT_MS = 2000
 
+const normalizeProfileName = (value) => {
+  if (typeof value !== 'string') return ''
+  return value.trim()
+}
+
 const withTimeout = async (promise, ms, label) => {
   if (!ms) return promise
   let timer
@@ -187,14 +192,28 @@ async function ensureUserProfile(user) {
   if (!user) return
 
   try {
-    const { data: existingProfile } = await selectAppUser(user.id, 8000, 'id')
-    if (existingProfile) return
+    const { data: existingProfile } = await selectAppUser(user.id, 8000, 'id,name')
+    const metadataName = normalizeProfileName(
+      user.user_metadata?.name || user.user_metadata?.full_name || '',
+    )
 
-    await upsertAppUser({
-      id: user.id,
-      email: user.email,
-      name: user.user_metadata?.name || user.user_metadata?.full_name || null,
-    }, 8000)
+    if (!existingProfile) {
+      const payload = {
+        id: user.id,
+        email: user.email,
+      }
+      if (metadataName) payload.name = metadataName
+      await upsertAppUser(payload, 8000)
+      return
+    }
+
+    const storedName = normalizeProfileName(existingProfile.name || '')
+    if (!storedName && metadataName) {
+      await upsertAppUser({
+        id: user.id,
+        name: metadataName,
+      }, 8000)
+    }
   } catch (err) {
     console.error('[AuthStore] Error checking/creating profile:', err)
   }

@@ -351,11 +351,50 @@ async function sendWithEnvFallback(params: {
   }
 }
 
-function messageForLocale(locale: string | null) {
-  if ((locale || '').toLowerCase() === 'en') {
-    return { title: 'Arcana', body: 'Your daily horoscope is ready ✨' }
+function dayOfYearUtc(date: Date) {
+  const start = Date.UTC(date.getUTCFullYear(), 0, 0)
+  const now = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+  return Math.floor((now - start) / 86400000)
+}
+
+function pickDailyContent(locale: string | null, dateIso: string) {
+  const isEn = (locale || '').toLowerCase() === 'en'
+  const dayNumber = dayOfYearUtc(new Date(`${dateIso}T00:00:00.000Z`))
+  const isCardDay = dayNumber % 2 === 1
+
+  if (isCardDay) {
+    return isEn
+      ? {
+          title: 'Arcana',
+          body: 'Your card of the day is ready. Tap to reveal it.',
+          route: 'daily',
+          path: '/daily',
+          contentType: 'daily_card',
+        }
+      : {
+          title: 'Arcana',
+          body: 'Ваша карта дня вже готова. Натисніть, щоб відкрити.',
+          route: 'daily',
+          path: '/daily',
+          contentType: 'daily_card',
+        }
   }
-  return { title: 'Arcana', body: 'Гороскоп дня вже готовий ✨' }
+
+  return isEn
+    ? {
+        title: 'Arcana',
+        body: 'Your horoscope for today is ready. Tap to read it.',
+        route: 'horoscope',
+        path: '/horoscope',
+        contentType: 'horoscope',
+      }
+    : {
+        title: 'Arcana',
+        body: 'Ваш гороскоп на сьогодні готовий. Натисніть, щоб прочитати.',
+        route: 'horoscope',
+        path: '/horoscope',
+        contentType: 'horoscope',
+      }
 }
 
 Deno.serve(async (req) => {
@@ -399,11 +438,14 @@ Deno.serve(async (req) => {
 
     for (const [key, tokens] of buckets.entries()) {
       const [env, loc] = key.split('__') as ['sandbox' | 'production', string]
-      const msg = messageForLocale(loc)
+      const dateIso = new Date().toISOString().slice(0, 10)
+      const msg = pickDailyContent(loc, dateIso)
       const payload = {
         aps: { alert: { title: msg.title, body: msg.body }, sound: 'default' },
-        route: 'horoscope',
-        date: new Date().toISOString().slice(0, 10),
+        route: msg.route,
+        path: msg.path,
+        date: dateIso,
+        content_type: msg.contentType,
       }
 
       const { okCount, invalidTokens, failures, successTokens, movedTokens, movedToEnv } =

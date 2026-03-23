@@ -32,6 +32,11 @@ const cleanHeaders = (headers) => {
   return cleaned
 }
 
+const normalizeProfileName = (value) => {
+  if (typeof value !== 'string') return ''
+  return value.trim()
+}
+
 const mergeSession = (existing, refreshed) => {
   const next = { ...(existing || {}) }
   Object.keys(refreshed || {}).forEach((key) => {
@@ -188,13 +193,23 @@ export const selectAppUser = async (userId, timeoutMs = 6000, fields = 'name,ema
 
 export const upsertAppUser = async (payload, timeoutMs = 6000) => {
   if (!restBase) return { data: null, error: new Error('Supabase URL missing') }
+  const sanitizedPayload = { ...(payload || {}) }
+  if ('name' in sanitizedPayload) {
+    const normalizedName = normalizeProfileName(sanitizedPayload.name)
+    if (normalizedName) {
+      sanitizedPayload.name = normalizedName
+    } else {
+      delete sanitizedPayload.name
+    }
+  }
+
   const makeRequest = async () => {
     const headers = await buildAuthHeaders({
       'Content-Type': 'application/json',
       Prefer: 'resolution=merge-duplicates',
     })
     const url = `${restBase}/app_users`
-    return { url, init: { method: 'POST', headers, body: JSON.stringify(payload) } }
+    return { url, init: { method: 'POST', headers, body: JSON.stringify(sanitizedPayload) } }
   }
   const { res, data } = await requestWithRetry(makeRequest, timeoutMs, 'rest.app_users.upsert')
 

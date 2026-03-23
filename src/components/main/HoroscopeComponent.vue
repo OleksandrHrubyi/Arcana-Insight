@@ -23,12 +23,7 @@
 
         <!-- ✅ реальні летючі частинки (не крутяться разом з фоном) -->
         <div class="hero-disc__particles" aria-hidden="true">
-          <span
-            v-for="p in particles"
-            :key="p.id"
-            class="particle"
-            :style="p.style"
-          />
+          <span v-for="p in particles" :key="p.id" class="particle" :style="p.style" />
         </div>
       </div>
     </div>
@@ -94,7 +89,10 @@
                 <div class="horoscope-divider"></div>
 
                 <div class="horoscope-text-wrap">
-                  <div class="horoscope-info-style" :class="{ 'horoscope-info-style--blurred': isThemeLocked('love') }">
+                  <div
+                    class="horoscope-info-style"
+                    :class="{ 'horoscope-info-style--blurred': isThemeLocked('love') }"
+                  >
                     {{ horoscope[activeZodiac.key]?.love?.detailed || '' }}
                   </div>
                   <button
@@ -116,7 +114,10 @@
                 <div class="horoscope-divider"></div>
 
                 <div class="horoscope-text-wrap">
-                  <div class="horoscope-info-style" :class="{ 'horoscope-info-style--blurred': isThemeLocked('career') }">
+                  <div
+                    class="horoscope-info-style"
+                    :class="{ 'horoscope-info-style--blurred': isThemeLocked('career') }"
+                  >
                     {{ horoscope[activeZodiac.key]?.career?.detailed || '' }}
                   </div>
                   <button
@@ -134,15 +135,26 @@
           </q-tab-panels>
           <div class="horoscope-controls">
             <div class="dots">
-              <button class="dot" :class="{ active: themeTab === 'energy', 'dot--locked': isThemeLocked('energy') }" @click="setTheme('energy')"></button>
-              <button class="dot" :class="{ active: themeTab === 'love', 'dot--locked': isThemeLocked('love') }" @click="setTheme('love')"></button>
-              <button class="dot" :class="{ active: themeTab === 'career', 'dot--locked': isThemeLocked('career') }" @click="setTheme('career')"></button>
+              <button
+                class="dot"
+                :class="{ active: themeTab === 'energy', 'dot--locked': isThemeLocked('energy') }"
+                @click="setTheme('energy')"
+              ></button>
+              <button
+                class="dot"
+                :class="{ active: themeTab === 'love', 'dot--locked': isThemeLocked('love') }"
+                @click="setTheme('love')"
+              ></button>
+              <button
+                class="dot"
+                :class="{ active: themeTab === 'career', 'dot--locked': isThemeLocked('career') }"
+                @click="setTheme('career')"
+              ></button>
             </div>
 
-<!--            <q-btn size="12px" round class="share-wrap" icon="share" @click="handleShare" />-->
+            <!--            <q-btn size="12px" round class="share-wrap" icon="share" @click="handleShare" />-->
           </div>
         </div>
-
       </div>
     </div>
 
@@ -151,39 +163,49 @@
 </template>
 
 <script>
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { localISODate } from 'src/helpers/date.js';
-import { saveLocal, loadLocal } from 'src/helpers/localStorageSaver.js';
-import { t, currentLocale } from 'src/i18n';
-import { Share } from '@capacitor/share';
-import { selectHoroscopes } from 'src/services/supabaseNative';
-import { usePremiumAccess } from 'src/stores/premiumAccess';
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
+import { localISODate } from 'src/helpers/date.js'
+import { saveLocal, loadLocal } from 'src/helpers/localStorageSaver.js'
+import { t, currentLocale } from 'src/i18n'
+import { Share } from '@capacitor/share'
+import { selectAppUser, selectHoroscopes } from 'src/services/supabaseNative'
+import { usePremiumAccess } from 'src/stores/premiumAccess'
+import { useAuthStore } from 'stores/authStore.js'
 
-const DESIGN_W = 440;
-const DESIGN_TOP_INSET = 30;
-const DESIGN_GAP = 136;
-const JOIN_OFFSET = 10;
-const ACTIVE_OFFSET = 0;
+const DESIGN_W = 440
+const DESIGN_TOP_INSET = 30
+const DESIGN_GAP = 136
+const JOIN_OFFSET = 10
+const ACTIVE_OFFSET = 0
 
-const FLING_THRESHOLD_DEG_PER_SEC = 80;
-const INERTIA_FRICTION_PER_SEC = 15.2;
-const SNAP_STIFFNESS = 90;
-const SNAP_DAMPING = 18;
+const FLING_THRESHOLD_DEG_PER_SEC = 80
+const INERTIA_FRICTION_PER_SEC = 15.2
+const SNAP_STIFFNESS = 90
+const SNAP_DAMPING = 18
 
 const ZODIAC_EMOJI = {
-  capricorn: '♑️', aquarius: '♒️', pisces: '♓️',
-  aries: '♈️', taurus: '♉️', gemini: '♊️',
-  cancer: '♋️', leo: '♌️', virgo: '♍️',
-  libra: '♎️', scorpio: '♏️', sagittarius: '♐️',
-};
+  capricorn: '♑️',
+  aquarius: '♒️',
+  pisces: '♓️',
+  aries: '♈️',
+  taurus: '♉️',
+  gemini: '♊️',
+  cancer: '♋️',
+  leo: '♌️',
+  virgo: '♍️',
+  libra: '♎️',
+  scorpio: '♏️',
+  sagittarius: '♐️',
+}
 
 const THEME_META = {
   love: { emoji: '💖', label: 'Кохання' },
   career: { emoji: '💼', label: 'Кар’єра' },
   energy: { emoji: '⚡️', label: 'Енергія' },
-};
-const FREE_HOROSCOPE_THEME = 'energy';
-const premiumAccessStore = usePremiumAccess();
+}
+const FREE_HOROSCOPE_THEME = 'energy'
+const premiumAccessStore = usePremiumAccess()
+const authStore = useAuthStore()
 
 export default {
   name: 'HoroscopeComponent',
@@ -242,85 +264,88 @@ export default {
       ],
 
       horoscope: {},
+      authStore,
+      userSignApplied: false,
 
       midnightTimer: null,
       themeTab: FREE_HOROSCOPE_THEME,
-    };
+    }
   },
 
   computed: {
     hasPremiumAccess() {
-      return premiumAccessStore.hasPremiumAccess.value;
+      return premiumAccessStore.hasPremiumAccess.value
     },
 
     locale() {
-      return currentLocale.value || 'en';
+      return currentLocale.value || 'en'
     },
 
     stepDeg() {
-      return 360 / this.sectorCount;
+      return 360 / this.sectorCount
     },
 
     activeZodiac() {
-      const idx = this.mod(this.currentSector + ACTIVE_OFFSET, 12);
-      return this.zodiacMeta[idx];
+      const idx = this.mod(this.currentSector + ACTIVE_OFFSET, 12)
+      return this.zodiacMeta[idx]
     },
 
     monthDayLabel() {
-      const now = new Date();
-      const locale = this.locale === 'uk' ? 'uk-UA' : 'en-US';
+      const now = new Date()
+      const locale = this.locale === 'uk' ? 'uk-UA' : 'en-US'
 
       const label = new Intl.DateTimeFormat(locale, {
         day: 'numeric',
         month: 'long',
-      }).format(now);
+      }).format(now)
 
-      return label.toLocaleUpperCase(locale);
+      return label.toLocaleUpperCase(locale)
     },
 
     tt() {
-      return (key) => t(this.locale, key);
+      return (key) => t(this.locale, key)
     },
   },
 
   mounted() {
-    this.themeTab = FREE_HOROSCOPE_THEME;
-    this.setVh();
-    this.applyScale();
-    this.loadHoroscopesForDay();
+    this.themeTab = FREE_HOROSCOPE_THEME
+    this.setVh()
+    this.applyScale()
+    this.loadHoroscopesForDay()
 
     // ✅ частинки
-    this.buildParticles();
+    this.buildParticles()
 
-    this.rotation = Math.round(this.rotation / this.stepDeg) * this.stepDeg;
-    this.desiredRotation = this.rotation;
-    this.lastSnapIndex = Math.floor(this.rotation / this.stepDeg + 0.5);
-    this.currentSector = this.mod(this.lastSnapIndex, this.sectorCount);
+    this.rotation = Math.round(this.rotation / this.stepDeg) * this.stepDeg
+    this.desiredRotation = this.rotation
+    this.lastSnapIndex = Math.floor(this.rotation / this.stepDeg + 0.5)
+    this.currentSector = this.mod(this.lastSnapIndex, this.sectorCount)
 
     this.$nextTick(() => {
-      this.recalcCenter();
-      this.layoutAll();
-      this.applyRotationToView(this.rotation, false);
+      this.recalcCenter()
+      this.layoutAll()
+      this.applyRotationToView(this.rotation, false)
+      void this.applyUserZodiacPreference()
 
-      window.addEventListener('resize', this.onResize, { passive: true });
-      window.addEventListener('orientationchange', this.onResize, { passive: true });
-    });
+      window.addEventListener('resize', this.onResize, { passive: true })
+      window.addEventListener('orientationchange', this.onResize, { passive: true })
+    })
 
-    this.scheduleMidnightRefresh();
+    this.scheduleMidnightRefresh()
   },
 
   beforeUnmount() {
-    window.removeEventListener('resize', this.onResize);
-    window.removeEventListener('orientationchange', this.onResize);
-    this.stopLoop();
-    clearTimeout(this.midnightTimer);
+    window.removeEventListener('resize', this.onResize)
+    window.removeEventListener('orientationchange', this.onResize)
+    this.stopLoop()
+    clearTimeout(this.midnightTimer)
 
-    const drag = this.$refs.dragLayer;
+    const drag = this.$refs.dragLayer
     if (this.activePointerId != null && drag?.releasePointerCapture) {
       try {
-        drag.releasePointerCapture(this.activePointerId);
+        drag.releasePointerCapture(this.activePointerId)
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
     }
   },
@@ -328,55 +353,51 @@ export default {
   watch: {
     hasPremiumAccess(next) {
       if (!next && this.themeTab !== FREE_HOROSCOPE_THEME) {
-        this.themeTab = FREE_HOROSCOPE_THEME;
+        this.themeTab = FREE_HOROSCOPE_THEME
       }
     },
   },
 
   methods: {
     isThemeLocked(tab) {
-      if (this.hasPremiumAccess) return false;
-      return tab !== FREE_HOROSCOPE_THEME;
+      if (this.hasPremiumAccess) return false
+      return tab !== FREE_HOROSCOPE_THEME
     },
 
     getThemeLockText(tab) {
-      const title = this.tt(tab).toLowerCase();
+      const title = this.tt(tab).toLowerCase()
       return this.locale === 'uk'
         ? `Для розділу «${title}» потрібен Premium`
-        : `Premium access is required for ${title}.`;
+        : `Premium access is required for ${title}.`
     },
 
     async openPremiumPaywall() {
       try {
-        await Haptics.impact({ style: ImpactStyle.Light });
+        await Haptics.impact({ style: ImpactStyle.Light })
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
-      this.$router.push({ name: 'premium' }).catch(() => {});
+      this.$router.push({ name: 'premium' }).catch(() => {})
     },
 
     // ✅ генерація “реальних” летючих частинок
     buildParticles() {
-      const count = 36; // 20–40
-      const colors = [
-        'rgba(255,255,255,0.95)',
-        'rgba(159,216,246,0.85)',
-        'rgba(255,220,180,0.70)',
-      ];
+      const count = 36 // 20–40
+      const colors = ['rgba(255,255,255,0.95)', 'rgba(159,216,246,0.85)', 'rgba(255,220,180,0.70)']
 
-      const out = [];
+      const out = []
       for (let i = 0; i < count; i++) {
-        const x = Math.random() * 100;
-        const y = Math.random() * 100;
+        const x = Math.random() * 100
+        const y = Math.random() * 100
 
-        const s = 1.2 + Math.random() * 2.8;        // size px
-        const blur = Math.random() * 1.2;           // blur px
-        const dur = 7 + Math.random() * 14;         // seconds
-        const delay = -Math.random() * dur;         // negative start
-        const dx = -22 + Math.random() * 44;        // drift X px
-        const dy = -(90 + Math.random() * 150);     // drift up px
-        const o = 0.25 + Math.random() * 0.70;      // opacity
-        const c = colors[Math.floor(Math.random() * colors.length)];
+        const s = 1.2 + Math.random() * 2.8 // size px
+        const blur = Math.random() * 1.2 // blur px
+        const dur = 7 + Math.random() * 14 // seconds
+        const delay = -Math.random() * dur // negative start
+        const dx = -22 + Math.random() * 44 // drift X px
+        const dy = -(90 + Math.random() * 150) // drift up px
+        const o = 0.25 + Math.random() * 0.7 // opacity
+        const c = colors[Math.floor(Math.random() * colors.length)]
 
         out.push({
           id: i,
@@ -392,412 +413,516 @@ export default {
             '--o': `${o.toFixed(2)}`,
             '--c': c,
           },
-        });
+        })
       }
 
-      this.particles = out;
+      this.particles = out
     },
 
     rowsToRegistry(rows) {
-      const reg = {};
+      const reg = {}
       for (const row of rows ?? []) {
-        const sign = row.sign;
-        const theme = row.theme;
-        if (!sign || !theme) continue;
+        const sign = row.sign
+        const theme = row.theme
+        if (!sign || !theme) continue
 
-        if (!reg[sign]) reg[sign] = {};
+        if (!reg[sign]) reg[sign] = {}
         reg[sign][theme] = {
           summary: row.summary,
           detailed: row.detailed,
-        };
+        }
       }
-      return reg;
+      return reg
     },
 
     registryToRows(reg) {
-      const rows = [];
+      const rows = []
       for (const sign of Object.keys(reg || {})) {
-        const themes = reg[sign] || {};
+        const themes = reg[sign] || {}
         for (const theme of Object.keys(themes)) {
-          const item = themes[theme] || {};
+          const item = themes[theme] || {}
           rows.push({
             sign,
             theme,
             summary: item.summary ?? '',
             detailed: item.detailed ?? '',
-          });
+          })
         }
       }
-      return rows;
+      return rows
+    },
+
+    parseBirthDate(value) {
+      const raw = String(value || '').trim()
+      if (!raw) return { day: null, month: null }
+
+      if (raw.includes('.')) {
+        const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(raw)
+        if (!match) return { day: null, month: null }
+        return {
+          day: Number.parseInt(match[1], 10),
+          month: Number.parseInt(match[2], 10),
+        }
+      }
+
+      if (raw.includes('-')) {
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw)
+        if (!match) return { day: null, month: null }
+        return {
+          day: Number.parseInt(match[3], 10),
+          month: Number.parseInt(match[2], 10),
+        }
+      }
+
+      return { day: null, month: null }
+    },
+
+    zodiacKeyFromBirthDate(value) {
+      const { day, month } = this.parseBirthDate(value)
+      if (!day || !month) return ''
+
+      if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return 'aries'
+      if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return 'taurus'
+      if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return 'gemini'
+      if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return 'cancer'
+      if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return 'leo'
+      if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return 'virgo'
+      if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return 'libra'
+      if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return 'scorpio'
+      if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return 'sagittarius'
+      if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return 'capricorn'
+      if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return 'aquarius'
+      if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) return 'pisces'
+      return ''
+    },
+
+    focusZodiacByKey(zodiacKey) {
+      const idx = this.zodiacMeta.findIndex((item) => item.key === zodiacKey)
+      if (idx < 0) return false
+
+      const targetRotation = this.wrapRotation(-idx * this.stepDeg)
+      this.rotation = targetRotation
+      this.desiredRotation = targetRotation
+      this.omega = 0
+      this.snapTarget = targetRotation
+      this.lastSnapIndex = idx
+      this.currentSector = this.mod(idx, this.sectorCount)
+      this.applyRotationToView(this.rotation, false)
+      return true
+    },
+
+    async applyUserZodiacPreference() {
+      if (this.userSignApplied) return
+
+      try {
+        await this.authStore.syncSession({ refresh: false })
+        const userId = this.authStore.state.user?.id
+        if (!userId) return
+
+        const { data, error } = await selectAppUser(userId, 6000, 'date_of_birth')
+        if (error) return
+
+        const zodiacKey = this.zodiacKeyFromBirthDate(data?.date_of_birth || '')
+        if (!zodiacKey) return
+
+        if (this.focusZodiacByKey(zodiacKey)) {
+          this.userSignApplied = true
+        }
+      } catch (e) {
+        console.warn('[Horoscope] applyUserZodiacPreference failed', e)
+      }
     },
 
     async loadHoroscopesForDay({ forceNetwork = false } = {}) {
-      const locale = this.locale;
-      const today = localISODate();
+      const locale = this.locale
+      const today = localISODate()
 
       if (!forceNetwork) {
-        const local = await loadLocal();
+        const local = await loadLocal()
         if (
           local?.date === today &&
           local?.locale === locale &&
           Array.isArray(local?.rows) &&
           local.rows.length
         ) {
-          this.horoscope = this.rowsToRegistry(local.rows);
-          return;
+          this.horoscope = this.rowsToRegistry(local.rows)
+          return
         }
       }
 
       const fetchByDate = async (date) => {
-        const { data, error } = await selectHoroscopes(date, locale, 8000);
-        if (error) throw error;
-        return data ?? [];
-      };
-
-      let rows = await fetchByDate(today);
-
-      if (!rows.length) {
-        const d = new Date();
-        d.setDate(d.getDate() + 1);
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        const tomorrow = `${y}-${m}-${day}`;
-        rows = await fetchByDate(tomorrow);
+        const { data, error } = await selectHoroscopes(date, locale, 8000)
+        if (error) throw error
+        return data ?? []
       }
 
-      const reg = this.rowsToRegistry(rows);
-      this.horoscope = reg;
+      let rows = await fetchByDate(today)
 
-      await saveLocal({ date: today, locale, rows: this.registryToRows(reg) });
+      if (!rows.length) {
+        const d = new Date()
+        d.setDate(d.getDate() + 1)
+        const y = d.getFullYear()
+        const m = String(d.getMonth() + 1).padStart(2, '0')
+        const day = String(d.getDate()).padStart(2, '0')
+        const tomorrow = `${y}-${m}-${day}`
+        rows = await fetchByDate(tomorrow)
+      }
+
+      const reg = this.rowsToRegistry(rows)
+      this.horoscope = reg
+
+      await saveLocal({ date: today, locale, rows: this.registryToRows(reg) })
     },
 
     scheduleMidnightRefresh() {
-      const now = new Date();
-      const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-      const ms = nextMidnight - now + 200;
+      const now = new Date()
+      const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+      const ms = nextMidnight - now + 200
 
       this.midnightTimer = setTimeout(async () => {
-        await this.loadHoroscopesForDay({ forceNetwork: true });
-        this.scheduleMidnightRefresh();
-      }, ms);
+        await this.loadHoroscopesForDay({ forceNetwork: true })
+        this.scheduleMidnightRefresh()
+      }, ms)
     },
 
     setVh() {
-      const vh = window.innerHeight * 0.01;
-      const el = this.$refs.container;
-      if (el) el.style.setProperty('--vh', `${vh}px`);
+      const vh = window.innerHeight * 0.01
+      const el = this.$refs.container
+      if (el) el.style.setProperty('--vh', `${vh}px`)
     },
 
     onResize() {
-      this.setVh();
-      this.applyScale();
+      this.setVh()
+      this.applyScale()
       this.$nextTick(() => {
-        this.recalcCenter();
-        this.layoutAll();
-        this.applyRotationToView(this.rotation, false);
-      });
+        this.recalcCenter()
+        this.layoutAll()
+        this.applyRotationToView(this.rotation, false)
+      })
     },
 
     applyScale() {
-      const el = this.$refs.container;
-      if (!el) return;
-      const W = el.getBoundingClientRect().width;
-      el.style.setProperty('--s', W / DESIGN_W);
+      const el = this.$refs.container
+      if (!el) return
+      const W = el.getBoundingClientRect().width
+      el.style.setProperty('--s', W / DESIGN_W)
     },
 
     setLine(el, x1, y1, x2, y2) {
-      const dx = x2 - x1;
-      const dy = y2 - y1;
-      const len = Math.hypot(dx, dy);
-      const ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+      const dx = x2 - x1
+      const dy = y2 - y1
+      const len = Math.hypot(dx, dy)
+      const ang = (Math.atan2(dy, dx) * 180) / Math.PI
 
-      el.style.left = `${x1}px`;
-      el.style.top = `${y1}px`;
-      el.style.width = `${len}px`;
-      el.style.transform = `rotate(${ang}deg)`;
+      el.style.left = `${x1}px`
+      el.style.top = `${y1}px`
+      el.style.width = `${len}px`
+      el.style.transform = `rotate(${ang}deg)`
     },
 
     layoutAll() {
-      this.layoutLines();
+      this.layoutLines()
     },
 
     layoutLines() {
-      const container = this.$refs.container;
-      const leftEl = this.$refs.lineLeft;
-      const rightEl = this.$refs.lineRight;
-      const centerRound = this.$refs.centerRound;
-      const sideCoverLeft = this.$refs.sideCoverLeft;
-      const sideCoverRight = this.$refs.sideCoverRight;
+      const container = this.$refs.container
+      const leftEl = this.$refs.lineLeft
+      const rightEl = this.$refs.lineRight
+      const centerRound = this.$refs.centerRound
+      const sideCoverLeft = this.$refs.sideCoverLeft
+      const sideCoverRight = this.$refs.sideCoverRight
 
-      if (!container || !leftEl || !rightEl || !centerRound) return;
+      if (!container || !leftEl || !rightEl || !centerRound) return
 
-      const rect = container.getBoundingClientRect();
-      const W = rect.width;
-      const s = W / DESIGN_W;
+      const rect = container.getBoundingClientRect()
+      const W = rect.width
+      const s = W / DESIGN_W
 
-      const cx = W / 2;
-      const halfGap = (DESIGN_GAP / 2) * s;
-      const inset = DESIGN_TOP_INSET * s;
+      const cx = W / 2
+      const halfGap = (DESIGN_GAP / 2) * s
+      const inset = DESIGN_TOP_INSET * s
 
-      const c = centerRound.getBoundingClientRect();
-      const yJoin = (c.top - rect.top) + (JOIN_OFFSET * s);
+      const c = centerRound.getBoundingClientRect()
+      const yJoin = c.top - rect.top + JOIN_OFFSET * s
 
-      container.style.setProperty('--yJoin', `${yJoin}px`);
-      container.style.setProperty('--halfGap', `${halfGap}px`);
-      container.style.setProperty('--inset', `${inset}px`);
+      container.style.setProperty('--yJoin', `${yJoin}px`)
+      container.style.setProperty('--halfGap', `${halfGap}px`)
+      container.style.setProperty('--inset', `${inset}px`)
 
-      const leftTop = { x: inset, y: 0 };
-      const rightTop = { x: W - inset, y: 0 };
-      const leftBottom = { x: cx - halfGap, y: yJoin };
-      const rightBottom = { x: cx + halfGap, y: yJoin };
+      const leftTop = { x: inset, y: 0 }
+      const rightTop = { x: W - inset, y: 0 }
+      const leftBottom = { x: cx - halfGap, y: yJoin }
+      const rightBottom = { x: cx + halfGap, y: yJoin }
 
-      this.setLine(leftEl, leftTop.x, leftTop.y, leftBottom.x, leftBottom.y);
-      this.setLine(rightEl, rightTop.x, rightTop.y, rightBottom.x, rightBottom.y);
+      this.setLine(leftEl, leftTop.x, leftTop.y, leftBottom.x, leftBottom.y)
+      this.setLine(rightEl, rightTop.x, rightTop.y, rightBottom.x, rightBottom.y)
 
       if (sideCoverLeft) {
         sideCoverLeft.style.clipPath =
-          'polygon(0 0, calc(var(--inset) + var(--coverBleed)) 0, calc(50% - var(--halfGap)) var(--yJoin), 0 calc(var(--yJoin) + var(--coverSlope)))';
+          'polygon(0 0, calc(var(--inset) + var(--coverBleed)) 0, calc(50% - var(--halfGap)) var(--yJoin), 0 calc(var(--yJoin) + var(--coverSlope)))'
       }
       if (sideCoverRight) {
         sideCoverRight.style.clipPath =
-          'polygon(calc(100% - (var(--inset) + var(--coverBleed))) 0, 100% 0, 100% calc(var(--yJoin) + var(--coverSlope)), calc(50% + var(--halfGap)) var(--yJoin))';
+          'polygon(calc(100% - (var(--inset) + var(--coverBleed))) 0, 100% 0, 100% calc(var(--yJoin) + var(--coverSlope)), calc(50% + var(--halfGap)) var(--yJoin))'
       }
     },
 
     mod(n, m) {
-      return ((n % m) + m) % m;
+      return ((n % m) + m) % m
     },
 
     deltaAngle(a, b) {
-      let d = a - b;
-      while (d > 180) d -= 360;
-      while (d < -180) d += 360;
-      return d;
+      let d = a - b
+      while (d > 180) d -= 360
+      while (d < -180) d += 360
+      return d
     },
 
     wrapRotation(rot) {
-      rot = ((rot % 360) + 360) % 360;
-      if (rot >= 180) rot -= 360;
-      return rot;
+      rot = ((rot % 360) + 360) % 360
+      if (rot >= 180) rot -= 360
+      return rot
     },
 
     getSnapTarget(rotation, omegaDegPerSec) {
-      const step = this.stepDeg;
-      const idx = rotation / step;
+      const step = this.stepDeg
+      const idx = rotation / step
 
-      const fling = Math.abs(omegaDegPerSec) > FLING_THRESHOLD_DEG_PER_SEC;
-      let targetIdx;
+      const fling = Math.abs(omegaDegPerSec) > FLING_THRESHOLD_DEG_PER_SEC
+      let targetIdx
 
-      if (fling) targetIdx = omegaDegPerSec > 0 ? Math.ceil(idx) : Math.floor(idx);
-      else targetIdx = Math.round(idx);
+      if (fling) targetIdx = omegaDegPerSec > 0 ? Math.ceil(idx) : Math.floor(idx)
+      else targetIdx = Math.round(idx)
 
-      return targetIdx * step;
+      return targetIdx * step
     },
 
     applyRotationToView(rot, withHaptic) {
-      const wheel = this.$refs.wheel;
-      if (wheel) wheel.style.transform = `translate3d(-50%, -50%, 0) rotate(${rot}deg)`;
-      this.updateSnapState(withHaptic);
+      const wheel = this.$refs.wheel
+      if (wheel) wheel.style.transform = `translate3d(-50%, -50%, 0) rotate(${rot}deg)`
+      this.updateSnapState(withHaptic)
     },
 
     async playHapticForIndex(snapIndex) {
-      if (this.lastHapticSnapIndex === snapIndex) return;
-      const now = performance.now();
-      if (now - this.lastHapticTs < this.hapticCooldownMs) return;
+      if (this.lastHapticSnapIndex === snapIndex) return
+      const now = performance.now()
+      if (now - this.lastHapticTs < this.hapticCooldownMs) return
 
-      this.lastHapticTs = now;
-      this.lastHapticSnapIndex = snapIndex;
+      this.lastHapticTs = now
+      this.lastHapticSnapIndex = snapIndex
 
       try {
-        await Haptics.impact({ style: ImpactStyle.Light });
+        await Haptics.impact({ style: ImpactStyle.Light })
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
     },
 
     updateSnapState(withHaptic = false) {
-      const step = this.stepDeg;
-      const snapIndex = Math.floor((-this.rotation) / step + 0.5);
+      const step = this.stepDeg
+      const snapIndex = Math.floor(-this.rotation / step + 0.5)
 
       if (snapIndex !== this.lastSnapIndex) {
-        this.lastSnapIndex = snapIndex;
-        this.currentSector = this.mod(snapIndex, this.sectorCount);
-        if (withHaptic) this.playHapticForIndex(snapIndex);
+        this.lastSnapIndex = snapIndex
+        this.currentSector = this.mod(snapIndex, this.sectorCount)
+        if (withHaptic) this.playHapticForIndex(snapIndex)
       }
     },
 
     recalcCenter() {
-      const wheel = this.$refs.wheel;
-      if (!wheel) return;
-      const rect = wheel.getBoundingClientRect();
-      this.center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      const wheel = this.$refs.wheel
+      if (!wheel) return
+      const rect = wheel.getBoundingClientRect()
+      this.center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
     },
 
     getPointerAngle(event) {
-      const e = event.touches ? event.touches[0] : event;
-      const x = e.clientX - this.center.x;
-      const y = e.clientY - this.center.y;
-      return (Math.atan2(y, x) * 180) / Math.PI;
+      const e = event.touches ? event.touches[0] : event
+      const x = e.clientX - this.center.x
+      const y = e.clientY - this.center.y
+      return (Math.atan2(y, x) * 180) / Math.PI
     },
 
     startLoop(mode) {
       if (this.isAnimating) {
-        this.mode = mode;
-        return;
+        this.mode = mode
+        return
       }
-      this.mode = mode;
-      this.isAnimating = true;
-      this.gpuOn = true;
-      this.lastFrameTs = performance.now();
-      this.rafId = requestAnimationFrame(this.tick);
+      this.mode = mode
+      this.isAnimating = true
+      this.gpuOn = true
+      this.lastFrameTs = performance.now()
+      this.rafId = requestAnimationFrame(this.tick)
     },
 
     stopLoop() {
-      if (this.rafId != null) cancelAnimationFrame(this.rafId);
-      this.rafId = null;
-      this.isAnimating = false;
-      this.mode = 'idle';
+      if (this.rafId != null) cancelAnimationFrame(this.rafId)
+      this.rafId = null
+      this.isAnimating = false
+      this.mode = 'idle'
       window.setTimeout(() => {
-        this.gpuOn = false;
-      }, 220);
+        this.gpuOn = false
+      }, 220)
     },
 
     tick(now) {
-      const dtMsRaw = now - this.lastFrameTs;
-      this.lastFrameTs = now;
+      const dtMsRaw = now - this.lastFrameTs
+      this.lastFrameTs = now
 
-      const dtMs = Math.min(32, Math.max(1, dtMsRaw));
-      const dt = dtMs / 1000;
+      const dtMs = Math.min(32, Math.max(1, dtMsRaw))
+      const dt = dtMs / 1000
 
       if (this.mode === 'drag') {
-        this.rotation = this.desiredRotation;
-        this.rotation = this.wrapRotation(this.rotation);
-        this.applyRotationToView(this.rotation, true);
-        this.rafId = requestAnimationFrame(this.tick);
-        return;
+        this.rotation = this.desiredRotation
+        this.rotation = this.wrapRotation(this.rotation)
+        this.applyRotationToView(this.rotation, true)
+        this.rafId = requestAnimationFrame(this.tick)
+        return
       }
 
       if (this.mode === 'inertia') {
-        this.rotation += this.omega * dt;
-        this.omega *= Math.exp(-INERTIA_FRICTION_PER_SEC * dt);
-        this.rotation = this.wrapRotation(this.rotation);
-        this.applyRotationToView(this.rotation, false);
+        this.rotation += this.omega * dt
+        this.omega *= Math.exp(-INERTIA_FRICTION_PER_SEC * dt)
+        this.rotation = this.wrapRotation(this.rotation)
+        this.applyRotationToView(this.rotation, false)
 
         if (Math.abs(this.omega) < 8) {
-          this.snapTarget = this.getSnapTarget(this.rotation, this.omega);
-          this.mode = 'snap';
+          this.snapTarget = this.getSnapTarget(this.rotation, this.omega)
+          this.mode = 'snap'
         }
 
-        this.rafId = requestAnimationFrame(this.tick);
-        return;
+        this.rafId = requestAnimationFrame(this.tick)
+        return
       }
 
       if (this.mode === 'snap') {
-        const diff = this.snapTarget - this.rotation;
-        const accel = diff * SNAP_STIFFNESS - this.omega * SNAP_DAMPING;
-        this.omega += accel * dt;
-        this.rotation += this.omega * dt;
+        const diff = this.snapTarget - this.rotation
+        const accel = diff * SNAP_STIFFNESS - this.omega * SNAP_DAMPING
+        this.omega += accel * dt
+        this.rotation += this.omega * dt
 
-        this.rotation = this.wrapRotation(this.rotation);
-        this.applyRotationToView(this.rotation, true);
+        this.rotation = this.wrapRotation(this.rotation)
+        this.applyRotationToView(this.rotation, true)
 
         if (Math.abs(diff) < 0.08 && Math.abs(this.omega) < 6) {
-          this.rotation = this.snapTarget;
-          this.rotation = this.wrapRotation(this.rotation);
-          this.applyRotationToView(this.rotation, true);
-          this.stopLoop();
-          return;
+          this.rotation = this.snapTarget
+          this.rotation = this.wrapRotation(this.rotation)
+          this.applyRotationToView(this.rotation, true)
+          this.stopLoop()
+          return
         }
 
-        this.rafId = requestAnimationFrame(this.tick);
-        return;
+        this.rafId = requestAnimationFrame(this.tick)
+        return
       }
 
-      this.stopLoop();
+      this.stopLoop()
     },
 
     onPointerDown(event) {
-      const drag = this.$refs.dragLayer;
-      if (!drag || this.isDragging) return;
+      const drag = this.$refs.dragLayer
+      if (!drag || this.isDragging) return
 
-      this.stopLoop();
-      this.recalcCenter();
+      this.stopLoop()
+      this.recalcCenter()
 
-      this.isDragging = true;
-      this.activePointerId = event.pointerId ?? null;
+      this.isDragging = true
+      this.activePointerId = event.pointerId ?? null
 
-      this.startAngle = this.getPointerAngle(event);
-      this.startRotation = this.rotation;
+      this.startAngle = this.getPointerAngle(event)
+      this.startRotation = this.rotation
 
-      this.desiredRotation = this.rotation;
-      this.omega = 0;
+      this.desiredRotation = this.rotation
+      this.omega = 0
 
-      this.lastMoveTs = performance.now();
-      this.lastMoveAngle = this.startAngle;
+      this.lastMoveTs = performance.now()
+      this.lastMoveAngle = this.startAngle
 
       if (this.activePointerId != null && drag.setPointerCapture) {
         try {
-          drag.setPointerCapture(this.activePointerId);
+          drag.setPointerCapture(this.activePointerId)
         } catch (e) {
-          console.error(e);
+          console.error(e)
         }
       }
 
-      this.startLoop('drag');
+      this.startLoop('drag')
     },
 
     onPointerMove(event) {
-      if (!this.isDragging) return;
-      if (this.activePointerId != null && event.pointerId != null && event.pointerId !== this.activePointerId) return;
+      if (!this.isDragging) return
+      if (
+        this.activePointerId != null &&
+        event.pointerId != null &&
+        event.pointerId !== this.activePointerId
+      )
+        return
 
-      const now = performance.now();
-      const angle = this.getPointerAngle(event);
+      const now = performance.now()
+      const angle = this.getPointerAngle(event)
 
-      const d = this.deltaAngle(angle, this.startAngle);
-      this.desiredRotation = this.startRotation + d * this.dragGain;
+      const d = this.deltaAngle(angle, this.startAngle)
+      this.desiredRotation = this.startRotation + d * this.dragGain
 
-      const dtMs = Math.max(1, now - this.lastMoveTs);
-      const da = this.deltaAngle(angle, this.lastMoveAngle);
+      const dtMs = Math.max(1, now - this.lastMoveTs)
+      const da = this.deltaAngle(angle, this.lastMoveAngle)
 
-      const instantOmega = (da / dtMs) * 1000 * this.dragGain * this.velocityGain;
-      this.omega = this.omega * 0.82 + instantOmega * 0.18;
+      const instantOmega = (da / dtMs) * 1000 * this.dragGain * this.velocityGain
+      this.omega = this.omega * 0.82 + instantOmega * 0.18
 
-      this.lastMoveTs = now;
-      this.lastMoveAngle = angle;
+      this.lastMoveTs = now
+      this.lastMoveAngle = angle
     },
 
     onPointerUp(event) {
-      if (!this.isDragging) return;
-      if (this.activePointerId != null && event?.pointerId != null && event.pointerId !== this.activePointerId) return;
+      if (!this.isDragging) return
+      if (
+        this.activePointerId != null &&
+        event?.pointerId != null &&
+        event.pointerId !== this.activePointerId
+      )
+        return
 
-      this.isDragging = false;
+      this.isDragging = false
 
-      const drag = this.$refs.dragLayer;
+      const drag = this.$refs.dragLayer
       if (this.activePointerId != null && drag?.releasePointerCapture) {
         try {
-          drag.releasePointerCapture(this.activePointerId);
+          drag.releasePointerCapture(this.activePointerId)
         } catch (e) {
-          console.error(e);
+          console.error(e)
         }
       }
-      this.activePointerId = null;
+      this.activePointerId = null
 
       if (Math.abs(this.omega) < 30) {
-        this.snapTarget = this.getSnapTarget(this.rotation, 0);
-        this.mode = 'snap';
-        return;
+        this.snapTarget = this.getSnapTarget(this.rotation, 0)
+        this.mode = 'snap'
+        return
       }
 
-      this.mode = 'inertia';
+      this.mode = 'inertia'
     },
 
     normalizeText(s = '') {
-      return String(s).replace(/\r/g, '').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+      return String(s)
+        .replace(/\r/g, '')
+        .replace(/[ \t]+\n/g, '\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim()
     },
 
-    buildShareTextCard({ title, date, zodiacEmoji, zodiacName, datesRange, themeEmoji, themeLabel, text }) {
-      const clean = this.normalizeText(text);
+    buildShareTextCard({
+      title,
+      date,
+      zodiacEmoji,
+      zodiacName,
+      datesRange,
+      themeEmoji,
+      themeLabel,
+      text,
+    }) {
+      const clean = this.normalizeText(text)
       return [
         `✨ ${title}`,
         `🗓️ ${date}`,
@@ -807,56 +932,60 @@ export default {
         clean,
         '',
         `💛 ${this.tt('shareSubInfo')}`,
-      ].join('\n');
+      ].join('\n')
     },
 
     async handleShare() {
-      const rawText = this.horoscope?.[this.activeZodiac.key]?.[this.themeTab]?.detailed || '';
+      const rawText = this.horoscope?.[this.activeZodiac.key]?.[this.themeTab]?.detailed || ''
       if (!rawText) {
-        this.$q.notify({ type: 'negative', message: this.tt('errors.noShareText') });
-        return;
+        this.$q.notify({ type: 'negative', message: this.tt('errors.noShareText') })
+        return
       }
 
-      const title = this.tt('dailyHoroscope');
-      const date = this.monthDayLabel;
+      const title = this.tt('dailyHoroscope')
+      const date = this.monthDayLabel
 
-      const zodiacKey = this.activeZodiac.key;
-      const zodiacName = this.tt(`zodiac.${zodiacKey}`);
-      const zodiacEmoji = ZODIAC_EMOJI[zodiacKey] || '✨';
-      const datesRange = this.activeZodiac?.dates || '';
+      const zodiacKey = this.activeZodiac.key
+      const zodiacName = this.tt(`zodiac.${zodiacKey}`)
+      const zodiacEmoji = ZODIAC_EMOJI[zodiacKey] || '✨'
+      const datesRange = this.activeZodiac?.dates || ''
 
-      const themeMeta = THEME_META[this.themeTab] || { emoji: '✨', label: this.themeTab };
-      const themeLabel = this.tt(this.themeTab);
-      const themeEmoji = themeMeta.emoji;
+      const themeMeta = THEME_META[this.themeTab] || { emoji: '✨', label: this.themeTab }
+      const themeLabel = this.tt(this.themeTab)
+      const themeEmoji = themeMeta.emoji
 
       const payload = {
-        title, date,
-        zodiacEmoji, zodiacName, datesRange,
-        themeEmoji, themeLabel,
+        title,
+        date,
+        zodiacEmoji,
+        zodiacName,
+        datesRange,
+        themeEmoji,
+        themeLabel,
         text: rawText,
-      };
+      }
 
       requestAnimationFrame(() => {
-        document.activeElement?.blur?.();
-      });
+        document.activeElement?.blur?.()
+      })
 
       try {
-        await Share.share({ text: this.buildShareTextCard(payload) });
+        await Share.share({ text: this.buildShareTextCard(payload) })
       } catch (e) {
-        console.warn('Share cancelled/failed', e);
+        console.warn('Share cancelled/failed', e)
       }
     },
 
     async setTheme(tab) {
-      this.themeTab = tab;
+      this.themeTab = tab
       try {
-        await Haptics.impact({ style: ImpactStyle.Light });
+        await Haptics.impact({ style: ImpactStyle.Light })
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
     },
   },
-};
+}
 </script>
 
 <style scoped lang="scss">
@@ -903,8 +1032,9 @@ export default {
   z-index: 145;
   pointer-events: none;
 
-  box-shadow: 0 26px 44px rgba(0, 0, 0, 0.60),
-  0 0 0 1px rgba(159, 216, 246, 0.10);
+  box-shadow:
+    0 26px 44px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(159, 216, 246, 0.1);
 
   -webkit-mask-image: radial-gradient(circle, #fff 72%, transparent 100%);
   mask-image: radial-gradient(circle, #fff 72%, transparent 100%);
@@ -972,23 +1102,35 @@ export default {
   mix-blend-mode: screen;
   filter: blur(0.2px);
 
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.85) 0 1px, transparent 1.8px),
-  radial-gradient(circle, rgba(159, 216, 246, 0.55) 0 1px, transparent 2.2px),
-  radial-gradient(circle, rgba(255, 220, 180, 0.35) 0 1.1px, transparent 2.6px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.85) 0 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(159, 216, 246, 0.55) 0 1px, transparent 2.2px),
+    radial-gradient(circle, rgba(255, 220, 180, 0.35) 0 1.1px, transparent 2.6px);
 
-  background-size: 90px 90px, 150px 150px, 240px 240px;
-  background-position: 10px 20px, 60px 90px, 140px 40px;
+  background-size:
+    90px 90px,
+    150px 150px,
+    240px 240px;
+  background-position:
+    10px 20px,
+    60px 90px,
+    140px 40px;
 }
 
 .hero-disc__stars--2 {
   opacity: 0.14;
   filter: blur(0.7px);
 
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.60) 0 1px, transparent 2.2px),
-  radial-gradient(circle, rgba(255, 255, 255, 0.35) 0 1px, transparent 2.8px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.6) 0 1px, transparent 2.2px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.35) 0 1px, transparent 2.8px);
 
-  background-size: 120px 120px, 260px 260px;
-  background-position: 30px 70px, 180px 20px;
+  background-size:
+    120px 120px,
+    260px 260px;
+  background-position:
+    30px 70px,
+    180px 20px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1000,8 +1142,9 @@ export default {
   }
 
   @keyframes starsTwinkle {
-    0%, 100% {
-      opacity: 0.20;
+    0%,
+    100% {
+      opacity: 0.2;
       transform: scale(1);
     }
     50% {
@@ -1010,12 +1153,13 @@ export default {
     }
   }
   @keyframes starsTwinkle2 {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 0.12;
       transform: scale(1);
     }
     50% {
-      opacity: 0.20;
+      opacity: 0.2;
       transform: scale(1.016);
     }
   }
@@ -1029,14 +1173,14 @@ export default {
   filter: blur(7px);
 
   background: linear-gradient(
-      115deg,
-      transparent 0%,
-      transparent 40%,
-      rgba(255, 255, 255, 0.06) 47%,
-      rgba(159, 216, 246, 0.20) 50%,
-      rgba(255, 220, 180, 0.08) 53%,
-      transparent 60%,
-      transparent 100%
+    115deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.06) 47%,
+    rgba(159, 216, 246, 0.2) 50%,
+    rgba(255, 220, 180, 0.08) 53%,
+    transparent 60%,
+    transparent 100%
   );
 
   transform: translateX(-60%) rotate(18deg);
@@ -1082,7 +1226,7 @@ export default {
 }
 
 .hero-disc__particles::before {
-  content: "";
+  content: '';
   position: absolute;
   left: -35%;
   top: 20%;
@@ -1092,11 +1236,11 @@ export default {
   transform: rotate(22deg);
   filter: blur(0.4px);
   background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.70) 45%,
-      rgba(159, 216, 246, 0.50) 55%,
-      transparent 100%
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.7) 45%,
+    rgba(159, 216, 246, 0.5) 55%,
+    transparent 100%
   );
 }
 
@@ -1142,8 +1286,9 @@ export default {
 
 @media (prefers-reduced-motion: no-preference) {
   .particle {
-    animation: particleMove calc(var(--dur) * 1s) linear infinite,
-    particleFade calc(var(--dur) * 1s) ease-in-out infinite;
+    animation:
+      particleMove calc(var(--dur) * 1s) linear infinite,
+      particleFade calc(var(--dur) * 1s) ease-in-out infinite;
     animation-delay: calc(var(--delay) * 1s), calc(var(--delay) * 1s);
   }
 
@@ -1173,27 +1318,27 @@ export default {
 }
 
 .hero-disc::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   z-index: 10;
   pointer-events: none;
   background: radial-gradient(
-      circle at 50% 45%,
-      rgba(0, 0, 0, 0.00) 0%,
-      rgba(0, 0, 0, 0.12) 62%,
-      rgba(0, 0, 0, 0.50) 100%
+    circle at 50% 45%,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.12) 62%,
+    rgba(0, 0, 0, 0.5) 100%
   );
 }
 
 .hero-disc::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   z-index: 11;
   pointer-events: none;
   border-radius: 50%;
-  border: 1px solid rgba(159, 216, 246, 0.10);
+  border: 1px solid rgba(159, 216, 246, 0.1);
   box-shadow: 0 0 22px rgba(159, 216, 246, 0.07);
 }
 
@@ -1221,13 +1366,13 @@ export default {
   pointer-events: none;
   /*noinspection CssInvalidPropertyValue*/
   clip-path: inset(
-      calc(var(--yJoin) - var(--arcBand)) 0 calc(100% - (var(--yJoin) + var(--arcBand))) 0
+    calc(var(--yJoin) - var(--arcBand)) 0 calc(100% - (var(--yJoin) + var(--arcBand))) 0
   );
 }
 
 .arc-overlay::before,
 .arc-overlay::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 50%;
   top: calc(740px * var(--s));
@@ -1348,8 +1493,9 @@ export default {
   justify-content: center;
   padding-bottom: calc(18px + env(safe-area-inset-bottom));
   background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
-  box-shadow: inset 0 0 0 1px rgba(159, 216, 246, 0.10),
-  inset 0 30px 60px rgba(159, 216, 246, 0.05);
+  box-shadow:
+    inset 0 0 0 1px rgba(159, 216, 246, 0.1),
+    inset 0 30px 60px rgba(159, 216, 246, 0.05);
 }
 
 .horoscope-info {
@@ -1398,11 +1544,11 @@ export default {
   height: 1px;
   margin: 0 auto 6px;
   background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(159, 216, 246, 0.75) 40%,
-      rgba(255, 255, 255, 0.35) 60%,
-      transparent 100%
+    90deg,
+    transparent 0%,
+    rgba(159, 216, 246, 0.75) 40%,
+    rgba(255, 255, 255, 0.35) 60%,
+    transparent 100%
   );
   opacity: 0.8;
 }
@@ -1467,18 +1613,18 @@ export default {
   hyphens: auto;
 
   -webkit-mask-image: linear-gradient(
-      to bottom,
-      transparent 0px,
-      #000 14px,
-      #000 calc(100% - 18px),
-      transparent 100%
+    to bottom,
+    transparent 0px,
+    #000 14px,
+    #000 calc(100% - 18px),
+    transparent 100%
   );
   mask-image: linear-gradient(
-      to bottom,
-      transparent 0px,
-      #000 14px,
-      #000 calc(100% - 18px),
-      transparent 100%
+    to bottom,
+    transparent 0px,
+    #000 14px,
+    #000 calc(100% - 18px),
+    transparent 100%
   );
 }
 
@@ -1557,7 +1703,7 @@ export default {
 }
 
 .dot::after {
-  content: "";
+  content: '';
   width: 7px;
   height: 7px;
   border-radius: 999px;
@@ -1565,7 +1711,10 @@ export default {
   background: rgba(255, 255, 255, 0.22);
   box-shadow: 0 0 0 rgba(159, 216, 246, 0);
 
-  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .dot--locked::after {
@@ -1594,8 +1743,9 @@ export default {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35),
-  0 0 0 1px rgba(255, 255, 255, 0.04);
+  box-shadow:
+    0 10px 20px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
 
   color: rgba(159, 216, 246, 0.75);
 }

@@ -34,7 +34,9 @@
 
               <div class="daily-card__tags">
                 <span class="daily-tag daily-tag--primary">{{ orientationLabel }}</span>
-                <span v-for="word in cardKeywordsPreview" :key="word" class="daily-tag">{{ word }}</span>
+                <span v-for="word in cardKeywordsPreview" :key="word" class="daily-tag">{{
+                  word
+                }}</span>
               </div>
             </div>
 
@@ -72,15 +74,18 @@ import { t, currentLocale } from 'src/i18n'
 import { loadTarotData } from 'src/helpers/tarotData'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
+import { useAuthStore } from 'stores/authStore.js'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
 const router = useRouter()
+const authStore = useAuthStore()
 
 const oracleActionsRef = ref(null)
 const dailyMainRef = ref(null)
 const cardScale = ref(1)
 const cards = ref([])
+const ANON_DAILY_SEED_KEY = 'arcana_daily_seed_v1'
 
 onMounted(async () => {
   const data = await loadTarotData()
@@ -110,14 +115,35 @@ const hashString = (value) => {
   return hash
 }
 
+const getOrCreateAnonSeed = () => {
+  if (typeof window === 'undefined') return 'anon'
+  const stored = localStorage.getItem(ANON_DAILY_SEED_KEY)
+  if (stored) return stored
+
+  const next =
+    (window.crypto &&
+      typeof window.crypto.randomUUID === 'function' &&
+      window.crypto.randomUUID()) ||
+    `${Date.now()}-${Math.random().toString(36).slice(2)}`
+
+  localStorage.setItem(ANON_DAILY_SEED_KEY, next)
+  return next
+}
+
+const dailySeed = computed(() => {
+  const userId = authStore.state.user?.id
+  const identity = userId || getOrCreateAnonSeed()
+  return `${todayKey()}::${identity}`
+})
+
 const dailyIndex = computed(() => {
   if (!cards.value.length) return 0
-  const hash = hashString(todayKey())
+  const hash = hashString(`${dailySeed.value}::card`)
   return hash % cards.value.length
 })
 
 const orientation = computed(() => {
-  const hash = hashString(`${todayKey()}-orientation`)
+  const hash = hashString(`${dailySeed.value}::orientation`)
   return hash % 2 === 0 ? 'upright' : 'reversed'
 })
 
@@ -240,7 +266,8 @@ watch(
   height: 100svh;
   margin: 0 auto;
   border-radius: 0;
-  padding: calc(90px + env(safe-area-inset-top, 0px)) 18px calc(env(safe-area-inset-bottom, 0px) + 18px);
+  padding: calc(90px + env(safe-area-inset-top, 0px)) 18px
+    calc(env(safe-area-inset-bottom, 0px) + 18px);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 12px;
@@ -360,8 +387,12 @@ watch(
 .daily-meaning {
   border-radius: 14px;
   border: 1px solid rgba(173, 210, 255, 0.2);
-  background:
-    linear-gradient(120deg, rgba(110, 166, 255, 0.12) 0%, rgba(110, 166, 255, 0.04) 45%, rgba(8, 12, 20, 0.7) 100%);
+  background: linear-gradient(
+    120deg,
+    rgba(110, 166, 255, 0.12) 0%,
+    rgba(110, 166, 255, 0.04) 45%,
+    rgba(8, 12, 20, 0.7) 100%
+  );
   padding: 12px 13px 12px 14px;
   text-align: left;
   position: relative;
