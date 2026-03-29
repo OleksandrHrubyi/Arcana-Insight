@@ -2,8 +2,8 @@ name: Send push notifications
 
 on:
   schedule:
-    # Запускати кожну годину
-    - cron: "0 * * * *"
+    # Запускати кожні 30 хвилин
+    - cron: "*/30 * * * *"
   workflow_dispatch:
     inputs:
       mode:

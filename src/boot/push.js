@@ -2,15 +2,33 @@
 import { Capacitor } from '@capacitor/core'
 import { PushNotifications } from '@capacitor/push-notifications'
 import { getSavedTime, syncRegisterDevice } from 'src/helpers/pushBackend'
+import { analytics } from 'src/services/analytics'
 const DEBUG_PUSH = import.meta.env.DEV
 const LS_DAILY_PUSH = 'daily_push_enabled'
 const ROUTE_MAP = {
   horoscope: 'horoscope',
   daily: 'daily',
+  tarot: 'tarot',
   menu: 'menu',
 }
 
 let listenersInited = false
+
+const normalizePushParam = (value, fallback = 'unknown') => {
+  const normalized = String(value || '')
+    .trim()
+    .toLowerCase()
+  return normalized || fallback
+}
+
+const buildPushAnalyticsPayload = (payload = {}) => ({
+  source: normalizePushParam(payload.source, 'push'),
+  entry: normalizePushParam(payload.entry, 'notification'),
+  route: normalizePushParam(payload.route, 'unknown'),
+  content_type: normalizePushParam(payload.content_type, 'unknown'),
+  has_theme: payload.theme ? 'true' : 'false',
+  has_focus: payload.focus ? 'true' : 'false',
+})
 
 function getLocale() {
   return localStorage.getItem('push_locale') || localStorage.getItem('locale') || 'uk'
@@ -24,10 +42,20 @@ function buildTargetFromPayload(payload) {
   const routeRaw = typeof payload?.route === 'string' ? payload.route.trim().toLowerCase() : ''
   const routeName = ROUTE_MAP[routeRaw]
   const date = typeof payload?.date === 'string' ? payload.date : ''
+  const theme = typeof payload?.theme === 'string' ? payload.theme.trim() : ''
+  const focus = typeof payload?.focus === 'string' ? payload.focus.trim() : ''
+  const source = typeof payload?.source === 'string' ? payload.source.trim() : ''
+  const entry = typeof payload?.entry === 'string' ? payload.entry.trim() : ''
 
   if (routeName) {
-    if (routeName === 'horoscope' && date) {
-      return { name: routeName, query: { date } }
+    const query = {}
+    if (date) query.date = date
+    if (theme) query.theme = theme
+    if (focus) query.focus = focus
+    if (source) query.source = source
+    if (entry) query.entry = entry
+    if (Object.keys(query).length) {
+      return { name: routeName, query }
     }
     return { name: routeName }
   }
@@ -47,23 +75,24 @@ function fallbackNavigate(target) {
     return
   }
 
-  const name = target?.name
-  const date = target?.query?.date
-  if (name === 'daily') {
-    window.location.hash = '#/daily'
-    return
+  const name = String(target?.name || '')
+  const pathMap = {
+    daily: '/daily',
+    horoscope: '/horoscope',
+    tarot: '/tarot',
+    menu: '/menu',
   }
-  if (name === 'horoscope') {
-    const qs = date ? `?date=${encodeURIComponent(String(date))}` : ''
-    window.location.hash = `#/horoscope${qs}`
-    return
+  const basePath = pathMap[name] || '/menu'
+  const query = target?.query || {}
+  const params = new URLSearchParams()
+  for (const key of ['date', 'theme', 'focus', 'source', 'entry']) {
+    const raw = query[key]
+    const value = Array.isArray(raw) ? String(raw[0] || '') : String(raw || '')
+    if (!value) continue
+    params.set(key, value)
   }
-  if (name === 'menu') {
-    window.location.hash = '#/menu'
-    return
-  }
-
-  window.location.hash = '#/menu'
+  const qs = params.toString()
+  window.location.hash = `#${basePath}${qs ? `?${qs}` : ''}`
 }
 
 async function navigateByPushAction(action, navigate) {
@@ -73,7 +102,12 @@ async function navigateByPushAction(action, navigate) {
     route: data.route || action?.notification?.route,
     path: data.path || action?.notification?.path,
     date: data.date || action?.notification?.date,
+    theme: data.theme || action?.notification?.theme,
+    focus: data.focus || action?.notification?.focus,
+    source: data.source || action?.notification?.source,
+    entry: data.entry || action?.notification?.entry,
   }
+  void analytics.logEvent('push_open', buildPushAnalyticsPayload(payload))
 
   const target = buildTargetFromPayload(payload)
 
@@ -120,6 +154,19 @@ export async function initPushListeners({ navigate } = {}) {
   // коли пуш прийшов у foreground
   PushNotifications.addListener('pushNotificationReceived', (notification) => {
     if (DEBUG_PUSH) console.info('[push] received', notification)
+    const data = notification?.data || {}
+    const payload = {
+      ...data,
+      route: data.route || notification?.route,
+      path: data.path || notification?.path,
+      date: data.date || notification?.date,
+      theme: data.theme || notification?.theme,
+      focus: data.focus || notification?.focus,
+      source: data.source || notification?.source,
+      entry: data.entry || notification?.entry,
+      content_type: data.content_type || notification?.content_type,
+    }
+    void analytics.logEvent('push_received', buildPushAnalyticsPayload(payload))
   })
 
   // коли юзер натиснув пуш

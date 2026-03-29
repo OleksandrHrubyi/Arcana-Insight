@@ -4,25 +4,31 @@ const STORAGE_KEY = 'arcana_premium_access_v1'
 const PREMIUM_CHANGED_EVENT = 'arcana-premium-access-changed'
 
 const normalizePlan = (value) => (value === 'yearly' ? 'yearly' : 'monthly')
+const normalizeSource = (value) => {
+  const source = String(value || 'billing').toLowerCase()
+  return source === 'local' ? 'local' : 'billing'
+}
 
 const readFromStorage = () => {
   if (typeof window === 'undefined') {
-    return { active: false, plan: 'monthly', updatedAt: '', source: 'local' }
+    return { active: false, plan: 'monthly', updatedAt: '', source: 'billing' }
   }
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) {
-      return { active: false, plan: 'monthly', updatedAt: '', source: 'local' }
+      return { active: false, plan: 'monthly', updatedAt: '', source: 'billing' }
     }
     const parsed = JSON.parse(raw)
+    const source = normalizeSource(parsed?.source)
+    const active = source === 'local' ? false : Boolean(parsed?.active)
     return {
-      active: Boolean(parsed?.active),
+      active,
       plan: normalizePlan(parsed?.plan),
       updatedAt: String(parsed?.updatedAt || ''),
-      source: String(parsed?.source || 'local'),
+      source,
     }
   } catch {
-    return { active: false, plan: 'monthly', updatedAt: '', source: 'local' }
+    return { active: false, plan: 'monthly', updatedAt: '', source: 'billing' }
   }
 }
 
@@ -58,35 +64,12 @@ const ensureListeners = () => {
   })
 }
 
-const grantPremiumAccess = (plan = 'monthly') => {
-  writeToStorage({
-    active: true,
-    plan: normalizePlan(plan),
-    updatedAt: new Date().toISOString(),
-    source: 'local',
-  })
-}
-
-const restorePremiumAccess = () => {
-  const current = readFromStorage()
-  if (current.active) {
-    writeToStorage({
-      ...current,
-      updatedAt: new Date().toISOString(),
-      source: String(current.source || 'local'),
-    })
-  } else {
-    state.value = current
-  }
-  return current.active
-}
-
 const revokePremiumAccess = () => {
   writeToStorage({
     active: false,
     plan: 'monthly',
     updatedAt: new Date().toISOString(),
-    source: 'local',
+    source: 'billing',
   })
 }
 
@@ -95,11 +78,12 @@ const syncPremiumAccess = () => {
 }
 
 const applyPremiumAccessStatus = ({ active = false, plan = 'monthly', source = 'billing' } = {}) => {
+  const normalizedSource = normalizeSource(source)
   writeToStorage({
-    active: Boolean(active),
+    active: normalizedSource === 'local' ? false : Boolean(active),
     plan: normalizePlan(plan),
     updatedAt: new Date().toISOString(),
-    source: String(source || 'billing'),
+    source: normalizedSource,
   })
 }
 
@@ -112,10 +96,13 @@ export function usePremiumAccess() {
     state,
     hasPremiumAccess,
     premiumPlan,
-    grantPremiumAccess,
-    restorePremiumAccess,
     revokePremiumAccess,
     syncPremiumAccess,
     applyPremiumAccessStatus,
   }
+}
+
+export const __resetPremiumAccessForTests = () => {
+  listenersAttached = false
+  state.value = readFromStorage()
 }

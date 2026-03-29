@@ -105,15 +105,27 @@ export default {
   },
 
   mounted() {
-    const win = typeof window !== 'undefined' ? window : null
-    this.reduceMotion = !!win?.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
-    this.platform = Capacitor.getPlatform()
-    this.logAuth('mounted', { platform: this.platform, isNative: this.isNativePlatform })
-    this.fillForm()
-    this.buildDateOptions()
+    void this.initializeSignUpSafe()
   },
 
   methods: {
+    async initializeSignUp() {
+      const win = typeof window !== 'undefined' ? window : null
+      this.reduceMotion = !!win?.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+      this.platform = Capacitor.getPlatform()
+      this.logAuth('mounted', { platform: this.platform, isNative: this.isNativePlatform })
+      this.fillForm()
+      this.buildDateOptions()
+    },
+
+    async initializeSignUpSafe() {
+      try {
+        await this.initializeSignUp()
+      } catch (error) {
+        this.logAuth('mounted_failed', error?.message || String(error))
+      }
+    },
+
     logAuth(step, payload) {
       if (payload !== undefined) {
         console.log(`[Auth][SignUp] ${step}`, payload)

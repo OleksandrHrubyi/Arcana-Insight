@@ -154,6 +154,7 @@ import { useQuasar } from 'quasar'
 import { useAuthStore } from 'stores/authStore.js'
 import { selectAppUser } from 'src/services/supabaseNative'
 import { Preferences } from '@capacitor/preferences'
+import { resolveUserSignSnapshot } from 'src/helpers/zodiacUserSignCore.js'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
@@ -1156,28 +1157,24 @@ const shareSign = async (sign) => {
 }
 
 const loadUserSign = async () => {
-  let dob = ''
-  try {
-    const { value } = await Preferences.get({ key: 'profile_cache_v1' })
-    if (value) {
-      const parsed = JSON.parse(value)
-      dob = parsed?.date_of_birth || ''
-    }
-  } catch {
-    // ignore cache parsing errors
-  }
-
-  if (!dob) {
-    const userId = authStore.state.user?.id
-    if (userId) {
+  const snapshot = await resolveUserSignSnapshot({
+    readProfileCacheValue: async () => {
+      const { value } = await Preferences.get({ key: 'profile_cache_v1' })
+      return value || ''
+    },
+    getCurrentUserId: () => authStore.state.user?.id || '',
+    fetchUserDateOfBirthById: async (userId) => {
       const { data } = await selectAppUser(userId, 6000, 'date_of_birth')
-      dob = data?.date_of_birth || ''
-    }
+      return data?.date_of_birth || ''
+    },
+    zodiacFromRawDate,
+  })
+
+  if (snapshot.errors.length) {
+    console.warn('[ZodiacGuide] loadUserSign degraded:', snapshot.errors.join(','))
   }
 
-  const signKey = zodiacFromRawDate(dob)
-  if (!signKey) return
-  userSignKey.value = signKey
+  userSignKey.value = snapshot.signKey || ''
 }
 
 const hapticTap = async () => {
@@ -1208,7 +1205,7 @@ const toggleSign = async (signKey) => {
   await hapticTap()
 }
 
-onMounted(async () => {
+const initializeZodiacGuide = async () => {
   favoriteKeys.value = loadFavorites()
   try {
     if (!authStore.state.user) {
@@ -1218,6 +1215,19 @@ onMounted(async () => {
     console.warn('[ZodiacGuide] syncSession failed', e)
   }
   await loadUserSign()
+}
+
+const initializeZodiacGuideSafe = async () => {
+  try {
+    await initializeZodiacGuide()
+  } catch (error) {
+    userSignKey.value = ''
+    console.warn('[ZodiacGuide] init failed', error)
+  }
+}
+
+onMounted(() => {
+  void initializeZodiacGuideSafe()
 })
 </script>
 

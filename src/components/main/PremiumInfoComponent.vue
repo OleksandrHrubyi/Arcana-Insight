@@ -15,6 +15,16 @@
         <span class="premium-header__spacer" aria-hidden="true"></span>
       </header>
 
+      <section class="premium-card premium-card--model">
+        <div class="premium-card__label">{{ tt('premiumPage.accessModel.title') }}</div>
+        <div class="premium-model-list">
+          <article v-for="row in paywallAccessRows" :key="row.key" class="premium-model-row">
+            <div class="premium-model-row__label">{{ row.label }}</div>
+            <div class="premium-model-row__text">{{ row.text }}</div>
+          </article>
+        </div>
+      </section>
+
       <section class="premium-card premium-card--vision">
         <div class="premium-card__label">{{ tt('premiumPage.sections.why') }}</div>
         <p class="premium-vision">{{ tt('premiumPage.whyLead') }}</p>
@@ -47,17 +57,18 @@
             type="button"
             class="plan-tile"
             :class="{ 'plan-tile--active': selectedPlanId === plan.id }"
+            :disabled="isBillingActionPending || !billingReady"
             @click="onSelectPlan(plan.id)"
           >
-            <div class="plan-tile__head">
-              <div class="plan-tile__title">{{ tt(plan.titleKey) }}</div>
-              <div class="plan-tile__dot">
+            <span class="plan-tile__head">
+              <span class="plan-tile__title">{{ tt(plan.titleKey) }}</span>
+              <span class="plan-tile__dot">
                 <q-icon v-if="selectedPlanId === plan.id" name="check" size="11px" />
-              </div>
-            </div>
-            <div class="plan-tile__price">{{ tt(plan.priceKey) }}</div>
-            <div v-if="plan.savingKey" class="plan-tile__saving">{{ tt(plan.savingKey) }}</div>
-            <div class="plan-tile__note">{{ tt(plan.noteKey) }}</div>
+              </span>
+            </span>
+            <span class="plan-tile__price">{{ getPlanPriceLabel(plan.id) }}</span>
+            <span v-if="getPlanOfferLabel(plan.id)" class="plan-tile__saving">{{ getPlanOfferLabel(plan.id) }}</span>
+            <span class="plan-tile__note">{{ tt(plan.noteKey) }}</span>
           </button>
         </div>
       </section>
@@ -116,8 +127,8 @@
             {{ tt('premiumPage.legal.terms') }}
           </button>
           <span class="legal-links__sep">•</span>
-          <button type="button" class="legal-link" @click="onRestore">
-            {{ tt('premiumPage.billing.restore') }}
+          <button type="button" class="legal-link" :disabled="isBillingActionPending || !billingReady" @click="onRestore">
+            {{ restoreButtonLabel }}
           </button>
         </div>
         <p class="premium-footnote">{{ tt('premiumPage.billing.footnote') }}</p>
@@ -139,6 +150,7 @@
             type="button"
             class="sticky-plan-switch__item"
             :class="{ 'sticky-plan-switch__item--active': selectedPlanId === plan.id }"
+            :disabled="isBillingActionPending || !billingReady"
             @click="onSelectPlan(plan.id)"
           >
             <span
@@ -150,26 +162,29 @@
             <span class="sticky-plan-switch__text">
               <span class="sticky-plan-switch__label">{{ tt(plan.buttonLabelKey) }}</span>
               <span class="sticky-plan-switch__price-row">
-                <span class="sticky-plan-switch__value">{{ tt(plan.priceKey) }}</span>
+                <span class="sticky-plan-switch__value">{{ getPlanPriceLabel(plan.id) }}</span>
               </span>
             </span>
-            <span v-if="plan.id === 'yearly'" class="sticky-plan-switch__save-badge">
-              {{ saveBadgeText }}
+            <span v-if="getPlanOfferLabel(plan.id)" class="sticky-plan-switch__save-badge">
+              {{ getPlanOfferLabel(plan.id) }}
             </span>
           </button>
         </div>
       </div>
 
       <div class="sticky-purchase__footer">
-        <button type="button" class="sticky-purchase__ok" @click="onPurchase">
+        <button type="button" class="sticky-purchase__ok" :disabled="purchaseDisabled" @click="onPurchase">
           <span class="sticky-purchase__ok-content">
-            <span class="sticky-purchase__ok-main">{{ tt('premiumPage.billing.button') }}</span>
+            <span class="sticky-purchase__ok-main">{{
+              isPurchasing ? tt('premiumPage.billing.processing') : tt('premiumPage.billing.button')
+            }}</span>
             <span class="sticky-purchase__ok-sub"
-              >{{ tt(selectedPlan.titleKey) }} · {{ tt(selectedPlan.priceKey) }}</span
+              >{{ purchaseSubline }}</span
             >
           </span>
           <span class="sticky-purchase__ok-arrow">
-            <q-icon name="arrow_forward" size="16px" />
+            <q-spinner v-if="isPurchasing" size="16px" color="white" />
+            <q-icon v-else name="arrow_forward" size="16px" />
           </span>
         </button>
         <div class="sticky-purchase__close-wrap">
@@ -183,8 +198,8 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import { useQuasar } from 'quasar'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
@@ -192,67 +207,48 @@ import { Capacitor } from '@capacitor/core'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
 import {
   getBillingPremiumStatus,
+  getBillingPaywallPlans,
   purchasePremiumPlan,
   restorePremiumPurchases,
 } from 'src/services/premiumBilling'
+import {
+  getPremiumBillingIncludeKeys,
+  getPremiumDetailItems,
+  PREMIUM_COMPARE_ROWS,
+  PREMIUM_FREE_ITEM_KEYS,
+} from 'src/constants/premiumModel'
+import { PAYWALL_FUNNEL_EVENTS } from 'src/constants/analyticsEvents'
+import { analytics } from 'src/services/analytics'
+import { loadPremiumBootstrapSnapshot } from 'src/helpers/premiumBootstrapCore.js'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
 const router = useRouter()
+const route = useRoute()
 const $q = useQuasar()
+const tarotAiEnabled = import.meta.env.VITE_ENABLE_TAROT_AI === 'true'
 const {
   state: premiumState,
   hasPremiumAccess,
   premiumPlan,
-  grantPremiumAccess,
   revokePremiumAccess,
-  restorePremiumAccess,
   applyPremiumAccessStatus,
 } = usePremiumAccess()
 const selectedPlanId = ref(premiumPlan.value)
+const billingCatalog = ref({
+  monthly: { priceLabel: '', offerLabel: '' },
+  yearly: { priceLabel: '', offerLabel: '' },
+})
+const isPurchasing = ref(false)
+const isRestoring = ref(false)
+const billingReady = ref(true)
+const paywallCloseReason = ref('route_change')
+const paywallCloseLogged = ref(false)
+const purchaseCompleted = ref(false)
 
-const freeItemKeys = [
-  'premiumPage.free.dailyCard',
-  'premiumPage.free.horoscope',
-  'premiumPage.free.tarotOne',
-  'premiumPage.free.cardsLibrary',
-  'premiumPage.free.zodiacGuide',
-]
-
-const billingIncludeKeys = [
-  'premiumPage.billing.includes.unlimitedReadings',
-  'premiumPage.billing.includes.deepInterpretation',
-  'premiumPage.billing.includes.compatibility',
-  'premiumPage.billing.includes.history',
-]
-
-const premiumDetailItems = [
-  {
-    icon: 'all_inclusive',
-    titleKey: 'premiumPage.premiumDetails.unlimitedTarot.title',
-    textKey: 'premiumPage.premiumDetails.unlimitedTarot.text',
-  },
-  {
-    icon: 'dashboard_customize',
-    titleKey: 'premiumPage.premiumDetails.spreads.title',
-    textKey: 'premiumPage.premiumDetails.spreads.text',
-  },
-  {
-    icon: 'auto_stories',
-    titleKey: 'premiumPage.premiumDetails.fullInterpretation.title',
-    textKey: 'premiumPage.premiumDetails.fullInterpretation.text',
-  },
-  {
-    icon: 'favorite_border',
-    titleKey: 'premiumPage.premiumDetails.compatibility.title',
-    textKey: 'premiumPage.premiumDetails.compatibility.text',
-  },
-  {
-    icon: 'history',
-    titleKey: 'premiumPage.premiumDetails.history.title',
-    textKey: 'premiumPage.premiumDetails.history.text',
-  },
-]
+const freeItemKeys = PREMIUM_FREE_ITEM_KEYS
+const billingIncludeKeys = computed(() => getPremiumBillingIncludeKeys({ tarotAiEnabled }))
+const premiumDetailItems = computed(() => getPremiumDetailItems({ tarotAiEnabled }))
 
 const reasonItems = [
   {
@@ -272,30 +268,36 @@ const reasonItems = [
   },
 ]
 
-const quickCompareRows = [
-  {
-    featureKey: 'premiumPage.quickCompare.rows.depth.feature',
-    freeKey: 'premiumPage.quickCompare.rows.depth.free',
-    premiumKey: 'premiumPage.quickCompare.rows.depth.premium',
-  },
-  {
-    featureKey: 'premiumPage.quickCompare.rows.frequency.feature',
-    freeKey: 'premiumPage.quickCompare.rows.frequency.free',
-    premiumKey: 'premiumPage.quickCompare.rows.frequency.premium',
-  },
-  {
-    featureKey: 'premiumPage.quickCompare.rows.history.feature',
-    freeKey: 'premiumPage.quickCompare.rows.history.free',
-    premiumKey: 'premiumPage.quickCompare.rows.history.premium',
-  },
-]
+const quickCompareRows = PREMIUM_COMPARE_ROWS
+const paywallAccessRows = computed(() => {
+  const purchaseText = billingReady.value
+    ? `${tt('premiumPage.accessModel.purchasePrefix')} ${tt(selectedPlan.value.titleKey)} · ${getPlanPriceLabel(selectedPlan.value.id)}`
+    : `${tt('premiumPage.accessModel.purchasePrefix')} ${tt('premiumPage.billing.unavailableHint')}`
+
+  return [
+    {
+      key: 'free',
+      label: tt('premiumAccess.model.labels.free'),
+      text: tt('premiumPage.accessModel.free'),
+    },
+    {
+      key: 'premium',
+      label: tt('premiumAccess.model.labels.premium'),
+      text: tt('premiumPage.accessModel.premium'),
+    },
+    {
+      key: 'purchase',
+      label: tt('premiumAccess.model.labels.purchase'),
+      text: purchaseText,
+    },
+  ]
+})
 
 const billingPlans = [
   {
     id: 'monthly',
     titleKey: 'premiumPage.billing.monthly.title',
     buttonLabelKey: 'premiumPage.billing.monthly.buttonLabel',
-    priceKey: 'premiumPage.billing.monthly.price',
     noteKey: 'premiumPage.billing.monthly.note',
     badgeKey: '',
   },
@@ -303,12 +305,63 @@ const billingPlans = [
     id: 'yearly',
     titleKey: 'premiumPage.billing.yearly.title',
     buttonLabelKey: 'premiumPage.billing.yearly.buttonLabel',
-    priceKey: 'premiumPage.billing.yearly.price',
-    savingKey: 'premiumPage.billing.yearly.savings',
     noteKey: 'premiumPage.billing.yearly.note',
     badgeKey: 'premiumPage.billing.yearly.badge',
   },
 ]
+
+const getPlanPriceLabel = (planId) => {
+  const price = String(billingCatalog.value?.[planId]?.priceLabel || '').trim()
+  if (price) return price
+  return tt('premiumPage.billing.pricePending')
+}
+
+const getPlanOfferLabel = (planId) => {
+  return String(billingCatalog.value?.[planId]?.offerLabel || '').trim()
+}
+
+const paywallSource = computed(() => {
+  const value = route.query?.source
+  if (Array.isArray(value)) return String(value[0] || 'direct')
+  return String(value || 'direct')
+})
+const paywallEntry = computed(() => {
+  const value = route.query?.entry
+  if (Array.isArray(value)) return String(value[0] || 'direct')
+  return String(value || 'direct')
+})
+
+const detectTrialOffer = (planId) => {
+  const text = getPlanOfferLabel(planId).toLowerCase()
+  if (!text) return false
+  return /(trial|free|пробн|безкоштов)/.test(text)
+}
+
+const logPaywallEvent = (eventName, params = {}) => {
+  void analytics.logEvent(eventName, {
+    source: paywallSource.value,
+    entry: paywallEntry.value,
+    plan: selectedPlanId.value,
+    ...params,
+  })
+}
+
+const markPaywallClose = (reason) => {
+  if (paywallCloseLogged.value) return
+  paywallCloseLogged.value = true
+  void analytics.logEvent(PAYWALL_FUNNEL_EVENTS.paywallClose, {
+    source: paywallSource.value,
+    entry: paywallEntry.value,
+    reason,
+    purchase_completed: purchaseCompleted.value ? 'true' : 'false',
+  })
+}
+
+const isBillingActionPending = computed(() => isPurchasing.value || isRestoring.value)
+const purchaseDisabled = computed(() => isBillingActionPending.value || !billingReady.value)
+const restoreButtonLabel = computed(() =>
+  isRestoring.value ? tt('premiumPage.billing.restoring') : tt('premiumPage.billing.restore'),
+)
 
 const hapticTap = async () => {
   if (!Capacitor.isNativePlatform()) return
@@ -320,59 +373,77 @@ const hapticTap = async () => {
 }
 
 const onBack = async () => {
+  paywallCloseReason.value = 'back'
+  markPaywallClose('back')
   await hapticTap()
   router.back()
 }
 
 const onClose = async () => {
+  paywallCloseReason.value = 'close_button'
+  markPaywallClose('close_button')
   await onBack()
 }
 
 const onSelectPlan = async (id) => {
+  if (isBillingActionPending.value || !billingReady.value) return
   selectedPlanId.value = id
   await hapticTap()
 }
 
+const resolveBillingErrorMessage = (reason, mode = 'purchase') => {
+  const normalized = String(reason || '').toLowerCase()
+  if (normalized === 'network_error') return tt('premiumPage.billing.errors.network')
+  if (normalized === 'missing_api_key' || normalized === 'configure_failed' || normalized === 'plugin_missing') {
+    return tt('premiumPage.billing.errors.config')
+  }
+  if (normalized === 'not_native') {
+    return mode === 'restore'
+      ? tt('premiumPage.billing.errors.restoreUnavailable')
+      : tt('premiumPage.billing.errors.unavailable')
+  }
+  if (mode === 'restore') return tt('premiumPage.billing.errors.restoreFailed')
+  return tt('premiumPage.billing.errors.purchaseFailed')
+}
+
 const onPurchase = async () => {
-  await hapticTap()
-  const wasActive = hasPremiumAccess.value
-  const result = await purchasePremiumPlan(selectedPlanId.value)
-  if (result.ok && result.hasPremium) {
-    applyPremiumAccessStatus({ active: true, plan: result.plan, source: 'billing' })
-    const message = currentLocale.value?.startsWith('uk')
-      ? wasActive
-        ? 'План Premium оновлено.'
-        : 'Premium активовано.'
-      : wasActive
-        ? 'Premium plan updated.'
-        : 'Premium unlocked.'
-    $q.notify({
-      message,
-      color: 'dark',
-      textColor: 'white',
-      position: 'bottom',
-    })
-    return
-  }
-
-  if (result.cancelled) {
-    $q.notify({
-      message: currentLocale.value?.startsWith('uk') ? 'Покупку скасовано.' : 'Purchase cancelled.',
-      color: 'dark',
-      textColor: 'white',
-      position: 'bottom',
-    })
-    return
-  }
-
-  if (!result.available) {
-    const isLocalPremium = String(premiumState.value?.source || 'local') === 'local'
-    if (wasActive && isLocalPremium) {
-      revokePremiumAccess()
+  if (purchaseDisabled.value) {
+    if (!billingReady.value) {
       $q.notify({
-        message: currentLocale.value?.startsWith('uk')
-          ? 'Тестовий Premium вимкнено.'
-          : 'Test Premium was disabled.',
+        message: tt('premiumPage.billing.errors.unavailable'),
+        color: 'dark',
+        textColor: 'white',
+        position: 'bottom',
+      })
+    }
+    return
+  }
+  await hapticTap()
+  logPaywallEvent(PAYWALL_FUNNEL_EVENTS.purchaseClick, {
+    price: getPlanPriceLabel(selectedPlanId.value),
+    has_offer: getPlanOfferLabel(selectedPlanId.value) ? 'true' : 'false',
+  })
+  isPurchasing.value = true
+  const wasActive = hasPremiumAccess.value
+  try {
+    const result = await purchasePremiumPlan(selectedPlanId.value)
+    if (result.ok && result.hasPremium) {
+      billingReady.value = true
+      purchaseCompleted.value = true
+      applyPremiumAccessStatus({ active: true, plan: result.plan, source: 'billing' })
+      logPaywallEvent(PAYWALL_FUNNEL_EVENTS.purchaseSuccess, {
+        plan: result.plan,
+      })
+      if (detectTrialOffer(result.plan)) {
+        logPaywallEvent(PAYWALL_FUNNEL_EVENTS.trialStart, {
+          plan: result.plan,
+        })
+      }
+      const message = wasActive
+        ? tt('premiumPage.billing.results.updated')
+        : tt('premiumPage.billing.results.activated')
+      $q.notify({
+        message,
         color: 'dark',
         textColor: 'white',
         position: 'bottom',
@@ -380,26 +451,40 @@ const onPurchase = async () => {
       return
     }
 
-    grantPremiumAccess(selectedPlanId.value)
+    if (result.cancelled) {
+      logPaywallEvent(PAYWALL_FUNNEL_EVENTS.purchaseError, { reason: 'cancelled' })
+      $q.notify({
+        message: tt('premiumPage.billing.results.cancelled'),
+        color: 'dark',
+        textColor: 'white',
+        position: 'bottom',
+      })
+      return
+    }
+
+    if (!result.available) {
+      billingReady.value = false
+      logPaywallEvent(PAYWALL_FUNNEL_EVENTS.purchaseError, { reason: String(result.reason || 'unavailable') })
+      $q.notify({
+        message: resolveBillingErrorMessage(result.reason, 'purchase'),
+        color: 'dark',
+        textColor: 'white',
+        position: 'bottom',
+      })
+      return
+    }
+
+    billingReady.value = true
+    logPaywallEvent(PAYWALL_FUNNEL_EVENTS.purchaseError, { reason: String(result.reason || 'unknown') })
     $q.notify({
-      message: currentLocale.value?.startsWith('uk')
-        ? 'IAP ще не підключено. Увімкнено тестовий Premium-режим.'
-        : 'IAP is not connected yet. Test Premium mode was enabled.',
+      message: resolveBillingErrorMessage(result.reason, 'purchase'),
       color: 'dark',
       textColor: 'white',
       position: 'bottom',
     })
-    return
+  } finally {
+    isPurchasing.value = false
   }
-
-  $q.notify({
-    message: currentLocale.value?.startsWith('uk')
-      ? 'Не вдалося завершити покупку. Спробуй ще раз.'
-      : 'Purchase failed. Please try again.',
-    color: 'dark',
-    textColor: 'white',
-    position: 'bottom',
-  })
 }
 
 const onOpenPolicy = async (section) => {
@@ -408,31 +493,62 @@ const onOpenPolicy = async (section) => {
 }
 
 const onRestore = async () => {
-  await hapticTap()
-  const result = await restorePremiumPurchases()
-  let restored = false
-  if (result.ok && result.hasPremium) {
-    applyPremiumAccessStatus({ active: true, plan: result.plan, source: 'billing' })
-    selectedPlanId.value = result.plan
-    restored = true
-  } else if (!result.available) {
-    restored = restorePremiumAccess()
-    if (restored) {
-      selectedPlanId.value = premiumPlan.value
+  if (isBillingActionPending.value || !billingReady.value) {
+    if (!billingReady.value) {
+      $q.notify({
+        message: tt('premiumPage.billing.errors.restoreUnavailable'),
+        color: 'dark',
+        textColor: 'white',
+        position: 'bottom',
+      })
     }
+    return
   }
-  $q.notify({
-    message: restored
-      ? currentLocale.value?.startsWith('uk')
-        ? 'Покупку відновлено.'
-        : 'Purchase restored.'
-      : currentLocale.value?.startsWith('uk')
-        ? 'Активних покупок не знайдено.'
-        : 'No active purchases found.',
-    color: 'dark',
-    textColor: 'white',
-    position: 'bottom',
-  })
+  await hapticTap()
+  isRestoring.value = true
+  try {
+    const result = await restorePremiumPurchases()
+    if (!result.available) {
+      billingReady.value = false
+      $q.notify({
+        message: resolveBillingErrorMessage(result.reason, 'restore'),
+        color: 'dark',
+        textColor: 'white',
+        position: 'bottom',
+      })
+      return
+    }
+
+    billingReady.value = true
+    let restored = false
+    if (result.ok && result.hasPremium) {
+      applyPremiumAccessStatus({ active: true, plan: result.plan, source: 'billing' })
+      selectedPlanId.value = result.plan
+      restored = true
+      logPaywallEvent(PAYWALL_FUNNEL_EVENTS.restoreSuccess, { plan: result.plan })
+    } else if (result.ok) {
+      applyPremiumAccessStatus({ active: false, plan: 'monthly', source: 'billing' })
+      selectedPlanId.value = 'monthly'
+    } else if (!result.ok) {
+      $q.notify({
+        message: resolveBillingErrorMessage(result.reason, 'restore'),
+        color: 'dark',
+        textColor: 'white',
+        position: 'bottom',
+      })
+      return
+    }
+    $q.notify({
+      message: restored
+        ? tt('premiumPage.billing.results.restored')
+        : tt('premiumPage.billing.results.noActive'),
+      color: 'dark',
+      textColor: 'white',
+      position: 'bottom',
+    })
+  } finally {
+    isRestoring.value = false
+  }
 }
 
 watch(premiumPlan, (plan) => {
@@ -441,24 +557,63 @@ watch(premiumPlan, (plan) => {
   }
 })
 
-onMounted(async () => {
-  const status = await getBillingPremiumStatus()
-  if (!status.ok || !status.available) {
-    return
+const initializePremiumBillingState = async () => {
+  logPaywallEvent(PAYWALL_FUNNEL_EVENTS.paywallView)
+
+  // Migration: remove legacy local/test premium state.
+  const isLegacyLocalPremium =
+    premiumState.value?.active && String(premiumState.value?.source || '').toLowerCase() === 'local'
+  if (isLegacyLocalPremium) {
+    revokePremiumAccess()
   }
-  applyPremiumAccessStatus({
-    active: status.hasPremium,
-    plan: status.plan,
-    source: 'billing',
+
+  const snapshot = await loadPremiumBootstrapSnapshot({
+    getBillingPaywallPlans,
+    getBillingPremiumStatus,
   })
+
+  billingCatalog.value = snapshot.billingCatalog
+  billingReady.value = snapshot.billingReady
+
+  if (snapshot.status) {
+    applyPremiumAccessStatus({
+      active: snapshot.status.hasPremium,
+      plan: snapshot.status.plan,
+      source: 'billing',
+    })
+  }
+
+  if (snapshot.errors.length) {
+    console.warn('[Premium] billing bootstrap degraded', snapshot.errors.join(','))
+  }
+}
+
+const initializePremiumBillingStateSafe = async () => {
+  try {
+    await initializePremiumBillingState()
+  } catch (error) {
+    billingReady.value = false
+    console.warn('[Premium] billing bootstrap failed', error)
+  }
+}
+
+onMounted(() => {
+  void initializePremiumBillingStateSafe()
 })
 
-const saveBadgeText = computed(() => {
-  return 'Save 50%'
+onBeforeUnmount(() => {
+  markPaywallClose(paywallCloseReason.value || 'route_change')
 })
 
 const selectedPlan = computed(() => {
   return billingPlans.find((item) => item.id === selectedPlanId.value) || billingPlans[0]
+})
+
+const purchaseSubline = computed(() => {
+  if (!billingReady.value) {
+    return tt('premiumPage.billing.unavailableHint')
+  }
+  return `${tt(selectedPlan.value.titleKey)} · ${getPlanPriceLabel(selectedPlan.value.id)}`
 })
 </script>
 
@@ -622,6 +777,34 @@ const selectedPlan = computed(() => {
     0 12px 24px rgba(0, 0, 0, 0.3);
 }
 
+.premium-model-list {
+  display: grid;
+  gap: 8px;
+}
+
+.premium-model-row {
+  display: grid;
+  gap: 3px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(186, 207, 247, 0.14);
+  background: rgba(7, 12, 20, 0.44);
+}
+
+.premium-model-row__label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(173, 210, 255, 0.86);
+  font-weight: 620;
+}
+
+.premium-model-row__text {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(219, 231, 250, 0.88);
+}
+
 .premium-card::before {
   content: '';
   position: absolute;
@@ -773,6 +956,11 @@ const selectedPlan = computed(() => {
     0 0 0 1px rgba(148, 208, 255, 0.22),
     0 10px 18px rgba(0, 0, 0, 0.24);
   transform: translateY(-1px);
+}
+
+.plan-tile:disabled {
+  opacity: 0.52;
+  pointer-events: none;
 }
 
 .plan-tile__head {
@@ -1017,6 +1205,11 @@ const selectedPlan = computed(() => {
   text-underline-offset: 2px;
 }
 
+.legal-link:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .legal-links {
   display: flex;
   justify-content: center;
@@ -1161,6 +1354,11 @@ const selectedPlan = computed(() => {
     0 10px 18px rgba(0, 0, 0, 0.24);
 }
 
+.sticky-plan-switch__item:disabled {
+  opacity: 0.54;
+  pointer-events: none;
+}
+
 .sticky-plan-switch__check {
   width: 14px;
   height: 14px;
@@ -1299,6 +1497,11 @@ const selectedPlan = computed(() => {
 .sticky-purchase__ok:active {
   transform: translateY(1px);
   filter: brightness(0.95);
+}
+
+.sticky-purchase__ok:disabled {
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .sticky-purchase__close {

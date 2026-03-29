@@ -3,7 +3,7 @@ import {
   PLAN_BY_PRODUCT_ID,
   PREMIUM_ENTITLEMENT_ID,
   PREMIUM_PLAN_PRODUCT_IDS,
-} from 'src/constants/premiumBilling'
+} from '../constants/premiumBilling.js'
 
 const Purchases = registerPlugin('Purchases')
 
@@ -20,13 +20,24 @@ const getProductIdByPlan = (planId) => {
 const isNative = () => Capacitor.isNativePlatform()
 const getPlatform = () => Capacitor.getPlatform()
 
+const readEnv = (key) => {
+  const importMetaEnv = import.meta?.env
+  if (importMetaEnv && Object.prototype.hasOwnProperty.call(importMetaEnv, key)) {
+    return importMetaEnv[key]
+  }
+  if (typeof process !== 'undefined' && process?.env && Object.prototype.hasOwnProperty.call(process.env, key)) {
+    return process.env[key]
+  }
+  return ''
+}
+
 const getRevenueCatApiKey = () => {
   const platform = getPlatform()
   if (platform === 'ios') {
-    return String(import.meta.env.VITE_RC_IOS_API_KEY || '').trim()
+    return String(readEnv('VITE_RC_IOS_API_KEY') || '').trim()
   }
   if (platform === 'android') {
-    return String(import.meta.env.VITE_RC_ANDROID_API_KEY || '').trim()
+    return String(readEnv('VITE_RC_ANDROID_API_KEY') || '').trim()
   }
   return ''
 }
@@ -52,6 +63,86 @@ const extractCustomerInfo = (payload) => {
   if (payload.data?.customerInfo) return payload.data.customerInfo
   if (payload.data) return payload.data
   return payload
+}
+
+const extractOfferingsPayload = (payload) => {
+  if (!payload) return null
+  if (payload.offerings) return payload.offerings
+  if (payload.data?.offerings) return payload.data.offerings
+  if (payload.data) return payload.data
+  return payload
+}
+
+const normalizeOfferings = (payload) => {
+  const offerings = extractOfferingsPayload(payload)
+  if (!offerings || typeof offerings !== 'object') return []
+
+  const out = []
+  if (offerings.current && typeof offerings.current === 'object') {
+    out.push(offerings.current)
+  }
+
+  if (offerings.all && typeof offerings.all === 'object') {
+    out.push(...Object.values(offerings.all).filter(Boolean))
+  }
+
+  return out
+}
+
+const normalizePackages = (offering) => {
+  if (!offering || typeof offering !== 'object') return []
+  const list = offering.availablePackages
+  return Array.isArray(list) ? list : []
+}
+
+const extractProduct = (pkg) => {
+  if (!pkg || typeof pkg !== 'object') return null
+  if (pkg.product && typeof pkg.product === 'object') return pkg.product
+  if (pkg.storeProduct && typeof pkg.storeProduct === 'object') return pkg.storeProduct
+  return null
+}
+
+const toLabel = (value) => {
+  return String(value || '').trim()
+}
+
+const extractPriceLabel = (pkg, product) => {
+  const candidates = [
+    product?.priceString,
+    product?.localizedPriceString,
+    product?.formattedPrice,
+    pkg?.priceString,
+    pkg?.localizedPriceString,
+  ]
+  for (const candidate of candidates) {
+    const label = toLabel(candidate)
+    if (label) return label
+  }
+  return ''
+}
+
+const extractOfferLabel = (pkg, product) => {
+  const intro = product?.introPrice || product?.introductoryPrice || pkg?.introPrice || pkg?.introductoryPrice
+  if (!intro) return ''
+  if (typeof intro === 'string') return toLabel(intro)
+
+  const candidates = [intro?.priceString, intro?.localizedPriceString, intro?.description]
+  for (const candidate of candidates) {
+    const label = toLabel(candidate)
+    if (label) return label
+  }
+
+  return ''
+}
+
+const extractProductId = (pkg, product) => {
+  return String(
+    product?.identifier ||
+      product?.productIdentifier ||
+      pkg?.productIdentifier ||
+      pkg?.identifier ||
+      '',
+  ).trim()
 }
 
 const resolvePlanFromCustomerInfo = (customerInfo) => {
@@ -221,3 +312,56 @@ export const restorePremiumPurchases = async () => {
 
 export const getPremiumProductId = (planId) => getProductIdByPlan(planId)
 
+export const getBillingPaywallPlans = async () => {
+  const configured = await ensureConfigured()
+  if (!configured.ok) {
+    return {
+      ok: false,
+      available: false,
+      reason: configured.reason,
+      plans: {},
+    }
+  }
+
+  try {
+    const response = await Purchases.getOfferings()
+    const offerings = normalizeOfferings(response)
+    const plans = {}
+
+    for (const offering of offerings) {
+      const packages = normalizePackages(offering)
+      for (const pkg of packages) {
+        const product = extractProduct(pkg)
+        const productId = extractProductId(pkg, product)
+        const planId = PLAN_BY_PRODUCT_ID[productId]
+        if (!planId || plans[planId]) continue
+
+        plans[planId] = {
+          productId,
+          priceLabel: extractPriceLabel(pkg, product),
+          offerLabel: extractOfferLabel(pkg, product),
+        }
+      }
+    }
+
+    return {
+      ok: true,
+      available: true,
+      reason: '',
+      plans,
+    }
+  } catch (error) {
+    return {
+      ok: false,
+      available: true,
+      reason: toErrorReason(error),
+      plans: {},
+      error,
+    }
+  }
+}
+
+export const __resetPremiumBillingForTests = () => {
+  isConfigured = false
+  configureAttempted = false
+}

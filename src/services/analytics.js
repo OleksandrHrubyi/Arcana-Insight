@@ -3,10 +3,21 @@ import { Capacitor } from '@capacitor/core'
 
 class AnalyticsService {
   constructor() {
+    const env =
+      typeof import.meta !== 'undefined' && import.meta?.env
+        ? import.meta.env
+        : {}
     this.isNative = Capacitor.isNativePlatform()
     this.isAvailable = Capacitor.isPluginAvailable('FirebaseAnalytics')
     this.initialized = false
     this.timeoutMs = 1500
+    this.debug = env.DEV && env.VITE_ANALYTICS_DEBUG === '1'
+    this.devFallback = env.DEV && env.VITE_ANALYTICS_DEV_FALLBACK !== '0'
+  }
+
+  logDevFallback(label, payload = {}) {
+    if (!this.devFallback) return
+    console.info('[Analytics][dev-fallback]', label, payload)
   }
 
   async withTimeout(promise, label) {
@@ -27,10 +38,7 @@ class AnalyticsService {
   }
 
   async init() {
-    if (!this.isNative || !this.isAvailable) {
-      console.log('[Analytics] Analytics unavailable, skipping init')
-      return
-    }
+    if (!this.isNative || !this.isAvailable) return
 
     try {
       await this.withTimeout(
@@ -38,18 +46,30 @@ class AnalyticsService {
         'setEnabled',
       )
       this.initialized = true
-      console.log('[Analytics] Firebase Analytics initialized')
     } catch (error) {
-      console.error('[Analytics] Initialization failed:', error)
+      if (this.debug) {
+        console.warn('[Analytics] Initialization failed:', error)
+      }
     }
   }
 
   async logEvent(eventName, params = {}) {
-    if (!this.isNative || !this.isAvailable) return
+    if (!this.isNative || !this.isAvailable) {
+      this.logDevFallback('logEvent:plugin-unavailable', {
+        eventName,
+        params,
+        isNative: this.isNative,
+        isAvailable: this.isAvailable,
+      })
+      return
+    }
 
     // Безпечно ігноруємо якщо не ініціалізовано
     if (!this.initialized) {
-      console.log(`[Analytics] Skipped ${eventName} (not initialized yet)`)
+      this.logDevFallback('logEvent:not-initialized', {
+        eventName,
+        params,
+      })
       return
     }
 
@@ -61,9 +81,11 @@ class AnalyticsService {
         }),
         `logEvent:${eventName}`,
       )
-      console.log(`[Analytics] Event logged: ${eventName}`, params)
     } catch (error) {
-      console.error(`[Analytics] Failed to log event ${eventName}:`, error)
+      this.logDevFallback('logEvent:error', { eventName, params })
+      if (this.debug) {
+        console.warn(`[Analytics] Failed to log event ${eventName}:`, error)
+      }
     }
   }
 
@@ -75,9 +97,10 @@ class AnalyticsService {
         FirebaseAnalytics.setUserId({ userId: userId?.toString() || null }),
         'setUserId',
       )
-      console.log(`[Analytics] User ID set: ${userId}`)
     } catch (error) {
-      console.error('[Analytics] Failed to set user ID:', error)
+      if (this.debug) {
+        console.warn('[Analytics] Failed to set user ID:', error)
+      }
     }
   }
 
@@ -92,9 +115,10 @@ class AnalyticsService {
         }),
         `setUserProperty:${name}`,
       )
-      console.log(`[Analytics] User property set: ${name} = ${value}`)
     } catch (error) {
-      console.error('[Analytics] Failed to set user property:', error)
+      if (this.debug) {
+        console.warn('[Analytics] Failed to set user property:', error)
+      }
     }
   }
 
@@ -112,9 +136,10 @@ class AnalyticsService {
         }),
         `screenView:${screenName}`,
       )
-      console.log(`[Analytics] Screen view: ${screenName}`)
     } catch (error) {
-      console.error('[Analytics] Failed to log screen view:', error)
+      if (this.debug) {
+        console.warn('[Analytics] Failed to log screen view:', error)
+      }
     }
   }
 

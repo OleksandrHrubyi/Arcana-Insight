@@ -35,6 +35,7 @@
 <script>
 import { t, currentLocale } from 'src/i18n/index.js';
 import { loadTarotData } from 'src/helpers/tarotData';
+import { findTarotCardById, loadTarotCardsSnapshot } from 'src/helpers/tarotDataSnapshotCore.js';
 import { Share } from "@capacitor/share";
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
@@ -94,19 +95,37 @@ export default {
       return `/images/cards/${this.card.file}`;
     }
   },
-  async mounted() {
-    this.tarotData = await loadTarotData();
-    this.loadCard();
+  mounted() {
+    void this.ensureTarotDataLoadedSafe();
   },
   watch: {
-    async "$route.params.id"() {
-      if (!this.tarotData) {
-        this.tarotData = await loadTarotData();
-      }
-      this.loadCard();
+    "$route.params.id"() {
+      void this.ensureTarotDataLoadedSafe();
     }
   },
   methods: {
+    syncCardFromRoute() {
+      const id = this.$route.params.id;
+      this.card = findTarotCardById(this.tarotData?.cards, id);
+    },
+    async ensureTarotDataLoaded() {
+      if (!this.tarotData?.cards) {
+        const { cards, error } = await loadTarotCardsSnapshot({ loadTarotData });
+        this.tarotData = { cards };
+        if (error) {
+          console.warn('[TarotResult] loadTarotData failed', error);
+        }
+      }
+      this.syncCardFromRoute();
+    },
+    async ensureTarotDataLoadedSafe() {
+      try {
+        await this.ensureTarotDataLoaded();
+      } catch (error) {
+        this.card = null;
+        console.warn('[TarotResult] init failed', error);
+      }
+    },
     async hapticTap() {
       if (!Capacitor.isNativePlatform()) return;
       try {
@@ -116,8 +135,7 @@ export default {
       }
     },
     loadCard() {
-      const id = this.$route.params.id;
-      this.card = (this.tarotData?.cards || []).find((c) => c.id === id) || null;
+      this.syncCardFromRoute();
     },
     async share() {
       if (!this.card) return;

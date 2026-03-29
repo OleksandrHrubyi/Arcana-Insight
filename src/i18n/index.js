@@ -30,6 +30,21 @@ async function ensureMessagesLoaded() {
   messagesVersion.value += 1
 }
 
+function scheduleMessagesPreload() {
+  if (typeof window === 'undefined') return
+
+  const load = () => {
+    void ensureMessagesLoaded()
+  }
+
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(load, { timeout: 2000 })
+    return
+  }
+
+  setTimeout(load, 700)
+}
+
 
 export function t(locale, key) {
   // reactive dependency for re-render when messages load
@@ -66,4 +81,4 @@ export function t(locale, key) {
 }
 
 // preload in background
-void ensureMessagesLoaded()
+scheduleMessagesPreload()

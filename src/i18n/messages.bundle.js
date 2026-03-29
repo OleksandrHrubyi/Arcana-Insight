@@ -543,6 +543,20 @@ export const messages = {
         lastQuarter: 'Last Quarter',
         waningCrescent: 'Waning Crescent',
       },
+      planets: {
+        sun: 'Sun', moon: 'Moon', mars: 'Mars',
+        mercury: 'Mercury', jupiter: 'Jupiter', venus: 'Venus', saturn: 'Saturn',
+      },
+      days: 'days',
+      tomorrow: 'tomorrow',
+      tonight: 'tonight',
+      sunIn: 'Sun in',
+      streak: 'Day',
+      elements: { fire: 'Fire', water: 'Water', air: 'Air', earth: 'Earth' },
+      numerology: {
+        '1': 'Action', '2': 'Balance', '3': 'Expression', '4': 'Structure',
+        '5': 'Freedom', '6': 'Harmony', '7': 'Reflection', '8': 'Power', '9': 'Completion',
+      },
     },
 
     // Settings
@@ -564,8 +578,13 @@ export const messages = {
       subtitle: 'Tune your arcana flow',
       sections: {
         general: 'General',
+        personalization: 'Personalization',
         notifications: 'Notifications',
         account: 'Account',
+      },
+      personalization: {
+        interestsHint: 'Adjust your focus used by personalized Home shortcuts.',
+        selectedLabel: 'Selected',
       },
     },
 
@@ -573,6 +592,9 @@ export const messages = {
       defaultTime: 'Default (08:00 UTC)',
       noPermission: 'No permission / no token',
       syncFailed: 'Push sync failed',
+      syncing: 'Syncing notifications…',
+      off: 'Daily reminders are off',
+      onAt: 'Daily reminder at',
     },
 
     languages: {
@@ -742,6 +764,7 @@ export const messages = {
       cards: 'Card library',
       zodiacGuide: 'Zodiac signs',
       readings: 'My readings',
+      rewards: 'Rewards',
       premium: 'Premium',
       soon: 'Soon',
     },
@@ -752,6 +775,49 @@ export const messages = {
       cardLabel: 'Your card',
       meaningLabel: 'Meaning',
       guidanceLabel: 'Guidance',
+      loopLabel: 'Daily ritual',
+      loopText: 'Complete this short flow to get more value from your day.',
+      streakCurrent: 'Current streak',
+      streakBest: 'Best streak',
+      progressLabel: 'Progress',
+      progressText: 'Your last 7 days of ritual activity.',
+      activeDaysLabel: 'Active days',
+      fullDaysLabel: 'Full ritual',
+      nextCardIn: 'Next card in',
+      statusDone: 'Done',
+      statusNext: 'Next',
+      actionGoHoroscope: 'Open horoscope',
+      actionGoTarot: 'Open tarot',
+      reminderCta: 'Reminders',
+      reminderOn: 'Daily reminders are enabled.',
+      reminderOnAt: 'Daily reminder at',
+      reminderOff: 'Reminders are off. Turn them on to keep the daily ritual.',
+      ritualItems: {
+        dailyCard: 'Daily card',
+        horoscope: 'Horoscope',
+        tarot: 'Tarot session',
+      },
+      energySheet: {
+        eyebrow: 'Energy ritual',
+        heroInProgressTitle: 'Build your daily momentum',
+        heroInProgressSubtitle:
+          'Complete the next ritual step to unlock your reward state for today.',
+        heroReadyTitle: 'Reward unlocked for today',
+        heroReadySubtitle:
+          'Great run. Claim your reward now and keep your rhythm tomorrow.',
+        heroClaimedTitle: 'Reward claimed. Flow is active',
+        heroClaimedSubtitle:
+          'Excellent consistency. Keep the chain alive and upgrade your next unlock.',
+        pointsLabel: 'pts',
+        rewardProgressLabel: 'Reward progress',
+        ctaContinueRitual: 'Continue ritual',
+        ctaClaimReward: 'Claim reward',
+        ctaKeepFlow: 'Keep the flow',
+        nextStepHint: 'Tap the highlighted step to continue your ritual.',
+        claimNoReward: 'No reward available yet.',
+        claimSuccess: 'Reward claimed successfully.',
+        claimFailed: 'Reward claim failed. Try again.',
+      },
     },
 
     cardsPage: {
@@ -896,25 +962,109 @@ export const messages = {
     premiumAccess: {
       badge: 'Premium',
       cta: 'Unlock Premium',
+      model: {
+        labels: {
+          free: 'Free',
+          premium: 'Premium',
+          purchase: 'Purchase',
+        },
+        readings: {
+          free: 'No saved reading history.',
+          premium: 'Full timeline with all readings, spreads, and cards.',
+          purchase: 'Premium subscription with history and unlimited access features.',
+        },
+        compatibility: {
+          free: 'No full compatibility report.',
+          premium: 'Full pair analysis with score breakdown and practical guidance.',
+          purchase: 'Premium subscription with compatibility insights and advanced breakdown.',
+        },
+        horoscopeLove: {
+          free: 'Only daily energy theme.',
+          premium: 'Daily love-focused insights and deeper emotional guidance.',
+          purchase: 'Premium subscription with all daily horoscope themes.',
+        },
+        horoscopeCareer: {
+          free: 'Only daily energy theme.',
+          premium: 'Daily career-focused guidance and next-step focus.',
+          purchase: 'Premium subscription with all daily horoscope themes.',
+        },
+      },
+      horoscope: {
+        love: {
+          title: 'Love theme is in Premium',
+          text: 'Unlock Premium to get daily Love insights and deeper relationship context.',
+        },
+        career: {
+          title: 'Career theme is in Premium',
+          text: 'Unlock Premium to get daily Career guidance and practical next steps.',
+        },
+      },
       compatibility: {
-        title: 'Compatibility is in Premium',
-        text: 'Open full compatibility reports for any pair of signs with Premium access.',
+        title: 'Full compatibility report is in Premium',
+        text: 'Free does not include compatibility report. Premium unlocks full pair analysis with score breakdown and clear guidance.',
+        bullets: {
+          report: 'Detailed report for any sign pair, with clear strengths and tension points.',
+          scores: 'All spheres and score breakdown: emotion, communication, and stability.',
+          insight: 'Actionable relationship insight for your selected pair.',
+        },
       },
       readings: {
-        title: 'Reading history is in Premium',
-        text: 'Save and revisit your tarot sessions in one place with Premium.',
+        title: 'Full reading history is in Premium',
+        text: 'Free mode does not save reading history. Premium keeps all tarot sessions in one timeline.',
+        bullets: {
+          timeline: 'All previous readings in one place with date, spread, and cards.',
+          search: 'Quickly return to important sessions and key questions.',
+          patterns: 'Track repeating themes instead of reading each session in isolation.',
+        },
       },
       spreads: {
-        notify: '3-card and 5-card spreads are available in Premium.',
+        notify: 'Free mode includes 1-card reading. Premium unlocks 3-card and 5-card spreads with deeper interpretation.',
+      },
+      tarot: {
+        dailyLimit:
+          'Your free 1-card tarot reading is already used for today. Premium removes the daily limit and unlocks unlimited sessions.',
+        aha: {
+          title: 'Unlock deeper value from your next spread',
+          lead: 'You already got the free baseline insight. Premium adds more depth, context, and practical next steps.',
+          previewLabel: 'PREMIUM PREVIEW',
+          previewFallback:
+            'In Premium you get broader context, deeper interpretation, and concrete next-step guidance.',
+          previewNowPrefix: 'Now',
+          points: {
+            unlimited: 'Unlimited tarot sessions without daily limits.',
+            spreads: '3-card and 5-card spreads for wider context.',
+            history: 'Full reading history to revisit patterns, not isolated sessions.',
+          },
+        },
       },
     },
 
     menuPage: {
       subtitle: 'All sections in one place',
+      dailyLauncher: {
+        eyebrow: 'Today ritual',
+        closedTitle: 'Your daily card is waiting',
+        openTitle: 'Your daily card is open',
+        closedHint: 'Tap once to reveal your focus for today.',
+        openHint: 'Your card is already revealed. Tap to open its interpretation.',
+        ctaClosed: 'Reveal card',
+        ctaOpen: 'Open card',
+        fallbackCardTitle: 'Daily card',
+      },
+      personalizedHint: 'Recommended from your selected interests',
       sections: {
+        personalized: 'For you',
         main: 'Explore',
         account: 'Account',
         support: 'Support',
+      },
+      personalizedHints: {
+        love: 'Tarot focused on relationships and emotional dynamics',
+        career: 'Career-focused horoscope theme and practical direction',
+        money: 'Tarot focus on finances, stability, and decisions',
+        self: 'Daily guidance for reflection and personal clarity',
+        energy: 'Energy-centered horoscope for your day rhythm',
+        future: 'Tarot focus on choices and next-step direction',
       },
     },
 
@@ -923,6 +1073,13 @@ export const messages = {
       subtitle: 'Same Premium features in every plan. Choose monthly or yearly billing.',
       header: {
         kicker: 'Unlock full access',
+      },
+      accessModel: {
+        title: 'Access model',
+        free: 'Free: daily card, energy horoscope, and one 1-card tarot reading per day.',
+        premium:
+          'Premium: unlimited tarot sessions, all horoscope themes, full history, and compatibility insights.',
+        purchasePrefix: 'Purchase:',
       },
       status: 'Current access model',
       heroBadge: 'Premium preview',
@@ -950,38 +1107,47 @@ export const messages = {
       },
       free: {
         dailyCard: 'Daily card',
-        horoscope: 'Daily horoscope: love, career, energy',
+        horoscope: 'Daily horoscope: energy theme',
         tarotOne: 'Tarot: 1 reading per day (1 card)',
         cardsLibrary: 'Card library',
         zodiacGuide: 'Zodiac signs guide',
       },
       premium: {
         unlimitedTarot: 'Unlimited tarot sessions',
+        horoscopeThemes: 'All horoscope themes every day',
         spreads: '3-card and 5-card spreads',
-        fullInterpretation: 'Full interpretation and deeper guidance',
-        compatibility: 'Compatibility section',
-        history: 'Saved reading history in account',
+        fullInterpretation: 'Deeper interpretation with action points',
+        compatibility: 'Premium compatibility insights',
+        history: 'Full saved reading history',
       },
       premiumDetails: {
         unlimitedTarot: {
           title: 'Unlimited tarot sessions',
-          text: 'Open a reading whenever you need clarity, not only once per day.',
+          text: 'No daily cap: run 1, 3, or 5-card readings whenever you need clarity.',
+        },
+        horoscopeThemes: {
+          title: 'All horoscope themes, daily',
+          text: 'Unlock love and career every day, not only the free energy theme.',
         },
         spreads: {
           title: '3-card and 5-card spreads',
-          text: 'See context, current influence, and next direction instead of a single card.',
+          text: 'Go beyond one card: see context, current influence, and next direction.',
         },
         fullInterpretation: {
-          title: 'Full interpretation',
-          text: 'Get a deeper explanation of your spread with practical focus points.',
+          title: 'Deeper AI interpretation',
+          text: 'Get a structured AI output with pattern, focus, practice, and journal prompt.',
+        },
+        structuredInterpretation: {
+          title: 'Deeper structured interpretation',
+          text: 'Get a longer structured reading with concrete focus points and next actions.',
         },
         compatibility: {
-          title: 'Compatibility',
-          text: 'Check relationship dynamics by signs with clear, structured insights.',
+          title: 'Premium compatibility insights',
+          text: 'See advanced pair insights with score breakdown by emotion, communication, and stability.',
         },
         history: {
-          title: 'Reading history',
-          text: 'Return to previous sessions and track repeating themes over time.',
+          title: 'Full reading history',
+          text: 'Keep all sessions in one timeline: question, spread, cards, and interpretation.',
         },
       },
       reasons: {
@@ -1004,7 +1170,7 @@ export const messages = {
           depth: {
             feature: 'Reading depth',
             free: '1 card',
-            premium: '3/5 cards',
+            premium: '3/5 cards + deep interpretation',
           },
           frequency: {
             feature: 'Sessions',
@@ -1014,7 +1180,7 @@ export const messages = {
           history: {
             feature: 'History',
             free: 'No',
-            premium: 'Saved',
+            premium: 'Full timeline',
           },
         },
       },
@@ -1071,8 +1237,8 @@ export const messages = {
         premium: 'Premium',
       },
       cta: {
-        button: 'Notify me when launched',
-        hint: 'Free sections stay available. Premium simply adds deeper tools when checkout is launched.',
+        button: 'Continue with Premium',
+        hint: 'Free sections stay available. Premium adds more depth and removes daily limits.',
       },
       legal: {
         privacy: 'Privacy',
@@ -1082,36 +1248,52 @@ export const messages = {
         button: 'Continue with Premium',
         selectedLabel: 'Selected plan',
         restore: 'Restore purchases',
+        restoring: 'Restoring...',
+        processing: 'Processing...',
+        pricePending: 'Price from App Store.',
+        unavailableHint: 'Purchases are unavailable on this device.',
         footnote:
           'Subscription renews automatically unless canceled at least 24 hours before renewal.',
         includesTitle: 'Every plan includes:',
         includes: {
-          unlimitedReadings: 'Unlimited tarot sessions',
-          deepInterpretation: 'Deep interpretations',
-          compatibility: 'Compatibility section',
-          history: 'Reading history',
+          unlimitedReadings: 'Unlimited tarot readings (1, 3, and 5 cards)',
+          horoscopeThemes: 'All daily horoscope themes: energy, love, and career',
+          deepInterpretation: 'Deeper AI interpretations with practical action points',
+          structuredInterpretation: 'Extended structured interpretations with clear next actions',
+          compatibility: 'Premium compatibility with full score breakdown',
+          history: 'Full reading history with saved questions and spreads',
+        },
+        errors: {
+          unavailable: 'Purchases are unavailable on this device.',
+          restoreUnavailable: 'Restore purchases is unavailable on this device.',
+          network: 'Network issue. Check your connection and try again.',
+          config: 'Store configuration is unavailable. Try again later.',
+          purchaseFailed: 'Unable to complete purchase. Please try again.',
+          restoreFailed: 'Unable to restore purchases. Please try again.',
+        },
+        results: {
+          activated: 'Premium unlocked.',
+          updated: 'Premium plan updated.',
+          cancelled: 'Purchase cancelled.',
+          restored: 'Purchase restored.',
+          noActive: 'No active purchases found.',
         },
         monthly: {
           title: 'Monthly plan',
           buttonLabel: 'Monthly',
-          price: '$4.99 / month',
+          price: 'Price from App Store',
           note: 'Full Premium access with monthly billing.',
         },
         yearly: {
           title: 'Yearly plan',
           buttonLabel: 'Yearly',
-          price: '$29.99 / year',
-          savings: 'Save 50% vs monthly',
+          price: 'Price from App Store',
+          savings: 'Offer is shown at checkout if available.',
           note: 'Full Premium access with the best yearly value.',
           badge: 'Best value',
         },
       },
-      notifications: {
-        comingSoon: 'Premium checkout is coming soon.',
-        billingPlaceholder: 'Checkout button is ready. StoreKit will be connected next.',
-        restorePlaceholder: 'Restore flow UI is ready. StoreKit restore will be connected next.',
-      },
-      note: 'This is an informational page. Payment flow will be added separately.',
+      note: 'Billing is managed by App Store. You can cancel anytime in Apple ID subscriptions.',
     },
 
     zodiacGuidePage: {
@@ -1237,11 +1419,18 @@ export const messages = {
     },
 
     onboardingPage: {
-      title: 'Welcome',
-      subtitle: 'Choose your focus',
+      title: 'Welcome to Arcana Insight',
+      subtitle: 'Tarot and horoscope, personalized for your day',
+      nextTitle: 'Next',
+      nextText: 'Open Home. Start today’s ritual in one tap.',
       sectionInterests: 'Interests',
       sectionHint: 'Tip',
-      hintText: 'You can change your focus later in Settings.',
+      hintText: 'Choose 1-3. You can update this later.',
+      selectedLabel: 'Selected',
+      selectionHint: 'Optional, but 1-3 helps personalize your start.',
+      selectionHintEmpty: 'Pick 1-3 for a better personalized start.',
+      selectionHintActive: 'Great. Home will start with your selected focus.',
+      actionHint: 'Continue to Home and launch your ritual',
       skip: 'Skip',
       continue: 'Continue',
       interests: {
@@ -1772,7 +1961,6 @@ export const messages = {
     startReading: 'Почати читання',
     login: 'Увійти',
     signUp: 'Реєстрація',
-
     astro: {
       moonIn: 'Місяць у',
       mercuryRetrograde: 'Ретроградний Меркурій',
@@ -1785,6 +1973,20 @@ export const messages = {
         waningGibbous: 'Спадаючий місяць',
         lastQuarter: 'Остання чверть',
         waningCrescent: 'Спадний серп',
+      },
+      planets: {
+        sun: 'Сонце', moon: 'Місяць', mars: 'Марс',
+        mercury: 'Меркурій', jupiter: 'Юпітер', venus: 'Венера', saturn: 'Сатурн',
+      },
+      days: 'днів',
+      tomorrow: 'завтра',
+      tonight: 'сьогодні',
+      sunIn: 'Сонце у',
+      streak: 'День',
+      elements: { fire: 'Вогонь', water: 'Вода', air: 'Повітря', earth: 'Земля' },
+      numerology: {
+        '1': 'Дія', '2': 'Баланс', '3': 'Вираження', '4': 'Структура',
+        '5': 'Свобода', '6': 'Гармонія', '7': 'Рефлексія', '8': 'Сила', '9': 'Завершення',
       },
     },
 
@@ -1806,8 +2008,13 @@ export const messages = {
       subtitle: 'Налаштуй свій потік аркани',
       sections: {
         general: 'Загальні',
+        personalization: 'Персоналізація',
         notifications: 'Сповіщення',
         account: 'Акаунт',
+      },
+      personalization: {
+        interestsHint: 'Онови фокус, який використовується для персональних шорткатів на Home.',
+        selectedLabel: 'Обрано',
       },
     },
 
@@ -1815,6 +2022,9 @@ export const messages = {
       defaultTime: 'За замовчуванням (08:00 UTC)',
       noPermission: 'Немає дозволу / немає токена',
       syncFailed: 'Синхронізація push не вдалася',
+      syncing: 'Синхронізуємо сповіщення…',
+      off: 'Щоденні нагадування вимкнені',
+      onAt: 'Щоденне нагадування о',
     },
 
     languages: {
@@ -1984,6 +2194,7 @@ export const messages = {
       cards: 'Бібліотека карт',
       zodiacGuide: 'Знаки зодіаку',
       readings: 'Мої розклади',
+      rewards: 'Нагороди',
       premium: 'Преміум',
       soon: 'Скоро',
     },
@@ -1994,6 +2205,49 @@ export const messages = {
       cardLabel: 'Твоя карта',
       meaningLabel: 'Значення',
       guidanceLabel: 'Пояснення',
+      loopLabel: 'Щоденний ритуал',
+      loopText: 'Пройди цей короткий цикл, щоб отримати більше користі сьогодні.',
+      streakCurrent: 'Поточна серія',
+      streakBest: 'Найкраща серія',
+      progressLabel: 'Прогрес',
+      progressText: 'Твоя активність у ритуалі за останні 7 днів.',
+      activeDaysLabel: 'Активні дні',
+      fullDaysLabel: 'Повний ритуал',
+      nextCardIn: 'Наступна карта через',
+      statusDone: 'Готово',
+      statusNext: 'Далі',
+      actionGoHoroscope: 'Відкрити гороскоп',
+      actionGoTarot: 'Відкрити таро',
+      reminderCta: 'Нагадування',
+      reminderOn: 'Щоденні нагадування увімкнені.',
+      reminderOnAt: 'Щоденне нагадування о',
+      reminderOff: 'Нагадування вимкнені. Увімкни їх для щоденного ритуалу.',
+      ritualItems: {
+        dailyCard: 'Карта дня',
+        horoscope: 'Гороскоп',
+        tarot: 'Сесія таро',
+      },
+      energySheet: {
+        eyebrow: 'Енергія ритуалу',
+        heroInProgressTitle: 'Нарощуй щоденний ритм',
+        heroInProgressSubtitle:
+          'Заверши наступний крок ритуалу, щоб відкрити сьогоднішню нагороду.',
+        heroReadyTitle: 'Нагорода на сьогодні відкрита',
+        heroReadySubtitle:
+          'Класний темп. Забери нагороду зараз і тримай ритм завтра.',
+        heroClaimedTitle: 'Нагорода отримана. Потік активний',
+        heroClaimedSubtitle:
+          'Сильна стабільність. Продовж ланцюжок і відкривай кращі нагороди.',
+        pointsLabel: 'бал',
+        rewardProgressLabel: 'Прогрес до нагороди',
+        ctaContinueRitual: 'Продовжити ритуал',
+        ctaClaimReward: 'Забрати нагороду',
+        ctaKeepFlow: 'Підтримати ритм',
+        nextStepHint: 'Натисни підсвічений крок, щоб продовжити ритуал.',
+        claimNoReward: 'Нагорода ще недоступна.',
+        claimSuccess: 'Нагороду успішно отримано.',
+        claimFailed: 'Не вдалося отримати нагороду. Спробуй ще раз.',
+      },
     },
 
     cardsPage: {
@@ -2137,25 +2391,109 @@ export const messages = {
     premiumAccess: {
       badge: 'Premium',
       cta: 'Відкрити Premium',
+      model: {
+        labels: {
+          free: 'Free',
+          premium: 'Premium',
+          purchase: 'Покупка',
+        },
+        readings: {
+          free: 'Історія розкладів не зберігається.',
+          premium: 'Повна стрічка всіх розкладів: сесії, формати і карти.',
+          purchase: 'Підписка Premium з історією розкладів і розширеним доступом.',
+        },
+        compatibility: {
+          free: 'Повний звіт сумісності недоступний.',
+          premium: 'Повний аналіз пари з розбивкою балів і практичними підказками.',
+          purchase: 'Підписка Premium з інсайтами сумісності і розширеним розбором.',
+        },
+        horoscopeLove: {
+          free: 'Доступна лише щоденна тема енергії.',
+          premium: 'Щоденні інсайти про стосунки і глибша емоційна динаміка.',
+          purchase: 'Підписка Premium з усіма щоденними темами гороскопу.',
+        },
+        horoscopeCareer: {
+          free: 'Доступна лише щоденна тема енергії.',
+          premium: 'Щоденний карʼєрний фокус і чіткі наступні кроки.',
+          purchase: 'Підписка Premium з усіма щоденними темами гороскопу.',
+        },
+      },
+      horoscope: {
+        love: {
+          title: 'Тема кохання доступна в Premium',
+          text: 'Відкрий Premium, щоб щодня отримувати тему Кохання і нові інсайти про стосунки.',
+        },
+        career: {
+          title: 'Тема карʼєри доступна в Premium',
+          text: 'Відкрий Premium, щоб щодня бачити тему Карʼєри і практичні наступні кроки.',
+        },
+      },
       compatibility: {
-        title: 'Сумісність доступна в Premium',
-        text: 'Відкрий повні звіти сумісності для будь-якої пари знаків у Premium.',
+        title: 'Повний звіт сумісності доступний у Premium',
+        text: 'У free немає повного звіту сумісності. Premium відкриває повний аналіз пари з розбивкою балів і практичним напрямом.',
+        bullets: {
+          report: 'Детальний звіт для будь-якої пари знаків з сильними і слабкими зонами.',
+          scores: 'Повний розклад по сферах: емоції, комунікація та стабільність.',
+          insight: 'Практичний інсайт для вибраної пари.',
+        },
       },
       readings: {
-        title: 'Історія розкладів доступна в Premium',
-        text: 'Зберігай і переглядай свої розклади таро в одному місці з Premium.',
+        title: 'Повна історія розкладів доступна в Premium',
+        text: 'У free історія розкладів не зберігається. Premium зберігає всі сесії таро в єдину стрічку.',
+        bullets: {
+          timeline: 'Усі минулі розклади в одному місці: дата, формат і карти.',
+          search: 'Швидко повертайся до важливих сесій і запитів.',
+          patterns: 'Відстежуй повторювані теми, а не окремі випадкові читання.',
+        },
       },
       spreads: {
-        notify: 'Розклади на 3 і 5 карт доступні в Premium.',
+        notify: 'У free доступний розклад на 1 карту. Premium відкриває розклади на 3 і 5 карт із глибшою інтерпретацією.',
+      },
+      tarot: {
+        dailyLimit:
+          'Безкоштовний розклад на 1 карту вже використано сьогодні. Premium знімає денний ліміт і відкриває необмежені сесії.',
+        aha: {
+          title: 'Відкрий глибшу цінність у наступному розкладі',
+          lead: 'Ти вже отримав базовий free-інсайт. Premium додає глибину, більше контексту і чіткі наступні кроки.',
+          previewLabel: 'PREMIUM PREVIEW',
+          previewFallback:
+            'У Premium ти отримуєш ширший контекст, глибшу інтерпретацію та конкретні рекомендації наступного кроку.',
+          previewNowPrefix: 'Зараз',
+          points: {
+            unlimited: 'Необмежені таро-сесії без денного ліміту.',
+            spreads: 'Розклади на 3 і 5 карт для ширшої картини.',
+            history: 'Повна історія розкладів, щоб бачити патерни, а не окремі сесії.',
+          },
+        },
       },
     },
 
     menuPage: {
       subtitle: 'Усі розділи в одному місці',
+      dailyLauncher: {
+        eyebrow: 'Ритуал дня',
+        closedTitle: 'Твоя карта дня чекає',
+        openTitle: 'Твоя карта дня вже відкрита',
+        closedHint: 'Один тап, щоб відкрити фокус на сьогодні.',
+        openHint: 'Карта вже відкрита. Натисни, щоб відкрити її тлумачення.',
+        ctaClosed: 'Відкрити карту',
+        ctaOpen: 'Переглянути карту',
+        fallbackCardTitle: 'Карта дня',
+      },
+      personalizedHint: 'Рекомендовано за твоїми інтересами',
       sections: {
+        personalized: 'Для тебе',
         main: 'Досліджувати',
         account: 'Акаунт',
         support: 'Підтримка',
+      },
+      personalizedHints: {
+        love: 'Таро з фокусом на стосунки та емоційну динаміку',
+        career: 'Тема гороскопу про карʼєру з практичним напрямом',
+        money: 'Таро-фокус на фінансах, стабільності та рішеннях',
+        self: 'Щоденний напрям для рефлексії та особистої ясності',
+        energy: 'Гороскоп про енергію та ритм твого дня',
+        future: 'Таро-фокус на виборі та напрямі наступного кроку',
       },
     },
 
@@ -2164,6 +2502,13 @@ export const messages = {
       subtitle: 'Усі Premium-можливості входять у кожен план. Обери щомісячну або річну оплату.',
       header: {
         kicker: 'Відкрий повний доступ',
+      },
+      accessModel: {
+        title: 'Модель доступу',
+        free: 'Free: карта дня, гороскоп енергії та один розклад таро на 1 карту щодня.',
+        premium:
+          'Premium: необмежені сесії таро, усі теми гороскопу, повна історія та інсайти сумісності.',
+        purchasePrefix: 'Покупка:',
       },
       status: 'Поточна модель доступу',
       heroBadge: 'Попередній перегляд Premium',
@@ -2191,38 +2536,47 @@ export const messages = {
       },
       free: {
         dailyCard: 'Карта дня',
-        horoscope: 'Щоденний гороскоп: кохання, карʼєра, енергія',
+        horoscope: 'Щоденний гороскоп: тема енергії',
         tarotOne: 'Таро: 1 розклад на день (1 карта)',
         cardsLibrary: 'Бібліотека карт',
         zodiacGuide: 'Гід по знаках зодіаку',
       },
       premium: {
         unlimitedTarot: 'Необмежені сесії таро',
+        horoscopeThemes: 'Усі теми гороскопу щодня',
         spreads: 'Розклади на 3 і 5 карт',
-        fullInterpretation: 'Повна інтерпретація та глибші пояснення',
-        compatibility: 'Розділ «Сумісність»',
-        history: 'Історія розкладів в акаунті',
+        fullInterpretation: 'Глибша інтерпретація з практичними кроками',
+        compatibility: 'Преміум-інсайти сумісності',
+        history: 'Повна збережена історія розкладів',
       },
       premiumDetails: {
         unlimitedTarot: {
           title: 'Необмежені сесії таро',
-          text: 'Роби розклад тоді, коли справді потрібна ясність, а не лише раз на день.',
+          text: 'Без денного ліміту: запускай розклади на 1, 3 або 5 карт у будь-який момент.',
+        },
+        horoscopeThemes: {
+          title: 'Усі теми гороскопу щодня',
+          text: 'Відкрий кохання і карʼєру щодня, а не лише безкоштовну тему енергії.',
         },
         spreads: {
           title: 'Розклади на 3 і 5 карт',
-          text: 'Бачиш контекст, поточний вплив і напрям далі, а не тільки одну карту.',
+          text: 'Більше, ніж одна карта: бачиш контекст, поточний вплив і напрям далі.',
         },
         fullInterpretation: {
-          title: 'Повна інтерпретація',
-          text: 'Отримуєш глибше пояснення розкладу з практичними акцентами на дії.',
+          title: 'Глибша AI-інтерпретація',
+          text: 'Отримуєш структурований AI-вивід: патерн, фокус, практика і journal prompt.',
+        },
+        structuredInterpretation: {
+          title: 'Глибша структурована інтерпретація',
+          text: 'Отримуєш довший структурований розбір із конкретними фокусами та діями.',
         },
         compatibility: {
-          title: 'Сумісність',
-          text: 'Можеш перевірити динаміку пари за знаками у структурованому форматі.',
+          title: 'Преміум-інсайти сумісності',
+          text: 'Бачиш розширений аналіз пари з розбивкою балів по сферах: емоції, комунікація, стабільність.',
         },
         history: {
-          title: 'Історія розкладів',
-          text: 'Повертаєшся до попередніх читань і бачиш повторювані теми в часі.',
+          title: 'Повна історія розкладів',
+          text: 'Зберігай усі сесії в одній стрічці: питання, формат, карти та інтерпретація.',
         },
       },
       reasons: {
@@ -2246,7 +2600,7 @@ export const messages = {
           depth: {
             feature: 'Глибина розкладу',
             free: '1 карта',
-            premium: '3/5 карт',
+            premium: '3/5 карт + глибша інтерпретація',
           },
           frequency: {
             feature: 'Кількість сесій',
@@ -2256,7 +2610,7 @@ export const messages = {
           history: {
             feature: 'Історія',
             free: 'Немає',
-            premium: 'Збережається',
+            premium: 'Повна стрічка',
           },
         },
       },
@@ -2312,8 +2666,8 @@ export const messages = {
         premium: 'Premium',
       },
       cta: {
-        button: 'Повідомити про запуск',
-        hint: 'Безкоштовні розділи залишаються. Premium просто додає глибші інструменти після запуску оплати.',
+        button: 'Продовжити з Premium',
+        hint: 'Безкоштовні розділи залишаються. Premium додає глибину і знімає денні ліміти.',
       },
       legal: {
         privacy: 'Конфіденційність',
@@ -2323,37 +2677,52 @@ export const messages = {
         button: 'Продовжити з Premium',
         selectedLabel: 'Обраний план',
         restore: 'Відновити покупки',
+        restoring: 'Відновлення...',
+        processing: 'Обробка...',
+        pricePending: 'Ціна з App Store.',
+        unavailableHint: 'Покупки недоступні на цьому пристрої.',
         footnote:
           'Підписка продовжується автоматично, якщо не скасувати щонайменше за 24 години до продовження.',
         includesTitle: 'У кожному плані ти отримуєш:',
         includes: {
-          unlimitedReadings: 'Необмежені розклади таро',
-          deepInterpretation: 'Глибшу інтерпретацію',
-          compatibility: 'Розділ «Сумісність»',
-          history: 'Історію розкладів',
+          unlimitedReadings: 'Необмежені розклади таро (1, 3 і 5 карт)',
+          horoscopeThemes: 'Усі щоденні теми гороскопу: енергія, кохання і карʼєра',
+          deepInterpretation: 'Глибші AI-інтерпретації з практичними акцентами',
+          structuredInterpretation: 'Розширені структуровані інтерпретації з чіткими діями',
+          compatibility: 'Преміум-сумісність із повною розбивкою балів',
+          history: 'Повну історію розкладів зі збереженими питаннями і форматами',
+        },
+        errors: {
+          unavailable: 'Покупки недоступні на цьому пристрої.',
+          restoreUnavailable: 'Відновлення покупок недоступне на цьому пристрої.',
+          network: 'Проблема з мережею. Перевір підключення і спробуй ще раз.',
+          config: 'Конфігурація Store недоступна. Спробуй пізніше.',
+          purchaseFailed: 'Не вдалося завершити покупку. Спробуй ще раз.',
+          restoreFailed: 'Не вдалося відновити покупки. Спробуй ще раз.',
+        },
+        results: {
+          activated: 'Premium активовано.',
+          updated: 'План Premium оновлено.',
+          cancelled: 'Покупку скасовано.',
+          restored: 'Покупку відновлено.',
+          noActive: 'Активних покупок не знайдено.',
         },
         monthly: {
           title: 'Місячний план',
           buttonLabel: 'Щомісяця',
-          price: '$4.99 / місяць',
+          price: 'Ціна з App Store',
           note: 'Повний Premium-доступ з оплатою щомісяця.',
         },
         yearly: {
           title: 'Річний план',
           buttonLabel: 'Щороку',
-          price: '$29.99 / рік',
-          savings: 'Економія 50% проти місячного',
+          price: 'Ціна з App Store',
+          savings: 'Офер показується в оплаті, якщо доступний.',
           note: 'Той самий повний Premium-доступ за вигіднішою ціною на рік.',
           badge: 'Найкраща ціна',
         },
       },
-      notifications: {
-        comingSoon: 'Екран оплати Premium скоро буде доступний.',
-        billingPlaceholder: 'Кнопка оплати вже готова. Наступний крок — підключення StoreKit.',
-        restorePlaceholder:
-          'Кнопка відновлення вже готова. Наступний крок — підключення StoreKit restore.',
-      },
-      note: 'Це інформаційна сторінка. Екран оплати буде додано окремо.',
+      note: 'Оплата керується через App Store. Скасування доступне в підписках Apple ID у будь-який час.',
     },
 
     zodiacGuidePage: {
@@ -2476,11 +2845,18 @@ export const messages = {
     },
 
     onboardingPage: {
-      title: 'Вітаємо',
-      subtitle: 'Обери фокус',
+      title: 'Ласкаво просимо в Arcana Insight',
+      subtitle: 'Таро й гороскоп, персоналізовані під твій день',
+      nextTitle: 'Далі',
+      nextText: 'Відкрий Home. Запусти сьогоднішній ритуал в один дотик.',
       sectionInterests: 'Інтереси',
       sectionHint: 'Порада',
-      hintText: 'Фокус можна змінити пізніше в Налаштуваннях.',
+      hintText: 'Обери 1-3 теми. Змінити можна пізніше.',
+      selectedLabel: 'Обрано',
+      selectionHint: 'Необовʼязково, але 1-3 теми дадуть кращий старт.',
+      selectionHintEmpty: 'Обери 1-3 теми для кращого персонального старту.',
+      selectionHintActive: 'Чудово. Home стартуватиме з твоїм фокусом.',
+      actionHint: 'Продовжити на Home і запустити ритуал',
       skip: 'Пропустити',
       continue: 'Далі',
       interests: {

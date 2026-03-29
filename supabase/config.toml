@@ -53,3 +53,33 @@ entrypoint = "./functions/push-worker/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/send-broadcast/index.ts"
+
+[functions.ritual-track]
+enabled = true
+verify_jwt = false
+import_map = "./functions/ritual-track/deno.json"
+entrypoint = "./functions/ritual-track/index.ts"
+
+[functions.ritual-dashboard]
+enabled = true
+verify_jwt = false
+import_map = "./functions/ritual-dashboard/deno.json"
+entrypoint = "./functions/ritual-dashboard/index.ts"
+
+[functions.ritual-claim]
+enabled = true
+verify_jwt = false
+import_map = "./functions/ritual-claim/deno.json"
+entrypoint = "./functions/ritual-claim/index.ts"
+
+[functions.ritual-inventory-sync]
+enabled = true
+verify_jwt = false
+import_map = "./functions/ritual-inventory-sync/deno.json"
+entrypoint = "./functions/ritual-inventory-sync/index.ts"
+
+[functions.ritual-consume]
+enabled = true
+verify_jwt = false
+import_map = "./functions/ritual-consume/deno.json"
+entrypoint = "./functions/ritual-consume/index.ts"

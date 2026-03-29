@@ -21,18 +21,18 @@
 
           <div class="compat-pick-group">
             <button type="button" class="compat-pick" @click="openPicker('a')">
-              <div class="compat-pick__content">
+              <span class="compat-pick__content">
                 <span class="compat-pick__label">{{ tt('compatibilityPage.you') }}</span>
                 <span class="compat-pick__value">{{ selectedLabelA }}</span>
-              </div>
+              </span>
               <q-icon name="chevron_right" size="18px" class="compat-chevron" />
             </button>
 
             <button type="button" class="compat-pick" @click="openPicker('b')">
-              <div class="compat-pick__content">
+              <span class="compat-pick__content">
                 <span class="compat-pick__label">{{ tt('compatibilityPage.partner') }}</span>
                 <span class="compat-pick__value">{{ selectedLabelB }}</span>
-              </div>
+              </span>
               <q-icon name="chevron_right" size="18px" class="compat-chevron" />
             </button>
           </div>
@@ -148,6 +148,17 @@
         <div class="compat-lock__badge">{{ tt('premiumAccess.badge') }}</div>
         <div class="compat-lock__title">{{ tt('premiumAccess.compatibility.title') }}</div>
         <p class="compat-lock__text">{{ tt('premiumAccess.compatibility.text') }}</p>
+        <div class="compat-lock__model">
+          <div v-for="row in compatibilityAccessModelRows" :key="row.key" class="compat-lock__model-row">
+            <span class="compat-lock__model-label">{{ row.label }}</span>
+            <span class="compat-lock__model-text">{{ row.text }}</span>
+          </div>
+        </div>
+        <ul class="compat-lock__bullets">
+          <li v-for="item in compatibilityLockBullets" :key="item" class="compat-lock__bullet">
+            {{ item }}
+          </li>
+        </ul>
         <div class="compat-lock__preview">
           <div class="compat-lock__preview-line">{{ tt('compatibilityPage.spheres.emotion') }} · 82%</div>
           <div class="compat-lock__preview-line">{{ tt('compatibilityPage.spheres.communication') }} · 76%</div>
@@ -319,6 +330,28 @@ const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
 const router = useRouter()
 const { hasPremiumAccess } = usePremiumAccess()
+const compatibilityLockBullets = computed(() => [
+  tt('premiumAccess.compatibility.bullets.report'),
+  tt('premiumAccess.compatibility.bullets.scores'),
+  tt('premiumAccess.compatibility.bullets.insight'),
+])
+const compatibilityAccessModelRows = computed(() => [
+  {
+    key: 'free',
+    label: tt('premiumAccess.model.labels.free'),
+    text: tt('premiumAccess.model.compatibility.free'),
+  },
+  {
+    key: 'premium',
+    label: tt('premiumAccess.model.labels.premium'),
+    text: tt('premiumAccess.model.compatibility.premium'),
+  },
+  {
+    key: 'purchase',
+    label: tt('premiumAccess.model.labels.purchase'),
+    text: tt('premiumAccess.model.compatibility.purchase'),
+  },
+])
 
 const signs = [
   { key: 'aries', element: 'fire', modality: 'cardinal' },
@@ -508,7 +541,7 @@ async function onBack() {
 
 async function goPremium() {
   await hapticSelect()
-  await router.push({ name: 'premium' })
+  await router.push({ name: 'premium', query: { source: 'compatibility_lock', entry: 'secondary' } })
 }
 
 function openPicker(which) {
@@ -598,6 +631,17 @@ watch(
   () => detailsOpen.value,
   (val) => {
     document.body.classList.toggle('hide-bottom-nav', val)
+  }
+)
+
+watch(
+  () => hasPremiumAccess.value,
+  (next) => {
+    if (next) return
+    sheetOpen.value = false
+    detailsOpen.value = false
+    showResult.value = false
+    detailsTab.value = 'basic'
   }
 )
 
@@ -767,6 +811,57 @@ onBeforeUnmount(() => {
   font-size: 14px;
   line-height: 1.6;
   color: rgba(216, 228, 247, 0.78);
+}
+
+.compat-lock__model {
+  border-radius: 12px;
+  border: 1px solid rgba(165, 196, 245, 0.2);
+  background: rgba(7, 12, 20, 0.56);
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.compat-lock__model-row {
+  display: grid;
+  gap: 3px;
+}
+
+.compat-lock__model-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(173, 210, 255, 0.86);
+  font-weight: 600;
+}
+
+.compat-lock__model-text {
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(224, 234, 251, 0.82);
+}
+
+.compat-lock__bullets {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.compat-lock__bullet {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(224, 234, 251, 0.86);
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.compat-lock__bullet::before {
+  content: '✦';
+  color: rgba(173, 210, 255, 0.88);
+  line-height: 1.2;
 }
 
 .compat-lock__preview {
@@ -1429,7 +1524,6 @@ onBeforeUnmount(() => {
   width: 100vw;
   max-width: 100vw;
   margin: 0 auto;
-  margin-bottom: 0;
   border-radius: 22px 22px 0 0;
   padding: 8px 12px calc(env(safe-area-inset-bottom, 0px) + 24px);
   box-shadow: 0 -16px 46px rgba(0, 0, 0, 0.42);
@@ -1470,7 +1564,6 @@ onBeforeUnmount(() => {
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  overflow-x: hidden;
   touch-action: pan-y;
 }
 

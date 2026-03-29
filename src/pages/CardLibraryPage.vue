@@ -128,6 +128,7 @@ import { computed, ref, watch, onBeforeUnmount, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import { loadTarotData } from 'src/helpers/tarotData'
+import { loadTarotCardsSnapshot } from 'src/helpers/tarotDataSnapshotCore.js'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
 
@@ -264,9 +265,25 @@ onBeforeUnmount(() => {
   setBottomNavDark(false)
 })
 
-onMounted(async () => {
-  const data = await loadTarotData()
-  cards.value = data?.cards || []
+const initializeCardLibrary = async () => {
+  const { cards: nextCards, error } = await loadTarotCardsSnapshot({ loadTarotData })
+  cards.value = nextCards
+  if (error) {
+    console.warn('[CardLibrary] loadTarotData failed', error)
+  }
+}
+
+const initializeCardLibrarySafe = async () => {
+  try {
+    await initializeCardLibrary()
+  } catch (error) {
+    cards.value = []
+    console.warn('[CardLibrary] init failed', error)
+  }
+}
+
+onMounted(() => {
+  void initializeCardLibrarySafe()
   setBottomNavDark(true)
 })
 </script>

@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onBeforeUnmount, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { initPushListeners } from 'boot/push'
 import { getBillingPremiumStatus } from 'src/services/premiumBilling'
@@ -15,6 +15,7 @@ import { usePremiumAccess } from 'src/stores/premiumAccess'
 
 const { applyPremiumAccessStatus } = usePremiumAccess()
 const router = useRouter()
+let delayedInitTimer = null
 
 const syncPremiumStatus = async () => {
   const status = await getBillingPremiumStatus()
@@ -26,13 +27,39 @@ const syncPremiumStatus = async () => {
   })
 }
 
+const syncPremiumStatusSafe = async () => {
+  try {
+    await syncPremiumStatus()
+  } catch (error) {
+    console.warn('[premium] sync status failed', error)
+  }
+}
+
 const navigateFromPush = async (target) => {
   await router.push(target)
 }
 
+const initPushListenersSafe = async () => {
+  try {
+    await initPushListeners({ navigate: navigateFromPush })
+  } catch (error) {
+    console.warn('[push] init listeners failed', error)
+  }
+}
+
 onMounted(() => {
-  void initPushListeners({ navigate: navigateFromPush })
-  void syncPremiumStatus()
+  // Keep first paint light: postpone non-critical startup tasks.
+  delayedInitTimer = setTimeout(() => {
+    void initPushListenersSafe()
+    void syncPremiumStatusSafe()
+  }, 700)
+})
+
+onBeforeUnmount(() => {
+  if (delayedInitTimer) {
+    clearTimeout(delayedInitTimer)
+  }
+  delayedInitTimer = null
 })
 </script>
 

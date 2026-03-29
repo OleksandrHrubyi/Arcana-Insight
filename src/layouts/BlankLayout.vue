@@ -1,20 +1,9 @@
 <script>
 import BottomNavigation from 'components/ui/BottomNavigation.vue'
-import { useAuthStore } from 'stores/authStore.js'
 
 export default {
   name: 'BlankLayout',
   components: { BottomNavigation },
-
-  data() {
-    return {
-      authStore: useAuthStore(),
-    }
-  },
-
-  created() {
-    this.authStore.initAuth()
-  },
 
   computed: {
     showNavigation() {

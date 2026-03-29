@@ -4,54 +4,59 @@ import { useAuthStore } from 'stores/authStore'
 import { isAuthInFlight } from 'src/services/supabaseClient'
 import { useAppEpoch } from 'stores/appEpoch'
 
-export default boot(async () => {
+export default boot(() => {
   const authStore = useAuthStore()
   const { markBackground, clearAuthTimeout } = useAppEpoch()
-  console.log('[AuthBoot] initAuth')
-  void authStore.initAuth()
+  const runAuthTask = (label: string, task: () => Promise<unknown>) => {
+    void task().catch((error) => {
+      console.warn(`[AuthBoot] ${label} failed`, error)
+    })
+  }
+  runAuthTask('initAuth', () => authStore.initAuth())
 
   if (!Capacitor.isNativePlatform()) return
 
-  try {
-    const { App } = await import('@capacitor/app')
-    let flushTimer = null
+  // Do not block first render on native plugin import/setup.
+  void (async () => {
+    try {
+      const { App } = await import('@capacitor/app')
+      let flushTimer = null
 
-    const startFlushTimer = () => {
-      if (flushTimer) return
-      flushTimer = setInterval(() => {
-        void authStore.flushProfileQueue()
-      }, 15000)
-    }
-
-    const stopFlushTimer = () => {
-      if (!flushTimer) return
-      clearInterval(flushTimer)
-      flushTimer = null
-    }
-
-
-    App.addListener('appStateChange', async ({ isActive }) => {
-      console.log('[AuthBoot] appStateChange', { isActive })
-      if (!isActive) {
-        markBackground()
-        stopFlushTimer()
-        return
+      const startFlushTimer = () => {
+        if (flushTimer) return
+        flushTimer = setInterval(() => {
+          runAuthTask('flushProfileQueue(interval)', () => authStore.flushProfileQueue())
+        }, 15000)
       }
 
-      if (!isAuthInFlight()) {
-        void authStore.refreshSessionNative()
-        void authStore.syncSession({ refresh: false })
-        void authStore.flushProfileQueue()
-        startFlushTimer()
-        clearAuthTimeout()
-      } else {
-        console.log('[AuthBoot] auth in flight, skip reset/sync')
+      const stopFlushTimer = () => {
+        if (!flushTimer) return
+        clearInterval(flushTimer)
+        flushTimer = null
       }
-    })
 
-    // start timer for active session
-    startFlushTimer()
-  } catch (err) {
-    console.warn('[AuthBoot] @capacitor/app not available:', err)
-  }
+      App.addListener('appStateChange', async ({ isActive }) => {
+        if (!isActive) {
+          markBackground()
+          stopFlushTimer()
+          return
+        }
+
+        if (!isAuthInFlight()) {
+          runAuthTask('refreshSessionNative(appState)', () => authStore.refreshSessionNative())
+          runAuthTask('syncSession(appState)', () => authStore.syncSession({ refresh: false }))
+          runAuthTask('flushProfileQueue(appState)', () => authStore.flushProfileQueue())
+          startFlushTimer()
+          clearAuthTimeout()
+        }
+      }).catch((error) => {
+        console.warn('[AuthBoot] appStateChange listener failed:', error)
+      })
+
+      // start timer for active session
+      startFlushTimer()
+    } catch (err) {
+      console.warn('[AuthBoot] @capacitor/app not available:', err)
+    }
+  })()
 })

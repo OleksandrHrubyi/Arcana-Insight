@@ -17,6 +17,17 @@
         <div class="readings-lock__badge">{{ tt('premiumAccess.badge') }}</div>
         <div class="readings-lock__title">{{ tt('premiumAccess.readings.title') }}</div>
         <p class="readings-lock__text">{{ tt('premiumAccess.readings.text') }}</p>
+        <div class="readings-lock__model">
+          <div v-for="row in readingsAccessModelRows" :key="row.key" class="readings-lock__model-row">
+            <span class="readings-lock__model-label">{{ row.label }}</span>
+            <span class="readings-lock__model-text">{{ row.text }}</span>
+          </div>
+        </div>
+        <ul class="readings-lock__bullets">
+          <li v-for="item in readingsLockBullets" :key="item" class="readings-lock__bullet">
+            {{ item }}
+          </li>
+        </ul>
         <div class="readings-lock__preview">
           <div class="readings-lock__stack" aria-hidden="true">
             <span class="readings-lock__thumb"></span>
@@ -195,6 +206,7 @@ import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import { getUserNative, selectTarotReadingsByUser, deleteTarotReading } from 'src/services/supabaseNative'
 import { loadTarotData } from 'src/helpers/tarotData'
+import { loadSavedReadingsSnapshot, EMPTY_SAVED_READINGS_STATE } from 'src/helpers/savedReadingsCore.js'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
@@ -203,6 +215,28 @@ const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
 const router = useRouter()
 const { hasPremiumAccess } = usePremiumAccess()
+const readingsLockBullets = computed(() => [
+  tt('premiumAccess.readings.bullets.timeline'),
+  tt('premiumAccess.readings.bullets.search'),
+  tt('premiumAccess.readings.bullets.patterns'),
+])
+const readingsAccessModelRows = computed(() => [
+  {
+    key: 'free',
+    label: tt('premiumAccess.model.labels.free'),
+    text: tt('premiumAccess.model.readings.free'),
+  },
+  {
+    key: 'premium',
+    label: tt('premiumAccess.model.labels.premium'),
+    text: tt('premiumAccess.model.readings.premium'),
+  },
+  {
+    key: 'purchase',
+    label: tt('premiumAccess.model.labels.purchase'),
+    text: tt('premiumAccess.model.readings.purchase'),
+  },
+])
 
 const readings = ref([])
 const tarotData = ref(null)
@@ -331,7 +365,7 @@ const goToLogin = async () => {
 
 const goPremium = async () => {
   await hapticTap()
-  router.push({ name: 'premium' })
+  router.push({ name: 'premium', query: { source: 'readings_lock', entry: 'secondary' } })
 }
 
 const onBack = async () => {
@@ -349,37 +383,58 @@ const setBottomNavDark = (enabled) => {
   document.body.classList.toggle('cards-nav-dark', enabled)
 }
 
+const ensureTarotDataLoaded = async () => {
+  if (tarotData.value) return
+  tarotData.value = await loadTarotData()
+}
+
+const applyEmptySavedReadingsState = () => {
+  readings.value = EMPTY_SAVED_READINGS_STATE.readings
+  isLoggedIn.value = EMPTY_SAVED_READINGS_STATE.isLoggedIn
+  userId.value = EMPTY_SAVED_READINGS_STATE.userId
+  selectedReading.value = null
+  detailOpen.value = false
+  deleteDialog.value = false
+}
+
 const loadReadings = async () => {
-  if (!hasPremiumAccess.value) {
+  loading.value = true
+  const snapshot = await loadSavedReadingsSnapshot({
+    hasPremiumAccess: hasPremiumAccess.value,
+    ensureTarotDataLoaded,
+    getUserNative,
+    selectTarotReadingsByUser,
+  })
+
+  if (snapshot.status === 'locked') {
+    applyEmptySavedReadingsState()
     loading.value = false
-    readings.value = []
     return
   }
 
-  loading.value = true
+  readings.value = snapshot.readings
+  isLoggedIn.value = snapshot.isLoggedIn
+  userId.value = snapshot.userId
+
+  if (snapshot.error) {
+    console.error('Load readings failed:', snapshot.error)
+  }
+
+  if (!snapshot.isLoggedIn) {
+    selectedReading.value = null
+    detailOpen.value = false
+    deleteDialog.value = false
+  }
+
+  loading.value = false
+}
+
+const loadReadingsSafe = async () => {
   try {
-    const { data: user } = await getUserNative(8000)
-    if (!user) {
-      isLoggedIn.value = false
-      loading.value = false
-      return
-    }
-
-    isLoggedIn.value = true
-    userId.value = user.id
-
-    const { data, error } = await selectTarotReadingsByUser(user.id, 8000)
-
-    if (error) {
-      console.error('Load readings error:', error)
-      loading.value = false
-      return
-    }
-
-    readings.value = data || []
-  } catch (err) {
-    console.error('Load readings failed:', err)
-  } finally {
+    await loadReadings()
+  } catch (error) {
+    console.error('Load readings crashed:', error)
+    applyEmptySavedReadingsState()
     loading.value = false
   }
 }
@@ -389,7 +444,20 @@ watch(detailOpen, (value) => {
 })
 
 watch(deleteDialog, (value) => {
-  if (value) setBottomNavHidden(true)
+  if (value) {
+    setBottomNavHidden(true)
+    return
+  }
+  setBottomNavHidden(detailOpen.value)
+})
+
+watch(hasPremiumAccess, (next) => {
+  if (!next) {
+    applyEmptySavedReadingsState()
+    loading.value = false
+    return
+  }
+  void loadReadingsSafe()
 })
 
 onBeforeUnmount(() => {
@@ -397,12 +465,8 @@ onBeforeUnmount(() => {
   setBottomNavDark(false)
 })
 
-onMounted(async () => {
-  if (hasPremiumAccess.value) {
-    const data = await loadTarotData()
-    tarotData.value = data
-  }
-  await loadReadings()
+onMounted(() => {
+  void loadReadingsSafe()
   setBottomNavDark(true)
 })
 </script>
@@ -541,6 +605,57 @@ onMounted(async () => {
   font-size: 14px;
   line-height: 1.6;
   color: rgba(216, 228, 247, 0.78);
+}
+
+.readings-lock__model {
+  border-radius: 12px;
+  border: 1px solid rgba(165, 196, 245, 0.2);
+  background: rgba(7, 12, 20, 0.56);
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.readings-lock__model-row {
+  display: grid;
+  gap: 3px;
+}
+
+.readings-lock__model-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(173, 210, 255, 0.86);
+  font-weight: 600;
+}
+
+.readings-lock__model-text {
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(224, 234, 251, 0.82);
+}
+
+.readings-lock__bullets {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.readings-lock__bullet {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(224, 234, 251, 0.86);
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.readings-lock__bullet::before {
+  content: '✦';
+  color: rgba(173, 210, 255, 0.88);
+  line-height: 1.2;
 }
 
 .readings-lock__preview {

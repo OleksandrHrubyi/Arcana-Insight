@@ -3,7 +3,7 @@ import { Capacitor } from '@capacitor/core'
 import { StatusBar, Style } from '@capacitor/status-bar'
 
 export default boot(() => {
-  if (Capacitor.getPlatform() === 'ios') {
+  if (Capacitor.getPlatform() === 'ios' && Capacitor.isPluginAvailable('StatusBar')) {
     // не блокуємо монтаж програми
     setTimeout(() => {
       (async () => {

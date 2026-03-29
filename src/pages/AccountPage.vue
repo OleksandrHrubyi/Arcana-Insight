@@ -16,6 +16,10 @@
           <div class="account-status__content">
             <div class="account-status__title">{{ tt('accountPage.zodiacTitle') }}</div>
             <div class="account-status__subtitle">{{ zodiacLabel }}</div>
+            <div v-if="hasMysticBadge" class="account-status__reward-badge">
+              <span class="account-status__reward-icon">✦</span>
+              <span>{{ mysticBadgeLabel }}</span>
+            </div>
           </div>
           <div class="account-badge">
             {{ zodiacEmoji }}
@@ -27,26 +31,26 @@
         <div class="account-panel__title">{{ tt('accountPage.profileInfo') }}</div>
 
         <button type="button" class="account-row account-row--button" @click="openEdit('name')">
-          <div class="account-row__content">
+          <span class="account-row__content">
             <span class="account-label">{{ tt('fields.name') }}</span>
             <span class="account-value">{{ profile.name || '—' }}</span>
-          </div>
+          </span>
           <q-icon name="edit" size="18px" class="account-row__icon" />
         </button>
 
         <button type="button" class="account-row account-row--button" @click="openEdit('email')">
-          <div class="account-row__content">
+          <span class="account-row__content">
             <span class="account-label">{{ tt('fields.email') }}</span>
             <span class="account-value">{{ profile.email || userEmail || '—' }}</span>
-          </div>
+          </span>
           <q-icon name="edit" size="18px" class="account-row__icon" />
         </button>
 
         <button type="button" class="account-row account-row--button" @click="onOpenDateSheet">
-          <div class="account-row__content">
+          <span class="account-row__content">
             <span class="account-label">{{ tt('fields.dateOfBirth') }}</span>
             <span class="account-value">{{ profile.date_of_birth || '—' }}</span>
-          </div>
+          </span>
           <q-icon name="edit" size="18px" class="account-row__icon" />
         </button>
       </section>
@@ -204,6 +208,9 @@ import DeleteAccountDialog from 'src/components/DeleteAccountDialog.vue'
 import { useAuthStore } from 'stores/authStore.js'
 import { Preferences } from '@capacitor/preferences'
 import { useAppEpoch } from 'stores/appEpoch'
+import { resolveAccountBootstrapUser } from 'src/helpers/accountBootstrapCore.js'
+import { ensureRitualRewardInventory } from 'src/helpers/ritualRewardsBackend.js'
+import { isRitualRewardActive, RITUAL_REWARD_KEYS } from 'src/helpers/ritualRewardInventory'
 
 export default defineComponent({
   name: 'AccountPage',
@@ -242,6 +249,7 @@ export default defineComponent({
       lastDateHapticAt: 0,
       reduceMotion: false,
       profileLoaded: false,
+      rewardAccessTick: 0,
     }
   },
 
@@ -332,6 +340,19 @@ export default defineComponent({
       }
       return emojiMap[this.zodiacKey] || '✦'
     },
+
+    mysticBadgeLabel() {
+      return this.locale === 'uk' ? 'Містичний ритуал активний' : 'Mystic ritual badge active'
+    },
+
+    hasMysticBadge() {
+      const now = this.rewardAccessTick ? new Date() : new Date()
+      return isRitualRewardActive({
+        rewardKey: RITUAL_REWARD_KEYS.mysticBadge,
+        userId: String(this.userId || this.authStore.state.user?.id || '').trim(),
+        now,
+      })
+    },
   },
 
   watch: {
@@ -343,32 +364,8 @@ export default defineComponent({
     },
   },
 
-  async mounted() {
-    let user = this.authStore.state.user
-    if (!user) {
-      await this.authStore.syncSession({ refresh: false })
-      user = this.authStore.state.user
-    }
-
-    if (!user) {
-      this.$router.replace('/login')
-      return
-    }
-
-    this.userId = user.id
-    this.userEmail = user.email || ''
-    this.profile.name = this.normalizeProfileName(
-      this.profile.name || user.user_metadata?.name || user.user_metadata?.full_name || '',
-    )
-
-    const cached = await this.loadCachedProfile()
-    if (cached) {
-      this.profile = { ...this.profile, ...cached }
-    }
-
-    await this.loadProfile(user)
-
-    this.buildDateOptions()
+  mounted() {
+    void this.initializeAccountPageSafe()
   },
 
   beforeUnmount() {
@@ -376,6 +373,57 @@ export default defineComponent({
   },
 
   methods: {
+    async refreshRitualRewardAccess(force = false) {
+      const userId = String(this.userId || this.authStore.state.user?.id || '').trim()
+      await ensureRitualRewardInventory({
+        userId,
+        force,
+      })
+      this.rewardAccessTick = Date.now()
+    },
+
+    async initializeAccountPage() {
+      const { user, error } = await resolveAccountBootstrapUser({
+        initialUser: this.authStore.state.user || null,
+        syncSession: (payload) => this.authStore.syncSession(payload),
+        getCurrentUser: () => this.authStore.state.user || null,
+      })
+
+      if (error) {
+        console.warn('[AccountPage] session bootstrap failed:', error)
+      }
+
+      if (!user) {
+        this.$router.replace('/login')
+        return
+      }
+
+      this.userId = user.id
+      this.userEmail = user.email || ''
+      this.profile.name = this.normalizeProfileName(
+        this.profile.name || user.user_metadata?.name || user.user_metadata?.full_name || '',
+      )
+      await this.refreshRitualRewardAccess(false)
+
+      const cached = await this.loadCachedProfile()
+      if (cached) {
+        this.profile = { ...this.profile, ...cached }
+      }
+
+      await this.loadProfile(user)
+      this.buildDateOptions()
+      await this.refreshRitualRewardAccess(true)
+    },
+
+    async initializeAccountPageSafe() {
+      try {
+        await this.initializeAccountPage()
+      } catch (error) {
+        this.profileLoaded = true
+        console.warn('[AccountPage] init failed:', error)
+      }
+    },
+
     normalizeProfileName(value) {
       if (typeof value !== 'string') return ''
       return value.trim()
@@ -425,7 +473,9 @@ export default defineComponent({
 
       try {
         const { data: row, error } = await selectAppUser(this.userId, 6000)
-        if (error) throw error
+        if (error) {
+          console.warn('[AccountPage] profile load failed, retrying:', error)
+        }
         if (row) {
           const rowName = this.normalizeProfileName(row.name || '')
           const fallbackName = this.normalizeProfileName(
@@ -442,9 +492,9 @@ export default defineComponent({
           await this.backfillMissingName(rowName, fallbackName)
         }
         this.profileLoaded = true
-        return
+        if (!error) return
       } catch (err) {
-        console.warn('[AccountPage] profile load failed, retrying:', err)
+        console.warn('[AccountPage] profile load crashed, retrying:', err)
       }
 
       // Retry once after syncing session
@@ -452,7 +502,11 @@ export default defineComponent({
       const refreshedUser = this.authStore.state.user || currentUser
       try {
         const { data: row, error } = await selectAppUser(this.userId, 6000)
-        if (error) throw error
+        if (error) {
+          console.warn('[AccountPage] profile load retry failed:', error)
+          this.profileLoaded = true
+          return
+        }
         if (row) {
           const rowName = this.normalizeProfileName(row.name || '')
           const fallbackName = this.normalizeProfileName(
@@ -1065,6 +1119,26 @@ export default defineComponent({
   font-size: 16px;
   font-weight: 600;
   color: rgba(234, 244, 255, 0.92);
+}
+
+.account-status__reward-badge {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(151, 210, 255, 0.36);
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(112, 217, 255, 0.26), rgba(112, 217, 255, 0) 60%),
+    linear-gradient(140deg, rgba(20, 33, 52, 0.86), rgba(10, 18, 30, 0.92));
+  padding: 4px 10px;
+  font-size: 12px;
+  color: rgba(223, 240, 255, 0.92);
+}
+
+.account-status__reward-icon {
+  color: rgba(153, 228, 255, 0.95);
 }
 
 .account-badge {

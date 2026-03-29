@@ -357,13 +357,132 @@ function dayOfYearUtc(date: Date) {
   return Math.floor((now - start) / 86400000)
 }
 
+function isoWeekdayUtc(dateIso: string) {
+  const day = new Date(`${dateIso}T00:00:00.000Z`).getUTCDay()
+  return day === 0 ? 7 : day
+}
+
 function pickDailyContent(locale: string | null, dateIso: string) {
   const isEn = (locale || '').toLowerCase() === 'en'
+  const weekday = isoWeekdayUtc(dateIso)
   const dayNumber = dayOfYearUtc(new Date(`${dateIso}T00:00:00.000Z`))
-  const isCardDay = dayNumber % 2 === 1
+  const tarotFocus = dayNumber % 2 === 0 ? 'self' : 'future'
 
-  if (isCardDay) {
-    return isEn
+  const contentByWeekday = isEn
+    ? {
+        1: {
+          title: 'Arcana',
+          body: 'Start the week with your career horoscope.',
+          route: 'horoscope',
+          path: '/horoscope',
+          contentType: 'horoscope_career',
+          theme: 'career',
+        },
+        2: {
+          title: 'Arcana',
+          body: 'Your card of the day is ready. Tap to reveal it.',
+          route: 'daily',
+          path: '/daily',
+          contentType: 'daily_card',
+        },
+        3: {
+          title: 'Arcana',
+          body: 'Take a short tarot check-in for clarity today.',
+          route: 'tarot',
+          path: '/tarot',
+          contentType: 'tarot_checkin',
+          focus: tarotFocus,
+        },
+        4: {
+          title: 'Arcana',
+          body: 'Open your love horoscope for today.',
+          route: 'horoscope',
+          path: '/horoscope',
+          contentType: 'horoscope_love',
+          theme: 'love',
+        },
+        5: {
+          title: 'Arcana',
+          body: 'Your daily card is waiting. Keep your streak alive.',
+          route: 'daily',
+          path: '/daily',
+          contentType: 'daily_card_streak',
+        },
+        6: {
+          title: 'Arcana',
+          body: 'Weekend tarot guidance is ready.',
+          route: 'tarot',
+          path: '/tarot',
+          contentType: 'tarot_weekend',
+          focus: 'future',
+        },
+        7: {
+          title: 'Arcana',
+          body: 'Close the week with your daily reflection card.',
+          route: 'daily',
+          path: '/daily',
+          contentType: 'daily_reflection',
+        },
+      }
+    : {
+        1: {
+          title: 'Arcana',
+          body: 'Почни тиждень із карʼєрного гороскопу.',
+          route: 'horoscope',
+          path: '/horoscope',
+          contentType: 'horoscope_career',
+          theme: 'career',
+        },
+        2: {
+          title: 'Arcana',
+          body: 'Ваша карта дня вже готова. Натисніть, щоб відкрити.',
+          route: 'daily',
+          path: '/daily',
+          contentType: 'daily_card',
+        },
+        3: {
+          title: 'Arcana',
+          body: 'Зроби короткий tarot check-in, щоб навести фокус.',
+          route: 'tarot',
+          path: '/tarot',
+          contentType: 'tarot_checkin',
+          focus: tarotFocus,
+        },
+        4: {
+          title: 'Arcana',
+          body: 'Відкрий свій любовний гороскоп на сьогодні.',
+          route: 'horoscope',
+          path: '/horoscope',
+          contentType: 'horoscope_love',
+          theme: 'love',
+        },
+        5: {
+          title: 'Arcana',
+          body: 'Карта дня чекає. Підтримай свій streak.',
+          route: 'daily',
+          path: '/daily',
+          contentType: 'daily_card_streak',
+        },
+        6: {
+          title: 'Arcana',
+          body: 'Готова tarot-підказка на вихідні.',
+          route: 'tarot',
+          path: '/tarot',
+          contentType: 'tarot_weekend',
+          focus: 'future',
+        },
+        7: {
+          title: 'Arcana',
+          body: 'Заверши тиждень картою щоденної рефлексії.',
+          route: 'daily',
+          path: '/daily',
+          contentType: 'daily_reflection',
+        },
+      }
+
+  return (
+    contentByWeekday[weekday as 1 | 2 | 3 | 4 | 5 | 6 | 7] ||
+    (isEn
       ? {
           title: 'Arcana',
           body: 'Your card of the day is ready. Tap to reveal it.',
@@ -377,24 +496,8 @@ function pickDailyContent(locale: string | null, dateIso: string) {
           route: 'daily',
           path: '/daily',
           contentType: 'daily_card',
-        }
-  }
-
-  return isEn
-    ? {
-        title: 'Arcana',
-        body: 'Your horoscope for today is ready. Tap to read it.',
-        route: 'horoscope',
-        path: '/horoscope',
-        contentType: 'horoscope',
-      }
-    : {
-        title: 'Arcana',
-        body: 'Ваш гороскоп на сьогодні готовий. Натисніть, щоб прочитати.',
-        route: 'horoscope',
-        path: '/horoscope',
-        contentType: 'horoscope',
-      }
+        })
+  )
 }
 
 Deno.serve(async (req) => {
@@ -445,6 +548,10 @@ Deno.serve(async (req) => {
         route: msg.route,
         path: msg.path,
         date: dateIso,
+        theme: msg.theme || '',
+        focus: msg.focus || '',
+        source: 'push_daily_reminder',
+        entry: 'push_notification',
         content_type: msg.contentType,
       }
 

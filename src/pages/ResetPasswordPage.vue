@@ -53,8 +53,11 @@ export default {
       return (key) => t(this.locale, key)
     }
   },
-  async mounted () {
-    try {
+  mounted () {
+    void this.initializeResetPasswordSafe()
+  },
+  methods: {
+    async initializeResetPassword () {
       // 1) спроба PKCE (коли у URL ?code=...)
       let sessionOk = false
       try {
@@ -78,13 +81,18 @@ export default {
 
       this.sessionReady = sessionOk
       if (!sessionOk) this.error = this.tt('resetPassword.invalidLink')
-    } catch (e) {
-      this.error = e.message || String(e)
-    } finally {
-      this.loading = false
-    }
-  },
-  methods: {
+    },
+
+    async initializeResetPasswordSafe () {
+      try {
+        await this.initializeResetPassword()
+      } catch (e) {
+        this.error = e.message || String(e)
+      } finally {
+        this.loading = false
+      }
+    },
+
     async onUpdate () {
       this.error = ''; this.ok = false; this.saving = true
       try {

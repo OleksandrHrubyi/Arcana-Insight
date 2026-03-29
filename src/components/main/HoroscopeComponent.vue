@@ -11,7 +11,14 @@
       <div class="hero-disc__tilt">
         <!-- крутиться повільно -->
         <div class="hero-disc__spin">
-          <img class="hero-disc__img" src="/images/p-7.png" alt="" />
+          <img
+            class="hero-disc__img"
+            src="/images/p-7.jpg"
+            alt=""
+            loading="eager"
+            decoding="async"
+            fetchpriority="high"
+          />
 
           <!-- “зерно/зорі” всередині диска -->
           <div class="hero-disc__stars"></div>
@@ -69,7 +76,10 @@
           <q-tab-panels
             v-model="themeTab"
             animated
-            swipeable
+            transition-prev="theme-slide-right"
+            transition-next="theme-slide-left"
+            :transition-duration="220"
+            v-touch-swipe:[themeSwipeSensitivity].horizontal="handleThemeSwipe"
             class="bg-transparent horoscope-panels"
           >
             <q-tab-panel name="energy" class="q-pa-none">
@@ -77,8 +87,16 @@
                 <div class="horoscope-info-title">{{ tt('energy') }}</div>
                 <div class="horoscope-divider"></div>
 
-                <div class="horoscope-info-style">
-                  {{ horoscope[activeZodiac.key]?.energy?.detailed || '' }}
+                <div
+                  class="horoscope-info-style"
+                  :class="{ 'horoscope-info-style--loading': !hasThemeText('energy') }"
+                >
+                  <template v-if="hasThemeText('energy')">
+                    {{ getThemeText('energy') }}
+                  </template>
+                  <div v-else class="horoscope-text-skeleton" aria-hidden="true">
+                    <span v-for="index in 6" :key="`energy-skeleton-${index}`" class="horoscope-text-skeleton__line"></span>
+                  </div>
                 </div>
               </div>
             </q-tab-panel>
@@ -91,9 +109,17 @@
                 <div class="horoscope-text-wrap">
                   <div
                     class="horoscope-info-style"
-                    :class="{ 'horoscope-info-style--blurred': isThemeLocked('love') }"
+                    :class="{
+                      'horoscope-info-style--blurred': isThemeLocked('love'),
+                      'horoscope-info-style--loading': !hasThemeText('love'),
+                    }"
                   >
-                    {{ horoscope[activeZodiac.key]?.love?.detailed || '' }}
+                    <template v-if="hasThemeText('love')">
+                      {{ getThemeText('love') }}
+                    </template>
+                    <div v-else class="horoscope-text-skeleton" aria-hidden="true">
+                      <span v-for="index in 6" :key="`love-skeleton-${index}`" class="horoscope-text-skeleton__line"></span>
+                    </div>
                   </div>
                   <button
                     v-if="isThemeLocked('love')"
@@ -101,8 +127,11 @@
                     class="horoscope-lock-overlay"
                     @click="openPremiumPaywall"
                   >
-                    <span>{{ getThemeLockText('love') }}</span>
-                    <span class="horoscope-lock-overlay__cta">{{ tt('premiumAccess.cta') }}</span>
+                    <span class="horoscope-lock-overlay__title">{{ getThemeLockTitle('love') }}</span>
+                    <span class="horoscope-lock-overlay__text">{{ getThemeLockText('love') }}</span>
+                    <span class="horoscope-lock-overlay__cta">
+                      <span>{{ tt('premiumAccess.cta') }}</span>
+                    </span>
                   </button>
                 </div>
               </div>
@@ -116,9 +145,17 @@
                 <div class="horoscope-text-wrap">
                   <div
                     class="horoscope-info-style"
-                    :class="{ 'horoscope-info-style--blurred': isThemeLocked('career') }"
+                    :class="{
+                      'horoscope-info-style--blurred': isThemeLocked('career'),
+                      'horoscope-info-style--loading': !hasThemeText('career'),
+                    }"
                   >
-                    {{ horoscope[activeZodiac.key]?.career?.detailed || '' }}
+                    <template v-if="hasThemeText('career')">
+                      {{ getThemeText('career') }}
+                    </template>
+                    <div v-else class="horoscope-text-skeleton" aria-hidden="true">
+                      <span v-for="index in 6" :key="`career-skeleton-${index}`" class="horoscope-text-skeleton__line"></span>
+                    </div>
                   </div>
                   <button
                     v-if="isThemeLocked('career')"
@@ -126,8 +163,11 @@
                     class="horoscope-lock-overlay"
                     @click="openPremiumPaywall"
                   >
-                    <span>{{ getThemeLockText('career') }}</span>
-                    <span class="horoscope-lock-overlay__cta">{{ tt('premiumAccess.cta') }}</span>
+                    <span class="horoscope-lock-overlay__title">{{ getThemeLockTitle('career') }}</span>
+                    <span class="horoscope-lock-overlay__text">{{ getThemeLockText('career') }}</span>
+                    <span class="horoscope-lock-overlay__cta">
+                      <span>{{ tt('premiumAccess.cta') }}</span>
+                    </span>
                   </button>
                 </div>
               </div>
@@ -151,8 +191,15 @@
                 @click="setTheme('career')"
               ></button>
             </div>
-
-            <!--            <q-btn size="12px" round class="share-wrap" icon="share" @click="handleShare" />-->
+            <q-btn
+              round
+              dense
+              flat
+              :icon="isCurrentThemeLocked ? 'lock' : 'share'"
+              class="share-controls-btn"
+              :disable="!hasThemeText(themeTab)"
+              @click="handleShareControlsClick"
+            />
           </div>
         </div>
       </div>
@@ -164,13 +211,25 @@
 
 <script>
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
+import { Preferences } from '@capacitor/preferences'
 import { localISODate } from 'src/helpers/date.js'
+import { loadHoroscopeRegistry } from 'src/helpers/horoscopeContentCore.js'
 import { saveLocal, loadLocal } from 'src/helpers/localStorageSaver.js'
 import { t, currentLocale } from 'src/i18n'
 import { Share } from '@capacitor/share'
 import { selectAppUser, selectHoroscopes } from 'src/services/supabaseNative'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
 import { useAuthStore } from 'stores/authStore.js'
+import { DAILY_ACTIVITY_KEYS, markDailyActivity } from 'src/helpers/dailyRitual'
+import { resolveUserSignSnapshot } from 'src/helpers/zodiacUserSignCore.js'
+import {
+  ensureRitualRewardInventory,
+  trackRitualActivityWithGuestFallback,
+} from 'src/helpers/ritualRewardsBackend.js'
+import {
+  isRitualRewardActive,
+  RITUAL_REWARD_KEYS,
+} from 'src/helpers/ritualRewardInventory'
 
 const DESIGN_W = 440
 const DESIGN_TOP_INSET = 30
@@ -204,6 +263,16 @@ const THEME_META = {
   energy: { emoji: '⚡️', label: 'Енергія' },
 }
 const FREE_HOROSCOPE_THEME = 'energy'
+const THEME_TABS = ['energy', 'love', 'career']
+const ROUTE_THEME_MAP = {
+  energy: 'energy',
+  love: 'love',
+  career: 'career',
+  work: 'career',
+  self: 'energy',
+}
+const ZODIAC_SIGN_CACHE_KEY = 'horoscope_sign_key_v1'
+const PROFILE_CACHE_KEY = 'profile_cache_v1'
 const premiumAccessStore = usePremiumAccess()
 const authStore = useAuthStore()
 
@@ -269,6 +338,8 @@ export default {
 
       midnightTimer: null,
       themeTab: FREE_HOROSCOPE_THEME,
+      themeSwipeSensitivity: '0.03:1:30',
+      rewardAccessTick: 0,
     }
   },
 
@@ -302,19 +373,30 @@ export default {
       return label.toLocaleUpperCase(locale)
     },
 
+    isCurrentThemeLocked() {
+      return this.isThemeLocked(this.themeTab)
+    },
+
     tt() {
       return (key) => t(this.locale, key)
     },
   },
 
   mounted() {
+    markDailyActivity(DAILY_ACTIVITY_KEYS.horoscope)
+    void trackRitualActivityWithGuestFallback(DAILY_ACTIVITY_KEYS.horoscope, {
+      source: 'horoscope_screen',
+      userId: authStore.state.user?.id || '',
+    })
     this.themeTab = FREE_HOROSCOPE_THEME
+    this.applyThemeFromRoute(this.$route?.query?.theme)
     this.setVh()
     this.applyScale()
-    this.loadHoroscopesForDay()
+    void this.refreshHoroscopesForDay()
 
     // ✅ частинки
     this.buildParticles()
+    this.hydrateZodiacFromCache()
 
     this.rotation = Math.round(this.rotation / this.stepDeg) * this.stepDeg
     this.desiredRotation = this.rotation
@@ -332,6 +414,7 @@ export default {
     })
 
     this.scheduleMidnightRefresh()
+    void this.refreshRitualRewardAccess()
   },
 
   beforeUnmount() {
@@ -356,19 +439,81 @@ export default {
         this.themeTab = FREE_HOROSCOPE_THEME
       }
     },
+    '$route.query.theme': {
+      immediate: true,
+      handler(nextTheme) {
+        this.applyThemeFromRoute(nextTheme)
+      },
+    },
+    'authStore.state.user.id': {
+      immediate: false,
+      handler() {
+        void this.refreshRitualRewardAccess(true)
+      },
+    },
   },
 
   methods: {
+    rewardAccessUserId() {
+      return String(this.authStore?.state?.user?.id || '').trim()
+    },
+
+    async refreshRitualRewardAccess(force = false) {
+      const userId = this.rewardAccessUserId()
+      await ensureRitualRewardInventory({
+        userId,
+        force,
+      })
+      this.rewardAccessTick = Date.now()
+    },
+
+    isThemeUnlockedByReward(tab) {
+      const now = this.rewardAccessTick ? new Date() : new Date()
+      const userId = this.rewardAccessUserId()
+      if (tab === 'love') {
+        return isRitualRewardActive({
+          rewardKey: RITUAL_REWARD_KEYS.horoscopeLoveUnlock24h,
+          userId,
+          now,
+        })
+      }
+      if (tab === 'career') {
+        return isRitualRewardActive({
+          rewardKey: RITUAL_REWARD_KEYS.horoscopeCareerUnlock24h,
+          userId,
+          now,
+        })
+      }
+      return false
+    },
+
+    normalizeRouteTheme(value) {
+      const key = String(value || '')
+        .trim()
+        .toLowerCase()
+      return ROUTE_THEME_MAP[key] || ''
+    },
+
+    applyThemeFromRoute(value) {
+      const nextTheme = this.normalizeRouteTheme(value)
+      if (!nextTheme) return
+      this.themeTab = nextTheme
+    },
+
     isThemeLocked(tab) {
       if (this.hasPremiumAccess) return false
-      return tab !== FREE_HOROSCOPE_THEME
+      if (tab === FREE_HOROSCOPE_THEME) return false
+      return !this.isThemeUnlockedByReward(tab)
+    },
+
+    getThemeLockTitle(tab) {
+      const themeKey = tab === 'career' ? 'career' : 'love'
+      return this.tt(`premiumAccess.horoscope.${themeKey}.title`)
     },
 
     getThemeLockText(tab) {
-      const title = this.tt(tab).toLowerCase()
-      return this.locale === 'uk'
-        ? `Для розділу «${title}» потрібен Premium`
-        : `Premium access is required for ${title}.`
+      const themeKey = tab === 'career' ? 'career' : 'love'
+      return this.tt(`premiumAccess.horoscope.${themeKey}.text`)
     },
 
     async openPremiumPaywall() {
@@ -377,7 +522,42 @@ export default {
       } catch (e) {
         console.error(e)
       }
-      this.$router.push({ name: 'premium' }).catch(() => {})
+      this.$router.push({ name: 'premium', query: { source: 'horoscope_lock', entry: 'secondary' } }).catch(() => {})
+    },
+
+    normalizeZodiacKey(value) {
+      const normalized = String(value || '')
+        .trim()
+        .toLowerCase()
+      if (!normalized) return ''
+      return this.zodiacMeta.some((item) => item.key === normalized) ? normalized : ''
+    },
+
+    readCachedZodiacKey() {
+      if (typeof window === 'undefined') return ''
+      try {
+        const raw = localStorage.getItem(ZODIAC_SIGN_CACHE_KEY) || ''
+        return this.normalizeZodiacKey(raw)
+      } catch {
+        return ''
+      }
+    },
+
+    writeCachedZodiacKey(zodiacKey) {
+      if (typeof window === 'undefined') return
+      const normalized = this.normalizeZodiacKey(zodiacKey)
+      if (!normalized) return
+      try {
+        localStorage.setItem(ZODIAC_SIGN_CACHE_KEY, normalized)
+      } catch {
+        // ignore cache write errors
+      }
+    },
+
+    hydrateZodiacFromCache() {
+      const cachedKey = this.readCachedZodiacKey()
+      if (!cachedKey) return
+      this.focusZodiacByKey(cachedKey)
     },
 
     // ✅ генерація “реальних” летючих частинок
@@ -419,37 +599,12 @@ export default {
       this.particles = out
     },
 
-    rowsToRegistry(rows) {
-      const reg = {}
-      for (const row of rows ?? []) {
-        const sign = row.sign
-        const theme = row.theme
-        if (!sign || !theme) continue
-
-        if (!reg[sign]) reg[sign] = {}
-        reg[sign][theme] = {
-          summary: row.summary,
-          detailed: row.detailed,
-        }
+    async refreshHoroscopesForDay(options = {}) {
+      try {
+        await this.loadHoroscopesForDay(options)
+      } catch (e) {
+        console.warn('[Horoscope] loadHoroscopesForDay failed', e)
       }
-      return reg
-    },
-
-    registryToRows(reg) {
-      const rows = []
-      for (const sign of Object.keys(reg || {})) {
-        const themes = reg[sign] || {}
-        for (const theme of Object.keys(themes)) {
-          const item = themes[theme] || {}
-          rows.push({
-            sign,
-            theme,
-            summary: item.summary ?? '',
-            detailed: item.detailed ?? '',
-          })
-        }
-      }
-      return rows
     },
 
     parseBirthDate(value) {
@@ -496,11 +651,30 @@ export default {
       return ''
     },
 
-    focusZodiacByKey(zodiacKey) {
+    focusZodiacByKey(zodiacKey, { animate = false } = {}) {
       const idx = this.zodiacMeta.findIndex((item) => item.key === zodiacKey)
       if (idx < 0) return false
 
       const targetRotation = this.wrapRotation(-idx * this.stepDeg)
+      if (animate && this.$refs.wheel) {
+        const atTarget = Math.abs(this.deltaAngle(targetRotation, this.rotation)) < 0.08
+        if (atTarget) {
+          this.rotation = targetRotation
+          this.desiredRotation = targetRotation
+          this.omega = 0
+          this.snapTarget = targetRotation
+          this.lastSnapIndex = idx
+          this.currentSector = this.mod(idx, this.sectorCount)
+          this.applyRotationToView(this.rotation, false)
+          return true
+        }
+
+        this.omega = 0
+        this.snapTarget = targetRotation
+        this.startLoop('snap')
+        return true
+      }
+
       this.rotation = targetRotation
       this.desiredRotation = targetRotation
       this.omega = 0
@@ -516,18 +690,35 @@ export default {
 
       try {
         await this.authStore.syncSession({ refresh: false })
-        const userId = this.authStore.state.user?.id
-        if (!userId) return
 
-        const { data, error } = await selectAppUser(userId, 6000, 'date_of_birth')
-        if (error) return
+        const snapshot = await resolveUserSignSnapshot({
+          readProfileCacheValue: async () => {
+            const { value } = await Preferences.get({ key: PROFILE_CACHE_KEY })
+            return value || ''
+          },
+          getCurrentUserId: () => this.authStore.state.user?.id || '',
+          fetchUserDateOfBirthById: async (userId) => {
+            const { data, error } = await selectAppUser(userId, 6000, 'date_of_birth')
+            if (error) throw error
+            return data?.date_of_birth || ''
+          },
+          zodiacFromRawDate: (rawDate) => this.zodiacKeyFromBirthDate(rawDate),
+        })
 
-        const zodiacKey = this.zodiacKeyFromBirthDate(data?.date_of_birth || '')
-        if (!zodiacKey) return
-
-        if (this.focusZodiacByKey(zodiacKey)) {
-          this.userSignApplied = true
+        if (snapshot.errors.length) {
+          console.warn('[Horoscope] applyUserZodiacPreference degraded:', snapshot.errors.join(','))
         }
+
+        const zodiacKey = this.normalizeZodiacKey(snapshot.signKey)
+        if (!zodiacKey) {
+          this.userSignApplied = true
+          return
+        }
+
+        if (this.focusZodiacByKey(zodiacKey, { animate: true })) {
+          this.writeCachedZodiacKey(zodiacKey)
+        }
+        this.userSignApplied = true
       } catch (e) {
         console.warn('[Horoscope] applyUserZodiacPreference failed', e)
       }
@@ -536,42 +727,15 @@ export default {
     async loadHoroscopesForDay({ forceNetwork = false } = {}) {
       const locale = this.locale
       const today = localISODate()
-
-      if (!forceNetwork) {
-        const local = await loadLocal()
-        if (
-          local?.date === today &&
-          local?.locale === locale &&
-          Array.isArray(local?.rows) &&
-          local.rows.length
-        ) {
-          this.horoscope = this.rowsToRegistry(local.rows)
-          return
-        }
-      }
-
-      const fetchByDate = async (date) => {
-        const { data, error } = await selectHoroscopes(date, locale, 8000)
-        if (error) throw error
-        return data ?? []
-      }
-
-      let rows = await fetchByDate(today)
-
-      if (!rows.length) {
-        const d = new Date()
-        d.setDate(d.getDate() + 1)
-        const y = d.getFullYear()
-        const m = String(d.getMonth() + 1).padStart(2, '0')
-        const day = String(d.getDate()).padStart(2, '0')
-        const tomorrow = `${y}-${m}-${day}`
-        rows = await fetchByDate(tomorrow)
-      }
-
-      const reg = this.rowsToRegistry(rows)
-      this.horoscope = reg
-
-      await saveLocal({ date: today, locale, rows: this.registryToRows(reg) })
+      const { registry } = await loadHoroscopeRegistry({
+        locale,
+        today,
+        forceNetwork,
+        loadLocal,
+        saveLocal,
+        selectHoroscopes,
+      })
+      this.horoscope = registry
     },
 
     scheduleMidnightRefresh() {
@@ -580,7 +744,7 @@ export default {
       const ms = nextMidnight - now + 200
 
       this.midnightTimer = setTimeout(async () => {
-        await this.loadHoroscopesForDay({ forceNetwork: true })
+        await this.refreshHoroscopesForDay({ forceNetwork: true })
         this.scheduleMidnightRefresh()
       }, ms)
     },
@@ -904,6 +1068,14 @@ export default {
       this.mode = 'inertia'
     },
 
+    getThemeText(tab) {
+      return this.horoscope?.[this.activeZodiac.key]?.[tab]?.detailed || ''
+    },
+
+    hasThemeText(tab) {
+      return this.getThemeText(tab).trim().length > 0
+    },
+
     normalizeText(s = '') {
       return String(s)
         .replace(/\r/g, '')
@@ -976,12 +1148,39 @@ export default {
       }
     },
 
+    async handleShareControlsClick() {
+      if (this.isCurrentThemeLocked) {
+        await this.openPremiumPaywall()
+        return
+      }
+      await this.handleShare()
+    },
+
     async setTheme(tab) {
+      if (!tab || this.themeTab === tab) return
       this.themeTab = tab
       try {
         await Haptics.impact({ style: ImpactStyle.Light })
       } catch (e) {
         console.error(e)
+      }
+    },
+
+    shiftThemeBy(offset) {
+      const currentIdx = THEME_TABS.indexOf(this.themeTab)
+      if (currentIdx === -1) return
+
+      const nextIdx = currentIdx + offset
+      if (nextIdx < 0 || nextIdx >= THEME_TABS.length) return
+
+      void this.setTheme(THEME_TABS[nextIdx])
+    },
+
+    handleThemeSwipe(details) {
+      if (details?.direction === 'left') {
+        this.shiftThemeBy(1)
+      } else if (details?.direction === 'right') {
+        this.shiftThemeBy(-1)
       }
     },
   },
@@ -1519,7 +1718,7 @@ export default {
 }
 
 .active-zodiac-name {
-  font-size: calc(16px * var(--s));
+  font-size: calc(18px * var(--s));
   letter-spacing: 0.04em;
   color: rgba(255, 255, 255, 0.92);
 }
@@ -1556,7 +1755,7 @@ export default {
 :deep(.horoscope-panels) {
   flex: 1;
   min-height: 0;
-  max-height: calc(100% - 200px);
+  max-height: calc(100% - 220px);
 }
 
 :deep(.q-tab-panel) {
@@ -1564,19 +1763,41 @@ export default {
   min-height: 0;
 }
 
-.q-tab-panel {
-  animation: panelIn 180ms ease-out;
+:deep(.q-transition--theme-slide-left-enter-active),
+:deep(.q-transition--theme-slide-left-leave-active),
+:deep(.q-transition--theme-slide-right-enter-active),
+:deep(.q-transition--theme-slide-right-leave-active) {
+  transition:
+    transform var(--q-transition-duration) cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity var(--q-transition-duration) ease;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-@keyframes panelIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+:deep(.q-transition--theme-slide-left-leave-active),
+:deep(.q-transition--theme-slide-right-leave-active) {
+  position: absolute;
+}
+
+:deep(.q-transition--theme-slide-left-enter-from) {
+  opacity: 0;
+  transform: translateX(18%);
+}
+
+:deep(.q-transition--theme-slide-left-leave-to) {
+  opacity: 0;
+  transform: translateX(-12%);
+}
+
+:deep(.q-transition--theme-slide-right-enter-from) {
+  opacity: 0;
+  transform: translateX(-18%);
+}
+
+:deep(.q-transition--theme-slide-right-leave-to) {
+  opacity: 0;
+  transform: translateX(12%);
 }
 
 .panel-inner {
@@ -1590,6 +1811,7 @@ export default {
   position: relative;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
 }
 
 .horoscope-info-style {
@@ -1599,31 +1821,34 @@ export default {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 
-  font-weight: 400;
-  font-size: max(15px, calc(15px * var(--s)));
-  line-height: 1.55;
-  letter-spacing: 0.01em;
+  text-align: center;
+  font-weight: 450;
+  font-size: max(16px, calc(16px * var(--s)));
+  line-height: 1.62;
+  letter-spacing: 0;
   text-transform: none;
-  color: rgba(225, 235, 250, 0.78);
+  color: rgba(235, 244, 255, 0.92);
 
-  padding: 3px clamp(14px, 4vw, 22px);
+  padding: 6px clamp(16px, 5vw, 24px);
 
   scrollbar-width: none;
   text-wrap: pretty;
-  hyphens: auto;
+  hyphens: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0px,
-    #000 14px,
-    #000 calc(100% - 18px),
+    #000 8px,
+    #000 calc(100% - 10px),
     transparent 100%
   );
   mask-image: linear-gradient(
     to bottom,
     transparent 0px,
-    #000 14px,
-    #000 calc(100% - 18px),
+    #000 8px,
+    #000 calc(100% - 10px),
     transparent 100%
   );
 }
@@ -1635,36 +1860,224 @@ export default {
   user-select: none;
 }
 
-.horoscope-lock-overlay {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  max-width: min(88%, 300px);
-  width: min(88%, 300px);
-  border-radius: 14px;
-  border: 1px solid rgba(255, 229, 177, 0.34);
-  background: rgba(10, 16, 26, 0.84);
-  color: rgba(244, 236, 216, 0.95);
-  font-size: max(14px, calc(14px * var(--s)));
-  line-height: 1.4;
-  text-align: center;
-  padding: 10px 14px;
-  backdrop-filter: blur(8px);
+.horoscope-info-style--loading {
+  overflow: hidden;
+}
+
+.horoscope-text-skeleton {
   display: grid;
   gap: 8px;
+  padding: 6px clamp(14px, 4vw, 22px);
+}
+
+.horoscope-text-skeleton__line {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(159, 216, 246, 0.3) 50%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  background-size: 220% 100%;
+  animation: horoscopeSkeletonPulse 1.25s ease-in-out infinite;
+}
+
+.horoscope-text-skeleton__line:nth-child(1) {
+  width: 96%;
+}
+
+.horoscope-text-skeleton__line:nth-child(2) {
+  width: 88%;
+}
+
+.horoscope-text-skeleton__line:nth-child(3) {
+  width: 93%;
+}
+
+.horoscope-text-skeleton__line:nth-child(4) {
+  width: 82%;
+}
+
+.horoscope-text-skeleton__line:nth-child(5) {
+  width: 90%;
+}
+
+.horoscope-text-skeleton__line:nth-child(6) {
+  width: 78%;
+}
+
+@keyframes horoscopeSkeletonPulse {
+  0% {
+    background-position: 100% 0;
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    background-position: 0 0;
+    opacity: 0.75;
+  }
+}
+
+.horoscope-lock-overlay {
+  position: absolute;
+  inset: 3px;
+  transform: none;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(159, 216, 246, 0.24);
+  background: linear-gradient(180deg, rgba(10, 16, 26, 0.9) 0%, rgba(7, 13, 21, 0.84) 100%);
+  color: rgba(244, 236, 216, 0.95);
+  line-height: 1.4;
+  text-align: center;
+  padding: clamp(10px, 2.6vw, 14px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
   justify-items: center;
-  border-radius: 14px;
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.horoscope-lock-overlay__title {
+  font-size: max(15px, calc(15px * var(--s)));
+  font-weight: 640;
+  letter-spacing: 0.02em;
+  color: rgba(236, 247, 255, 0.96);
+}
+
+.horoscope-lock-overlay__text {
+  width: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  font-size: max(15px, calc(15px * var(--s)));
+  line-height: 1.42;
+  font-weight: 500;
+  text-wrap: pretty;
+  color: rgba(222, 235, 247, 0.9);
+  scrollbar-width: none;
+}
+
+.horoscope-lock-overlay__text::-webkit-scrollbar {
+  display: none;
 }
 
 .horoscope-lock-overlay__cta {
+  position: relative;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  width: 100%;
+  min-height: 46px;
   border-radius: 12px;
-  padding: 4px 10px;
-  border: 1px solid rgba(255, 229, 177, 0.4);
-  background: rgba(255, 224, 156, 0.08);
-  color: rgba(255, 238, 204, 0.94);
-  font-size: max(12px, calc(12px * var(--s)));
-  letter-spacing: 0.04em;
+  padding: 12px 14px;
+  border: 1px solid rgba(156, 206, 255, 0.56);
+  background: linear-gradient(160deg, rgba(58, 90, 145, 0.98), rgba(25, 43, 74, 0.98) 56%, rgba(16, 29, 51, 0.98));
+  color: #f6fbff;
+  font-size: max(13px, calc(13px * var(--s)));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow:
+    0 14px 28px rgba(17, 38, 72, 0.58),
+    0 0 0 1px rgba(173, 224, 255, 0.14) inset;
+  transition:
+    transform 170ms ease,
+    box-shadow 220ms ease,
+    filter 220ms ease;
+  will-change: transform, box-shadow, filter;
+  animation: horoscopeLockCtaBreath 1.9s ease-in-out infinite;
+}
+
+.horoscope-lock-overlay__cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(236, 247, 255, 0.26), rgba(236, 247, 255, 0) 58%);
+  opacity: 0.54;
+  pointer-events: none;
+  animation: horoscopeLockCtaInnerGlow 1.9s ease-in-out infinite;
+}
+
+.horoscope-lock-overlay__cta::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 14px;
+  border: 1px solid rgba(174, 221, 255, 0.5);
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+  animation: horoscopeLockCtaRing 1.9s ease-in-out infinite;
+}
+
+.horoscope-lock-overlay__cta > span {
+  position: relative;
+  z-index: 1;
+}
+
+.horoscope-lock-overlay:active .horoscope-lock-overlay__cta,
+.horoscope-lock-overlay__cta:active {
+  transform: translateY(-1px) scale(1.01);
+  filter: saturate(1.04);
+  box-shadow:
+    0 18px 36px rgba(22, 51, 95, 0.68),
+    0 0 0 1px rgba(188, 230, 255, 0.2) inset,
+    0 0 22px rgba(141, 203, 255, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.horoscope-lock-overlay:focus-visible .horoscope-lock-overlay__cta {
+  outline: 2px solid rgba(159, 216, 246, 0.7);
+  outline-offset: 2px;
+}
+
+@keyframes horoscopeLockCtaBreath {
+  0%,
+  100% {
+    transform: translateY(0);
+    filter: saturate(1);
+  }
+  50% {
+    transform: translateY(-1px);
+    filter: saturate(1.04);
+  }
+}
+
+@keyframes horoscopeLockCtaInnerGlow {
+  0%,
+  100% {
+    opacity: 0.44;
+  }
+  50% {
+    opacity: 0.62;
+  }
+}
+
+@keyframes horoscopeLockCtaRing {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  42% {
+    opacity: 0.48;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.03);
+  }
 }
 
 .horoscope-info-style::-webkit-scrollbar {
@@ -1676,7 +2089,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 12px;
+  min-height: 40px;
 }
 
 .dots {
@@ -1727,27 +2140,28 @@ export default {
   box-shadow: 0 0 14px rgba(159, 216, 246, 0.35);
 }
 
-.share-wrap {
+.share-controls-btn {
   position: absolute;
-  right: 30px;
+  right: 32px;
   top: 50%;
   transform: translateY(-50%);
-
-  width: 36px;
-  height: 36px;
-
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
   border-radius: 999px;
-  background: rgba(9, 16, 26, 0.55);
-  border: 1px solid rgba(159, 216, 246, 0.18);
+  border: 1px solid rgba(159, 216, 246, 0.16);
+  background: rgba(7, 14, 22, 0.38);
+  color: rgba(202, 224, 241, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
 
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+.share-controls-btn:active {
+  transform: translateY(calc(-50% + 1px));
+}
 
-  box-shadow:
-    0 10px 20px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(255, 255, 255, 0.04);
-
-  color: rgba(159, 216, 246, 0.75);
+.share-controls-btn.q-btn--disable {
+  opacity: 0.45;
 }
 
 .date-info {

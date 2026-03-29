@@ -4,7 +4,7 @@
 }
 
 body {
-  font-family: var(--font-ui);
+  font-family: var(--font-ui), sans-serif;
   font-weight: 400;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
@@ -45,7 +45,7 @@ button {
 .interpret-title,
 .interpret-card__name,
 .horoscope-info-title {
-  font-family: var(--font-accent);
+  font-family: var(--font-accent), serif;
   font-weight: 400;
   letter-spacing: 0.04em;
 }
@@ -55,5 +55,9 @@ body.settings-sheet-open .bottom-nav-wrap {
 }
 
 body.oracle-sheet-open .bottom-nav-wrap {
+  display: none !important;
+}
+
+body.energy-sheet-open .bottom-nav-wrap {
   display: none !important;
 }

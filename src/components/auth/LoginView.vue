@@ -50,7 +50,26 @@ export default {
     },
   },
 
+  mounted() {
+    void this.initializeLoginViewSafe()
+  },
+
   methods: {
+    async initializeLoginView() {
+      const win = typeof window !== 'undefined' ? window : null
+      this.reduceMotion = !!win?.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+      this.platform = Capacitor.getPlatform()
+      this.logAuth('mounted', { platform: this.platform, isNative: this.isNativePlatform })
+    },
+
+    async initializeLoginViewSafe() {
+      try {
+        await this.initializeLoginView()
+      } catch (error) {
+        this.logAuth('mounted_failed', error?.message || String(error))
+      }
+    },
+
     logAuth(step, payload) {
       if (payload !== undefined) {
         console.log(`[Auth][Login] ${step}`, payload)
@@ -293,13 +312,6 @@ export default {
       }
     },
   },
-
-  mounted() {
-    const win = typeof window !== 'undefined' ? window : null
-    this.reduceMotion = !!win?.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
-    this.platform = Capacitor.getPlatform()
-    this.logAuth('mounted', { platform: this.platform, isNative: this.isNativePlatform })
-  },
 }
 </script>
 
@@ -435,8 +447,6 @@ export default {
 <style scoped lang="scss">
 .login-wrap {
   min-height: 100vh;
-  min-height: 100svh;
-  min-height: 100dvh;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -447,8 +457,6 @@ export default {
 .login-container {
   position: relative;
   min-height: 100vh;
-  min-height: 100svh;
-  min-height: 100dvh;
   width: 100%;
   max-width: 460px;
   margin: 0 auto;
@@ -456,6 +464,22 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+@supports (min-height: 100dvh) {
+  .login-wrap,
+  .login-container {
+    min-height: 100dvh;
+  }
+}
+
+@supports (min-height: 100svh) {
+  @supports not (min-height: 100dvh) {
+    .login-wrap,
+    .login-container {
+      min-height: 100svh;
+    }
+  }
 }
 
 .auth-hero {

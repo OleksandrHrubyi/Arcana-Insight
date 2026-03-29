@@ -5,19 +5,46 @@ import { Capacitor, CapacitorHttp } from '@capacitor/core'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim() || ''
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim() || ''
 
+const storageCache = new Map<string, string | null>()
+const storageReadsInFlight = new Map<string, Promise<string | null>>()
+
 const supabaseStorage = {
   async getItem(key: string) {
-    if (Capacitor.isNativePlatform()) {
-      const { value } = await Preferences.get({ key })
-      return value
+    if (storageCache.has(key)) {
+      return storageCache.get(key) ?? null
     }
+    if (storageReadsInFlight.has(key)) {
+      return storageReadsInFlight.get(key) as Promise<string | null>
+    }
+
+    const readTask = (async () => {
+      let value: string | null
+
+      if (Capacitor.isNativePlatform()) {
+        const result = await Preferences.get({ key })
+        value = result.value ?? null
+      } else {
+        try {
+          value = localStorage.getItem(key)
+        } catch {
+          value = null
+        }
+      }
+
+      storageCache.set(key, value)
+      return value
+    })()
+
+    storageReadsInFlight.set(key, readTask)
     try {
-      return localStorage.getItem(key)
-    } catch {
-      return null
+      return await readTask
+    } finally {
+      storageReadsInFlight.delete(key)
     }
   },
   async setItem(key: string, value: string) {
+    storageCache.set(key, value)
+
     if (Capacitor.isNativePlatform()) {
       await Preferences.set({ key, value })
       return
@@ -29,6 +56,7 @@ const supabaseStorage = {
     }
   },
   async removeItem(key: string) {
+    storageCache.set(key, null)
     if (Capacitor.isNativePlatform()) {
       await Preferences.remove({ key })
       return
@@ -129,14 +157,31 @@ export const getAuthStorageKey = () => {
   return ref ? `sb-${ref}-auth-token` : ''
 }
 
+let cachedSessionRaw: string | null = null
+let cachedSessionParsed: any = null
+
 export const readStoredSession = async () => {
   const key = getAuthStorageKey()
   if (!key) return null
   const raw = await supabaseStorage.getItem(key)
-  if (!raw) return null
+  if (!raw) {
+    cachedSessionRaw = null
+    cachedSessionParsed = null
+    return null
+  }
+
+  if (raw === cachedSessionRaw) {
+    return cachedSessionParsed
+  }
+
   try {
-    return JSON.parse(raw)
+    const parsed = JSON.parse(raw)
+    cachedSessionRaw = raw
+    cachedSessionParsed = parsed
+    return parsed
   } catch {
+    cachedSessionRaw = null
+    cachedSessionParsed = null
     return null
   }
 }
@@ -150,7 +195,10 @@ export const writeStoredSession = async (session: any) => {
   const key = getAuthStorageKey()
   if (!key) return
   try {
-    await supabaseStorage.setItem(key, JSON.stringify(session || {}))
+    const raw = JSON.stringify(session || {})
+    cachedSessionRaw = raw
+    cachedSessionParsed = session || {}
+    await supabaseStorage.setItem(key, raw)
   } catch {
     // ignore storage errors
   }
@@ -160,6 +208,8 @@ export const clearStoredSession = async () => {
   const key = getAuthStorageKey()
   if (!key) return
   try {
+    cachedSessionRaw = null
+    cachedSessionParsed = null
     await supabaseStorage.removeItem(key)
   } catch {
     // ignore storage errors

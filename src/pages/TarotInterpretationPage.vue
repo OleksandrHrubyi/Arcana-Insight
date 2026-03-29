@@ -62,6 +62,28 @@
         <div class="interpret-section__label">{{ adviceLabel }}</div>
         <div class="interpret-advice">{{ reading.advice }}</div>
       </div>
+
+      <section v-if="showPremiumAha" class="interpret-upgrade">
+        <div class="interpret-upgrade__badge">{{ premiumBadge }}</div>
+        <div class="interpret-upgrade__title">{{ premiumTitle }}</div>
+        <p class="interpret-upgrade__lead">{{ premiumLead }}</p>
+
+        <div class="interpret-upgrade__preview">
+          <div class="interpret-upgrade__preview-label">{{ premiumPreviewLabel }}</div>
+          <div class="interpret-upgrade__preview-text">{{ premiumPreviewText }}</div>
+        </div>
+
+        <div class="interpret-upgrade__list">
+          <div v-for="item in premiumAhaPoints" :key="item" class="interpret-upgrade__item">
+            <q-icon name="check" size="14px" />
+            <span>{{ item }}</span>
+          </div>
+        </div>
+
+        <button type="button" class="interpret-upgrade__cta" @click="openPremiumFromAha">
+          {{ premiumCta }}
+        </button>
+      </section>
     </section>
 
     <section v-else class="interpret-empty">
@@ -94,16 +116,24 @@ import { useQuasar } from 'quasar'
 import { Share } from '@capacitor/share'
 import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
-import { currentLocale } from 'src/i18n'
+import { currentLocale, t } from 'src/i18n'
+import { usePremiumAccess } from 'src/stores/premiumAccess'
+import { analytics } from 'src/services/analytics'
 
 const STORAGE_KEY = 'tarot-interpretation-v1'
 
 const router = useRouter()
 const $q = useQuasar()
+const { hasPremiumAccess } = usePremiumAccess()
 const reading = ref(null)
 const meta = ref({ themeLabel: '', subThemeLabel: '', question: '' })
 const visuals = ref([])
 const locale = computed(() => (currentLocale.value || 'en').toLowerCase().startsWith('uk') ? 'uk' : 'en')
+const tt = (key, fallback = '') => {
+  const translated = t(locale.value, key)
+  if (translated === key) return fallback || key
+  return translated
+}
 
 const headerKicker = computed(() => (locale.value === 'uk' ? 'ТАРО • ТЛУМАЧЕННЯ' : 'TAROT • INTERPRETATION'))
 const fallbackTitle = computed(() => (locale.value === 'uk' ? 'Тлумачення' : 'Interpretation'))
@@ -120,6 +150,28 @@ const newSessionLabel = computed(() => (locale.value === 'uk' ? 'Новий се
 const overviewLabel = computed(() => (locale.value === 'uk' ? 'Суть розкладу' : 'Overview'))
 const cardsLabel = computed(() => (locale.value === 'uk' ? 'Карти' : 'Cards'))
 const adviceLabel = computed(() => (locale.value === 'uk' ? 'Підсумок' : 'Closing'))
+const showPremiumAha = computed(() => Boolean(reading.value) && !hasPremiumAccess.value)
+const premiumBadge = computed(() => (locale.value === 'uk' ? 'PREMIUM' : 'PREMIUM'))
+const premiumTitle = computed(() =>
+  tt(
+    'premiumAccess.tarot.aha.title',
+    locale.value === 'uk' ? 'Відкрий глибший формат наступного розкладу' : 'Unlock a deeper format for your next spread',
+  ),
+)
+const premiumLead = computed(() =>
+  tt(
+    'premiumAccess.tarot.aha.lead',
+    locale.value === 'uk'
+      ? 'Ти вже отримав базовий інсайт. Premium додає більше контексту і чіткіший напрям дії.'
+      : 'You already got a baseline insight. Premium adds more context and clearer next steps.',
+  ),
+)
+const premiumPreviewLabel = computed(() =>
+  tt('premiumAccess.tarot.aha.previewLabel', locale.value === 'uk' ? 'PREVIEW NEXT' : 'PREVIEW NEXT'),
+)
+const premiumCta = computed(() =>
+  tt('premiumAccess.cta', locale.value === 'uk' ? 'Відкрити Premium' : 'Unlock Premium'),
+)
 
 const mergedCards = computed(() => {
   const cards = reading.value?.cards || []
@@ -132,6 +184,46 @@ const mergedCards = computed(() => {
     }
   })
 })
+
+const premiumPreviewText = computed(() => {
+  const card = mergedCards.value[0]
+  const fallback = tt(
+    'premiumAccess.tarot.aha.previewFallback',
+    locale.value === 'uk'
+      ? 'У Premium ти побачиш ширший контекст, глибшу інтерпретацію та рекомендації для наступного кроку.'
+      : 'Premium adds broader context, deeper interpretation, and practical next-step guidance.',
+  )
+  if (!card) return fallback
+
+  const line = String(card.message || card.detail || reading.value?.summary || '').trim()
+  if (!line) return fallback
+  const clipped = line.length > 132 ? `${line.slice(0, 131)}…` : line
+  const prefix = tt('premiumAccess.tarot.aha.previewNowPrefix', locale.value === 'uk' ? 'Зараз' : 'Now')
+  return `${prefix}: ${clipped}`
+})
+
+const premiumAhaPoints = computed(() =>
+  [
+    tt(
+      'premiumAccess.tarot.aha.points.unlimited',
+      locale.value === 'uk'
+        ? 'Необмежені таро-сесії без денного ліміту.'
+        : 'Unlimited tarot sessions without daily limits.',
+    ),
+    tt(
+      'premiumAccess.tarot.aha.points.spreads',
+      locale.value === 'uk'
+        ? 'Розклади на 3 і 5 карт для ширшої картини.'
+        : '3-card and 5-card spreads for wider context.',
+    ),
+    tt(
+      'premiumAccess.tarot.aha.points.history',
+      locale.value === 'uk'
+        ? 'Збереження історії розкладів і повернення до патернів.'
+        : 'Saved reading history to revisit recurring patterns.',
+    ),
+  ],
+)
 
 const loadReading = () => {
   try {
@@ -225,6 +317,21 @@ const shareReading = async () => {
   } catch (error) {
     console.error(error)
   }
+}
+
+const openPremiumFromAha = async () => {
+  void analytics.logEvent('paywall_entry_primary', {
+    source: 'tarot_post_session',
+    entry: 'interpretation_aha',
+  })
+  await hapticTap()
+  router.push({
+    name: 'premium',
+    query: {
+      source: 'tarot_post_session',
+      entry: 'interpretation_aha',
+    },
+  }).catch(() => {})
 }
 
 onMounted(() => {
@@ -458,6 +565,94 @@ onMounted(() => {
   font-size: 14px;
   line-height: 1.6;
   color: rgba(236, 238, 244, 0.92);
+}
+
+.interpret-upgrade {
+  margin-bottom: 18px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(147, 203, 255, 0.34);
+  background:
+    radial-gradient(120% 140% at 0% 0, rgba(147, 203, 255, 0.16), rgba(147, 203, 255, 0)),
+    linear-gradient(165deg, rgba(8, 12, 20, 0.9), rgba(4, 6, 12, 0.96));
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+  display: grid;
+  gap: 10px;
+}
+
+.interpret-upgrade__badge {
+  justify-self: start;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  color: rgba(230, 242, 255, 0.95);
+  border: 1px solid rgba(141, 201, 255, 0.62);
+  background: rgba(147, 203, 255, 0.2);
+}
+
+.interpret-upgrade__title {
+  font-size: 16px;
+  line-height: 1.45;
+  color: rgba(246, 242, 232, 0.96);
+  font-weight: 650;
+}
+
+.interpret-upgrade__lead {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.58;
+  color: rgba(214, 225, 242, 0.9);
+}
+
+.interpret-upgrade__preview {
+  border-radius: 12px;
+  border: 1px solid rgba(156, 184, 235, 0.2);
+  background: rgba(8, 12, 18, 0.58);
+  padding: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.interpret-upgrade__preview-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(200, 210, 226, 0.62);
+}
+
+.interpret-upgrade__preview-text {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(230, 238, 252, 0.9);
+}
+
+.interpret-upgrade__list {
+  display: grid;
+  gap: 8px;
+}
+
+.interpret-upgrade__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(222, 234, 251, 0.9);
+}
+
+.interpret-upgrade__cta {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 12px;
+  border: 1px solid rgba(168, 224, 255, 0.72);
+  padding: 11px 12px;
+  background: linear-gradient(180deg, rgba(88, 150, 231, 0.96), rgba(46, 102, 184, 0.98));
+  color: #f4f9ff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .interpret-empty {

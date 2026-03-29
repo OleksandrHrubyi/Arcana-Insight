@@ -1,6 +1,8 @@
 import { analytics } from 'src/services/analytics'
 
 export default async () => {
-  // Do not block app boot on analytics init.
-  analytics.init()
+  // Keep startup interactive first; init analytics shortly after first paint.
+  setTimeout(() => {
+    analytics.init()
+  }, 1500)
 }

@@ -9,6 +9,8 @@ import routes from './routes'
 import { scroll } from 'quasar'
 import { analytics } from 'src/services/analytics'
 import { useAuthStore } from 'stores/authStore.js'
+import { isOnboardingComplete } from 'src/helpers/onboardingPrefs'
+import { resolveRouteGuardDecision } from './guard'
 
 /*
  * If not building with SSR mode, you can
@@ -59,18 +61,13 @@ export default defineRouter(function (/* { store, ssrContext } */) {
 
   Router.beforeEach(async (to) => {
     const authStore = useAuthStore()
-    console.log('[Router] beforeEach', { to: to.name || to.path, requiresAuth: !!to.meta?.requiresAuth })
-    if (!to.meta?.requiresAuth) return true
-    if (authStore.state.user) {
-      console.log('[Router] cached authStore user present, allow')
-      return true
-    }
-    // Avoid hanging on auth network calls in route guard
-    if (authStore.state.user) {
-      console.log('[Router] fallback to cached authStore user, allow')
-      return true
-    }
-    return { name: 'login' }
+    const onboardingComplete = isOnboardingComplete()
+    const hasUser = Boolean(authStore.state.user)
+    return resolveRouteGuardDecision({
+      to,
+      onboardingComplete,
+      hasUser,
+    })
   })
 
   Router.afterEach((to) => {

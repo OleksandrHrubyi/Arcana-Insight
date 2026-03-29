@@ -281,13 +281,25 @@
 import { computed, onActivated, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { currentLocale, t as i18nT } from 'src/i18n'
 import { loadTarotData } from 'src/helpers/tarotData'
+import { DAILY_ACTIVITY_KEYS, markDailyActivity } from 'src/helpers/dailyRitual'
+import {
+  consumeRitualReward,
+  ensureRitualRewardInventory,
+  trackRitualActivityWithGuestFallback,
+} from 'src/helpers/ritualRewardsBackend.js'
+import {
+  getRitualRewardQuantity,
+  RITUAL_REWARD_KEYS,
+} from 'src/helpers/ritualRewardInventory'
 import { getTarotReading } from 'src/services/tarotOracle'
 import { getUserNative, insertTarotReading } from 'src/services/supabaseNative'
+import { analytics } from 'src/services/analytics'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
+import { useAuthStore } from 'stores/authStore.js'
 
 const videoRef = ref(null)
 const sceneRef = ref(null)
@@ -304,9 +316,11 @@ const currentLang = computed(() => {
   const locale = String(currentLocale.value || 'en').toLowerCase()
   return locale.startsWith('uk') ? 'uk' : 'en'
 })
+const route = useRoute()
 const router = useRouter()
 const $q = useQuasar()
 const { hasPremiumAccess } = usePremiumAccess()
+const authStore = useAuthStore()
 
 const stage = ref('intro')
 const selectedTheme = ref('')
@@ -330,8 +344,10 @@ const interpretationDecision = ref('')
 const interpretationLoading = ref(false)
 const interpretationError = ref('')
 const interpretationData = ref(null)
+const entryFocusApplied = ref(false)
 const loadingDots = ref(1)
 let loadingDotsTimer = null
+const tarotAiEnabled = import.meta.env.VITE_ENABLE_TAROT_AI === 'true'
 
 const timers = []
 let videoPlaybackWatchdog = null
@@ -352,6 +368,14 @@ const DEAL_REVEAL_DELAY = 620
 const DEAL_FLIP_DELAY = 620
 const DEAL_FINISH_DELAY = 1100
 const FREE_TAROT_DAILY_KEY = 'arcana_free_tarot_daily_v1'
+const ENTRY_FOCUS_THEME_MAP = Object.freeze({
+  love: 'relationships',
+  career: 'work',
+  money: 'money',
+  self: 'self',
+  energy: 'self',
+  future: 'choice',
+})
 let controlsRevealToken = 0
 const DECK_ANCHOR = Object.freeze({
   x: 0.728,
@@ -360,6 +384,30 @@ const DECK_ANCHOR = Object.freeze({
   offsetX: 20,
   offsetY: 80,
 })
+const ritualRewardTick = ref(0)
+const pendingSpreadRewardKey = ref('')
+
+const getRitualRewardUserId = () => String(authStore.state.user?.id || '').trim()
+
+const refreshRitualRewardAccess = async (force = false) => {
+  await ensureRitualRewardInventory({
+    userId: getRitualRewardUserId(),
+    force,
+  })
+  ritualRewardTick.value = Date.now()
+}
+
+const getExtraTarotSpreadTokens = () => {
+  const nowTick = ritualRewardTick.value
+  void nowTick
+  return Math.max(
+    0,
+    getRitualRewardQuantity({
+      rewardKey: RITUAL_REWARD_KEYS.extraTarotSpread,
+      userId: getRitualRewardUserId(),
+    }),
+  )
+}
 
 function onExit() {
   void impact(ImpactStyle.Light)
@@ -405,18 +453,60 @@ const markFreeTarotUsedToday = () => {
 }
 
 const notifyFreeTarotDailyLimit = () => {
-  const message =
-    currentLang.value === 'uk'
-      ? 'Безкоштовний розклад уже використано сьогодні. Новий буде завтра, або відкрий Premium без ліміту.'
-      : 'Your free tarot reading is already used for today. Come back tomorrow or unlock Premium for unlimited access.'
+  const message = i18nT(currentLang.value, 'premiumAccess.tarot.dailyLimit')
 
   $q.notify({
     message,
     color: 'dark',
     textColor: 'white',
     position: 'bottom',
-    timeout: 2200,
+    timeout: 2600,
+    actions: [
+      {
+        label: i18nT(currentLang.value, 'premiumAccess.cta'),
+        color: 'primary',
+        handler: () => {
+          void openPremiumFromUpsell('tarot_daily_limit')
+        },
+      },
+    ],
   })
+}
+
+const notifyPremiumSpreadLock = () => {
+  const message = i18nT(currentLang.value, 'premiumAccess.spreads.notify')
+  if (!message) return
+
+  $q.notify({
+    message,
+    color: 'dark',
+    textColor: 'white',
+    position: 'bottom',
+    timeout: 2600,
+    actions: [
+      {
+        label: i18nT(currentLang.value, 'premiumAccess.cta'),
+        color: 'primary',
+        handler: () => {
+          void openPremiumFromUpsell('tarot_spread_lock')
+        },
+      },
+    ],
+  })
+}
+
+const openPremiumFromUpsell = async (source) => {
+  void analytics.logEvent('paywall_entry_secondary', {
+    source,
+    entry: 'notify_action',
+  })
+  await router.push({
+    name: 'premium',
+    query: {
+      source,
+      entry: 'notify_action',
+    },
+  }).catch(() => {})
 }
 const ORACLE_HEAD_ANCHOR = Object.freeze({
   x: 0.49,
@@ -504,6 +594,15 @@ const loadCardPool = async () => {
       synopsis: card?.synopsis || null,
       description: card?.description || null,
     }))
+}
+
+const loadCardPoolSafe = async () => {
+  try {
+    await loadCardPool()
+  } catch (error) {
+    cardPool.value = []
+    console.warn('[TarotOracle] loadCardPool failed', error)
+  }
 }
 
 const cryptoRandomFloat = () => {
@@ -740,6 +839,7 @@ const askThemePrimary = () => {
   selectedSubTheme.value = ''
   selectedQuestion.value = ''
   selectedSpread.value = 0
+  pendingSpreadRewardKey.value = ''
   draftQuestion.value = ''
   isReadingActive.value = false
   spreadCards.value = []
@@ -751,6 +851,9 @@ const askThemePrimary = () => {
   resetInterpretationState()
   stage.value = 'theme'
   setPrompt('theme')
+  if (applyRouteEntryFocusIfNeeded()) {
+    return
+  }
   revealControlsWithDelay(1400)
 }
 
@@ -789,6 +892,22 @@ const pickTheme = (theme) => {
     setPrompt('subTheme')
     revealControlsWithDelay(950)
   })
+}
+
+function normalizeEntryFocusTheme(value) {
+  const key = String(value || '')
+    .trim()
+    .toLowerCase()
+  return ENTRY_FOCUS_THEME_MAP[key] || ''
+}
+
+function applyRouteEntryFocusIfNeeded() {
+  if (entryFocusApplied.value) return false
+  const nextTheme = normalizeEntryFocusTheme(route.query?.focus)
+  if (!nextTheme) return false
+  entryFocusApplied.value = true
+  pickTheme(nextTheme)
+  return true
 }
 
 const pickSubTheme = (subTheme) => {
@@ -894,8 +1013,10 @@ Depth: ${spreadLabel}
 ${touchPrompt}`
 }
 
-const setSpread = (spread) => {
+const setSpread = (spread, options = {}) => {
+  const usesReward = Boolean(options.usesReward)
   selectedSpread.value = spread
+  pendingSpreadRewardKey.value = usesReward ? RITUAL_REWARD_KEYS.extraTarotSpread : ''
   stage.value = 'ready'
   controlsUnlocked.value = false
   actionsSheetOpen.value = false
@@ -913,27 +1034,21 @@ const setSpread = (spread) => {
 const selectSpreadWithAccess = async (spread) => {
   if (spread === 1 && !hasPremiumAccess.value && hasUsedFreeTarotToday()) {
     notifyFreeTarotDailyLimit()
-    await router.push({ name: 'premium' })
     return
   }
 
   if (spread === 1 || hasPremiumAccess.value) {
-    setSpread(spread)
+    setSpread(spread, { usesReward: false })
     return
   }
 
-  const message = i18nT(currentLang.value, 'premiumAccess.spreads.notify')
-  if (message) {
-    $q.notify({
-      message,
-      color: 'dark',
-      textColor: 'white',
-      position: 'bottom',
-      timeout: 1800,
-    })
+  const tokenCount = getExtraTarotSpreadTokens()
+  if (tokenCount > 0) {
+    setSpread(spread, { usesReward: true })
+    return
   }
 
-  await router.push({ name: 'premium' })
+  notifyPremiumSpreadLock()
 }
 
 const getCardRole = (index, total) => {
@@ -1131,6 +1246,80 @@ const buildBasicInterpretation = (payload) => {
   }
 }
 
+const trimInterpretationText = (value, max = 220) => {
+  const text = String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+  if (!text) return ''
+  if (text.length <= max) return text
+  return `${text.slice(0, max - 1).trimEnd()}…`
+}
+
+const buildPremiumStructuredFallback = (payload, { aiUnavailable = false } = {}) => {
+  const isUk = currentLang.value === 'uk'
+  const total = spreadCards.value.length || selectedSpread.value || 1
+  const cards = spreadCards.value.map((card, index) => {
+    const role = getCardRole(index, total)
+    const meaning = trimInterpretationText(getCardMeaningText(card), 170)
+    const detail = trimInterpretationText(getCardDetailText(card), 220)
+    const keywords = getCardKeywords(card).slice(0, 3)
+    const keywordsLine = keywords.length
+      ? isUk
+        ? `Ключі: ${keywords.join(', ')}.`
+        : `Keywords: ${keywords.join(', ')}.`
+      : ''
+    const question = isUk
+      ? `Фокус дії: який маленький крок у темі «${role}» ти зробиш сьогодні?`
+      : `Action focus: what small step can you take today in the “${role}” area?`
+
+    return {
+      position: getPositionKey(index, total),
+      positionLabel: role,
+      cardTitle: getCardTitle(card),
+      message: meaning || detail || getCardTitle(card),
+      detail: [detail, keywordsLine].filter(Boolean).join(' '),
+      question,
+    }
+  })
+
+  const primary = cards[0]?.message || ''
+  const secondary = cards[1]?.message || ''
+  const allKeywords = spreadCards.value
+    .flatMap((card) => getCardKeywords(card))
+    .map((word) => String(word || '').trim())
+    .filter(Boolean)
+    .filter((word, index, arr) => arr.indexOf(word) === index)
+    .slice(0, 6)
+  const keywordsSummary = allKeywords.length
+    ? isUk
+      ? `Повторювані акценти: ${allKeywords.join(', ')}.`
+      : `Recurring accents: ${allKeywords.join(', ')}.`
+    : ''
+  const focusLabel =
+    payload?.question || payload?.subThemeLabel || payload?.themeLabel || (isUk ? 'поточний фокус' : 'current focus')
+
+  const opening = aiUnavailable
+    ? isUk
+      ? `AI-інтерпретація тимчасово недоступна, тому нижче сформовано розширене Premium-тлумачення на основі структури розкладу та значень карт.`
+      : `AI interpretation is temporarily unavailable, so the extended Premium interpretation below is built from spread structure and card meanings.`
+    : isUk
+      ? `Розширене Premium-тлумачення для фокусу «${focusLabel}». Воно зібране зі структури розкладу та змісту кожної карти.`
+      : `Extended Premium interpretation for “${focusLabel}”, built from spread structure and each card meaning.`
+
+  const summary = [primary, secondary, keywordsSummary].filter(Boolean).join(' ')
+  const advice = isUk
+    ? 'Наступний крок: обери один конкретний фокус із розкладу, зафіксуй дію на сьогодні та ввечері коротко перевір, що змінилось.'
+    : 'Next step: pick one concrete focus from the spread, commit one action for today, and do a short evening check-in on what shifted.'
+
+  return {
+    summaryTitle: isUk ? 'Розширене Premium-тлумачення' : 'Extended Premium interpretation',
+    opening,
+    summary,
+    advice,
+    cards,
+  }
+}
+
 const persistInterpretationAndOpen = async (data, payload) => {
   interpretationData.value = data
   try {
@@ -1249,20 +1438,40 @@ const startSpreadScene = () => {
   })
 }
 
-const touchDeck = () => {
+const touchDeck = async () => {
   if (stage.value !== 'ready' || !isDeckHotspotActive.value) {
     return
   }
 
   if (!hasPremiumAccess.value && hasUsedFreeTarotToday()) {
     notifyFreeTarotDailyLimit()
-    void router.push({ name: 'premium' })
     return
   }
 
   if (!hasPremiumAccess.value && (selectedSpread.value || 1) === 1) {
     markFreeTarotUsedToday()
   }
+
+  if (!hasPremiumAccess.value && pendingSpreadRewardKey.value) {
+    const consumeResult = await consumeRitualReward(pendingSpreadRewardKey.value, {
+      source: 'tarot_spread_start',
+      userId: getRitualRewardUserId(),
+    })
+    if (!consumeResult.ok) {
+      pendingSpreadRewardKey.value = ''
+      notifyPremiumSpreadLock()
+      await refreshRitualRewardAccess(true)
+      return
+    }
+    pendingSpreadRewardKey.value = ''
+    await refreshRitualRewardAccess(false)
+  }
+
+  markDailyActivity(DAILY_ACTIVITY_KEYS.tarot)
+  void trackRitualActivityWithGuestFallback(DAILY_ACTIVITY_KEYS.tarot, {
+    source: 'tarot_oracle',
+    userId: authStore.state.user?.id || '',
+  })
 
   void impact(ImpactStyle.Light)
   stage.value = 'started'
@@ -1576,6 +1785,25 @@ const saveReadingToDatabase = async (interpretationData, payload) => {
   }
 }
 
+const buildInterpretationAnalyticsPayload = (payload) => {
+  const depth = Number(payload?.depth || selectedSpread.value || spreadCards.value.length || 1)
+  return {
+    source: 'tarot_oracle',
+    depth: String(Math.max(1, depth)),
+    has_question: payload?.question ? 'true' : 'false',
+    premium: hasPremiumAccess.value ? 'true' : 'false',
+    ai_enabled: tarotAiEnabled ? 'true' : 'false',
+    theme: String(payload?.theme || selectedTheme.value || 'unknown'),
+  }
+}
+
+const logInterpretationOutcome = (eventName, payload, extra = {}) => {
+  void analytics.logEvent(eventName, {
+    ...buildInterpretationAnalyticsPayload(payload),
+    ...extra,
+  })
+}
+
 const acceptInterpretation = async () => {
   if (interpretationLoading.value || interpretationDecision.value === 'yes') {
     return
@@ -1589,17 +1817,26 @@ const acceptInterpretation = async () => {
   try {
     if (!hasPremiumAccess.value) {
       const data = buildBasicInterpretation(payload)
+      logInterpretationOutcome('tarot_free_basic_interpretation', payload, { reason: 'free_access' })
+      await persistInterpretationAndOpen(data, payload)
+      return
+    }
+
+    if (!tarotAiEnabled) {
+      const data = buildPremiumStructuredFallback(payload)
+      logInterpretationOutcome('tarot_premium_structured_fallback', payload, { reason: 'ai_disabled' })
       await persistInterpretationAndOpen(data, payload)
       return
     }
 
     const data = await getTarotReading(payload)
     if (!data) {
-      const fallbackData = buildBasicInterpretation(payload)
+      const fallbackData = buildPremiumStructuredFallback(payload, { aiUnavailable: true })
+      logInterpretationOutcome('tarot_premium_structured_fallback', payload, { reason: 'ai_no_data' })
       const fallbackMessage =
         currentLang.value === 'uk'
-          ? 'AI-інтерпретація тимчасово недоступна. Показую базове тлумачення.'
-          : 'AI interpretation is temporarily unavailable. Showing the basic card meaning.'
+          ? 'AI-інтерпретація тимчасово недоступна. Показую розширене Premium-тлумачення.'
+          : 'AI interpretation is temporarily unavailable. Showing the extended Premium interpretation.'
       $q.notify({
         message: fallbackMessage,
         color: 'dark',
@@ -1610,16 +1847,20 @@ const acceptInterpretation = async () => {
       return
     }
 
+    logInterpretationOutcome('tarot_premium_ai_success', payload)
     await persistInterpretationAndOpen(data, payload)
   } catch (error) {
     console.error(error)
     if (hasPremiumAccess.value) {
       try {
-        const fallbackData = buildBasicInterpretation(payload)
+        const fallbackData = buildPremiumStructuredFallback(payload, { aiUnavailable: true })
+        logInterpretationOutcome('tarot_premium_structured_fallback', payload, {
+          reason: 'ai_error',
+        })
         const fallbackMessage =
           currentLang.value === 'uk'
-            ? 'AI-інтерпретація тимчасово недоступна. Показую базове тлумачення.'
-            : 'AI interpretation is temporarily unavailable. Showing the basic card meaning.'
+            ? 'AI-інтерпретація тимчасово недоступна. Показую розширене Premium-тлумачення.'
+            : 'AI interpretation is temporarily unavailable. Showing the extended Premium interpretation.'
         $q.notify({
           message: fallbackMessage,
           color: 'dark',
@@ -1630,6 +1871,9 @@ const acceptInterpretation = async () => {
         return
       } catch (fallbackError) {
         console.error(fallbackError)
+        logInterpretationOutcome('tarot_premium_ai_error_unrecovered', payload, {
+          reason: 'fallback_failed',
+        })
       }
     }
     interpretationError.value = interpretationUnavailableLine.value
@@ -1702,6 +1946,14 @@ watch(choices, (items) => {
     })
   }
 })
+
+watch(
+  () => authStore.state.user?.id || '',
+  () => {
+    void refreshRitualRewardAccess(true)
+  },
+  { immediate: true },
+)
 
 const runChoice = (choice) => {
   if (!choice || choice.disabled || isChoiceTransitioning.value) {
@@ -1788,7 +2040,8 @@ const confirmWheelSelection = () => {
 }
 
 onMounted(() => {
-  void loadCardPool()
+  void loadCardPoolSafe()
+  void refreshRitualRewardAccess(false)
   applyPlaybackRate()
   ensureVideoPlayback()
   updateDeckHotspotPosition()
@@ -1837,8 +2090,9 @@ onMounted(() => {
 
 onActivated(() => {
   if (!cardPool.value.length) {
-    void loadCardPool()
+    void loadCardPoolSafe()
   }
+  void refreshRitualRewardAccess(false)
   ensureVideoPlayback()
   updateDeckHotspotPosition()
 })

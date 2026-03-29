@@ -158,30 +158,42 @@ export default defineComponent({
     }
   },
 
-  async mounted () {
-    const { data: user } = await getUserNative(8000)
-    if (!user) {
-      this.$router.replace('/auth')
-      return
-    }
-    this.userId = user.id
-
-    const { data: row } = await selectAppUser(
-      user.id,
-      8000,
-      'name,email,date_of_birth,city_of_birth,country'
-    )
-
-    if (row) {
-      this.form = { ...this.form, ...row }
-      this.birthModel = this.form.date_of_birth || ''
-    } else {
-      // email можемо підставити з auth
-      this.form.email = user.email || ''
-    }
+  mounted () {
+    void this.initializeAccountEditSafe()
   },
 
   methods: {
+    async initializeAccountEdit () {
+      const { data: user } = await getUserNative(8000)
+      if (!user) {
+        this.$router.replace('/auth')
+        return
+      }
+      this.userId = user.id
+
+      const { data: row } = await selectAppUser(
+        user.id,
+        8000,
+        'name,email,date_of_birth,city_of_birth,country'
+      )
+
+      if (row) {
+        this.form = { ...this.form, ...row }
+        this.birthModel = this.form.date_of_birth || ''
+      } else {
+        // email можемо підставити з auth
+        this.form.email = user.email || ''
+      }
+    },
+
+    async initializeAccountEditSafe () {
+      try {
+        await this.initializeAccountEdit()
+      } catch (error) {
+        console.warn('[AccountEdit] init failed', error)
+      }
+    },
+
     async hapticTap () {
       if (!Capacitor.isNativePlatform()) return
       try {
@@ -249,6 +261,9 @@ export default defineComponent({
         }
 
         this.$router.back()
+      } catch (error) {
+        console.error('[AccountEdit] save failed:', error)
+        this.$q.notify({ type: 'negative', message: this.tt('errors.saveFailed') })
       } finally {
         this.saving = false
       }

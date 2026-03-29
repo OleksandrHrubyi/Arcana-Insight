@@ -56,6 +56,7 @@
           </div>
           <div class="daily-panel__text">{{ cardDescription }}</div>
         </section>
+
       </div>
 
       <div class="oracle-actions__footer">
@@ -72,9 +73,12 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import { loadTarotData } from 'src/helpers/tarotData'
+import { loadDailyCardsSnapshot } from 'src/helpers/dailyCardCore.js'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
 import { useAuthStore } from 'stores/authStore.js'
+import { DAILY_ACTIVITY_KEYS, markDailyActivity } from 'src/helpers/dailyRitual'
+import { trackRitualActivityWithGuestFallback } from 'src/helpers/ritualRewardsBackend.js'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
@@ -87,12 +91,33 @@ const cardScale = ref(1)
 const cards = ref([])
 const ANON_DAILY_SEED_KEY = 'arcana_daily_seed_v1'
 
-onMounted(async () => {
-  const data = await loadTarotData()
-  cards.value = data?.cards || []
+const initializeDailyCardScreen = async () => {
+  markDailyActivity(DAILY_ACTIVITY_KEYS.dailyCard)
+  void trackRitualActivityWithGuestFallback(DAILY_ACTIVITY_KEYS.dailyCard, {
+    source: 'daily_card_screen',
+    userId: authStore.state.user?.id || '',
+  })
+  const { cards: nextCards, error } = await loadDailyCardsSnapshot({ loadTarotData })
+  cards.value = nextCards
+  if (error) {
+    console.warn('[DailyCard] loadTarotData failed', error)
+  }
   await nextTick()
-  fitCardToContent()
+  await fitCardToContent()
   window.addEventListener('resize', fitCardToContent, { passive: true })
+}
+
+const initializeDailyCardScreenSafe = async () => {
+  try {
+    await initializeDailyCardScreen()
+  } catch (error) {
+    cards.value = []
+    console.warn('[DailyCard] init failed', error)
+  }
+}
+
+onMounted(() => {
+  void initializeDailyCardScreenSafe()
 })
 
 onBeforeUnmount(() => {
@@ -211,24 +236,8 @@ const onClose = async () => {
 }
 
 const fitCardToContent = async () => {
-  const dailyMainEl = dailyMainRef.value
-  if (!dailyMainEl) return
-
   cardScale.value = 1
   await nextTick()
-
-  let scale = 1
-  for (let i = 0; i < 14; i += 1) {
-    const overflow = dailyMainEl.scrollHeight - dailyMainEl.clientHeight
-    if (overflow <= 0) return
-
-    const nextScale = Math.max(0.34, Number((scale - 0.05).toFixed(2)))
-    if (nextScale === scale) return
-
-    scale = nextScale
-    cardScale.value = scale
-    await nextTick()
-  }
 }
 
 watch(
@@ -344,7 +353,9 @@ watch(
   grid-template-rows: auto auto;
   align-content: start;
   gap: 12px;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .daily-card {
@@ -523,6 +534,178 @@ watch(
   color: rgba(224, 234, 251, 0.9);
 }
 
+.daily-panel__text--compact {
+  font-size: 13px;
+  color: rgba(214, 225, 242, 0.84);
+}
+
+.daily-loop-next {
+  font-size: 12px;
+  color: rgba(173, 210, 255, 0.88);
+  letter-spacing: 0.03em;
+}
+
+.daily-streak-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.daily-streak-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(173, 210, 255, 0.26);
+  background: rgba(110, 166, 255, 0.12);
+  color: rgba(224, 234, 251, 0.94);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.daily-streak-best {
+  font-size: 11px;
+  color: rgba(214, 225, 242, 0.68);
+}
+
+.daily-loop-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.daily-loop-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.daily-loop-item__left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.daily-loop-item__icon {
+  color: rgba(214, 225, 242, 0.42);
+}
+
+.daily-loop-item__icon--done {
+  color: rgba(173, 210, 255, 0.94);
+}
+
+.daily-loop-item__label {
+  color: rgba(224, 234, 251, 0.9);
+}
+
+.daily-loop-item__status {
+  color: rgba(214, 225, 242, 0.62);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.daily-loop-item__right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.daily-loop-item__streak {
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  color: rgba(173, 210, 255, 0.86);
+}
+
+.daily-loop-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.daily-loop-btn {
+  min-height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(9, 13, 21, 0.7);
+  color: rgba(224, 234, 251, 0.9);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  padding: 8px 10px;
+}
+
+.daily-loop-btn--primary {
+  border-color: rgba(156, 184, 235, 0.36);
+  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
+}
+
+.daily-loop-reminder {
+  font-size: 11px;
+  color: rgba(214, 225, 242, 0.6);
+  line-height: 1.45;
+}
+
+.daily-progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  color: rgba(214, 225, 242, 0.7);
+}
+
+.daily-progress-track {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.daily-progress-day {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 6px 2px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.daily-progress-day__label {
+  font-size: 10px;
+  color: rgba(214, 225, 242, 0.5);
+  letter-spacing: 0.04em;
+}
+
+.daily-progress-day__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(214, 225, 242, 0.3);
+}
+
+.daily-progress-day--active .daily-progress-day__dot {
+  background: rgba(173, 210, 255, 0.82);
+}
+
+.daily-progress-day--full {
+  border-color: rgba(173, 210, 255, 0.28);
+  background: rgba(110, 166, 255, 0.08);
+}
+
+.daily-progress-day--today {
+  box-shadow: inset 0 0 0 1px rgba(173, 210, 255, 0.34);
+}
+
+.daily-progress-day--today .daily-progress-day__label {
+  color: rgba(224, 234, 251, 0.9);
+}
+
 .oracle-actions__footer {
   margin-top: auto;
   padding: 8px;
@@ -623,6 +806,11 @@ watch(
   .daily-meaning__text {
     font-size: 15px;
     -webkit-line-clamp: 2;
+  }
+
+  .daily-loop-btn {
+    min-height: 32px;
+    font-size: 11px;
   }
 }
 </style>

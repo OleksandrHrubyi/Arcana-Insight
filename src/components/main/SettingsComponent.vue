@@ -49,6 +49,7 @@
 
                 <q-item-section>
                   <q-item-label class="settings-label">{{ tt('dailyPush') }}</q-item-label>
+                  <q-item-label caption class="settings-caption">{{ getPushStatusLabel() }}</q-item-label>
                 </q-item-section>
 
                 <q-item-section side>
@@ -88,6 +89,33 @@
                 </q-item-section>
               </q-item>
             </q-list>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card__title">
+              {{ tt('settingsPage.sections.personalization') }}
+            </div>
+            <div class="settings-personalization">
+              <div class="settings-personalization__hint">
+                {{ tt('settingsPage.personalization.interestsHint') }}
+              </div>
+              <div class="settings-personalization__meta">
+                {{ tt('settingsPage.personalization.selectedLabel') }}: {{ onboardingSelectedCount }}
+              </div>
+              <div class="settings-interest-tags">
+                <button
+                  v-for="item in onboardingInterestItems"
+                  :key="item.key"
+                  type="button"
+                  class="settings-interest-tag"
+                  :class="{ 'settings-interest-tag--active': item.isSelected }"
+                  @click="onToggleOnboardingInterest(item.key)"
+                >
+                  <q-icon :name="item.icon" size="14px" />
+                  <span>{{ tt(item.labelKey) }}</span>
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="settings-card">
@@ -168,6 +196,7 @@
 
               <q-item-section>
                 <q-item-label class="settings-label">{{ tt('dailyPush') }}</q-item-label>
+                <q-item-label caption class="settings-caption">{{ getPushStatusLabel() }}</q-item-label>
               </q-item-section>
 
                 <q-item-section side>
@@ -207,6 +236,33 @@
               </q-item-section>
             </q-item>
           </q-list>
+        </div>
+
+        <div class="settings-card">
+          <div class="settings-card__title">
+            {{ tt('settingsPage.sections.personalization') }}
+          </div>
+          <div class="settings-personalization">
+            <div class="settings-personalization__hint">
+              {{ tt('settingsPage.personalization.interestsHint') }}
+            </div>
+            <div class="settings-personalization__meta">
+              {{ tt('settingsPage.personalization.selectedLabel') }}: {{ onboardingSelectedCount }}
+            </div>
+            <div class="settings-interest-tags">
+              <button
+                v-for="item in onboardingInterestItems"
+                :key="item.key"
+                type="button"
+                class="settings-interest-tag"
+                :class="{ 'settings-interest-tag--active': item.isSelected }"
+                @click="onToggleOnboardingInterest(item.key)"
+              >
+                <q-icon :name="item.icon" size="14px" />
+                <span>{{ tt(item.labelKey) }}</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="settings-card">
@@ -323,7 +379,18 @@
 
 <script>
 import { defineComponent } from 'vue'
-import { ensureToken, syncRegisterDevice, getSavedTime, setSavedTime } from 'src/helpers/pushBackend'
+import {
+  ensureToken,
+  syncRegisterDevice,
+  resolveAccountPushPreference,
+  getSavedTime,
+  setSavedTime
+} from 'src/helpers/pushBackend'
+import {
+  normalizeOnboardingInterests,
+  persistOnboardingPreferences,
+  readOnboardingInterests,
+} from 'src/helpers/onboardingPrefs'
 import { t, currentLocale, setLocale } from 'src/i18n'
 import { useAuthStore } from 'stores/authStore.js'
 
@@ -333,6 +400,14 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics'
 
 const LS_DAILY_PUSH = 'daily_push_enabled'
 const DEFAULT_TIME = '08:00'
+const ONBOARDING_INTEREST_ITEMS = Object.freeze([
+  { key: 'love', icon: 'favorite', labelKey: 'onboardingPage.interests.love' },
+  { key: 'career', icon: 'work_outline', labelKey: 'onboardingPage.interests.career' },
+  { key: 'money', icon: 'payments', labelKey: 'onboardingPage.interests.money' },
+  { key: 'self', icon: 'self_improvement', labelKey: 'onboardingPage.interests.self' },
+  { key: 'energy', icon: 'bolt', labelKey: 'onboardingPage.interests.energy' },
+  { key: 'future', icon: 'travel_explore', labelKey: 'onboardingPage.interests.future' },
+])
 
 export default defineComponent({
   name: 'SettingsComponent',
@@ -356,6 +431,8 @@ export default defineComponent({
       authStore: useAuthStore(),
       dailyPush: JSON.parse(localStorage.getItem(LS_DAILY_PUSH) || 'false'),
       busy: false,
+      pushSyncError: false,
+      suppressDailyPushWatch: false,
       languageSheet: false,
       timeSheet: false,
       reduceMotion: false,
@@ -365,6 +442,7 @@ export default defineComponent({
       selectedTimeIndex: 0,
       lastTimeHapticAt: 0,
       selectedTimeValue: '',
+      onboardingInterests: [],
     }
   },
 
@@ -395,6 +473,22 @@ export default defineComponent({
         { value: 'en', label: this.tt('languages.en'), sub: this.tt('languagesNative.en') },
         { value: 'uk', label: this.tt('languages.uk'), sub: this.tt('languagesNative.uk') }
       ]
+    },
+
+    onboardingSelectedCount () {
+      return this.onboardingInterests.length
+    },
+
+    onboardingInterestItems () {
+      const selectedSet = new Set(this.onboardingInterests)
+      const selected = []
+      const rest = []
+      for (const item of ONBOARDING_INTEREST_ITEMS) {
+        const next = { ...item, isSelected: selectedSet.has(item.key) }
+        if (next.isSelected) selected.push(next)
+        else rest.push(next)
+      }
+      return [...selected, ...rest]
     }
   },
 
@@ -409,24 +503,157 @@ export default defineComponent({
 
     locale () {
       this.buildTimeOptions()
+      if (this.dailyPush && !this.busy) {
+        void this.syncDailyPushStateSafe(true, { silentError: true })
+      }
     },
 
-    async dailyPush (val) {
+    dailyPush (val) {
+      if (this.suppressDailyPushWatch) return
+      void this.syncDailyPushStateSafe(Boolean(val))
+    }
+  },
+
+  mounted () {
+    void this.initializeSettingsSafe()
+  },
+
+  beforeUnmount () {
+    // no-op
+  },
+
+  methods: {
+    async initializeSettings () {
+      // reduced motion
+      try {
+        this.reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      } catch (e) {
+        console.error(e)
+      }
+
+      this.buildTimeOptions()
+      this.selectedTimeValue = this.normalizeTimeValue(getSavedTime() || DEFAULT_TIME)
+      setSavedTime(this.selectedTimeValue)
+      this.hydrateOnboardingInterests()
+
+      await this.initializeSettingsAuthSafe()
+      await this.hydratePushPreferenceFromAccountSafe()
+    },
+
+    async initializeSettingsSafe () {
+      try {
+        await this.initializeSettings()
+      } catch (error) {
+        console.warn('[Settings] init failed', error)
+      }
+    },
+
+    async initializeSettingsAuthSafe () {
+      try {
+        await this.authStore.initAuth()
+      } catch (error) {
+        console.warn('[Settings] initAuth failed', error)
+      }
+    },
+
+    toHHMM (hour, minute) {
+      const h = Number(hour)
+      const m = Number(minute)
+      if (!Number.isFinite(h) || !Number.isFinite(m)) return ''
+      if (h < 0 || h > 23 || m < 0 || m > 59) return ''
+      return `${String(Math.trunc(h)).padStart(2, '0')}:${String(Math.trunc(m)).padStart(2, '0')}`
+    },
+
+    async hydratePushPreferenceFromAccount () {
+      if (!this.isLoggedIn) return
+
+      const resolved = await resolveAccountPushPreference()
+      if (!resolved.ok) {
+        console.warn('[Settings] resolveAccountPushPreference failed', resolved.error)
+        return
+      }
+
+      const pref = resolved?.data?.preference || null
+      if (!pref || typeof pref.enabled !== 'boolean') {
+        if (resolved?.data?.reason) {
+          console.warn('[Settings] account push preference unavailable:', resolved.data.reason)
+        }
+        return
+      }
+
+      const nextEnabled = Boolean(pref.enabled)
+      const nextHHMM = this.toHHMM(pref.notify_hour, pref.notify_minute)
+      if (nextHHMM) {
+        const normalized = this.normalizeTimeValue(nextHHMM)
+        this.selectedTimeValue = normalized
+        setSavedTime(normalized)
+      }
+
+      this.persistDailyPushFlag(nextEnabled)
+      this.setDailyPushLocally(nextEnabled)
+    },
+
+    async hydratePushPreferenceFromAccountSafe () {
+      try {
+        await this.hydratePushPreferenceFromAccount()
+      } catch (error) {
+        console.warn('[Settings] hydratePushPreferenceFromAccount failed', error)
+      }
+    },
+
+    getPushStatusLabel () {
+      if (this.busy) {
+        return this.tt('notifications.syncing')
+      }
+      if (this.pushSyncError) {
+        return this.tt('notifications.syncFailed')
+      }
+      if (!this.dailyPush) {
+        return this.tt('notifications.off')
+      }
+      return `${this.tt('notifications.onAt')} ${this.optimalTimeLabel}`
+    },
+
+    setDailyPushLocally (next) {
+      this.suppressDailyPushWatch = true
+      this.dailyPush = Boolean(next)
+      this.$nextTick(() => {
+        this.suppressDailyPushWatch = false
+      })
+    },
+
+    normalizeTimeValue (value) {
+      const candidate = String(value || '').trim()
+      const isValidOption = this.timeOptions.some((opt) => opt.value === candidate)
+      if (isValidOption) return candidate
+      const hasDefault = this.timeOptions.some((opt) => opt.value === DEFAULT_TIME)
+      if (hasDefault) return DEFAULT_TIME
+      return this.timeOptions[0]?.value || DEFAULT_TIME
+    },
+
+    persistDailyPushFlag (enabled) {
+      localStorage.setItem(LS_DAILY_PUSH, JSON.stringify(Boolean(enabled)))
+    },
+
+    async syncDailyPushState (enabled, { silentError = false } = {}) {
       if (this.busy) return
       this.busy = true
+      this.pushSyncError = false
       try {
-        localStorage.setItem(LS_DAILY_PUSH, JSON.stringify(val))
-
-        if (val) {
-          const token = await ensureToken()
-          if (!token) {
-            this.$q.notify({ type: 'negative', message: this.tt('notifications.noPermission') })
-            this.dailyPush = false
-            return
-          }
-          const chosenTime = getSavedTime() || DEFAULT_TIME
+        if (enabled) {
+          const chosenTime = this.normalizeTimeValue(getSavedTime() || this.selectedTimeValue || DEFAULT_TIME)
           setSavedTime(chosenTime)
           this.selectedTimeValue = chosenTime
+          const token = await ensureToken()
+          if (!token) {
+            this.pushSyncError = true
+            this.persistDailyPushFlag(false)
+            this.setDailyPushLocally(false)
+            if (!silentError) {
+              this.$q.notify({ type: 'negative', message: this.tt('notifications.noPermission') })
+            }
+            return
+          }
 
           const res = await syncRegisterDevice({
             enabled: true,
@@ -435,37 +662,56 @@ export default defineComponent({
           })
           if (!res.ok) {
             console.error(res.error)
+            this.pushSyncError = true
+            if (silentError) {
+              this.persistDailyPushFlag(true)
+              this.setDailyPushLocally(true)
+              return
+            }
+            this.persistDailyPushFlag(false)
+            this.setDailyPushLocally(false)
+            if (!silentError) {
+              this.$q.notify({ type: 'negative', message: this.tt('notifications.syncFailed') })
+            }
+            return
+          }
+          this.persistDailyPushFlag(true)
+          this.setDailyPushLocally(true)
+        } else {
+          this.persistDailyPushFlag(false)
+          const res = await syncRegisterDevice({ enabled: false, timeHHMM: '', locale: this.locale })
+          if (!res.ok) console.error(res.error)
+          this.setDailyPushLocally(false)
+        }
+      } catch (error) {
+        console.error('[Settings] syncDailyPushState failed:', error)
+        this.pushSyncError = true
+        if (enabled) {
+          if (silentError) {
+            this.persistDailyPushFlag(true)
+            this.setDailyPushLocally(true)
+          } else {
+            this.persistDailyPushFlag(false)
+            this.setDailyPushLocally(false)
             this.$q.notify({ type: 'negative', message: this.tt('notifications.syncFailed') })
           }
         } else {
-          const res = await syncRegisterDevice({ enabled: false, timeHHMM: '', locale: this.locale })
-          if (!res.ok) console.error(res.error)
+          this.persistDailyPushFlag(false)
+          this.setDailyPushLocally(false)
         }
       } finally {
         this.busy = false
       }
-    }
-  },
+    },
 
-  async mounted () {
-    // reduced motion
-    try {
-      this.reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    } catch (e) {
-      console.error(e);
-    }
+    async syncDailyPushStateSafe (enabled, options = {}) {
+      try {
+        await this.syncDailyPushState(enabled, options)
+      } catch (error) {
+        console.warn('[Settings] syncDailyPushStateSafe failed:', error)
+      }
+    },
 
-    this.selectedTimeValue = getSavedTime() || DEFAULT_TIME
-    this.buildTimeOptions()
-
-    this.authStore.initAuth()
-  },
-
-  beforeUnmount () {
-    // no-op
-  },
-
-  methods: {
     onBack () {
       // If you prefer always go to home, replace with this.go('/')
       if (window.history.length > 1) this.$router.back()
@@ -495,6 +741,22 @@ export default defineComponent({
       } catch (e) {
         console.error(e);
       }
+    },
+
+    hydrateOnboardingInterests () {
+      this.onboardingInterests = normalizeOnboardingInterests(readOnboardingInterests())
+    },
+
+    onToggleOnboardingInterest (key) {
+      const next = [...this.onboardingInterests]
+      const index = next.indexOf(key)
+      if (index >= 0) next.splice(index, 1)
+      else next.push(key)
+
+      const normalized = normalizeOnboardingInterests(next)
+      this.onboardingInterests = normalized
+      persistOnboardingPreferences(normalized)
+      this.hapticSelect()
     },
 
     onOpenLanguage () {
@@ -623,21 +885,25 @@ export default defineComponent({
       if (this.busy) return
       const opt = this.timeOptions[this.selectedTimeIndex]
       if (!opt) return
+      const prevTime = this.selectedTimeValue || DEFAULT_TIME
       const hhmm = opt.value
       setSavedTime(hhmm)
       this.selectedTimeValue = hhmm || DEFAULT_TIME
+      this.pushSyncError = false
 
       if (this.dailyPush) {
-        this.busy = true
-        try {
-          const res = await syncRegisterDevice({
-            enabled: true,
-            timeHHMM: hhmm,
-            locale: this.locale
-          })
-          if (!res.ok) console.error(res.error)
-        } finally {
-          this.busy = false
+        const res = await syncRegisterDevice({
+          enabled: true,
+          timeHHMM: hhmm,
+          locale: this.locale
+        })
+        if (!res.ok) {
+          console.error(res.error)
+          this.pushSyncError = true
+          this.selectedTimeValue = prevTime
+          setSavedTime(prevTime)
+          this.$q.notify({ type: 'negative', message: this.tt('notifications.syncFailed') })
+          return
         }
       }
 
@@ -667,8 +933,8 @@ export default defineComponent({
     },
 
     buildTimeOptions () {
-      const start = 6 * 60
-      const end = 14 * 60 + 30
+      const start = 0
+      const end = 23 * 60 + 30
       const step = 30
       const out = []
       for (let m = start; m <= end; m += step) {
@@ -682,7 +948,8 @@ export default defineComponent({
         })
       }
       this.timeOptions = out
-      const current = this.selectedTimeValue || DEFAULT_TIME
+      const current = this.normalizeTimeValue(this.selectedTimeValue || getSavedTime() || DEFAULT_TIME)
+      this.selectedTimeValue = current
       this.selectedTimeIndex = Math.max(0, this.timeOptions.findIndex((opt) => opt.value === current))
     },
 
@@ -812,6 +1079,12 @@ export default defineComponent({
   letter-spacing: 0.01em;
 }
 
+.settings-caption {
+  margin-top: 2px;
+  font-size: 11px;
+  color: rgba(214, 225, 242, 0.56);
+}
+
 .settings-side {
   color: rgba(229, 237, 250, 0.78);
   justify-content: flex-end;
@@ -880,6 +1153,59 @@ export default defineComponent({
   display: inline-flex;
   align-items: center;
   height: 22px;
+}
+
+.settings-personalization {
+  padding: 6px 14px 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.settings-personalization__hint {
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(214, 225, 242, 0.7);
+}
+
+.settings-personalization__meta {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(224, 234, 248, 0.64);
+}
+
+.settings-interest-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.settings-interest-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, rgba(15, 22, 36, 0.84), rgba(8, 12, 21, 0.8));
+  color: rgba(214, 225, 242, 0.72);
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 180ms ease, color 160ms ease;
+}
+
+.settings-interest-tag:active {
+  transform: scale(0.98);
+}
+
+.settings-interest-tag--active {
+  border-color: rgba(166, 218, 255, 0.72);
+  color: #f4f9ff;
+  background: linear-gradient(180deg, rgba(43, 67, 109, 0.75), rgba(20, 29, 46, 0.8));
+  box-shadow:
+    0 0 0 1px rgba(198, 234, 255, 0.16) inset,
+    0 8px 16px rgba(29, 62, 104, 0.28);
 }
 
 .arcana-toggle {
