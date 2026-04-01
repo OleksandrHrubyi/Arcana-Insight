@@ -21,17 +21,47 @@ test('requestTarotReading returns null when feature is disabled', async () => {
 test('requestTarotReading calls backend function and returns data', async () => {
   const { requestTarotReading } = await importModule('src/services/tarotOracleCore.js')
   const calls = []
+  const payload = {
+    summaryTitle: 'Reading',
+    opening: 'Opening',
+    summary: 'Summary',
+    advice: 'Advice',
+    cards: [{ position: 'present', positionLabel: 'Present', cardTitle: 'The Sun', message: 'm', detail: 'd', question: 'q' }],
+    meta: { provider: 'openai' },
+  }
   const result = await requestTarotReading({
     enabled: true,
     payload: { q: 'love', spread: 3 },
     invokeFunction: async (...args) => {
       calls.push(args)
-      return { data: { answer: 'ok' }, error: null }
+      return { data: payload, error: null }
     },
   })
 
-  assert.deepEqual(result, { answer: 'ok' })
+  assert.deepEqual(result, payload)
   assert.deepEqual(calls[0], ['tarot-reading', { q: 'love', spread: 3 }, 15000])
+})
+
+test('requestTarotReading throws when backend returns non-AI payload without provider metadata', async () => {
+  const { requestTarotReading } = await importModule('src/services/tarotOracleCore.js')
+
+  await assert.rejects(
+    requestTarotReading({
+      enabled: true,
+      payload: { q: 'career' },
+      invokeFunction: async () => ({
+        data: {
+          summaryTitle: 'Fallback',
+          opening: '...',
+          summary: '...',
+          advice: '...',
+          cards: [{ position: 'present', positionLabel: 'Present', cardTitle: 'Card', message: 'm', detail: 'd', question: 'q' }],
+        },
+        error: null,
+      }),
+    }),
+    /AI interpretation unavailable/,
+  )
 })
 
 test('requestTarotReading throws when backend returns error', async () => {

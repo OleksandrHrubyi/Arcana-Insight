@@ -9,12 +9,14 @@ const readSource = (relativePath) => {
 }
 
 test('App bootstrap refreshes premium entitlement on mount and app resume', () => {
-  const source = readSource('src/App.vue')
+  const appSource = readSource('src/App.vue')
+  const authBootSource = readSource('src/boot/auth.ts')
 
-  assert.match(source, /void initPushListenersSafe\(\)/)
-  assert.match(source, /void syncPremiumStatusSafe\(\)/)
-  assert.match(source, /App\.addListener\('appStateChange'/)
-  assert.match(source, /if \(isActive\) \{\s*void syncPremiumStatusSafe\(\)/s)
+  assert.match(appSource, /void initPushListenersSafe\(\)/)
+  assert.match(appSource, /void syncPremiumStatusSafe\(\)/)
+  assert.match(authBootSource, /App\.addListener\('appStateChange'/)
+  assert.match(authBootSource, /if \(!isActive\) \{/)
+  assert.match(authBootSource, /runAuthTask\('syncSession\(appState\)'/)
 })
 
 test('key premium screens keep explicit access gating and sync hooks', () => {

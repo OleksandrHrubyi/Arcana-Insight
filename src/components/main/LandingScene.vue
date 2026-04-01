@@ -26,57 +26,24 @@
         <img :src="logo" :alt="tt('appName')" class="logo-img" />
       </div>
 
-      <div v-if="astroToday" class="astro-strip" :class="{ 'astro-strip--visible': isPreloaded }">
-        <section class="astro-text" :class="{ 'astro-text--expanded': astroExpanded }">
-          <button
-            type="button"
-            class="astro-text__summary"
-            :aria-expanded="astroExpanded"
-            :aria-label="astroToggleLabel"
-            @click="toggleAstroExpanded"
-          >
-            <span class="astro-text__icon astro-text__icon--summary" aria-hidden="true">
-              <q-icon :name="astroSummaryItem.icon" class="astro-text__icon-glyph astro-text__icon-glyph--summary" />
-            </span>
-            <span class="astro-text__body astro-text__body--summary astro-text__kv">
-              <span class="astro-text__label astro-text__label--summary">{{ astroSummaryItem.label }}</span>
-              <span class="astro-text__value astro-text__value--summary">{{ astroSummaryItem.value }}</span>
-            </span>
-            <span
-              class="astro-text__toggle"
-              :class="{ 'astro-text__toggle--expanded': astroExpanded }"
-              aria-hidden="true"
-            >
-              <q-icon name="expand_more" class="astro-text__toggle-icon" />
-            </span>
-          </button>
-
-          <transition
-            @before-enter="onAstroListBeforeEnter"
-            @enter="onAstroListEnter"
-            @after-enter="onAstroListAfterEnter"
-            @before-leave="onAstroListBeforeLeave"
-            @leave="onAstroListLeave"
-            @after-leave="onAstroListAfterLeave"
-          >
-            <div v-show="astroExpanded" class="astro-text__list">
-              <div v-for="(item, index) in astroExtraItems" :key="`astro-item-${index}`" class="astro-text__row">
-                <span class="astro-text__icon" aria-hidden="true">
-                  <q-icon :name="item.icon" class="astro-text__icon-glyph" />
-                </span>
-                <div class="astro-text__body astro-text__kv">
-                  <div class="astro-text__label">{{ item.label }}</div>
-                  <div class="astro-text__value">{{ item.value }}</div>
-                </div>
-              </div>
-            </div>
-          </transition>
-        </section>
-      </div>
-
       <div class="main-title mono-text no-pointer-events">
         {{tt('betweenStars')}}
         <div> {{tt('answerAppear')}}</div>
+      </div>
+
+      <!-- Apple-style horizontal scroll cards -->
+      <div v-if="astroCards.length" class="astro-cards" :class="{ 'astro-cards--visible': isPreloaded }">
+        <div
+          v-for="card in astroCards"
+          :key="card.id"
+          class="astro-card"
+          :style="{ background: card.bg, borderColor: card.border }"
+        >
+          <span class="astro-card__label">{{ card.label }}</span>
+          <span class="astro-card__icon">{{ card.icon }}</span>
+          <span class="astro-card__value">{{ card.value }}</span>
+          <span v-if="card.sub" class="astro-card__sub">{{ card.sub }}</span>
+        </div>
       </div>
 
     </div>
@@ -89,6 +56,7 @@ import { useAuthStore } from 'src/stores/authStore.js'
 import { t, currentLocale } from 'src/i18n/index.js';
 import * as Astronomy from 'astronomy-engine';
 import { readDailyStreak, DAILY_ACTIVITY_KEYS } from 'src/helpers/dailyRitual.js';
+
 export default {
   name: 'LandingScene',
 
@@ -144,7 +112,7 @@ export default {
           'Твій наступний крок простий',
           'Все тихо стає на місце',
           'Твоє питання має напрямок',
-          'М’яка істина відкривається',
+          'М\u2019яка істина відкривається',
           'Відповідь поруч',
           'Тримай питання легко',
           'Подивись уважніше',
@@ -164,7 +132,6 @@ export default {
       isPreloaded: false,
       astroToday: null,
       dailyStreak: 0,
-      astroExpanded: true,
       authStore: null,
       cycleTimeout: null,
       phraseQueue: [],
@@ -181,34 +148,17 @@ export default {
     fullTextTokens() {
       const tokens = []
       let cursor = 0
-
-      // split зі збереженням пробілів
       const parts = this.fullText.split(/(\s+)/)
-
       for (const part of parts) {
         if (!part) continue
-
-        // spaces
         if (/^\s+$/.test(part)) {
-          tokens.push({
-            type: 'space',
-            text: part.replace(/ /g, '\u00A0'),
-            key: `sp-${cursor}`,
-          })
+          tokens.push({ type: 'space', text: part.replace(/ /g, '\u00A0'), key: `sp-${cursor}` })
           cursor += part.length
           continue
         }
-
-        // word
-        tokens.push({
-          type: 'word',
-          chars: Array.from(part),
-          start: cursor,
-          key: `w-${cursor}`,
-        })
+        tokens.push({ type: 'word', chars: Array.from(part), start: cursor, key: `w-${cursor}` })
         cursor += part.length
       }
-
       return tokens
     },
 
@@ -225,91 +175,126 @@ export default {
       return new Set(this.revealedIndices)
     },
 
-    astroMoonPhase() {
-      if (!this.astroToday) return ''
-      return this.tt(`astro.phases.${this.astroToday.moonPhaseKey}`)
-    },
-    astroMoonSign() {
-      if (!this.astroToday) return ''
-      return this.tt(`zodiac.${this.astroToday.moonSignKey}`)
-    },
-    astroNextLunarLine() {
-      const ev = this.astroToday?.nextLunarEvent
-      if (!ev) return ''
-      if (this.locale === 'uk') {
-        if (ev.daysUntil <= 0) return 'сьогодні вночі'
-        if (ev.daysUntil === 1) return 'завтра'
-        return `через ${ev.daysUntil} ${this._astroDaysWord(ev.daysUntil)}`
+    astroCards() {
+      if (!this.astroToday) return []
+      const d = this.astroToday
+      const pd = d.planetaryDay
+      const ev = d.nextLunarEvent
+      const cards = []
+
+      const phaseEmoji = { new:'🌑', waxingCrescent:'🌒', firstQuarter:'🌓', waxingGibbous:'🌔', full:'🌕', waningGibbous:'🌖', lastQuarter:'🌗', waningCrescent:'🌘' }
+
+      // 1. Moon phase
+      cards.push({
+        id: 'moon',
+        label: this.tt('astro.cards.moonPhase'),
+        icon: phaseEmoji[d.moonPhaseKey] || '🌙',
+        value: this.tt(`astro.phases.${d.moonPhaseKey}`),
+        sub: `${this.tt('astro.moonIn')} ${this.tt(`zodiac.${d.moonSignKey}`)}`,
+        bg: 'rgba(140, 170, 255, 0.09)',
+        border: 'rgba(140, 170, 255, 0.18)',
+      })
+
+      // 2. Next full moon
+      if (ev) {
+        let when
+        if (ev.daysUntil <= 0) when = this.tt('astro.tonight')
+        else if (ev.daysUntil === 1) when = this.tt('astro.tomorrow')
+        else when = `${ev.daysUntil} ${this._astroDaysWord(ev.daysUntil)}`
+        cards.push({
+          id: 'lunar',
+          label: this.tt('astro.phases.full'),
+          icon: '🌕',
+          value: when,
+          sub: this.tt('astro.cards.remaining'),
+          bg: 'rgba(255, 228, 130, 0.07)',
+          border: 'rgba(255, 228, 130, 0.15)',
+        })
       }
 
-      if (ev.daysUntil <= 0) return 'tonight'
-      if (ev.daysUntil === 1) return 'tomorrow'
-      return `in ${ev.daysUntil} ${this._astroDaysWord(ev.daysUntil)}`
-    },
-    astroPlanetaryDayLine() {
-      const pd = this.astroToday?.planetaryDay
-      if (!pd) return ''
-      return this.tt(`astro.planets.${pd.key}`)
-    },
-    astroSunLine() {
-      if (!this.astroToday) return ''
-      const sign = this.tt(`zodiac.${this.astroToday.sunSignKey}`)
-      return `${this.tt('astro.sunIn')} ${sign} · ${this.astroToday.sunDegInSign}°`
-    },
-    astroElementLine() {
-      const key = this.astroToday?.elementKey
-      if (!key) return ''
-      return this.tt(`astro.elements.${key}`)
-    },
-    astroNumerologyLine() {
-      if (!this.astroToday) return ''
-      const n = this.astroToday.numerologyDay
-      const meaning = this.tt(`astro.numerology.${n}`)
-      if (this.locale === 'uk') return `Число дня ${n} · ${meaning}`
-      return `Day number ${n} · ${meaning}`
-    },
-    astroStreakLine() {
-      if (!this.dailyStreak) return ''
-      if (this.locale === 'uk') return `Серія: ${this.dailyStreak} днів`
-      return `Streak: ${this.dailyStreak} days`
-    },
-    astroTextItems() {
-      if (this.locale === 'uk') {
-        return [
-          { icon: 'nightlight_round', label: 'Фаза Місяця', value: this.astroMoonPhase },
-          { icon: 'trip_origin', label: 'Місяць у знаку', value: this.astroMoonSign },
-          { icon: 'trending_up', label: 'Повний місяць', value: this.astroNextLunarLine || this.astroNumerologyLine },
-          { icon: 'wb_sunny', label: 'Сонячне поле', value: this.astroSunLine },
-          { icon: 'change_history', label: 'Стихія дня', value: this.astroElementLine },
-          { icon: 'public', label: 'Планета дня', value: this.astroPlanetaryDayLine },
-        ].filter((item) => Boolean(item.value))
+      // 3. Planetary day
+      if (pd) {
+        const pBg = { sun:'rgba(255,220,100,0.08)', moon:'rgba(140,180,255,0.08)', mars:'rgba(255,100,80,0.09)', mercury:'rgba(150,220,160,0.08)', jupiter:'rgba(255,200,100,0.08)', venus:'rgba(255,155,200,0.09)', saturn:'rgba(180,160,140,0.08)' }
+        const pBd = { sun:'rgba(255,220,100,0.18)', moon:'rgba(140,180,255,0.18)', mars:'rgba(255,100,80,0.2)', mercury:'rgba(150,220,160,0.18)', jupiter:'rgba(255,200,100,0.18)', venus:'rgba(255,155,200,0.2)', saturn:'rgba(180,160,140,0.18)' }
+        cards.push({
+          id: 'planet',
+          label: this.tt('astro.cards.dayRuler'),
+          icon: pd.symbol,
+          value: this.tt(`astro.planets.${pd.key}`),
+          sub: this.tt(`astro.planetMeanings.${pd.key}`),
+          bg: pBg[pd.key] || 'rgba(255,255,255,0.06)',
+          border: pBd[pd.key] || 'rgba(255,255,255,0.12)',
+        })
       }
 
-      return [
-        { icon: 'nightlight_round', label: 'Moon phase', value: this.astroMoonPhase },
-        { icon: 'trip_origin', label: 'Moon sign', value: this.astroMoonSign },
-        { icon: 'trending_up', label: 'Full Moon', value: this.astroNextLunarLine || this.astroNumerologyLine },
-        { icon: 'wb_sunny', label: 'Solar field', value: this.astroSunLine },
-        { icon: 'change_history', label: 'Day element', value: this.astroElementLine },
-        { icon: 'public', label: 'Planetary day', value: this.astroPlanetaryDayLine },
-      ].filter((item) => Boolean(item.value))
-    },
-    astroSummaryItem() {
-      return this.astroTextItems[0] || { icon: '☾', label: '', value: '' }
-    },
-    astroExtraItems() {
-      return this.astroTextItems.slice(1)
-    },
-    astroToggleLabel() {
-      if (this.locale === 'uk') {
-        return this.astroExpanded ? 'Згорнути астродеталі' : 'Розгорнути астродеталі'
+      // 4. Sun in sign
+      cards.push({
+        id: 'sun',
+        label: this.tt('astro.cards.sunPath'),
+        icon: '☀️',
+        value: this.tt(`zodiac.${d.sunSignKey}`),
+        sub: `${d.sunDegInSign}°`,
+        bg: 'rgba(255, 218, 90, 0.07)',
+        border: 'rgba(255, 218, 90, 0.15)',
+      })
+
+      // 5. Moon element
+      const eBg = { fire:'rgba(255,105,55,0.1)', water:'rgba(75,155,255,0.1)', air:'rgba(185,170,255,0.1)', earth:'rgba(105,195,105,0.1)' }
+      const eBd = { fire:'rgba(255,105,55,0.22)', water:'rgba(75,155,255,0.22)', air:'rgba(185,170,255,0.22)', earth:'rgba(105,195,105,0.22)' }
+      const eIco = { fire:'🔥', water:'🌊', air:'🌀', earth:'🌿' }
+      cards.push({
+        id: 'element',
+        label: this.tt('astro.cards.moonEnergy'),
+        icon: eIco[d.elementKey] || '◇',
+        value: this.tt(`astro.elements.${d.elementKey}`),
+        sub: this.tt(`astro.elementMeanings.${d.elementKey}`),
+        bg: eBg[d.elementKey] || 'rgba(255,255,255,0.06)',
+        border: eBd[d.elementKey] || 'rgba(255,255,255,0.12)',
+      })
+
+      // 6. Numerology
+      const numIco = { 1:'🌟', 2:'☯️', 3:'🎨', 4:'🏛️', 5:'🦋', 6:'🌸', 7:'🔮', 8:'💫', 9:'🌀' }
+      cards.push({
+        id: 'num',
+        label: this.tt('astro.cards.dayNumber'),
+        icon: numIco[d.numerologyDay] || '✨',
+        value: String(d.numerologyDay),
+        sub: this.tt(`astro.numerology.${d.numerologyDay}`),
+        bg: 'rgba(255,255,255,0.05)',
+        border: 'rgba(255,255,255,0.10)',
+      })
+
+      // 7. Streak
+      if (this.dailyStreak > 0) {
+        cards.push({
+          id: 'streak',
+          label: this.tt('astro.cards.yourStreak'),
+          icon: '⚡',
+          value: String(this.dailyStreak),
+          sub: this.tt('astro.cards.streakSub'),
+          bg: 'rgba(255, 205, 90, 0.09)',
+          border: 'rgba(255, 205, 90, 0.2)',
+        })
       }
-      return this.astroExpanded ? 'Collapse astro details' : 'Expand astro details'
+
+      // 8. Mercury retrograde (conditional)
+      if (d.mercuryRetrograde) {
+        cards.push({
+          id: 'retro',
+          label: this.tt('astro.cards.headsUp'),
+          icon: '☿',
+          value: this.tt('astro.mercuryRetrograde'),
+          sub: '',
+          bg: 'rgba(195, 155, 255, 0.1)',
+          border: 'rgba(195, 155, 255, 0.22)',
+        })
+      }
+
+      return cards
     },
   },
 
   mounted() {
-    // без preload — одразу показуємо сцену
     this.isPreloaded = true
     this.computeAstro()
     this.dailyStreak = Math.max(
@@ -403,8 +388,7 @@ export default {
       try {
         const fullMoonTime = Astronomy.SearchMoonPhase(180, now, 40)
         if (!fullMoonTime) return null
-        const eventDate = fullMoonTime.date
-        const daysUntil = Math.max(0, Math.ceil((eventDate.getTime() - now.getTime()) / 86400000))
+        const daysUntil = Math.max(0, Math.ceil((fullMoonTime.date.getTime() - now.getTime()) / 86400000))
         return { daysUntil }
       } catch {
         return null
@@ -439,67 +423,8 @@ export default {
       if (mod10 >= 2 && mod10 <= 4) return 'дні'
       return 'днів'
     },
-    toggleAstroExpanded() {
-      this.astroExpanded = !this.astroExpanded
-    },
-    onAstroListBeforeEnter(el) {
-      el.style.height = '0px'
-      el.style.opacity = '0'
-      el.style.transform = 'translateY(-4px)'
-      el.style.overflow = 'hidden'
-    },
-    onAstroListEnter(el, done) {
-      const targetHeight = `${el.scrollHeight}px`
-      requestAnimationFrame(() => {
-        el.style.transition = 'height 280ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 220ms ease, transform 220ms ease'
-        el.style.height = targetHeight
-        el.style.opacity = '1'
-        el.style.transform = 'translateY(0)'
-      })
-      const onEnd = (event) => {
-        if (event.propertyName !== 'height') return
-        el.removeEventListener('transitionend', onEnd)
-        done()
-      }
-      el.addEventListener('transitionend', onEnd)
-    },
-    onAstroListAfterEnter(el) {
-      el.style.height = 'auto'
-      el.style.overflow = ''
-      el.style.transition = ''
-      el.style.opacity = ''
-      el.style.transform = ''
-    },
-    onAstroListBeforeLeave(el) {
-      el.style.height = `${el.scrollHeight}px`
-      el.style.opacity = '1'
-      el.style.transform = 'translateY(0)'
-      el.style.overflow = 'hidden'
-    },
-    onAstroListLeave(el, done) {
-      requestAnimationFrame(() => {
-        el.style.transition = 'height 240ms cubic-bezier(0.4, 0, 0.2, 1), opacity 180ms ease, transform 180ms ease'
-        el.style.height = '0px'
-        el.style.opacity = '0'
-        el.style.transform = 'translateY(-4px)'
-      })
-      const onEnd = (event) => {
-        if (event.propertyName !== 'height') return
-        el.removeEventListener('transitionend', onEnd)
-        done()
-      }
-      el.addEventListener('transitionend', onEnd)
-    },
-    onAstroListAfterLeave(el) {
-      el.style.height = ''
-      el.style.overflow = ''
-      el.style.transition = ''
-      el.style.opacity = ''
-      el.style.transform = ''
-    },
 
     shuffleArray(arr) {
-      // Fisher–Yates
       for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
         ;[arr[i], arr[j]] = [arr[j], arr[i]]
@@ -510,12 +435,8 @@ export default {
     resetPhraseQueue() {
       const list = this.phrases?.[this.locale] || this.phrases.en
       if (!list?.length) return
-
-      // створюємо список індексів фраз
       this.phraseQueue = this.shuffleArray([...Array(list.length).keys()])
       this.phraseCursor = 0
-
-      // ✅ щоб перша фраза нового кола не була такою самою, як остання минулого
       if (list.length > 1 && this.phraseQueue[0] === this.lastPhraseIndex) {
         const swapIndex = 1
         ;[this.phraseQueue[0], this.phraseQueue[swapIndex]] = [this.phraseQueue[swapIndex], this.phraseQueue[0]]
@@ -529,10 +450,8 @@ export default {
       if (!this.phraseQueue.length || this.phraseCursor >= this.phraseQueue.length) {
         this.resetPhraseQueue()
       }
-
       const nextIndex = this.phraseQueue[this.phraseCursor]
       this.phraseCursor++
-
       this.lastPhraseIndex = nextIndex
       this.fullText = list[nextIndex]
     },
@@ -543,7 +462,6 @@ export default {
       clearTimeout(this.revealTimeout)
       clearTimeout(this.hideTimeout)
       clearTimeout(this.cycleTimeout)
-
       this.lettersTimer = null
       this.hideTimer = null
       this.revealTimeout = null
@@ -553,28 +471,21 @@ export default {
 
     startRandomLetterReveal() {
       this.clearAnimTimers()
-
       const indices = []
       for (let i = 0; i < this.fullText.length; i++) {
         if (this.fullText[i] !== ' ') indices.push(i)
       }
-
       if (!indices.length) return
-
-      // Fisher–Yates shuffle
       for (let i = indices.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
         ;[indices[i], indices[j]] = [indices[j], indices[i]]
       }
-
       this.revealedIndices = []
-
       this.revealTimeout = setTimeout(() => {
         let current = 0
         const totalDuration = 4000
         const minInterval = 90
         const step = Math.max(minInterval, Math.floor(totalDuration / indices.length))
-
         this.lettersTimer = setInterval(() => {
           if (current >= indices.length) {
             clearInterval(this.lettersTimer)
@@ -582,7 +493,6 @@ export default {
             this.startRandomLetterHide(indices)
             return
           }
-
           this.revealedIndices = [...this.revealedIndices, indices[current]]
           current++
         }, step)
@@ -595,25 +505,17 @@ export default {
       const totalDuration = 3500
       const minInterval = 90
       const step = Math.max(minInterval, Math.floor(totalDuration / shuffled.length))
-
       this.hideTimeout = setTimeout(() => {
         this.hideTimer = setInterval(() => {
           if (current >= shuffled.length) {
             clearInterval(this.hideTimer)
             this.hideTimer = null
-
             this.cycleTimeout = setTimeout(() => {
               this.setNextPhrase()
-              this.$nextTick(() => {
-                this.startRandomLetterReveal()
-              })
+              this.$nextTick(() => { this.startRandomLetterReveal() })
             }, 3200)
-
-
-
             return
           }
-
           this.revealedIndices = this.revealedIndices.filter(i => i !== shuffled[current])
           current++
         }, step)
@@ -624,40 +526,26 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* Плавна поява всієї сцени */
+/* ─── Scene fade ───────────────────────────────────────── */
 .wrapper,
 .container {
   opacity: 0;
   transition: opacity 1.4s cubic-bezier(0.215, 0.61, 0.355, 1);
 }
-
-.scene-ready {
-  opacity: 1;
-}
-
-.wrapper {
-  height: 100dvh;
-}
-
-.container {
-  position: relative;
-  height: 100dvh;
-  overflow: hidden;
-}
+.scene-ready { opacity: 1; }
+.wrapper { height: 100dvh; }
+.container { position: relative; height: 100dvh; overflow: hidden; }
 
 .bg-container {
-  background-image: url('assets/images/1v4.png');
+  background-image: url('assets/images/landing-stars-bg.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
+.mono-text { font-style: normal; font-weight: 400; }
 
-.mono-text {
-  font-style: normal;
-  font-weight: 400;
-}
-
+/* ─── Logo ─────────────────────────────────────────────── */
 .logo-wrap {
   margin-top: 80px;
   position: relative;
@@ -665,20 +553,9 @@ export default {
   display: flex;
   justify-content: center;
 }
+.logo-img { max-width: 170px; width: 170px; height: auto; display: block; }
 
-.logo-img {
-  max-width: 170px;
-  width: 170px;
-  height: auto;
-  display: block;
-}
-
-.content-wrapper {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-}
-
+/* ─── Subtitle ─────────────────────────────────────────── */
 .main-title {
   max-width: 300px;
   text-align: center;
@@ -689,8 +566,14 @@ export default {
   position: relative;
   z-index: 2;
   opacity: 0.8;
+  letter-spacing: 0.08em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+.main-title div { opacity: 0.72; }
 
+/* ─── Cycling phrase ───────────────────────────────────── */
+.content-wrapper { position: absolute; inset: 0; z-index: 3; }
 .appear-content {
   position: absolute;
   top: 48%;
@@ -704,276 +587,128 @@ export default {
   max-width: 192px;
   word-break: normal;
 }
+.appear-content span { display: inline-block; transition: opacity 0.5s ease; }
+.char-hidden { opacity: 0; }
 
-.appear-content span {
-  display: inline-block;
-  transition: opacity 0.5s ease;
-}
-
-.char-hidden {
-  opacity: 0;
-}
-
-.decor-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  overflow: hidden;
-}
-
+/* ─── Decor ────────────────────────────────────────────── */
+.decor-layer { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
 .shooting-star {
   position: absolute;
-  top: -40px;
-  right: -80px;
-  width: 2px;
-  height: 2px;
+  top: -40px; right: -80px;
+  width: 2px; height: 2px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.9), 0 0 14px rgba(159, 216, 246, 0.8);
+  box-shadow: 0 0 6px rgba(255,255,255,0.9), 0 0 14px rgba(159,216,246,0.8);
   opacity: 0;
   animation: shooting 5.5s ease-in-out 3s 1 forwards;
   will-change: transform, opacity;
 }
-
 @keyframes shooting {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 0, 0);
-  }
-  10% {
-    opacity: 1;
-  }
-  40% {
-    opacity: 1;
-    transform: translate3d(-60vw, 40vh, 0);
-  }
-  70%,
-  100% {
-    opacity: 0;
-    transform: translate3d(-75vw, 55vh, 0);
-  }
+  0%   { opacity: 0; transform: translate3d(0, 0, 0); }
+  10%  { opacity: 1; }
+  40%  { opacity: 1; transform: translate3d(-60vw, 40vh, 0); }
+  70%, 100% { opacity: 0; transform: translate3d(-75vw, 55vh, 0); }
 }
 
-.main-title {
-  letter-spacing: 0.08em;
-  font-size: 13px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.main-title div {
-  opacity: 0.72;
-}
-
-.astro-strip {
+/* ─── Astro Cards ──────────────────────────────────────── */
+.astro-cards {
+  --cards-pad: 20px;
   position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px) + 12px);
+  left: 0;
+  right: 0;
   z-index: 4;
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: var(--cards-pad);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
   opacity: 0;
-  transform: translateY(8px) scale(0.995);
-  transition: opacity 280ms ease, transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: translateY(12px);
+  transition: opacity 1.0s ease 0.9s, transform 1.0s cubic-bezier(0.2, 0.8, 0.2, 1) 0.9s;
+}
+.astro-cards::-webkit-scrollbar { display: none; }
+/* iOS WebKit fix: padding on overflow-x containers is unreliable — use pseudo-elements instead */
+.astro-cards::before,
+.astro-cards::after {
+  content: '';
+  flex-shrink: 0;
+  width: var(--cards-pad);
 }
 
-.astro-strip--visible {
+.astro-cards--visible {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
 }
 
-.astro-text {
-  border-radius: 12px;
-  padding: 8px;
-  background: rgba(8, 14, 22, 0.62);
-  border: 1px solid rgba(169, 218, 250, 0.2);
-  transition: background 240ms ease, border-color 240ms ease, box-shadow 280ms ease;
-}
-
-.astro-text--expanded {
-  border-color: rgba(169, 218, 250, 0.35);
-  background: rgba(9, 17, 26, 0.72);
+.astro-card {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  width: 106px;
+  padding: 12px 12px 11px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  display: flex;
+  flex-direction: column;
   box-shadow:
-    inset 0 1px 0 rgba(226, 241, 255, 0.12),
-    0 8px 20px rgba(2, 9, 17, 0.24);
+    inset 0 1px 0 rgba(255,255,255,0.09),
+    0 8px 28px rgba(0,0,0,0.22);
 }
 
-.astro-text__summary {
-  width: 100%;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  text-align: left;
-  border: 0;
-  background: transparent;
-  padding: 0;
-  transition: opacity 180ms ease, transform 180ms ease;
-}
-
-.astro-text__summary:active {
-  opacity: 0.9;
-  transform: scale(0.995);
-}
-
-.astro-text__toggle {
-  margin-left: auto;
-  color: rgba(180, 223, 248, 0.95);
-  width: 20px;
-  height: 20px;
-  flex: 0 0 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  align-self: center;
-  padding: 0;
-  transform: rotate(0deg);
-  transform-origin: center center;
-  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1), color 220ms ease;
-}
-
-.astro-text__toggle-icon {
-  font-size: 18px;
+.astro-card__label {
+  font-size: 9px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.36);
+  -webkit-font-smoothing: antialiased;
   line-height: 1;
+  margin-bottom: 7px;
 }
 
-.astro-text__toggle--expanded {
-  transform: rotate(180deg);
-  color: rgba(214, 240, 255, 0.96);
-}
-
-.astro-text__list {
-  margin-top: 7px;
-  padding-top: 7px;
-  border-top: 1px solid rgba(169, 218, 250, 0.16);
-}
-
-.astro-text__row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.astro-text__row + .astro-text__row {
-  margin-top: 6px;
-}
-
-.astro-text__icon {
-  width: 22px;
-  height: 22px;
-  margin-top: 0;
-  color: rgba(182, 220, 244, 0.95);
-  text-align: center;
+.astro-card__icon {
+  font-size: 22px;
   line-height: 1;
-  flex: 0 0 22px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 7px;
-  background: rgba(127, 171, 201, 0.16);
-  border: 1px solid rgba(160, 200, 227, 0.28);
+  margin-bottom: 6px;
 }
 
-.astro-text__icon--summary {
-  width: 24px;
-  height: 24px;
-  flex-basis: 24px;
-  border-radius: 8px;
-}
-
-.astro-text__body {
-  width: 100%;
-  min-width: 0;
-}
-
-.astro-text__body--summary {
-  flex: 1 1 auto;
-}
-
-.astro-text__kv {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.astro-text__label {
-  font-size: 12px;
-  line-height: 1.25;
-  color: rgba(167, 191, 212, 0.84);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-}
-
-.astro-text__label--summary {
-  font-size: 14px;
-}
-
-.astro-text__value {
-  margin-top: 0;
+.astro-card__value {
   font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.88);
+  letter-spacing: 0.01em;
   line-height: 1.25;
-  color: rgba(204, 220, 234, 0.9);
+  -webkit-font-smoothing: antialiased;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-align: right;
-  max-width: 58%;
-  flex: 0 0 auto;
 }
 
-.astro-text__value--summary {
-  font-size: 15px;
-  line-height: 1.2;
-  color: rgba(217, 231, 243, 0.9);
-  max-width: 60%;
+.astro-card__sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.42);
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  margin-top: 2px;
+  -webkit-font-smoothing: antialiased;
 }
-
-.astro-text__icon-glyph {
-  font-size: 14px;
-}
-
-.astro-text__icon-glyph--summary {
-  font-size: 16px;
-}
-
 
 @media (max-width: 390px) {
-  .astro-strip {
-    left: 12px;
-    right: 12px;
-    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  .astro-cards {
+    --cards-pad: 16px;
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px) + 10px);
+    gap: 7px;
   }
-
-  .astro-text__label--summary {
-    font-size: 13px;
-  }
-
-  .astro-text__value--summary {
-    font-size: 14px;
-  }
-
-  .astro-text__label {
-    font-size: 11px;
-  }
-
-  .astro-text__value {
-    font-size: 12px;
-  }
+  .astro-card { width: 98px; padding: 10px 10px 9px; }
+  .astro-card__icon { font-size: 20px; }
+  .astro-card__value { font-size: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .astro-strip {
-    transition: none;
-    animation: none;
-  }
-
-  .astro-text,
-  .astro-text__summary,
-  .astro-text__toggle {
-    transition: none;
-  }
+  .astro-cards { transition: none; }
 }
-
 </style>

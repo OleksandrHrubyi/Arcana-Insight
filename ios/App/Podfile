@@ -19,6 +19,7 @@ def capacitor_pods
   pod 'CapacitorPushNotifications', :path => '../../node_modules/@capacitor/push-notifications'
   pod 'CapacitorShare', :path => '../../node_modules/@capacitor/share'
   pod 'CapacitorStatusBar', :path => '../../node_modules/@capacitor/status-bar'
+  pod 'RevenuecatPurchasesCapacitor', :path => '../../node_modules/@revenuecat/purchases-capacitor'
 end
 
 target 'App' do
@@ -29,6 +30,34 @@ end
 
 post_install do |installer|
   assertDeploymentTarget(installer)
+
+  hybrid_common_file = File.join(
+    __dir__,
+    'Pods',
+    'PurchasesHybridCommon',
+    'ios',
+    'PurchasesHybridCommon',
+    'PurchasesHybridCommon',
+    'StoreProduct+HybridAdditions.swift'
+  )
+
+  if File.exist?(hybrid_common_file)
+    File.chmod(0o644, hybrid_common_file)
+    source = File.read(hybrid_common_file)
+    patched = source
+      .gsub('static func rc_normalized(subscriptionPeriod: SubscriptionPeriod) -> String {',
+            'static func rc_normalized(subscriptionPeriod: RevenueCat.SubscriptionPeriod) -> String {')
+      .gsub('static func rc_normalized(subscriptionPeriod: StoreKit.SubscriptionPeriod) -> String {',
+            'static func rc_normalized(subscriptionPeriod: RevenueCat.SubscriptionPeriod) -> String {')
+      .gsub('static func rc_normalized(subscriptionPeriodUnit: SubscriptionPeriod.Unit) -> String {',
+            'static func rc_normalized(subscriptionPeriodUnit: RevenueCat.SubscriptionPeriod.Unit) -> String {')
+      .gsub('static func rc_normalized(subscriptionPeriodUnit: StoreKit.SubscriptionPeriod.Unit) -> String {',
+            'static func rc_normalized(subscriptionPeriodUnit: RevenueCat.SubscriptionPeriod.Unit) -> String {')
+
+    if patched != source
+      File.write(hybrid_common_file, patched)
+    end
+  end
 
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|

@@ -1,8 +1,20 @@
+export const normalizeHoroscopeThemeKey = (value) => {
+  const key = String(value || '')
+    .trim()
+    .toLowerCase()
+
+  if (!key) return ''
+  if (key === 'energy' || key === 'self' || key === 'spirit') return 'spirit'
+  if (key === 'work' || key === 'career') return 'career'
+  if (key === 'love') return 'love'
+  return ''
+}
+
 export const rowsToRegistry = (rows) => {
   const reg = {}
   for (const row of rows ?? []) {
     const sign = row?.sign
-    const theme = row?.theme
+    const theme = normalizeHoroscopeThemeKey(row?.theme)
     if (!sign || !theme) continue
 
     if (!reg[sign]) reg[sign] = {}
@@ -19,10 +31,12 @@ export const registryToRows = (reg) => {
   for (const sign of Object.keys(reg || {})) {
     const themes = reg[sign] || {}
     for (const theme of Object.keys(themes)) {
+      const normalizedTheme = normalizeHoroscopeThemeKey(theme)
       const item = themes[theme] || {}
+      if (!normalizedTheme) continue
       rows.push({
         sign,
-        theme,
+        theme: normalizedTheme,
         summary: item.summary ?? '',
         detailed: item.detailed ?? '',
       })

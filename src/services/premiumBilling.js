@@ -95,6 +95,25 @@ const normalizePackages = (offering) => {
   return Array.isArray(list) ? list : []
 }
 
+const findPackageByPlan = (payload, planId) => {
+  const normalizedPlan = normalizePlan(planId)
+  const expectedProductId = getProductIdByPlan(normalizedPlan)
+  const offerings = normalizeOfferings(payload)
+
+  for (const offering of offerings) {
+    const packages = normalizePackages(offering)
+    for (const pkg of packages) {
+      const product = extractProduct(pkg)
+      const productId = extractProductId(pkg, product)
+      if (productId === expectedProductId) {
+        return pkg
+      }
+    }
+  }
+
+  return null
+}
+
 const extractProduct = (pkg) => {
   if (!pkg || typeof pkg !== 'object') return null
   if (pkg.product && typeof pkg.product === 'object') return pkg.product
@@ -237,21 +256,34 @@ export const getBillingPremiumStatus = async () => {
 }
 
 export const purchasePremiumPlan = async (planId) => {
-  const productIdentifier = getProductIdByPlan(planId)
+  const normalizedPlan = normalizePlan(planId)
   const configured = await ensureConfigured()
   if (!configured.ok) {
     return {
       ok: false,
       available: false,
       reason: configured.reason,
-      plan: normalizePlan(planId),
+      plan: normalizedPlan,
       hasPremium: false,
       cancelled: false,
     }
   }
 
   try {
-    const response = await Purchases.purchaseProduct({ productIdentifier })
+    const offeringsResponse = await Purchases.getOfferings()
+    const aPackage = findPackageByPlan(offeringsResponse, normalizedPlan)
+    if (!aPackage) {
+      return {
+        ok: false,
+        available: true,
+        reason: 'product_unavailable',
+        plan: normalizedPlan,
+        hasPremium: false,
+        cancelled: false,
+      }
+    }
+
+    const response = await Purchases.purchasePackage({ aPackage })
     const customerInfo = extractCustomerInfo(response)
     const status = resolvePremiumStatus(customerInfo)
     return {
@@ -267,7 +299,7 @@ export const purchasePremiumPlan = async (planId) => {
       ok: false,
       available: true,
       reason: toErrorReason(error),
-      plan: normalizePlan(planId),
+      plan: normalizedPlan,
       hasPremium: false,
       cancelled: isPurchaseCancelled(error),
       error,

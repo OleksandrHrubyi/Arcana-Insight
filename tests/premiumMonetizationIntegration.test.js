@@ -6,7 +6,8 @@ import { importModule, installBrowserEnv } from './utils/testEnv.js'
 const PURCHASES_METHODS = [
   { name: 'configure', rtype: 'promise' },
   { name: 'getCustomerInfo', rtype: 'promise' },
-  { name: 'purchaseProduct', rtype: 'promise' },
+  { name: 'purchasePackage', rtype: 'promise' },
+  { name: 'getOfferings', rtype: 'promise' },
   { name: 'restorePurchases', rtype: 'promise' },
 ]
 
@@ -77,7 +78,27 @@ test('monetization integration: purchase/restore/status flows keep premium store
       {
         configure: async () => ({}),
         getCustomerInfo: async () => ({ customerInfo: toCustomerInfo() }),
-        purchaseProduct: async ({ productIdentifier }) => {
+        getOfferings: async () => ({
+          offerings: {
+            current: {
+              availablePackages: [
+                {
+                  identifier: '$rc_monthly',
+                  productIdentifier: 'arcana.premium.monthly',
+                  product: { identifier: 'arcana.premium.monthly' },
+                },
+                {
+                  identifier: '$rc_annual',
+                  productIdentifier: 'arcana.premium.yearly',
+                  product: { identifier: 'arcana.premium.yearly' },
+                },
+              ],
+            },
+          },
+        }),
+        purchasePackage: async ({ aPackage }) => {
+          const productIdentifier =
+            aPackage?.product?.identifier || aPackage?.productIdentifier || aPackage?.identifier || ''
           if (productIdentifier === 'arcana.premium.yearly') {
             entitlement = { active: true, plan: 'yearly' }
             return { customerInfo: toCustomerInfo() }

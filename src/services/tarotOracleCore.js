@@ -1,3 +1,8 @@
+const resolveAiProvider = (data) => {
+  const provider = String(data?.meta?.provider || '').trim().toLowerCase()
+  return provider
+}
+
 export const requestTarotReading = async ({ enabled, payload, invokeFunction }) => {
   if (!enabled) {
     return null
@@ -7,6 +12,11 @@ export const requestTarotReading = async ({ enabled, payload, invokeFunction }) 
 
   if (error) {
     throw error
+  }
+
+  const provider = resolveAiProvider(data)
+  if (!provider || provider === 'fallback') {
+    throw new Error('AI interpretation unavailable')
   }
 
   return data

@@ -16,7 +16,7 @@
         @waiting="handleVideoPause"
         @stalled="handleVideoPause"
       >
-        <source src="/tarrotTest/test2.mp4" type="video/mp4" />
+        <source src="/oracle-media/oracle-loop.mp4" type="video/mp4" />
       </video>
       <div class="oracle-smoke oracle-smoke--one"></div>
       <div class="oracle-smoke oracle-smoke--two"></div>
@@ -2191,13 +2191,13 @@ onBeforeUnmount(() => {
 
 .oracle-smoke--one {
   opacity: 0.2;
-  background-image: url('/tarrotTest/smoke-opt.jpg');
+  background-image: url('/oracle-media/oracle-smoke.jpg');
   animation: oracle-smoke-drift-a 28s linear infinite alternate;
 }
 
 .oracle-smoke--two {
   opacity: 0.14;
-  background-image: url('/tarrotTest/smoke-opt.jpg');
+  background-image: url('/oracle-media/oracle-smoke.jpg');
   transform: scale(1.12);
   animation: oracle-smoke-drift-b 38s linear infinite alternate;
 }

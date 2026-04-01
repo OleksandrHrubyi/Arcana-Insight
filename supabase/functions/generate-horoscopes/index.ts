@@ -16,7 +16,7 @@ const SIGNS = [
   "pisces",
 ] as const;
 
-const THEMES = ["love", "career", "energy"] as const;
+const THEMES = ["love", "career", "spirit"] as const;
 
 type Sign = typeof SIGNS[number];
 type Theme = typeof THEMES[number];
@@ -33,9 +33,33 @@ function addDaysISO(iso: string, days: number): string {
 
 /* ------------------------------ prompt rules ------------------------------ */
 
+const SIGN_ARCHETYPES: Record<string, string> = {
+  aries:       "Fire · Cardinal · Bold, impulsive, self-starting. Needs to act first, reflect later. Driven by will and independence.",
+  taurus:      "Earth · Fixed · Patient, sensory, stubborn. Seeks stability and comfort. Values loyalty and slow-built trust.",
+  gemini:      "Air · Mutable · Curious, verbal, restless. Thrives on variety and connection. Processes the world through conversation.",
+  cancer:      "Water · Cardinal · Intuitive, protective, moody. Deeply feeling and security-oriented. Leads with emotion and memory.",
+  leo:         "Fire · Fixed · Expressive, generous, proud. Needs to be seen and appreciated. Leads with warmth and creative force.",
+  virgo:       "Earth · Mutable · Analytical, precise, self-critical. Finds meaning in usefulness. Pays attention to what others overlook.",
+  libra:       "Air · Cardinal · Diplomatic, relational, indecisive. Seeks harmony and fairness. Thinks in terms of balance and beauty.",
+  scorpio:     "Water · Fixed · Intense, perceptive, controlling. Goes deep or not at all. Values truth, loyalty, and transformation.",
+  sagittarius: "Fire · Mutable · Optimistic, blunt, freedom-seeking. Thrives on exploration and meaning. Resists being contained.",
+  capricorn:   "Earth · Cardinal · Disciplined, strategic, reserved. Builds for the long term. Earns trust through consistency.",
+  aquarius:    "Air · Fixed · Independent, unconventional, detached. Thinks in systems and ideals. Values progress over tradition.",
+  pisces:      "Water · Mutable · Empathic, imaginative, boundary-less. Absorbs the emotional field around them. Seeks transcendence.",
+};
+
+function signArchetypesBlock(): string {
+  return Object.entries(SIGN_ARCHETYPES)
+    .map(([sign, desc]) => `${sign}: ${desc}`)
+    .join("\n");
+}
+
 function rulesEn() {
   return `
 You write daily horoscopes. Tone: modern, calm, friendly, grounded.
+
+SIGN ARCHETYPES (use these to shape each horoscope — weave naturally, do not list traits explicitly):
+${signArchetypesBlock()}
 
 SAFETY:
 - No medical advice/diagnosis/treatment.
@@ -52,9 +76,9 @@ REALISM (STRICT):
 
 STYLE:
 - Avoid clichés. Vary sentence openings (do not start everything with "Today").
-- Each sign must sound distinct (different angle, verbs, advice).
-- Add 1 concrete everyday situation (message, meeting, choice, routine).
-- Add 1 micro-action (<= 10 words) in detailed.
+- Each sign must sound distinct — shaped by its archetype (element, modality, core traits).
+- Add 1 concrete everyday situation (message, meeting, choice, routine) that fits the sign's nature.
+- Add 1 micro-action (<= 10 words) in detailed that feels natural for this sign.
 
 LENGTH:
 - summary: 1–2 sentences (<= ~180 chars).
@@ -315,10 +339,10 @@ async function generateDay36En(params: { date: string; astroCompact: any | null 
 Date (UTC): ${params.date}
 Language: en
 
-Themes:
-- love
-- career
-- energy
+Themes (definitions — stay within these boundaries):
+- love: romantic relationships, emotional connections, intimacy, attraction, communication with a partner or potential partner
+- career: work, ambition, productivity, professional decisions, colleagues, goals
+- spirit: inner state, intuition, spiritual clarity, connection to self, inner voice, sense of meaning — NOT physical health, NOT energy levels
 
 ${astroLine}
 
@@ -333,7 +357,7 @@ Return valid JSON strictly matching the schema.
     schemaName: "horoscopes_day_en",
     schema: HORO_SCHEMA,
     temperature: 0.85,
-    maxTokens: 3500,
+    maxTokens: 4000,
   });
 
   return validate36(parsed?.items, "OpenAI generate EN");

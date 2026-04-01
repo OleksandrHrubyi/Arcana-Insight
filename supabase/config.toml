@@ -1,4 +1,9 @@
 
+[functions.build-astro-context]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/build-astro-context/index.ts"
+
 [functions.horoscope]
 enabled = true
 verify_jwt = true

@@ -169,7 +169,6 @@ const selectedLocale = computed(() => currentLocale.value || 'en')
 const items = [
   { name: 'arcana', labelKey: 'arcana' },
   { name: 'horoscope', labelKey: 'horoscope' },
-  { name: 'energy', labelKey: 'energy' },
   { name: 'tarot', labelKey: 'tarot' },
   { name: 'menu', labelKey: 'nav.menu' }
 ]

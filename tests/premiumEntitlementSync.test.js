@@ -5,7 +5,8 @@ import { importModule, installBrowserEnv } from './utils/testEnv.js'
 
 const PURCHASES_METHODS = [
   { name: 'configure', rtype: 'promise' },
-  { name: 'purchaseProduct', rtype: 'promise' },
+  { name: 'purchasePackage', rtype: 'promise' },
+  { name: 'getOfferings', rtype: 'promise' },
   { name: 'restorePurchases', rtype: 'promise' },
 ]
 
@@ -52,14 +53,32 @@ test('purchase + restore billing outcomes sync premiumAccess state across consum
     await withPurchasesEntitlementMock(
       {
         configure: async () => ({}),
-        purchaseProduct: async ({ productIdentifier }) => ({
+        getOfferings: async () => ({
+          offerings: {
+            current: {
+              availablePackages: [
+                {
+                  identifier: '$rc_annual',
+                  productIdentifier: 'arcana.premium.yearly',
+                  product: { identifier: 'arcana.premium.yearly' },
+                },
+              ],
+            },
+          },
+        }),
+        purchasePackage: async ({ aPackage }) => ({
           customerInfo: {
             entitlements: {
               active: {
-                premium: { productIdentifier },
+                premium: {
+                  productIdentifier:
+                    aPackage?.product?.identifier || aPackage?.productIdentifier || 'arcana.premium.yearly',
+                },
               },
             },
-            activeSubscriptions: [productIdentifier],
+            activeSubscriptions: [
+              aPackage?.product?.identifier || aPackage?.productIdentifier || 'arcana.premium.yearly',
+            ],
           },
         }),
         restorePurchases: async () => ({

@@ -23,8 +23,10 @@
    - set `VITE_ENABLE_TAROT_AI=true`
    - deploy Supabase function `tarot-reading`
    - add Supabase secret `OPENAI_API_KEY`
-5. Review push notifications flow:
-   - `register-device` function is still a minimal placeholder and should be replaced with production logic before relying on push delivery
+5. Verify production push notification secrets and schedule:
+   - confirm `register-device` and `push-worker` are deployed in the target Supabase project
+   - confirm APNs secrets are configured for the target app/bundle
+   - confirm the scheduled trigger for daily push delivery is active in the target environment
 6. Move Apple auth secret generation to local env:
    - use `APPLE_PRIVATE_KEY` or `APPLE_PRIVATE_KEY_PATH`
    - never commit `.p8` files back into the repo

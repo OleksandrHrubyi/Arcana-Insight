@@ -13,7 +13,7 @@
         <div class="hero-disc__spin">
           <img
             class="hero-disc__img"
-            src="/images/p-7.jpg"
+            src="/images/horoscope-disc.jpg"
             alt=""
             loading="eager"
             decoding="async"
@@ -82,20 +82,24 @@
             v-touch-swipe:[themeSwipeSensitivity].horizontal="handleThemeSwipe"
             class="bg-transparent horoscope-panels"
           >
-            <q-tab-panel name="energy" class="q-pa-none">
+            <q-tab-panel name="spirit" class="q-pa-none">
               <div class="panel-inner">
-                <div class="horoscope-info-title">{{ tt('energy') }}</div>
+                <div class="horoscope-info-title">{{ tt('spirit') }}</div>
                 <div class="horoscope-divider"></div>
 
                 <div
                   class="horoscope-info-style"
-                  :class="{ 'horoscope-info-style--loading': !hasThemeText('energy') }"
+                  :class="{ 'horoscope-info-style--loading': !hasThemeText('spirit') }"
                 >
-                  <template v-if="hasThemeText('energy')">
-                    {{ getThemeText('energy') }}
+                  <template v-if="hasThemeText('spirit')">
+                    {{ getThemeText('spirit') }}
                   </template>
                   <div v-else class="horoscope-text-skeleton" aria-hidden="true">
-                    <span v-for="index in 6" :key="`energy-skeleton-${index}`" class="horoscope-text-skeleton__line"></span>
+                    <span
+                      v-for="index in 6"
+                      :key="`spirit-skeleton-${index}`"
+                      class="horoscope-text-skeleton__line"
+                    ></span>
                   </div>
                 </div>
               </div>
@@ -118,7 +122,11 @@
                       {{ getThemeText('love') }}
                     </template>
                     <div v-else class="horoscope-text-skeleton" aria-hidden="true">
-                      <span v-for="index in 6" :key="`love-skeleton-${index}`" class="horoscope-text-skeleton__line"></span>
+                      <span
+                        v-for="index in 6"
+                        :key="`love-skeleton-${index}`"
+                        class="horoscope-text-skeleton__line"
+                      ></span>
                     </div>
                   </div>
                   <button
@@ -127,7 +135,9 @@
                     class="horoscope-lock-overlay"
                     @click="openPremiumPaywall"
                   >
-                    <span class="horoscope-lock-overlay__title">{{ getThemeLockTitle('love') }}</span>
+                    <span class="horoscope-lock-overlay__title">{{
+                      getThemeLockTitle('love')
+                    }}</span>
                     <span class="horoscope-lock-overlay__text">{{ getThemeLockText('love') }}</span>
                     <span class="horoscope-lock-overlay__cta">
                       <span>{{ tt('premiumAccess.cta') }}</span>
@@ -154,7 +164,11 @@
                       {{ getThemeText('career') }}
                     </template>
                     <div v-else class="horoscope-text-skeleton" aria-hidden="true">
-                      <span v-for="index in 6" :key="`career-skeleton-${index}`" class="horoscope-text-skeleton__line"></span>
+                      <span
+                        v-for="index in 6"
+                        :key="`career-skeleton-${index}`"
+                        class="horoscope-text-skeleton__line"
+                      ></span>
                     </div>
                   </div>
                   <button
@@ -163,8 +177,12 @@
                     class="horoscope-lock-overlay"
                     @click="openPremiumPaywall"
                   >
-                    <span class="horoscope-lock-overlay__title">{{ getThemeLockTitle('career') }}</span>
-                    <span class="horoscope-lock-overlay__text">{{ getThemeLockText('career') }}</span>
+                    <span class="horoscope-lock-overlay__title">{{
+                      getThemeLockTitle('career')
+                    }}</span>
+                    <span class="horoscope-lock-overlay__text">{{
+                      getThemeLockText('career')
+                    }}</span>
                     <span class="horoscope-lock-overlay__cta">
                       <span>{{ tt('premiumAccess.cta') }}</span>
                     </span>
@@ -173,12 +191,18 @@
               </div>
             </q-tab-panel>
           </q-tab-panels>
+
+          <div v-if="moonSignBlock" class="moon-sign-block">
+            <div class="moon-sign-block__label">🌙 {{ tt(`zodiac.${moonSignBlock.sign}`) }}</div>
+            <div class="moon-sign-block__text">{{ moonSignBlock.text }}</div>
+          </div>
+
           <div class="horoscope-controls">
             <div class="dots">
               <button
                 class="dot"
-                :class="{ active: themeTab === 'energy', 'dot--locked': isThemeLocked('energy') }"
-                @click="setTheme('energy')"
+                :class="{ active: themeTab === 'spirit', 'dot--locked': isThemeLocked('spirit') }"
+                @click="setTheme('spirit')"
               ></button>
               <button
                 class="dot"
@@ -213,7 +237,10 @@
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Preferences } from '@capacitor/preferences'
 import { localISODate } from 'src/helpers/date.js'
-import { loadHoroscopeRegistry } from 'src/helpers/horoscopeContentCore.js'
+import {
+  loadHoroscopeRegistry,
+  normalizeHoroscopeThemeKey,
+} from 'src/helpers/horoscopeContentCore.js'
 import { saveLocal, loadLocal } from 'src/helpers/localStorageSaver.js'
 import { t, currentLocale } from 'src/i18n'
 import { Share } from '@capacitor/share'
@@ -222,14 +249,12 @@ import { usePremiumAccess } from 'src/stores/premiumAccess'
 import { useAuthStore } from 'stores/authStore.js'
 import { DAILY_ACTIVITY_KEYS, markDailyActivity } from 'src/helpers/dailyRitual'
 import { resolveUserSignSnapshot } from 'src/helpers/zodiacUserSignCore.js'
+import * as Astronomy from 'astronomy-engine'
 import {
   ensureRitualRewardInventory,
   trackRitualActivityWithGuestFallback,
 } from 'src/helpers/ritualRewardsBackend.js'
-import {
-  isRitualRewardActive,
-  RITUAL_REWARD_KEYS,
-} from 'src/helpers/ritualRewardInventory'
+import { isRitualRewardActive, RITUAL_REWARD_KEYS } from 'src/helpers/ritualRewardInventory'
 
 const DESIGN_W = 440
 const DESIGN_TOP_INSET = 30
@@ -259,18 +284,11 @@ const ZODIAC_EMOJI = {
 
 const THEME_META = {
   love: { emoji: '💖', label: 'Кохання' },
-  career: { emoji: '💼', label: 'Кар’єра' },
-  energy: { emoji: '⚡️', label: 'Енергія' },
+  career: { emoji: '💼', label: 'Кар\u2019єра' },
+  spirit: { emoji: '✨', label: 'Дух' },
 }
-const FREE_HOROSCOPE_THEME = 'energy'
-const THEME_TABS = ['energy', 'love', 'career']
-const ROUTE_THEME_MAP = {
-  energy: 'energy',
-  love: 'love',
-  career: 'career',
-  work: 'career',
-  self: 'energy',
-}
+const FREE_HOROSCOPE_THEME = 'spirit'
+const THEME_TABS = ['spirit', 'love', 'career']
 const ZODIAC_SIGN_CACHE_KEY = 'horoscope_sign_key_v1'
 const PROFILE_CACHE_KEY = 'profile_cache_v1'
 const premiumAccessStore = usePremiumAccess()
@@ -335,6 +353,8 @@ export default {
       horoscope: {},
       authStore,
       userSignApplied: false,
+      userDob: '',
+      moonSign: '',
 
       midnightTimer: null,
       themeTab: FREE_HOROSCOPE_THEME,
@@ -375,6 +395,14 @@ export default {
 
     isCurrentThemeLocked() {
       return this.isThemeLocked(this.themeTab)
+    },
+
+    moonSignBlock() {
+      if (!this.moonSign) return null
+      if (this.moonSign === this.activeZodiac.key) return null
+      const text = this.horoscope?.[this.moonSign]?.[this.themeTab]?.summary || ''
+      if (!text.trim()) return null
+      return { sign: this.moonSign, text }
     },
 
     tt() {
@@ -488,10 +516,7 @@ export default {
     },
 
     normalizeRouteTheme(value) {
-      const key = String(value || '')
-        .trim()
-        .toLowerCase()
-      return ROUTE_THEME_MAP[key] || ''
+      return normalizeHoroscopeThemeKey(value)
     },
 
     applyThemeFromRoute(value) {
@@ -522,7 +547,9 @@ export default {
       } catch (e) {
         console.error(e)
       }
-      this.$router.push({ name: 'premium', query: { source: 'horoscope_lock', entry: 'secondary' } }).catch(() => {})
+      this.$router
+        .push({ name: 'premium', query: { source: 'horoscope_lock', entry: 'secondary' } })
+        .catch(() => {})
     },
 
     normalizeZodiacKey(value) {
@@ -632,6 +659,46 @@ export default {
       return { day: null, month: null }
     },
 
+    birthDateToISO(raw) {
+      const s = String(raw || '').trim()
+      if (!s) return ''
+      // DD.MM.YYYY → YYYY-MM-DD
+      const dotMatch = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s)
+      if (dotMatch) return `${dotMatch[3]}-${dotMatch[2]}-${dotMatch[1]}`
+      // YYYY-MM-DD — вже ISO
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s
+      return ''
+    },
+
+    moonSignFromBirthDate(raw) {
+      try {
+        const iso = this.birthDateToISO(raw)
+        if (!iso) return ''
+        const date = new Date(iso + 'T12:00:00Z')
+        const time = Astronomy.MakeTime(date)
+        const vec = Astronomy.GeoVector(Astronomy.Body.Moon, time, false)
+        const ecl = Astronomy.Ecliptic(vec)
+        const lon = ((ecl.elon % 360) + 360) % 360
+        const signs = [
+          'aries',
+          'taurus',
+          'gemini',
+          'cancer',
+          'leo',
+          'virgo',
+          'libra',
+          'scorpio',
+          'sagittarius',
+          'capricorn',
+          'aquarius',
+          'pisces',
+        ]
+        return signs[Math.floor(lon / 30) % 12] || ''
+      } catch {
+        return ''
+      }
+    },
+
     zodiacKeyFromBirthDate(value) {
       const { day, month } = this.parseBirthDate(value)
       if (!day || !month) return ''
@@ -707,6 +774,12 @@ export default {
 
         if (snapshot.errors.length) {
           console.warn('[Horoscope] applyUserZodiacPreference degraded:', snapshot.errors.join(','))
+        }
+
+        if (snapshot.dob) {
+          this.userDob = snapshot.dob
+          const ms = this.moonSignFromBirthDate(snapshot.dob)
+          this.moonSign = ms
         }
 
         const zodiacKey = this.normalizeZodiacKey(snapshot.signKey)
@@ -1069,7 +1142,9 @@ export default {
     },
 
     getThemeText(tab) {
-      return this.horoscope?.[this.activeZodiac.key]?.[tab]?.detailed || ''
+      const themeKey = normalizeHoroscopeThemeKey(tab)
+      if (!themeKey) return ''
+      return this.horoscope?.[this.activeZodiac.key]?.[themeKey]?.detailed || ''
     },
 
     hasThemeText(tab) {
@@ -1613,7 +1688,7 @@ export default {
   width: calc(1800px * var(--s));
   height: calc(1800px * var(--s));
   border-radius: 50%;
-  background: url('/images/final7.svg') center/contain no-repeat;
+  background: url('/images/horoscope-disc-symbol.svg') center/contain no-repeat;
   transform-origin: 50% 50%;
   z-index: 80;
   transform: translate3d(-50%, -50%, 0) rotate(0deg);
@@ -1638,7 +1713,7 @@ export default {
 }
 
 .top-bg {
-  background-image: url('/images/darkGradientTop_1x.png');
+  background-image: url('/images/horoscope-top-gradient.png');
   background-size: contain;
   background-repeat: no-repeat;
   position: absolute;
@@ -1983,7 +2058,12 @@ export default {
   border-radius: 12px;
   padding: 12px 14px;
   border: 1px solid rgba(156, 206, 255, 0.56);
-  background: linear-gradient(160deg, rgba(58, 90, 145, 0.98), rgba(25, 43, 74, 0.98) 56%, rgba(16, 29, 51, 0.98));
+  background: linear-gradient(
+    160deg,
+    rgba(58, 90, 145, 0.98),
+    rgba(25, 43, 74, 0.98) 56%,
+    rgba(16, 29, 51, 0.98)
+  );
   color: #f6fbff;
   font-size: max(13px, calc(13px * var(--s)));
   font-weight: 700;
@@ -2218,6 +2298,29 @@ export default {
 
   .bottom-wrapper {
     padding-top: 40px;
+  }
+}
+
+.moon-sign-block {
+  margin: 12px 0 4px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(147, 197, 253, 0.14);
+  background: rgba(147, 197, 253, 0.05);
+
+  &__label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(147, 197, 253, 0.6);
+    margin-bottom: 6px;
+  }
+
+  &__text {
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.55);
   }
 }
 </style>

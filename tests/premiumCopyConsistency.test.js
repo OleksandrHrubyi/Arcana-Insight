@@ -65,12 +65,9 @@ test('premium lock/paywall screens use shared copy model keys', () => {
   assert.match(compatibility, /premiumAccess\.model\.compatibility\.purchase/)
 
   const horoscope = readSource('src/components/main/HoroscopeComponent.vue')
-  assert.match(horoscope, /premiumAccess\.model\.labels\.free/)
-  assert.match(horoscope, /premiumAccess\.model\.labels\.premium/)
-  assert.match(horoscope, /premiumAccess\.model\.labels\.purchase/)
-  assert.match(horoscope, /premiumAccess\.model\.\$\{featureKey\}\.free/)
-  assert.match(horoscope, /premiumAccess\.model\.\$\{featureKey\}\.premium/)
-  assert.match(horoscope, /premiumAccess\.model\.\$\{featureKey\}\.purchase/)
+  assert.match(horoscope, /premiumAccess\.cta/)
+  assert.match(horoscope, /premiumAccess\.horoscope\.\$\{themeKey\}\.title/)
+  assert.match(horoscope, /premiumAccess\.horoscope\.\$\{themeKey\}\.text/)
 
   const premiumPaywall = readSource('src/components/main/PremiumInfoComponent.vue')
   assert.match(premiumPaywall, /premiumPage\.accessModel\.title/)

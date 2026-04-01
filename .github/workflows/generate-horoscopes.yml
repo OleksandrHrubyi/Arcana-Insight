@@ -11,27 +11,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install dependencies
+      - name: Build astro context via edge function (days=2)
+        shell: bash
         run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+          set -e
+          DATE=$(date -u -d "+1 day" +%F)
+          echo "Building astro context from date=$DATE for 2 days..."
 
-      - name: Generate astro context (+1, +2 days)
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: node scripts/astro-context.mjs
+          HTTP_CODE=$(curl --retry 5 --retry-delay 3 --retry-all-errors \
+            -sS -L -X POST \
+            "${{ secrets.SUPABASE_URL }}/functions/v1/build-astro-context" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"date\":\"$DATE\",\"days\":2}" \
+            -o response.json \
+            -w "%{http_code}")
+
+          echo "HTTP $HTTP_CODE"
+          echo "Response:"
+          cat response.json || true
+          echo ""
+
+          if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+            exit 1
+          fi
 
   generate_horoscopes:
     name: Generate horoscopes (+1/+2)

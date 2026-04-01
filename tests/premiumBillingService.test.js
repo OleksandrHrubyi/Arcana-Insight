@@ -6,7 +6,7 @@ import { importModule } from './utils/testEnv.js'
 const PURCHASES_METHODS = [
   { name: 'configure', rtype: 'promise' },
   { name: 'getCustomerInfo', rtype: 'promise' },
-  { name: 'purchaseProduct', rtype: 'promise' },
+  { name: 'purchasePackage', rtype: 'promise' },
   { name: 'restorePurchases', rtype: 'promise' },
   { name: 'getOfferings', rtype: 'promise' },
 ]
@@ -163,7 +163,27 @@ test('purchasePremiumPlan handles success, cancelled and network_error flows', a
   await withCapacitorPurchasesMock(
     {
       configure: async () => ({}),
-      purchaseProduct: async ({ productIdentifier }) => {
+      getOfferings: async () => ({
+        offerings: {
+          current: {
+            availablePackages: [
+              {
+                identifier: '$rc_monthly',
+                productIdentifier: 'arcana.premium.monthly',
+                product: { identifier: 'arcana.premium.monthly' },
+              },
+              {
+                identifier: '$rc_annual',
+                productIdentifier: 'arcana.premium.yearly',
+                product: { identifier: 'arcana.premium.yearly' },
+              },
+            ],
+          },
+        },
+      }),
+      purchasePackage: async ({ aPackage }) => {
+        const productIdentifier =
+          aPackage?.product?.identifier || aPackage?.productIdentifier || aPackage?.identifier || ''
         if (productIdentifier === 'arcana.premium.yearly') {
           return {
             customerInfo: {

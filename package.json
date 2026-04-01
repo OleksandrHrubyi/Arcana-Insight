@@ -39,6 +39,7 @@
     "@capacitor/status-bar": "^5.0.8",
     "@fontsource/nunito": "^5.2.7",
     "@quasar/extras": "^1.16.4",
+    "@revenuecat/purchases-capacitor": "^7.7.1",
     "@supabase/supabase-js": "^2.89.0",
     "astronomy-engine": "^2.1.19",
     "dotenv": "^17.2.3",

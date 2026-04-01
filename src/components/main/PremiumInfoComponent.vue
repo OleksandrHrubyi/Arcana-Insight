@@ -3,53 +3,50 @@
     <div class="premium-bg" aria-hidden="true"></div>
 
     <div class="premium-content">
-      <header class="premium-header">
+      <div class="premium-nav">
         <button type="button" class="premium-back" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
-        <div class="premium-header__text">
-          <div class="premium-header__kicker">{{ tt('premiumPage.header.kicker') }}</div>
-          <h1 class="premium-title">{{ tt('premiumPage.title') }}</h1>
-          <p class="premium-subtitle">{{ tt('premiumPage.subtitle') }}</p>
-        </div>
-        <span class="premium-header__spacer" aria-hidden="true"></span>
+      </div>
+
+      <header class="premium-hero">
+        <h1 class="premium-hero__title">{{ tt('premiumPage.title') }}</h1>
+        <p class="premium-hero__sub">{{ tt('premiumPage.subtitle') }}</p>
       </header>
 
-      <section class="premium-card premium-card--model">
-        <div class="premium-card__label">{{ tt('premiumPage.accessModel.title') }}</div>
-        <div class="premium-model-list">
-          <article v-for="row in paywallAccessRows" :key="row.key" class="premium-model-row">
-            <div class="premium-model-row__label">{{ row.label }}</div>
-            <div class="premium-model-row__text">{{ row.text }}</div>
-          </article>
+      <div class="feat-scroll" role="list" :aria-label="tt('premiumPage.sections.premium')">
+        <div class="feat-scroll__track">
+          <div class="feat-scroll__group">
+            <div
+              v-for="card in featureCards"
+              :key="card.titleKey"
+              class="feat-card"
+              role="listitem"
+              :style="{ '--fc-bg': card.bg, '--fc-border': card.border }"
+            >
+              <div class="feat-card__icon">{{ card.icon }}</div>
+              <div class="feat-card__title">{{ tt(card.titleKey) }}</div>
+              <div class="feat-card__sub">{{ tt(card.subKey) }}</div>
+            </div>
+          </div>
+          <div class="feat-scroll__group" aria-hidden="true">
+            <div
+              v-for="card in featureCards"
+              :key="`duplicate-${card.titleKey}`"
+              class="feat-card"
+              :style="{ '--fc-bg': card.bg, '--fc-border': card.border }"
+            >
+              <div class="feat-card__icon">{{ card.icon }}</div>
+              <div class="feat-card__title">{{ tt(card.titleKey) }}</div>
+              <div class="feat-card__sub">{{ tt(card.subKey) }}</div>
+            </div>
+          </div>
         </div>
-      </section>
-
-      <section class="premium-card premium-card--vision">
-        <div class="premium-card__label">{{ tt('premiumPage.sections.why') }}</div>
-        <p class="premium-vision">{{ tt('premiumPage.whyLead') }}</p>
-        <ul class="reason-list">
-          <li v-for="item in reasonItems" :key="item.titleKey" class="reason-item">
-            <div class="reason-item__icon">
-              <q-icon :name="item.icon" size="14px" />
-            </div>
-            <div class="reason-item__body">
-              <div class="reason-item__title">{{ tt(item.titleKey) }}</div>
-              <p class="reason-item__text">{{ tt(item.textKey) }}</p>
-            </div>
-          </li>
-        </ul>
-      </section>
+      </div>
 
       <section class="premium-card premium-card--plans">
         <div class="premium-card__label">{{ tt('premiumPage.sections.billing') }}</div>
-        <p class="plan-intro">{{ tt('premiumPage.billing.includesTitle') }}</p>
-        <div class="plan-includes" role="list" aria-label="Plan features">
-          <span v-for="key in billingIncludeKeys" :key="key" class="plan-include" role="listitem">
-            <q-icon name="check" size="12px" />
-            <span>{{ tt(key) }}</span>
-          </span>
-        </div>
+        <p v-if="!billingReady" class="plan-unavailable-note">{{ billingUnavailableMessage }}</p>
         <div class="plan-grid">
           <button
             v-for="plan in billingPlans"
@@ -57,7 +54,7 @@
             type="button"
             class="plan-tile"
             :class="{ 'plan-tile--active': selectedPlanId === plan.id }"
-            :disabled="isBillingActionPending || !billingReady"
+            :disabled="isBillingActionPending"
             @click="onSelectPlan(plan.id)"
           >
             <span class="plan-tile__head">
@@ -67,54 +64,38 @@
               </span>
             </span>
             <span class="plan-tile__price">{{ getPlanPriceLabel(plan.id) }}</span>
-            <span v-if="getPlanOfferLabel(plan.id)" class="plan-tile__saving">{{ getPlanOfferLabel(plan.id) }}</span>
+            <span v-if="getPlanOfferLabel(plan.id)" class="plan-tile__saving">{{
+              getPlanOfferLabel(plan.id)
+            }}</span>
             <span class="plan-tile__note">{{ tt(plan.noteKey) }}</span>
           </button>
         </div>
       </section>
 
-      <section class="premium-card premium-card--compare">
+      <section
+        class="premium-card premium-card--compare"
+        :class="{ 'premium-card--compare-visible': showCompareCard }"
+      >
         <div class="premium-card__label">{{ tt('premiumPage.sections.compare') }}</div>
-        <div class="compare-stack">
-          <article v-for="row in quickCompareRows" :key="row.featureKey" class="compare-row">
-            <div class="compare-row__feature">{{ tt(row.featureKey) }}</div>
-            <div class="compare-row__values">
-              <div class="compare-pill compare-pill--free">
-                <span>{{ tt('premiumPage.compare.free') }}</span>
-                <strong>{{ tt(row.freeKey) }}</strong>
+        <p class="compare-table__lead">{{ compareCardCopy.lead }}</p>
+        <div class="compare-table">
+          <div v-for="row in quickCompareRows" :key="row.id" class="compare-table__row">
+            <div class="compare-table__feat">{{ row.feature }}</div>
+            <div class="compare-table__stack">
+              <div class="compare-table__item compare-table__item--free">
+                <div class="compare-table__item-label">{{ tt('premiumPage.compare.free') }}</div>
+                <div class="compare-table__val compare-table__val--free">{{ row.free }}</div>
               </div>
-              <div class="compare-pill compare-pill--premium">
-                <span>{{ tt('premiumPage.compare.premium') }}</span>
-                <strong>{{ tt(row.premiumKey) }}</strong>
+              <div class="compare-table__item compare-table__item--premium">
+                <div class="compare-table__item-label compare-table__item-label--premium">
+                  {{ tt('premiumPage.compare.premium') }}
+                </div>
+                <div class="compare-table__val compare-table__val--premium">{{ row.premium }}</div>
               </div>
             </div>
-          </article>
-        </div>
-      </section>
-
-      <section class="premium-card premium-card--premium">
-        <div class="premium-card__label">{{ tt('premiumPage.sections.premium') }}</div>
-        <ul class="feature-list">
-          <li v-for="item in premiumDetailItems" :key="item.titleKey" class="feature-item">
-            <div class="feature-item__icon">
-              <q-icon :name="item.icon" size="15px" />
-            </div>
-            <div class="feature-item__body">
-              <div class="feature-item__title">{{ tt(item.titleKey) }}</div>
-              <p class="feature-item__text">{{ tt(item.textKey) }}</p>
-            </div>
-          </li>
-        </ul>
-      </section>
-
-      <section class="premium-card premium-card--free">
-        <div class="premium-card__label">{{ tt('premiumPage.sections.free') }}</div>
-        <div class="free-grid">
-          <div v-for="key in freeItemKeys" :key="key" class="free-chip">
-            <q-icon name="check_circle" size="14px" class="free-chip__icon" />
-            <span>{{ tt(key) }}</span>
           </div>
         </div>
+        <p class="compare-table__summary">{{ compareCardCopy.summary }}</p>
       </section>
 
       <div class="premium-legal">
@@ -127,73 +108,43 @@
             {{ tt('premiumPage.legal.terms') }}
           </button>
           <span class="legal-links__sep">•</span>
-          <button type="button" class="legal-link" :disabled="isBillingActionPending || !billingReady" @click="onRestore">
+          <button
+            type="button"
+            class="legal-link"
+            :disabled="isBillingActionPending"
+            @click="onRestore"
+          >
             {{ restoreButtonLabel }}
           </button>
         </div>
         <p class="premium-footnote">{{ tt('premiumPage.billing.footnote') }}</p>
       </div>
     </div>
-
-    <div class="sticky-purchase">
-      <div class="sticky-purchase__halo" aria-hidden="true"></div>
-      <div class="sticky-purchase__topline">
-        <q-icon name="diamond" size="13px" />
-        <span>{{ tt('premiumPage.billing.selectedLabel') }}</span>
-      </div>
-
-      <div class="sticky-purchase__meta">
-        <div class="sticky-plan-switch">
-          <button
-            v-for="plan in billingPlans"
-            :key="`sticky-${plan.id}`"
-            type="button"
-            class="sticky-plan-switch__item"
-            :class="{ 'sticky-plan-switch__item--active': selectedPlanId === plan.id }"
-            :disabled="isBillingActionPending || !billingReady"
-            @click="onSelectPlan(plan.id)"
-          >
-            <span
-              class="sticky-plan-switch__check"
-              :class="{ 'sticky-plan-switch__check--active': selectedPlanId === plan.id }"
-            >
-              <q-icon v-if="selectedPlanId === plan.id" name="check" size="10px" />
-            </span>
-            <span class="sticky-plan-switch__text">
-              <span class="sticky-plan-switch__label">{{ tt(plan.buttonLabelKey) }}</span>
-              <span class="sticky-plan-switch__price-row">
-                <span class="sticky-plan-switch__value">{{ getPlanPriceLabel(plan.id) }}</span>
-              </span>
-            </span>
-            <span v-if="getPlanOfferLabel(plan.id)" class="sticky-plan-switch__save-badge">
-              {{ getPlanOfferLabel(plan.id) }}
-            </span>
-          </button>
-        </div>
-      </div>
-
-      <div class="sticky-purchase__footer">
-        <button type="button" class="sticky-purchase__ok" :disabled="purchaseDisabled" @click="onPurchase">
+      <div class="sticky-purchase">
+        <button
+          type="button"
+          class="sticky-purchase__ok"
+          :disabled="isBillingActionPending"
+          @click="onPurchase"
+        >
           <span class="sticky-purchase__ok-content">
             <span class="sticky-purchase__ok-main">{{
               isPurchasing ? tt('premiumPage.billing.processing') : tt('premiumPage.billing.button')
             }}</span>
-            <span class="sticky-purchase__ok-sub"
-              >{{ purchaseSubline }}</span
-            >
+            <span class="sticky-purchase__ok-sub">{{ purchaseSubline }}</span>
           </span>
           <span class="sticky-purchase__ok-arrow">
             <q-spinner v-if="isPurchasing" size="16px" color="white" />
             <q-icon v-else name="arrow_forward" size="16px" />
           </span>
         </button>
+
         <div class="sticky-purchase__close-wrap">
           <button type="button" class="sticky-purchase__close" @click="onClose">
             {{ tt('common.close') }}
           </button>
         </div>
       </div>
-    </div>
   </q-page>
 </template>
 
@@ -211,12 +162,6 @@ import {
   purchasePremiumPlan,
   restorePremiumPurchases,
 } from 'src/services/premiumBilling'
-import {
-  getPremiumBillingIncludeKeys,
-  getPremiumDetailItems,
-  PREMIUM_COMPARE_ROWS,
-  PREMIUM_FREE_ITEM_KEYS,
-} from 'src/constants/premiumModel'
 import { PAYWALL_FUNNEL_EVENTS } from 'src/constants/analyticsEvents'
 import { analytics } from 'src/services/analytics'
 import { loadPremiumBootstrapSnapshot } from 'src/helpers/premiumBootstrapCore.js'
@@ -226,7 +171,6 @@ const tt = (key) => t(locale.value, key)
 const router = useRouter()
 const route = useRoute()
 const $q = useQuasar()
-const tarotAiEnabled = import.meta.env.VITE_ENABLE_TAROT_AI === 'true'
 const {
   state: premiumState,
   hasPremiumAccess,
@@ -242,56 +186,161 @@ const billingCatalog = ref({
 const isPurchasing = ref(false)
 const isRestoring = ref(false)
 const billingReady = ref(true)
+const billingIssueReason = ref('')
 const paywallCloseReason = ref('route_change')
 const paywallCloseLogged = ref(false)
 const purchaseCompleted = ref(false)
+const tarotAiEnabled = import.meta.env.VITE_ENABLE_TAROT_AI === 'true'
+const showCompareCard = ref(false)
 
-const freeItemKeys = PREMIUM_FREE_ITEM_KEYS
-const billingIncludeKeys = computed(() => getPremiumBillingIncludeKeys({ tarotAiEnabled }))
-const premiumDetailItems = computed(() => getPremiumDetailItems({ tarotAiEnabled }))
+let compareRevealFrame = 0
+const COMPARE_REVEAL_SCROLL_Y = 28
+const COMPARE_HIDE_SCROLL_Y = 8
 
-const reasonItems = [
+const updateCompareCardVisibility = () => {
+  if (typeof window === 'undefined') return
+  const y = Math.max(window.scrollY || 0, 0)
+  if (y >= COMPARE_REVEAL_SCROLL_Y) {
+    showCompareCard.value = true
+  } else if (y <= COMPARE_HIDE_SCROLL_Y) {
+    showCompareCard.value = false
+  }
+}
+
+const handleCompareCardScroll = () => {
+  if (typeof window === 'undefined' || compareRevealFrame) return
+  compareRevealFrame = window.requestAnimationFrame(() => {
+    compareRevealFrame = 0
+    updateCompareCardVisibility()
+  })
+}
+
+const featureCards = [
   {
-    icon: 'filter_alt',
-    titleKey: 'premiumPage.reasons.clarityTitle',
-    textKey: 'premiumPage.reasons.clarityText',
+    icon: '\uD83C\uDFB4',
+    titleKey: 'premiumPage.feat.tarot',
+    subKey: 'premiumPage.feat.tarotSub',
+    bg: 'rgba(147,130,255,0.1)',
+    border: 'rgba(147,130,255,0.22)',
   },
   {
-    icon: 'history',
-    titleKey: 'premiumPage.reasons.consistencyTitle',
-    textKey: 'premiumPage.reasons.consistencyText',
+    icon: '\uD83C\uDF39',
+    titleKey: 'premiumPage.feat.love',
+    subKey: 'premiumPage.feat.loveSub',
+    bg: 'rgba(255,130,160,0.1)',
+    border: 'rgba(255,130,160,0.22)',
   },
   {
-    icon: 'track_changes',
-    titleKey: 'premiumPage.reasons.depthTitle',
-    textKey: 'premiumPage.reasons.depthText',
+    icon: '\uD83D\uDD2E',
+    titleKey: 'premiumPage.feat.ai',
+    subKey: 'premiumPage.feat.aiSub',
+    bg: 'rgba(130,180,255,0.1)',
+    border: 'rgba(130,180,255,0.22)',
+  },
+  {
+    icon: '\uD83D\uDCD6',
+    titleKey: 'premiumPage.feat.history',
+    subKey: 'premiumPage.feat.historySub',
+    bg: 'rgba(255,200,100,0.1)',
+    border: 'rgba(255,200,100,0.22)',
+  },
+  {
+    icon: '\uD83D\uDC9E',
+    titleKey: 'premiumPage.feat.compat',
+    subKey: 'premiumPage.feat.compatSub',
+    bg: 'rgba(255,150,200,0.1)',
+    border: 'rgba(255,150,200,0.22)',
+  },
+  {
+    icon: '\u2728',
+    titleKey: 'premiumPage.feat.spreads',
+    subKey: 'premiumPage.feat.spreadsSub',
+    bg: 'rgba(200,255,150,0.07)',
+    border: 'rgba(200,255,150,0.18)',
   },
 ]
 
-const quickCompareRows = PREMIUM_COMPARE_ROWS
-const paywallAccessRows = computed(() => {
-  const purchaseText = billingReady.value
-    ? `${tt('premiumPage.accessModel.purchasePrefix')} ${tt(selectedPlan.value.titleKey)} · ${getPlanPriceLabel(selectedPlan.value.id)}`
-    : `${tt('premiumPage.accessModel.purchasePrefix')} ${tt('premiumPage.billing.unavailableHint')}`
+const quickCompareRows = computed(() => {
+  if (locale.value === 'uk') {
+    return [
+      {
+        id: 'tarot-format',
+        feature: 'Розклад таро',
+        free: '1 карта/день',
+        premium: '1, 3 або 5 карт без ліміту',
+      },
+      {
+        id: 'interpretation',
+        feature: 'Розбір',
+        free: 'Короткий висновок',
+        premium: tarotAiEnabled ? 'Глибокий AI-розбір + кроки' : 'Глибокий розбір + кроки',
+      },
+      {
+        id: 'horoscope',
+        feature: 'Теми гороскопу',
+        free: 'Лише енергія',
+        premium: 'Енергія, кохання, карʼєра',
+      },
+      {
+        id: 'compatibility',
+        feature: 'Сумісність',
+        free: 'Немає',
+        premium: 'Повний розбір пари',
+      },
+      {
+        id: 'history',
+        feature: 'Історія',
+        free: 'Без історії',
+        premium: 'Усі читання збережені',
+      },
+    ]
+  }
 
   return [
     {
-      key: 'free',
-      label: tt('premiumAccess.model.labels.free'),
-      text: tt('premiumPage.accessModel.free'),
+      id: 'tarot-format',
+      feature: 'Tarot spread',
+      free: '1 card/day',
+      premium: '1, 3, or 5 cards with no limit',
     },
     {
-      key: 'premium',
-      label: tt('premiumAccess.model.labels.premium'),
-      text: tt('premiumPage.accessModel.premium'),
+      id: 'interpretation',
+      feature: 'Reading depth',
+      free: 'Short takeaway',
+      premium: tarotAiEnabled ? 'Deep AI reading + action steps' : 'Deep reading + action steps',
     },
     {
-      key: 'purchase',
-      label: tt('premiumAccess.model.labels.purchase'),
-      text: purchaseText,
+      id: 'horoscope',
+      feature: 'Horoscope themes',
+      free: 'Energy only',
+      premium: 'Energy, love, and career',
+    },
+    {
+      id: 'compatibility',
+      feature: 'Compatibility',
+      free: 'No',
+      premium: 'Full relationship reading',
+    },
+    {
+      id: 'history',
+      feature: 'History',
+      free: 'No history',
+      premium: 'All readings saved',
     },
   ]
 })
+
+const compareCardCopy = computed(() =>
+  locale.value === 'uk'
+    ? {
+        lead: 'Free підходить для базового щоденного ритуалу. Premium відкриває повний формат роботи з таро, гороскопом і сумісністю.',
+        summary: 'Premium = повний доступ до всіх форматів без денних лімітів.',
+      }
+    : {
+        lead: 'Free works for a basic daily ritual. Premium unlocks the full tarot, horoscope, and compatibility experience.',
+        summary: 'Premium = full access to every format with no daily limits.',
+      },
+)
 
 const billingPlans = [
   {
@@ -334,7 +383,9 @@ const paywallEntry = computed(() => {
 const detectTrialOffer = (planId) => {
   const text = getPlanOfferLabel(planId).toLowerCase()
   if (!text) return false
-  return /(trial|free|пробн|безкоштов)/.test(text)
+  return /(trial|free|\u043f\u0440\u043e\u0431\u043d|\u0431\u0435\u0437\u043a\u043e\u0448\u0442\u043e\u0432)/.test(
+    text,
+  )
 }
 
 const logPaywallEvent = (eventName, params = {}) => {
@@ -358,7 +409,6 @@ const markPaywallClose = (reason) => {
 }
 
 const isBillingActionPending = computed(() => isPurchasing.value || isRestoring.value)
-const purchaseDisabled = computed(() => isBillingActionPending.value || !billingReady.value)
 const restoreButtonLabel = computed(() =>
   isRestoring.value ? tt('premiumPage.billing.restoring') : tt('premiumPage.billing.restore'),
 )
@@ -386,7 +436,7 @@ const onClose = async () => {
 }
 
 const onSelectPlan = async (id) => {
-  if (isBillingActionPending.value || !billingReady.value) return
+  if (isBillingActionPending.value) return
   selectedPlanId.value = id
   await hapticTap()
 }
@@ -394,7 +444,11 @@ const onSelectPlan = async (id) => {
 const resolveBillingErrorMessage = (reason, mode = 'purchase') => {
   const normalized = String(reason || '').toLowerCase()
   if (normalized === 'network_error') return tt('premiumPage.billing.errors.network')
-  if (normalized === 'missing_api_key' || normalized === 'configure_failed' || normalized === 'plugin_missing') {
+  if (
+    normalized === 'missing_api_key' ||
+    normalized === 'configure_failed' ||
+    normalized === 'plugin_missing'
+  ) {
     return tt('premiumPage.billing.errors.config')
   }
   if (normalized === 'not_native') {
@@ -406,11 +460,54 @@ const resolveBillingErrorMessage = (reason, mode = 'purchase') => {
   return tt('premiumPage.billing.errors.purchaseFailed')
 }
 
+const resolveBillingIssueDetail = (reason) => {
+  const normalized = String(reason || '').toLowerCase()
+  if (normalized === 'missing_api_key') {
+    return locale.value === 'uk'
+      ? '\u041d\u0435 \u0437\u0430\u0434\u0430\u043d\u043e VITE_RC_IOS_API_KEY \u0434\u043b\u044f iPhone build.'
+      : 'VITE_RC_IOS_API_KEY is missing for the iPhone build.'
+  }
+  if (normalized === 'plugin_missing' || normalized === 'configure_failed') {
+    return locale.value === 'uk'
+      ? 'RevenueCat Purchases plugin \u043d\u0435 \u043f\u0456\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0439 \u0443 \u043d\u0430\u0442\u0438\u0432\u043d\u043e\u043c\u0443 iOS build.'
+      : 'The RevenueCat Purchases plugin is not connected in the native iOS build.'
+  }
+  if (normalized === 'not_native') {
+    return locale.value === 'uk'
+      ? '\u041f\u043e\u043a\u0443\u043f\u043a\u0438 \u043f\u0440\u0430\u0446\u044e\u044e\u0442\u044c \u043b\u0438\u0448\u0435 \u0432 \u043d\u0430\u0442\u0438\u0432\u043d\u043e\u043c\u0443 iPhone build.'
+      : 'Purchases only work in a native iPhone build.'
+  }
+  if (normalized === 'network_error') {
+    return locale.value === 'uk'
+      ? '\u041d\u0435\u043c\u0430\u0454 \u0434\u043e\u0441\u0442\u0443\u043f\u0443 \u0434\u043e Store \u0430\u0431\u043e \u043c\u0435\u0440\u0435\u0436\u0456.'
+      : 'The Store or network is currently unreachable.'
+  }
+  return locale.value === 'uk'
+    ? 'Store billing \u0437\u0430\u0440\u0430\u0437 \u043d\u0435 \u0433\u043e\u0442\u043e\u0432\u0438\u0439.'
+    : 'Store billing is currently unavailable.'
+}
+
+const billingUnavailableMessage = computed(() => {
+  if (billingReady.value) return ''
+  const detail = resolveBillingIssueDetail(billingIssueReason.value)
+  return `${tt('premiumPage.billing.unavailableHint')} ${detail}`.trim()
+})
+
+const setBillingUnavailable = (reason) => {
+  billingReady.value = false
+  billingIssueReason.value = String(reason || 'unavailable').toLowerCase()
+}
+
+const markBillingReady = () => {
+  billingReady.value = true
+  billingIssueReason.value = ''
+}
+
 const onPurchase = async () => {
-  if (purchaseDisabled.value) {
+  if (isBillingActionPending.value || !billingReady.value) {
     if (!billingReady.value) {
       $q.notify({
-        message: tt('premiumPage.billing.errors.unavailable'),
+        message: resolveBillingErrorMessage(billingIssueReason.value || 'not_native', 'purchase'),
         color: 'dark',
         textColor: 'white',
         position: 'bottom',
@@ -428,7 +525,7 @@ const onPurchase = async () => {
   try {
     const result = await purchasePremiumPlan(selectedPlanId.value)
     if (result.ok && result.hasPremium) {
-      billingReady.value = true
+      markBillingReady()
       purchaseCompleted.value = true
       applyPremiumAccessStatus({ active: true, plan: result.plan, source: 'billing' })
       logPaywallEvent(PAYWALL_FUNNEL_EVENTS.purchaseSuccess, {
@@ -463,8 +560,10 @@ const onPurchase = async () => {
     }
 
     if (!result.available) {
-      billingReady.value = false
-      logPaywallEvent(PAYWALL_FUNNEL_EVENTS.purchaseError, { reason: String(result.reason || 'unavailable') })
+      setBillingUnavailable(result.reason)
+      logPaywallEvent(PAYWALL_FUNNEL_EVENTS.purchaseError, {
+        reason: String(result.reason || 'unavailable'),
+      })
       $q.notify({
         message: resolveBillingErrorMessage(result.reason, 'purchase'),
         color: 'dark',
@@ -474,8 +573,10 @@ const onPurchase = async () => {
       return
     }
 
-    billingReady.value = true
-    logPaywallEvent(PAYWALL_FUNNEL_EVENTS.purchaseError, { reason: String(result.reason || 'unknown') })
+    markBillingReady()
+    logPaywallEvent(PAYWALL_FUNNEL_EVENTS.purchaseError, {
+      reason: String(result.reason || 'unknown'),
+    })
     $q.notify({
       message: resolveBillingErrorMessage(result.reason, 'purchase'),
       color: 'dark',
@@ -496,7 +597,7 @@ const onRestore = async () => {
   if (isBillingActionPending.value || !billingReady.value) {
     if (!billingReady.value) {
       $q.notify({
-        message: tt('premiumPage.billing.errors.restoreUnavailable'),
+        message: resolveBillingErrorMessage(billingIssueReason.value || 'not_native', 'restore'),
         color: 'dark',
         textColor: 'white',
         position: 'bottom',
@@ -509,7 +610,7 @@ const onRestore = async () => {
   try {
     const result = await restorePremiumPurchases()
     if (!result.available) {
-      billingReady.value = false
+      setBillingUnavailable(result.reason)
       $q.notify({
         message: resolveBillingErrorMessage(result.reason, 'restore'),
         color: 'dark',
@@ -519,7 +620,7 @@ const onRestore = async () => {
       return
     }
 
-    billingReady.value = true
+    markBillingReady()
     let restored = false
     if (result.ok && result.hasPremium) {
       applyPremiumAccessStatus({ active: true, plan: result.plan, source: 'billing' })
@@ -573,7 +674,12 @@ const initializePremiumBillingState = async () => {
   })
 
   billingCatalog.value = snapshot.billingCatalog
-  billingReady.value = snapshot.billingReady
+  if (snapshot.billingReady) {
+    markBillingReady()
+  } else {
+    const reason = snapshot.errors[0]?.split(':')[1] || 'unavailable'
+    setBillingUnavailable(reason)
+  }
 
   if (snapshot.status) {
     applyPremiumAccessStatus({
@@ -592,16 +698,27 @@ const initializePremiumBillingStateSafe = async () => {
   try {
     await initializePremiumBillingState()
   } catch (error) {
-    billingReady.value = false
+    setBillingUnavailable('configure_failed')
     console.warn('[Premium] billing bootstrap failed', error)
   }
 }
 
 onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('scroll', handleCompareCardScroll, { passive: true })
+  }
+  updateCompareCardVisibility()
   void initializePremiumBillingStateSafe()
 })
 
 onBeforeUnmount(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('scroll', handleCompareCardScroll)
+  }
+  if (typeof window !== 'undefined' && compareRevealFrame) {
+    window.cancelAnimationFrame(compareRevealFrame)
+    compareRevealFrame = 0
+  }
   markPaywallClose(paywallCloseReason.value || 'route_change')
 })
 
@@ -613,7 +730,7 @@ const purchaseSubline = computed(() => {
   if (!billingReady.value) {
     return tt('premiumPage.billing.unavailableHint')
   }
-  return `${tt(selectedPlan.value.titleKey)} · ${getPlanPriceLabel(selectedPlan.value.id)}`
+  return `${tt(selectedPlan.value.titleKey)} \u00b7 ${getPlanPriceLabel(selectedPlan.value.id)}`
 })
 </script>
 
@@ -634,6 +751,18 @@ const purchaseSubline = computed(() => {
   overflow: hidden;
 }
 
+.premium-page::after {
+  content: '';
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(env(safe-area-inset-bottom) + 20px);
+  background: linear-gradient(180deg, rgba(5, 13, 21, 0.94), rgba(5, 13, 21, 1));
+  pointer-events: none;
+  z-index: 3;
+}
+
 .premium-bg {
   position: absolute;
   inset: 0;
@@ -646,90 +775,23 @@ const purchaseSubline = computed(() => {
 .premium-content {
   position: relative;
   z-index: 1;
-  padding: calc(90px + env(safe-area-inset-top)) 18px
-    calc(32px + env(safe-area-inset-bottom) + 260px);
+  padding: calc(52px + env(safe-area-inset-top)) 18px
+    calc(44px + env(safe-area-inset-bottom) + 286px);
   max-width: 560px;
   margin: 0 auto;
   display: grid;
-  gap: 12px;
+  gap: 14px;
+  overflow-x: clip;
 }
 
-.premium-header {
-  position: relative;
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) 34px;
-  align-items: start;
-  column-gap: 10px;
-  border: 1px solid transparent;
-  border-radius: 20px;
-  background:
-    linear-gradient(165deg, rgba(7, 11, 19, 0.95), rgba(4, 7, 13, 0.98)) padding-box,
-    linear-gradient(
-        132deg,
-        rgba(147, 203, 255, 0.38),
-        rgba(127, 162, 226, 0.24),
-        rgba(147, 203, 255, 0.1)
-      )
-      border-box;
-  box-shadow:
-    0 16px 30px rgba(0, 0, 0, 0.34),
-    inset 0 1px 0 rgba(186, 207, 247, 0.08);
-  padding: 14px 14px 13px;
-}
+/* ─── Nav ─────────────────────────────────────────────────── */
 
-.premium-header::before {
-  content: '';
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  top: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    rgba(186, 207, 247, 0),
-    rgba(186, 207, 247, 0.54),
-    rgba(186, 207, 247, 0)
-  );
-  pointer-events: none;
-}
-
-.premium-header__text {
-  display: grid;
-  gap: 7px;
-  justify-items: center;
-  text-align: center;
-  padding: 1px 4px 0;
-}
-
-.premium-header__kicker {
-  font-size: 11px;
-  line-height: 1.25;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(187, 206, 237, 0.72);
-  font-weight: 620;
-}
-
-.premium-title {
-  margin: 0;
-  font-size: clamp(25px, 6vw, 31px);
-  letter-spacing: 0.01em;
-  line-height: 1.08;
-  text-transform: none;
-}
-
-.premium-subtitle {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.45;
-  letter-spacing: 0.01em;
-  text-transform: none;
-  color: rgba(211, 224, 244, 0.86);
-  max-width: 38ch;
+.premium-nav {
+  display: flex;
+  align-items: center;
 }
 
 .premium-back {
-  position: relative;
   width: 34px;
   height: 34px;
   border-radius: 12px;
@@ -748,11 +810,145 @@ const purchaseSubline = computed(() => {
   border-color: rgba(156, 184, 235, 0.28);
 }
 
-.premium-header__spacer {
-  width: 34px;
-  height: 34px;
-  visibility: hidden;
+/* ─── Hero ────────────────────────────────────────────────── */
+
+.premium-hero {
+  display: grid;
+  gap: 10px;
+  text-align: center;
+  padding: 8px 4px 6px;
 }
+
+.premium-hero__kicker {
+  font-size: 11px;
+  font-weight: 640;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(147, 203, 255, 0.7);
+}
+
+.premium-hero__title {
+  margin: 0;
+  font-size: clamp(26px, 6.5vw, 32px);
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+  color: rgba(235, 243, 255, 0.98);
+}
+
+.premium-hero__sub {
+  margin: 0 auto;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(209, 222, 244, 0.8);
+  max-width: 34ch;
+}
+
+/* ─── Feature cards (horizontal scroll) ───────────────────── */
+
+.feat-scroll {
+  overflow: hidden;
+  margin-left: -18px;
+  margin-right: -18px;
+  width: calc(100% + 36px);
+  padding: 4px 0 8px;
+  margin-bottom: 16px;
+  mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+}
+
+.feat-scroll__track {
+  display: flex;
+  align-items: stretch;
+  width: max-content;
+  gap: 10px;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  animation: feat-marquee 44s linear infinite;
+  animation-delay: 2.6s;
+}
+
+.feat-scroll__group {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  padding-left: 18px;
+}
+
+.feat-card {
+  flex-shrink: 0;
+  width: 132px;
+  border-radius: 18px;
+  border: 1px solid var(--fc-border, rgba(147, 203, 255, 0.2));
+  background: var(--fc-bg, rgba(147, 203, 255, 0.07));
+  backdrop-filter: blur(14px);
+  padding: 14px 13px 13px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 8px 20px rgba(0, 0, 0, 0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feat-scroll {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .feat-scroll__track {
+    animation: none;
+  }
+}
+
+@keyframes feat-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(calc(-50% - 5px), 0, 0);
+  }
+}
+
+.feat-card::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0)
+  );
+  pointer-events: none;
+}
+
+.feat-card__icon {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.feat-card__title {
+  font-size: 13px;
+  font-weight: 660;
+  line-height: 1.3;
+  color: rgba(235, 242, 255, 0.96);
+}
+
+.feat-card__sub {
+  font-size: 11px;
+  line-height: 1.35;
+  color: rgba(195, 213, 242, 0.68);
+}
+
+/* ─── Card base ───────────────────────────────────────────── */
 
 .premium-card {
   border-radius: 16px;
@@ -767,7 +963,7 @@ const purchaseSubline = computed(() => {
       )
       border-box;
   backdrop-filter: blur(12px);
-  padding: 14px 14px 14px 14px;
+  padding: 14px;
   display: grid;
   gap: 12px;
   position: relative;
@@ -775,34 +971,6 @@ const purchaseSubline = computed(() => {
   box-shadow:
     inset 0 1px 0 rgba(186, 207, 247, 0.08),
     0 12px 24px rgba(0, 0, 0, 0.3);
-}
-
-.premium-model-list {
-  display: grid;
-  gap: 8px;
-}
-
-.premium-model-row {
-  display: grid;
-  gap: 3px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(186, 207, 247, 0.14);
-  background: rgba(7, 12, 20, 0.44);
-}
-
-.premium-model-row__label {
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(173, 210, 255, 0.86);
-  font-weight: 620;
-}
-
-.premium-model-row__text {
-  font-size: 12px;
-  line-height: 1.45;
-  color: rgba(219, 231, 250, 0.88);
 }
 
 .premium-card::before {
@@ -829,64 +997,7 @@ const purchaseSubline = computed(() => {
   color: rgba(204, 220, 245, 0.68);
 }
 
-.premium-card--vision {
-  padding-top: 14px;
-}
-
-.premium-vision {
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.45;
-  color: rgba(217, 229, 247, 0.86);
-}
-
-.reason-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 9px;
-}
-
-.reason-item {
-  border: 1px solid rgba(156, 183, 230, 0.26);
-  border-radius: 12px;
-  background: rgba(12, 19, 31, 0.66);
-  padding: 11px;
-  display: grid;
-  grid-template-columns: 24px 1fr;
-  gap: 9px;
-}
-
-.reason-item__icon {
-  width: 24px;
-  height: 24px;
-  border-radius: 8px;
-  border: 1px solid rgba(156, 183, 230, 0.38);
-  background: rgba(16, 24, 38, 0.78);
-  color: rgba(214, 225, 242, 0.9);
-  display: grid;
-  place-items: center;
-}
-
-.reason-item__body {
-  display: grid;
-  gap: 5px;
-}
-
-.reason-item__title {
-  font-size: 14px;
-  color: rgba(239, 245, 255, 0.94);
-  line-height: 1.35;
-  font-weight: 600;
-}
-
-.reason-item__text {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.45;
-  color: rgba(201, 216, 240, 0.78);
-}
+/* ─── Plans card ──────────────────────────────────────────── */
 
 .premium-card--plans {
   background:
@@ -899,32 +1010,14 @@ const purchaseSubline = computed(() => {
         rgba(147, 203, 255, 0.12)
       )
       border-box;
+  margin-bottom: 20px;
 }
 
-.plan-intro {
+.plan-unavailable-note {
   margin: 0;
-  font-size: 15px;
-  line-height: 1.45;
-  color: rgba(218, 229, 246, 0.9);
-}
-
-.plan-includes {
-  display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.plan-include {
-  border-radius: 10px;
-  border: 1px solid rgba(156, 183, 230, 0.24);
-  background: rgba(11, 18, 31, 0.6);
-  padding: 8px 9px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: rgba(221, 234, 251, 0.88);
   font-size: 12px;
-  line-height: 1.35;
+  line-height: 1.45;
+  color: rgba(255, 212, 170, 0.92);
 }
 
 .plan-grid {
@@ -936,25 +1029,37 @@ const purchaseSubline = computed(() => {
 .plan-tile {
   width: 100%;
   text-align: left;
-  border-radius: 13px;
-  border: 1px solid rgba(156, 183, 230, 0.28);
-  background: rgba(14, 22, 36, 0.72);
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #11161d;
   padding: 12px;
   display: grid;
   gap: 7px;
-  color: rgba(233, 241, 255, 0.9);
+  color: rgba(229, 235, 244, 0.92);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
   transition:
     border-color 150ms ease,
     background 150ms ease,
+    box-shadow 150ms ease,
     transform 150ms ease;
 }
 
+.plan-tile::before {
+  display: none;
+}
+
+.plan-tile::after {
+  display: none;
+}
+
 .plan-tile--active {
-  border-color: rgba(148, 208, 255, 0.74);
-  background: linear-gradient(165deg, rgba(87, 150, 231, 0.26), rgba(27, 62, 122, 0.32));
+  border-color: rgba(10, 132, 255, 0.62);
+  background: #171e28;
   box-shadow:
-    0 0 0 1px rgba(148, 208, 255, 0.22),
-    0 10px 18px rgba(0, 0, 0, 0.24);
+    0 0 0 1px rgba(10, 132, 255, 0.22),
+    0 8px 18px rgba(0, 0, 0, 0.18);
   transform: translateY(-1px);
 }
 
@@ -973,15 +1078,24 @@ const purchaseSubline = computed(() => {
 .plan-tile__title {
   font-size: 15px;
   line-height: 1.35;
-  color: rgba(232, 240, 254, 0.94);
+  color: rgba(214, 223, 236, 0.84);
   font-weight: 650;
 }
 
+.plan-tile:not(.plan-tile--active) .plan-tile__title {
+  color: rgba(196, 206, 223, 0.8);
+}
+
+.plan-tile--active .plan-tile__title {
+  color: rgba(248, 250, 255, 0.98);
+}
+
 .plan-tile__dot {
-  width: 17px;
-  height: 17px;
+  width: 18px;
+  height: 18px;
   border-radius: 999px;
-  border: 1px solid rgba(190, 210, 242, 0.44);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
   color: transparent;
   display: grid;
   place-items: center;
@@ -989,35 +1103,54 @@ const purchaseSubline = computed(() => {
 }
 
 .plan-tile--active .plan-tile__dot {
-  border-color: rgba(146, 205, 255, 0.88);
-  background: rgba(147, 203, 255, 0.34);
-  color: rgba(225, 235, 249, 0.96);
+  border-color: rgba(10, 132, 255, 0.92);
+  background: #0a84ff;
+  box-shadow: none;
+  color: rgba(245, 249, 255, 0.99);
 }
 
 .plan-tile__price {
   font-size: 22px;
   line-height: 1.2;
-  color: rgba(235, 242, 255, 0.96);
+  color: rgba(221, 230, 242, 0.88);
   font-weight: 670;
+}
+
+.plan-tile:not(.plan-tile--active) .plan-tile__price {
+  color: rgba(207, 217, 233, 0.82);
+}
+
+.plan-tile--active .plan-tile__price {
+  color: rgba(250, 252, 255, 1);
 }
 
 .plan-tile__saving {
   justify-self: start;
   border-radius: 999px;
-  padding: 2px 6px;
+  padding: 3px 7px;
   font-size: 12px;
   line-height: 1.3;
-  color: rgba(219, 232, 253, 0.93);
+  color: rgba(199, 223, 255, 0.92);
   font-weight: 600;
-  border: 1px solid rgba(141, 201, 255, 0.62);
-  background: rgba(147, 203, 255, 0.28);
+  border: 1px solid rgba(10, 132, 255, 0.2);
+  background: rgba(10, 132, 255, 0.12);
 }
 
 .plan-tile__note {
   font-size: 13px;
   line-height: 1.4;
-  color: rgba(203, 219, 243, 0.8);
+  color: rgba(168, 180, 200, 0.7);
 }
+
+.plan-tile:not(.plan-tile--active) .plan-tile__note {
+  color: rgba(160, 173, 194, 0.62);
+}
+
+.plan-tile--active .plan-tile__note {
+  color: rgba(208, 220, 238, 0.84);
+}
+
+/* ─── Compare card ────────────────────────────────────────── */
 
 .premium-card--compare {
   background:
@@ -1030,159 +1163,116 @@ const purchaseSubline = computed(() => {
         rgba(147, 203, 255, 0.08)
       )
       border-box;
+  margin-bottom: 16px;
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
 }
 
-.compare-stack {
+.premium-card--compare-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.compare-table {
   display: grid;
-  gap: 9px;
-}
-
-.compare-row {
-  border-radius: 12px;
-  border: 1px solid rgba(156, 183, 230, 0.22);
-  background: rgba(12, 19, 31, 0.62);
-  padding: 11px;
-  display: grid;
-  gap: 8px;
-}
-
-.compare-row__feature {
-  font-size: 14px;
-  color: rgba(231, 239, 252, 0.94);
-  font-weight: 600;
-}
-
-.compare-row__values {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.compare-pill {
-  border-radius: 10px;
-  border: 1px solid rgba(156, 183, 230, 0.22);
-  background: rgba(10, 16, 28, 0.68);
-  padding: 9px;
-  display: grid;
-  gap: 2px;
-}
-
-.compare-pill span {
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(192, 208, 233, 0.72);
-  font-weight: 600;
-}
-
-.compare-pill strong {
-  font-size: 14px;
-  line-height: 1.34;
-  color: rgba(233, 241, 254, 0.94);
-  font-weight: 600;
-}
-
-.compare-pill--premium {
-  border-color: rgba(141, 201, 255, 0.58);
-  background: rgba(147, 203, 255, 0.24);
-}
-
-.premium-card--premium {
-  background:
-    radial-gradient(120% 140% at 100% 0, rgba(147, 203, 255, 0.14), rgba(147, 203, 255, 0)),
-    linear-gradient(165deg, rgba(8, 12, 20, 0.9), rgba(4, 6, 12, 0.96)) padding-box,
-    linear-gradient(
-        132deg,
-        rgba(147, 203, 255, 0.34),
-        rgba(127, 162, 226, 0.2),
-        rgba(147, 203, 255, 0.1)
-      )
-      border-box;
-}
-
-.feature-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 9px;
-}
-
-.feature-item {
-  border-radius: 12px;
-  border: 1px solid rgba(156, 183, 230, 0.24);
-  background: rgba(12, 19, 31, 0.66);
-  padding: 11px;
-  display: grid;
-  grid-template-columns: 25px 1fr;
   gap: 10px;
 }
 
-.feature-item__icon {
-  width: 25px;
-  height: 25px;
-  border-radius: 8px;
-  border: 1px solid rgba(156, 183, 230, 0.38);
-  background: rgba(16, 24, 38, 0.78);
-  color: rgba(214, 225, 242, 0.9);
-  display: grid;
-  place-items: center;
-}
-
-.feature-item__body {
-  display: grid;
-  gap: 5px;
-}
-
-.feature-item__title {
-  font-size: 14px;
-  line-height: 1.35;
-  color: rgba(236, 243, 254, 0.94);
-  font-weight: 600;
-}
-
-.feature-item__text {
+.compare-table__lead,
+.compare-table__summary {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.4;
-  color: rgba(201, 216, 239, 0.8);
-}
-
-.premium-card--free {
-  background:
-    radial-gradient(120% 140% at 0% 0, rgba(147, 203, 255, 0.1), rgba(147, 203, 255, 0)),
-    linear-gradient(165deg, rgba(8, 12, 20, 0.9), rgba(4, 6, 12, 0.96)) padding-box,
-    linear-gradient(
-        132deg,
-        rgba(147, 203, 255, 0.24),
-        rgba(127, 162, 226, 0.16),
-        rgba(147, 203, 255, 0.08)
-      )
-      border-box;
-}
-
-.free-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-}
-
-.free-chip {
-  border-radius: 11px;
-  border: 1px solid rgba(156, 183, 230, 0.22);
-  background: rgba(12, 19, 31, 0.62);
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: rgba(225, 234, 248, 0.9);
   font-size: 14px;
-  line-height: 1.35;
+  line-height: 1.5;
+  color: rgba(206, 219, 241, 0.78);
 }
 
-.free-chip__icon {
-  color: rgba(138, 226, 171, 0.96);
+.compare-table__summary {
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(147, 203, 255, 0.18);
+  background: linear-gradient(180deg, rgba(17, 38, 61, 0.62), rgba(10, 20, 33, 0.84));
+  color: rgba(231, 240, 255, 0.94);
+  font-weight: 620;
 }
+
+.compare-table__row {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 15px;
+  border: 1px solid rgba(156, 183, 230, 0.14);
+  background:
+    linear-gradient(180deg, rgba(18, 24, 36, 0.92), rgba(8, 12, 19, 0.96)), rgba(8, 12, 19, 0.94);
+}
+
+.compare-table__feat {
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: rgba(234, 242, 255, 0.94);
+  font-weight: 620;
+}
+
+.compare-table__stack {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.compare-table__item {
+  min-width: 0;
+  border-radius: 13px;
+  padding: 10px 11px;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+
+.compare-table__item--free {
+  border: 1px solid rgba(156, 183, 230, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.compare-table__item--premium {
+  border: 1px solid rgba(147, 203, 255, 0.22);
+  background: linear-gradient(180deg, rgba(19, 46, 77, 0.5), rgba(10, 23, 39, 0.72));
+  box-shadow: inset 0 1px 0 rgba(147, 203, 255, 0.08);
+}
+
+.compare-table__item-label {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(177, 194, 220, 0.6);
+}
+
+.compare-table__item-label--premium {
+  color: rgba(147, 203, 255, 0.78);
+}
+
+.compare-table__val {
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: left;
+  color: rgba(180, 200, 230, 0.72);
+  font-weight: 560;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.compare-table__val--premium {
+  color: rgba(147, 203, 255, 0.94);
+  font-weight: 660;
+}
+
+/* ─── Legal ───────────────────────────────────────────────── */
 
 .premium-legal {
   display: grid;
@@ -1198,9 +1288,9 @@ const purchaseSubline = computed(() => {
   border: 0;
   background: transparent;
   padding: 0;
-  color: rgba(208, 222, 245, 0.86);
+  color: rgba(220, 232, 250, 0.9);
   font-size: 14px;
-  line-height: 1.35;
+  line-height: 1.4;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -1225,208 +1315,59 @@ const purchaseSubline = computed(() => {
 
 .premium-footnote {
   margin: 0;
-  font-size: 12px;
-  color: rgba(175, 194, 224, 0.78);
-  line-height: 1.45;
+  font-size: 13px;
+  color: rgba(196, 212, 236, 0.84);
+  line-height: 1.55;
   text-align: center;
 }
+
+/* ─── Sticky purchase ────────────────────────────────────── */
 
 .sticky-purchase {
   position: fixed;
   left: 14px;
   right: 14px;
-  bottom: 0;
+  bottom: 10px;
   z-index: 4;
   border: 1px solid transparent;
-  border-radius: 20px;
+  border-radius: 24px;
   background:
     linear-gradient(165deg, rgba(8, 12, 20, 0.98), rgba(4, 6, 12, 0.99)) padding-box,
     linear-gradient(
         132deg,
-        rgba(147, 203, 255, 0.46),
-        rgba(127, 162, 226, 0.28),
-        rgba(147, 203, 255, 0.14)
+        rgba(147, 203, 255, 0.34),
+        rgba(127, 162, 226, 0.2),
+        rgba(147, 203, 255, 0.08)
       )
       border-box;
+  backdrop-filter: blur(22px);
   box-shadow:
-    0 20px 44px rgba(0, 0, 0, 0.52),
-    inset 0 1px 0 rgba(186, 207, 247, 0.1);
-  backdrop-filter: blur(15px);
-  padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+    inset 0 1px 0 rgba(186, 207, 247, 0.08),
+    0 22px 40px rgba(0, 0, 0, 0.44),
+    0 8px 20px rgba(0, 0, 0, 0.28);
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
   display: grid;
-  gap: 8px;
+  gap: 10px;
   overflow: hidden;
-}
-
-.sticky-purchase__halo {
-  display: none;
 }
 
 .sticky-purchase::before {
   content: '';
   position: absolute;
-  left: 10px;
-  right: 10px;
+  left: 16px;
+  right: 16px;
   top: 0;
   height: 1px;
   background: linear-gradient(
     90deg,
     rgba(186, 207, 247, 0),
-    rgba(186, 207, 247, 0.66),
+    rgba(186, 207, 247, 0.46),
     rgba(186, 207, 247, 0)
   );
   pointer-events: none;
 }
 
-.sticky-purchase::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: -34px;
-  width: 64%;
-  height: 58px;
-  transform: translateX(-50%);
-  border-radius: 999px;
-  background: radial-gradient(
-    60% 100% at 50% 100%,
-    rgba(147, 203, 255, 0.28),
-    rgba(147, 203, 255, 0)
-  );
-  pointer-events: none;
-}
-
-.sticky-purchase__topline {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  font-size: 9px;
-  font-weight: 680;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: rgba(207, 222, 246, 0.76);
-}
-
-.sticky-purchase__meta {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  gap: 6px;
-  border-radius: 14px;
-  border: 1px solid rgba(156, 183, 230, 0.2);
-  background: rgba(8, 13, 22, 0.66);
-  padding: 8px;
-}
-
-.sticky-plan-switch {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.sticky-plan-switch__item {
-  border: 1px solid rgba(156, 183, 230, 0.36);
-  border-radius: 12px;
-  background: rgba(16, 24, 38, 0.78);
-  min-height: 56px;
-  padding: 9px 10px 8px;
-  display: grid;
-  grid-template-columns: 14px 1fr;
-  align-items: center;
-  gap: 7px;
-  color: rgba(224, 234, 247, 0.9);
-  transition:
-    border-color 150ms ease,
-    background 150ms ease,
-    transform 150ms ease;
-  position: relative;
-}
-
-.sticky-plan-switch__item--active {
-  border-color: rgba(148, 208, 255, 0.72);
-  background: linear-gradient(165deg, rgba(87, 150, 231, 0.26), rgba(27, 62, 122, 0.32));
-  color: rgba(231, 240, 255, 0.98);
-  transform: translateY(-0.5px);
-  box-shadow:
-    inset 0 1px 0 rgba(214, 229, 255, 0.22),
-    0 10px 18px rgba(0, 0, 0, 0.24);
-}
-
-.sticky-plan-switch__item:disabled {
-  opacity: 0.54;
-  pointer-events: none;
-}
-
-.sticky-plan-switch__check {
-  width: 14px;
-  height: 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(186, 204, 232, 0.62);
-  color: transparent;
-  display: grid;
-  place-items: center;
-}
-
-.sticky-plan-switch__check--active {
-  border-color: rgba(146, 205, 255, 0.88);
-  color: rgba(232, 244, 255, 0.98);
-  background: rgba(147, 203, 255, 0.34);
-}
-
-.sticky-plan-switch__text {
-  display: grid;
-  gap: 3px;
-  justify-items: start;
-  min-width: 0;
-  padding-right: 48px;
-}
-
-.sticky-plan-switch__label {
-  font-size: 12px;
-  line-height: 1.2;
-  font-weight: 650;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-.sticky-plan-switch__price-row {
-  display: block;
-  min-width: 0;
-}
-
-.sticky-plan-switch__value {
-  font-size: 16px;
-  line-height: 1.1;
-  color: rgba(229, 239, 255, 0.96);
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.sticky-plan-switch__save-badge {
-  position: absolute;
-  top: 7px;
-  right: 7px;
-  border-radius: 999px;
-  padding: 2px 7px;
-  font-size: 9px;
-  line-height: 1.1;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  border: 1px solid rgba(141, 201, 255, 0.62);
-  background: rgba(147, 203, 255, 0.28);
-  color: rgba(234, 245, 255, 0.98);
-  white-space: nowrap;
-}
-
-.sticky-purchase__footer {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  gap: 7px;
-}
+/* ─── CTA button ─────────────────────────────────────────── */
 
 .sticky-purchase__ok {
   position: relative;
@@ -1436,12 +1377,12 @@ const purchaseSubline = computed(() => {
   justify-content: space-between;
   gap: 10px;
   width: 100%;
-  min-height: 56px;
-  border-radius: 14px;
-  border: 1px solid rgba(168, 224, 255, 0.72);
-  padding: 10px 11px 10px 13px;
+  min-height: 68px;
+  border-radius: 16px;
+  border: 1px solid rgba(168, 224, 255, 0.56);
+  padding: 12px 14px 12px 18px;
   background: linear-gradient(180deg, rgba(88, 150, 231, 0.96), rgba(46, 102, 184, 0.98));
-  color: #081423;
+  color: #f4f9ff;
   box-shadow:
     inset 0 1px 0 rgba(220, 236, 255, 0.28),
     0 12px 22px rgba(8, 18, 34, 0.42);
@@ -1450,12 +1391,12 @@ const purchaseSubline = computed(() => {
 .sticky-purchase__ok::before {
   content: '';
   position: absolute;
-  left: -30%;
-  top: -55%;
-  width: 58%;
-  height: 220%;
-  transform: rotate(18deg);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0));
+  left: -20%;
+  top: -50%;
+  width: 52%;
+  height: 200%;
+  transform: rotate(16deg);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent);
   pointer-events: none;
 }
 
@@ -1463,35 +1404,35 @@ const purchaseSubline = computed(() => {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 2px;
+  gap: 4px;
   text-align: left;
 }
 
 .sticky-purchase__ok-main {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   letter-spacing: 0.01em;
   color: #f4f9ff;
 }
 
 .sticky-purchase__ok-sub {
-  font-size: 11px;
-  line-height: 1.25;
-  letter-spacing: 0.02em;
+  font-size: 13px;
+  line-height: 1.3;
   color: rgba(225, 238, 255, 0.9);
 }
 
 .sticky-purchase__ok-arrow {
   position: relative;
   z-index: 1;
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   border-radius: 999px;
   border: 1px solid rgba(229, 242, 255, 0.42);
   background: rgba(8, 24, 42, 0.18);
   color: #f2f8ff;
   display: grid;
   place-items: center;
+  flex-shrink: 0;
 }
 
 .sticky-purchase__ok:active {
@@ -1500,8 +1441,22 @@ const purchaseSubline = computed(() => {
 }
 
 .sticky-purchase__ok:disabled {
-  opacity: 0.55;
+  opacity: 0.48;
   pointer-events: none;
+}
+
+/* ─── Close (daily card style) ───────────────────────────── */
+
+.sticky-purchase__close-wrap {
+  padding: 8px;
+  border-radius: 16px;
+  border: 1px solid rgba(106, 126, 164, 0.22);
+  background:
+    linear-gradient(180deg, rgba(9, 13, 21, 0.88), rgba(3, 6, 11, 0.95)),
+    linear-gradient(90deg, rgba(83, 112, 170, 0.1), rgba(83, 112, 170, 0));
+  box-shadow:
+    inset 0 1px 0 rgba(186, 207, 247, 0.08),
+    0 10px 24px rgba(0, 0, 0, 0.3);
 }
 
 .sticky-purchase__close {
@@ -1519,25 +1474,13 @@ const purchaseSubline = computed(() => {
   box-shadow: none;
 }
 
-.sticky-purchase__close-wrap {
-  width: 100%;
-  margin-top: 1px;
-  padding: 8px;
-  border-radius: 16px;
-  border: 1px solid rgba(106, 126, 164, 0.22);
-  background:
-    linear-gradient(180deg, rgba(9, 13, 21, 0.88), rgba(3, 6, 11, 0.95)),
-    linear-gradient(90deg, rgba(83, 112, 170, 0.1), rgba(83, 112, 170, 0));
-  box-shadow:
-    inset 0 1px 0 rgba(186, 207, 247, 0.08),
-    0 10px 24px rgba(0, 0, 0, 0.3);
-}
-
 .sticky-purchase__close:active {
   transform: translateY(1px);
   border-color: rgba(156, 184, 235, 0.28);
   filter: saturate(0.92);
 }
+
+/* ─── Media queries ───────────────────────────────────────── */
 
 @media (min-width: 620px) {
   .sticky-purchase {
@@ -1550,81 +1493,56 @@ const purchaseSubline = computed(() => {
 
 @media (max-width: 460px) {
   .premium-content {
-    padding-top: calc(76px + env(safe-area-inset-top));
+    padding-top: calc(44px + env(safe-area-inset-top));
+    padding-bottom: calc(52px + env(safe-area-inset-bottom) + 292px);
     gap: 12px;
   }
 
-  .premium-header {
-    padding: 13px 12px 12px;
-    grid-template-columns: 32px minmax(0, 1fr) 32px;
-  }
-
-  .premium-header__text {
-    gap: 6px;
-    padding: 1px 2px 0;
-  }
-
-  .premium-title {
+  .premium-hero__title {
     font-size: clamp(24px, 7vw, 29px);
   }
 
-  .premium-subtitle {
+  .premium-hero__sub {
     font-size: 13px;
   }
 
-  .premium-back,
-  .premium-header__spacer {
-    width: 32px;
-    height: 32px;
-  }
-
   .premium-card {
-    padding: 14px;
-  }
-
-  .plan-includes {
-    grid-template-columns: 1fr;
+    padding: 12px;
   }
 
   .plan-grid {
     grid-template-columns: 1fr;
   }
 
-  .compare-row__values {
+  .compare-table__row {
+    padding: 11px;
+  }
+
+  .compare-table__stack {
     grid-template-columns: 1fr;
   }
 
+  .compare-table__lead,
+  .compare-table__summary,
+  .compare-table__val {
+    font-size: 12px;
+  }
+
   .sticky-purchase {
-    left: 14px;
-    right: 14px;
-    padding: 10px;
+    bottom: 12px;
+  }
+
+  .sticky-purchase__ok {
+    min-height: 64px;
     border-radius: 16px;
   }
 
-  .sticky-plan-switch__item {
-    min-height: 46px;
-    padding: 7px 8px;
-  }
-
-  .sticky-plan-switch__label {
-    font-size: 11px;
-  }
-
-  .sticky-plan-switch__value {
-    font-size: 14px;
-  }
-
-  .sticky-plan-switch__save-badge {
-    font-size: 8px;
-    padding: 2px 5px;
-  }
-
   .sticky-purchase__ok-main {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .sticky-purchase__ok-sub {
-    font-size: 10px;
+    font-size: 12px;
   }
 }
 </style>

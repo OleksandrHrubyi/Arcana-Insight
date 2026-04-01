@@ -21,24 +21,12 @@
         <div class="onboarding-hero__line"></div>
       </header>
 
-      <section class="onboarding-card onboarding-card--next">
-        <div class="onboarding-card__title">{{ tt('onboardingPage.nextTitle') }}</div>
-        <div class="onboarding-card__text">{{ tt('onboardingPage.nextText') }}</div>
-      </section>
-
       <section class="onboarding-card onboarding-card--interests">
         <div class="onboarding-card__row">
           <div class="onboarding-card__title">{{ tt('onboardingPage.sectionInterests') }}</div>
-          <div class="onboarding-card__meta">
-            {{ tt('onboardingPage.selectedLabel') }}: {{ selectedCount }}
-          </div>
+          <div v-if="selectedCount > 0" class="onboarding-card__badge">{{ selectedCount }}/3</div>
         </div>
-        <div class="onboarding-card__progress" aria-hidden="true">
-          <div class="onboarding-card__progress-track">
-            <span :style="{ width: `${progressPercent}%` }"></span>
-          </div>
-          <div class="onboarding-card__progress-text">{{ selectedCount }}/3</div>
-        </div>
+        <div class="onboarding-card__sub">{{ tt('onboardingPage.sectionInterestsHint') }}</div>
         <div class="onboarding-tags">
           <button
             v-for="item in displayInterestItems"
@@ -53,22 +41,11 @@
             <span>{{ tt(item.labelKey) }}</span>
           </button>
         </div>
-        <div class="onboarding-card__micro">{{ tt(selectionHintKey) }}</div>
-      </section>
-
-      <section class="onboarding-card onboarding-card--note">
-        <div class="onboarding-card__title">{{ tt('onboardingPage.sectionHint') }}</div>
-        <div class="onboarding-card__text">{{ tt('onboardingPage.hintText') }}</div>
+        <div v-if="selectedCount > 0" class="onboarding-card__micro">{{ tt('onboardingPage.selectionHintActive') }}</div>
       </section>
 
       <div class="onboarding-actions-shell">
-        <div class="onboarding-actions-copy">
-          <div class="onboarding-actions-copy__text">{{ tt('onboardingPage.actionHint') }}</div>
-        </div>
         <div class="onboarding-actions">
-          <button type="button" class="onboarding-skip" :disabled="isNavigating" @click="skip">
-            {{ tt('onboardingPage.skip') }}
-          </button>
           <button
             type="button"
             class="onboarding-continue"
@@ -77,6 +54,9 @@
             @click="continueNext"
           >
             {{ tt('onboardingPage.continue') }}
+          </button>
+          <button type="button" class="onboarding-skip" :disabled="isNavigating" @click="skip">
+            {{ tt('onboardingPage.skip') }}
           </button>
         </div>
       </div>
@@ -119,10 +99,6 @@ const selectedInterests = ref([])
 const isNavigating = ref(false)
 const continueFeedback = ref(false)
 const selectedCount = computed(() => selectedInterests.value.length)
-const progressPercent = computed(() => Math.min(100, Math.round((Math.min(selectedCount.value, 3) / 3) * 100)))
-const selectionHintKey = computed(() =>
-  selectedCount.value > 0 ? 'onboardingPage.selectionHintActive' : 'onboardingPage.selectionHintEmpty',
-)
 const displayInterestItems = computed(() => {
   const selectedSet = new Set(selectedInterests.value)
   const selected = []
@@ -495,6 +471,23 @@ onMounted(() => {
   color: rgba(214, 225, 242, 0.8);
 }
 
+.onboarding-card__sub {
+  font-size: 12px;
+  color: rgba(214, 225, 242, 0.48);
+  letter-spacing: 0.02em;
+  margin-top: -4px;
+}
+
+.onboarding-card__badge {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(166, 218, 255, 0.9);
+  background: rgba(100, 170, 255, 0.12);
+  border: 1px solid rgba(166, 218, 255, 0.22);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
 .onboarding-card__micro {
   font-size: 11px;
   letter-spacing: 0.06em;
@@ -557,37 +550,26 @@ onMounted(() => {
   backdrop-filter: blur(8px);
 }
 
-.onboarding-actions-copy {
-  display: grid;
-  justify-items: center;
-  gap: 0;
-  margin-bottom: 8px;
-}
-
-.onboarding-actions-copy__text {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-align: center;
-  color: rgba(214, 225, 242, 0.78);
-  text-wrap: balance;
-}
-
 .onboarding-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: 1fr;
+  gap: 4px;
 }
 
 .onboarding-skip {
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 12px 14px;
-  background: rgba(9, 13, 21, 0.7);
-  color: rgba(214, 225, 242, 0.8);
+  border: none;
+  background: none;
+  padding: 10px 14px;
+  color: rgba(214, 225, 242, 0.42);
   font-size: 12px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  text-align: center;
+  transition: color 180ms ease;
+}
+
+.onboarding-skip:not(:disabled):active {
+  color: rgba(214, 225, 242, 0.7);
 }
 
 .onboarding-continue {
@@ -703,11 +685,9 @@ onMounted(() => {
   }
 }
 
-/* Staggered entry: hero -> next -> interests -> actions within ~680ms total */
+/* Staggered entry: hero -> interests -> actions */
 .onboarding-hero,
-.onboarding-card--next,
 .onboarding-card--interests,
-.onboarding-card--note,
 .onboarding-actions-shell {
   opacity: 0;
   transform: translateY(10px) scale(0.985);
@@ -718,27 +698,17 @@ onMounted(() => {
   animation-delay: 0ms;
 }
 
-.onboarding-card--next {
+.onboarding-card--interests {
   animation-delay: 120ms;
 }
 
-.onboarding-card--interests {
-  animation-delay: 240ms;
-}
-
-.onboarding-card--note {
-  animation-delay: 300ms;
-}
-
 .onboarding-actions-shell {
-  animation-delay: 360ms;
+  animation-delay: 240ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .onboarding-hero,
-  .onboarding-card--next,
   .onboarding-card--interests,
-  .onboarding-card--note,
   .onboarding-actions-shell {
     animation: none;
     opacity: 1;
