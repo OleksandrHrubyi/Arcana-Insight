@@ -3,6 +3,7 @@ import { upsertAppUser, refreshAccessTokenNative, selectAppUser } from 'src/serv
 import { Preferences } from '@capacitor/preferences'
 import { createAuthStore } from './authStoreCore'
 import { syncGuestRitualState } from 'src/helpers/ritualRewardsBackend.js'
+import { loginToRevenueCat } from 'src/services/premiumBilling.js'
 
 const authLogger = {
   log: () => {},
@@ -28,6 +29,9 @@ const store = createAuthStore({
       userId: user?.id || '',
       source: `auth_${String(context?.source || 'sync').trim().slice(0, 32)}`,
     })
+    if (user?.id) {
+      await loginToRevenueCat(user.id)
+    }
   },
 })
 

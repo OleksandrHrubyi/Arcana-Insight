@@ -8,6 +8,7 @@ const routes = [
       { path: 'sign-up', name: 'signUp', component: () => import('src/pages/SignUpPage.vue'), meta: { allowWithoutOnboarding: true } },
       { path: 'confirm-code', component: () => import('src/pages/ConfirmEmailCodePage.vue'), meta: { hideBottomNav: true, allowWithoutOnboarding: true } },
       { path: 'horoscope', name: 'horoscope', component: () => import('src/pages/HoroscopePage.vue'), meta: { tab: 'horoscope' } },
+      { path: 'personal-horoscope', name: 'personalHoroscope', component: () => import('src/pages/PersonalHoroscopePage.vue'), meta: { tab: 'horoscope', hideBottomNav: true } },
       { path: 'tarot', name: 'tarot', component: () => import('src/pages/TarotPage.vue'), meta: { tab: 'tarot', hideBottomNav: true } },
       { path: 'tarot-interpretation', name: 'tarotInterpretation', component: () => import('src/pages/TarotInterpretationPage.vue'), meta: { tab: 'tarot', hideBottomNav: true } },
       {

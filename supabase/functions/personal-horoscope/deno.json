@@ -1,0 +1,5 @@
+{
+  "name": "personal-horoscope",
+  "entrypoint": "index.ts",
+  "verify_jwt": false
+}

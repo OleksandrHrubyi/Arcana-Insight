@@ -192,11 +192,6 @@
             </q-tab-panel>
           </q-tab-panels>
 
-          <div v-if="moonSignBlock" class="moon-sign-block">
-            <div class="moon-sign-block__label">🌙 {{ tt(`zodiac.${moonSignBlock.sign}`) }}</div>
-            <div class="moon-sign-block__text">{{ moonSignBlock.text }}</div>
-          </div>
-
           <div class="horoscope-controls">
             <div class="dots">
               <button
@@ -225,6 +220,16 @@
               @click="handleShareControlsClick"
             />
           </div>
+
+          <button
+            v-if="hasPremiumAccess"
+            type="button"
+            class="personal-reading-btn"
+            @click="goToPersonalReading"
+          >
+            <span class="personal-reading-btn__icon">✦</span>
+            {{ tt('personalHoroscope.title') }}
+          </button>
         </div>
       </div>
     </div>
@@ -397,14 +402,6 @@ export default {
       return this.isThemeLocked(this.themeTab)
     },
 
-    moonSignBlock() {
-      if (!this.moonSign) return null
-      if (this.moonSign === this.activeZodiac.key) return null
-      const text = this.horoscope?.[this.moonSign]?.[this.themeTab]?.summary || ''
-      if (!text.trim()) return null
-      return { sign: this.moonSign, text }
-    },
-
     tt() {
       return (key) => t(this.locale, key)
     },
@@ -550,6 +547,10 @@ export default {
       this.$router
         .push({ name: 'premium', query: { source: 'horoscope_lock', entry: 'secondary' } })
         .catch(() => {})
+    },
+
+    goToPersonalReading() {
+      this.$router.push({ name: 'personalHoroscope' }).catch(() => {})
     },
 
     normalizeZodiacKey(value) {
@@ -2301,26 +2302,26 @@ export default {
   }
 }
 
-.moon-sign-block {
-  margin: 12px 0 4px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid rgba(147, 197, 253, 0.14);
-  background: rgba(147, 197, 253, 0.05);
+.personal-reading-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 13px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(147, 197, 253, 0.2);
+  background: linear-gradient(155deg, rgba(37, 99, 235, 0.14), rgba(29, 78, 216, 0.08));
+  color: rgba(147, 197, 253, 0.85);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
 
-  &__label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: rgba(147, 197, 253, 0.6);
-    margin-bottom: 6px;
-  }
-
-  &__text {
+  &__icon {
     font-size: 13px;
-    line-height: 1.55;
-    color: rgba(255, 255, 255, 0.55);
+    opacity: 0.7;
   }
 }
 </style>

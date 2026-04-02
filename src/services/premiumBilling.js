@@ -393,6 +393,22 @@ export const getBillingPaywallPlans = async () => {
   }
 }
 
+export const loginToRevenueCat = async (userId) => {
+  if (!isNative()) return { ok: false, reason: 'not_native' }
+  if (!userId) return { ok: false, reason: 'no_user_id' }
+
+  const configured = await ensureConfigured()
+  if (!configured.ok) return { ok: false, reason: configured.reason }
+
+  try {
+    await Purchases.logIn({ appUserID: String(userId) })
+    return { ok: true }
+  } catch (error) {
+    console.warn('[premiumBilling] logIn failed', error)
+    return { ok: false, reason: toErrorReason(error), error }
+  }
+}
+
 export const __resetPremiumBillingForTests = () => {
   isConfigured = false
   configureAttempted = false
