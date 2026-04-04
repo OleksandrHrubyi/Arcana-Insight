@@ -35,6 +35,7 @@ export function createAuthStore({
   })
 
   let syncInFlight = null
+  let sessionReadyPromise = null
 
   const loadProfileQueue = async () => {
     try {
@@ -213,7 +214,15 @@ export function createAuthStore({
 
   async function initAuth() {
     if (!state.sessionLoaded) {
-      await syncSession()
+      // Track the session-ready promise so router guards can await it
+      if (!sessionReadyPromise) {
+        sessionReadyPromise = syncSession().finally(() => {
+          // sessionLoaded is set inside syncSession; this just ensures
+          // the promise always resolves (never stays pending)
+          if (!state.sessionLoaded) state.sessionLoaded = true
+        })
+      }
+      await sessionReadyPromise
     }
 
     if (state.listenerReady) return
@@ -250,6 +259,14 @@ export function createAuthStore({
     refreshSessionNative,
     queueProfileUpdate,
     flushProfileQueue,
+    // Resolves once the initial session restore is complete.
+    // Safe to call multiple times — returns the same promise.
+    waitForSession() {
+      if (state.sessionLoaded) return Promise.resolve()
+      if (sessionReadyPromise) return sessionReadyPromise
+      // initAuth hasn't been called yet — resolve immediately so guards don't hang
+      return Promise.resolve()
+    },
     async clearProfileQueue() {
       await saveProfileQueue([])
     },
@@ -264,6 +281,7 @@ export function createAuthStore({
       state.sessionLoaded = false
       state.listenerReady = false
       syncInFlight = null
+      sessionReadyPromise = null
     },
   }
 

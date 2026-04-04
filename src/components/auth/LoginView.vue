@@ -71,6 +71,7 @@ export default {
     },
 
     logAuth(step, payload) {
+      if (!import.meta.env.DEV) return
       if (payload !== undefined) {
         console.log(`[Auth][Login] ${step}`, payload)
       } else {
@@ -284,14 +285,26 @@ export default {
         const { error } = await supabase.auth.signInWithOtp({
           email: emailTrimmed,
           options: {
-            shouldCreateUser: true,
+            shouldCreateUser: false,
             emailRedirectTo: null,
           },
         })
         this.logAuth('email_otp_requested', { error: error?.message || null })
 
         if (error) {
-          this.errorMessage = error.message || this.tt('errors.generic')
+          // Supabase повертає цю помилку коли email не зареєстрований і shouldCreateUser: false
+          const msg = error.message || ''
+          if (
+            msg.toLowerCase().includes('signups not allowed') ||
+            msg.toLowerCase().includes('user not found') ||
+            msg.toLowerCase().includes('email not confirmed') ||
+            error.status === 422 ||
+            error.status === 400
+          ) {
+            this.errorMessage = this.tt('errors.emailNotRegistered') || 'Email not found. Please sign up first.'
+          } else {
+            this.errorMessage = msg || this.tt('errors.generic')
+          }
           return
         }
 
@@ -301,6 +314,7 @@ export default {
           path: '/confirm-code',
           query: {
             email: this.email,
+            mode: 'login',
           },
         })
       } catch (e) {

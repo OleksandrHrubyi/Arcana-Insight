@@ -1,102 +1,103 @@
 <template>
   <q-page class="personal-page">
-    <div class="personal-bg" aria-hidden="true"></div>
+    <div class="readings-bg" aria-hidden="true"></div>
 
-    <section class="personal-wrap">
-      <!-- header -->
-      <header class="personal-header">
-        <button type="button" class="personal-back" @click="onBack">
+    <section class="readings-content personal-wrap">
+      <header class="readings-hero readings-hero--with-back">
+        <button type="button" class="readings-back" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
-        <div class="personal-header__text">
-          <div class="personal-header__title">{{ tt('personalHoroscope.title') }}</div>
-          <div class="personal-header__date">{{ dateLabel }}</div>
+        <div class="readings-hero__text">
+          <div class="readings-title">{{ tt('personalHoroscope.title') }}</div>
+          <div class="readings-kicker">{{ dateLabel }}</div>
         </div>
       </header>
 
-      <!-- no birth date -->
-      <div v-if="!hasBirthDate" class="personal-empty">
-        <div class="personal-empty__icon">🌙</div>
-        <div class="personal-empty__text">{{ tt('personalHoroscope.errorNoBirthDate') }}</div>
-        <button type="button" class="personal-cta" @click="goToSettings">
-          {{ tt('personalHoroscope.noBirthDateBtn') }}
-        </button>
-      </div>
-
-      <!-- loading -->
-      <div v-else-if="loading" class="personal-loading">
-        <q-spinner color="rgba(147,197,253,0.7)" size="32px" />
-        <div class="personal-loading__text">{{ tt('personalHoroscope.loading') }}</div>
-      </div>
-
-      <!-- error -->
-      <div v-else-if="error" class="personal-empty">
-        <div class="personal-empty__icon">✦</div>
-        <div class="personal-empty__text">{{ error }}</div>
-        <button type="button" class="personal-cta" @click="generate">
-          {{ tt('personalHoroscope.btnRegenerate') }}
-        </button>
-      </div>
-
-      <!-- reading -->
-      <div v-else-if="reading" class="personal-content">
+      <section v-if="profileReady && hasBirthDate" class="personal-hero-card">
+        <div class="personal-hero-card__eyebrow">{{ tt('personalHoroscope.generatedLabel') }}</div>
+        <div class="personal-hero-card__title">{{ signLabel }}</div>
         <div class="personal-meta">
           <span class="personal-meta__sign">{{ signLabel }}</span>
           <span v-if="moonSign" class="personal-meta__moon">
             {{ tt('personalHoroscope.moonLabel') }} {{ moonSignLabel }}
           </span>
         </div>
+        <div class="personal-hero-card__text">{{ tt('personalHoroscope.subtitle') }}</div>
+      </section>
 
-        <div class="personal-section">
-          <div class="personal-section__label">{{ tt('personalHoroscope.sectionIntro') }}</div>
-          <div class="personal-section__text">{{ reading.intro }}</div>
+      <div class="personal-body" :class="{ 'personal-body--centered': !reading }">
+        <div v-if="!profileReady" class="personal-panel personal-panel--center personal-loading">
+          <q-spinner color="rgba(147,197,253,0.7)" size="32px" />
+          <div class="personal-loading__text">{{ tt('personalHoroscope.loading') }}</div>
         </div>
 
-        <div class="personal-section">
-          <div class="personal-section__label personal-section__label--love">
-            💖 {{ tt('personalHoroscope.sectionLove') }}
-          </div>
-          <div class="personal-section__text">{{ reading.love }}</div>
+        <div v-else-if="!hasBirthDate" class="personal-panel personal-panel--center personal-empty">
+          <div class="personal-empty__icon">🌙</div>
+          <div class="personal-empty__text">{{ tt('personalHoroscope.errorNoBirthDate') }}</div>
         </div>
 
-        <div class="personal-section">
-          <div class="personal-section__label personal-section__label--career">
-            💼 {{ tt('personalHoroscope.sectionCareer') }}
-          </div>
-          <div class="personal-section__text">{{ reading.career }}</div>
+        <div v-else-if="loading" class="personal-panel personal-panel--center personal-loading">
+          <q-spinner color="rgba(147,197,253,0.7)" size="32px" />
+          <div class="personal-loading__text">{{ tt('personalHoroscope.loading') }}</div>
         </div>
 
-        <div class="personal-section">
-          <div class="personal-section__label personal-section__label--spirit">
-            ✨ {{ tt('personalHoroscope.sectionSpirit') }}
-          </div>
-          <div class="personal-section__text">{{ reading.spirit }}</div>
+        <div v-else-if="error" class="personal-panel personal-panel--center personal-empty">
+          <div class="personal-empty__icon">✦</div>
+          <div class="personal-empty__text">{{ error }}</div>
         </div>
 
-        <div class="personal-generated-label">{{ tt('personalHoroscope.generatedLabel') }}</div>
+        <div v-else-if="reading" class="personal-reading">
+          <article
+            v-for="section in readingSections"
+            :key="section.key"
+            class="personal-panel personal-section"
+            :class="section.className"
+          >
+            <div class="personal-section__label">{{ section.label }}</div>
+            <div class="personal-section__text">{{ section.text }}</div>
+          </article>
+        </div>
+
+        <div v-else class="personal-panel personal-panel--center personal-start">
+          <div class="personal-start__subtitle">{{ tt('personalHoroscope.subtitle') }}</div>
+        </div>
       </div>
+    </section>
 
-      <!-- initial state — not yet generated -->
-      <div v-else class="personal-start">
-        <div class="personal-start__subtitle">{{ tt('personalHoroscope.subtitle') }}</div>
-        <div class="personal-start__meta">
-          <span class="personal-meta__sign">{{ signLabel }}</span>
-          <span v-if="moonSign" class="personal-meta__moon">
-            {{ tt('personalHoroscope.moonLabel') }} {{ moonSignLabel }}
-          </span>
-        </div>
-        <button type="button" class="personal-cta personal-cta--primary" @click="generate">
-          {{ tt('personalHoroscope.btnGenerate') }}
+    <div class="personal-sticky">
+      <div v-if="reading" class="personal-sticky__actions personal-sticky__actions--double">
+        <button type="button" class="personal-sticky__action personal-sticky__action--secondary" @click="shareReading">
+          <q-icon name="ios_share" size="16px" />
+          <span>{{ tt('misc.share') }}</span>
+        </button>
+        <button type="button" class="personal-sticky__action personal-sticky__action--primary" :disabled="loading" @click="generate">
+          <q-icon v-if="!loading" name="refresh" size="16px" />
+          <q-spinner v-else size="16px" color="white" />
+          <span>{{ tt('personalHoroscope.btnRegenerate') }}</span>
         </button>
       </div>
 
-      <!-- footer close -->
-      <div class="personal-footer">
-        <button type="button" class="personal-close" @click="onBack">
+      <div v-else-if="hasBirthDate" class="personal-sticky__actions">
+        <button type="button" class="personal-sticky__action personal-sticky__action--primary" :disabled="loading || !profileReady" @click="generate">
+          <q-icon v-if="!loading" name="auto_graph" size="16px" />
+          <q-spinner v-else size="16px" color="white" />
+          <span>{{ tt('personalHoroscope.btnGenerate') }}</span>
+        </button>
+      </div>
+
+      <div v-else-if="profileReady" class="personal-sticky__actions">
+        <button type="button" class="personal-sticky__action personal-sticky__action--primary" @click="goToSettings">
+          <q-icon name="manage_accounts" size="16px" />
+          <span>{{ tt('personalHoroscope.noBirthDateBtn') }}</span>
+        </button>
+      </div>
+
+      <div class="sticky-purchase__close-wrap">
+        <button type="button" class="sticky-purchase__close" @click="onBack">
           {{ tt('common.close') }}
         </button>
       </div>
-    </section>
+    </div>
   </q-page>
 </template>
 
@@ -104,6 +105,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Preferences } from '@capacitor/preferences'
+import { Share } from '@capacitor/share'
 import { t, currentLocale } from 'src/i18n'
 import { invokeFunction, selectAppUser } from 'src/services/supabaseNative'
 import { useAuthStore } from 'stores/authStore.js'
@@ -112,6 +114,7 @@ import * as Astronomy from 'astronomy-engine'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const PROFILE_CACHE_KEY = 'profile_cache_v1'
 
 
 const locale = computed(() => currentLocale.value || 'en')
@@ -123,6 +126,7 @@ const SIGNS = ['aries','taurus','gemini','cancer','leo','virgo','libra','scorpio
 const loading = ref(false)
 const error = ref('')
 const reading = ref(null)
+const profileReady = ref(false)
 const dateOfBirth = ref('')
 const sign = ref('')
 const moonSign = ref('')
@@ -149,8 +153,40 @@ const moonSignLabel = computed(() => {
   return tt(`zodiac.${moonSign.value}`)
 })
 
+const readingSections = computed(() => {
+  if (!reading.value) return []
+
+  return [
+    {
+      key: 'intro',
+      label: tt('personalHoroscope.sectionIntro'),
+      text: reading.value.intro || '',
+      className: 'personal-section--intro',
+    },
+    {
+      key: 'love',
+      label: tt('personalHoroscope.sectionLove'),
+      text: reading.value.love || '',
+      className: 'personal-section--love',
+    },
+    {
+      key: 'career',
+      label: tt('personalHoroscope.sectionCareer'),
+      text: reading.value.career || '',
+      className: 'personal-section--career',
+    },
+    {
+      key: 'spirit',
+      label: tt('personalHoroscope.sectionSpirit'),
+      text: reading.value.spirit || '',
+      className: 'personal-section--spirit',
+    },
+  ].filter((section) => String(section.text || '').trim())
+})
+
 // --- cache key ---
-const cacheKey = () => `personal_horoscope_${todayISO()}_${authStore.state.user?.id || 'guest'}`
+const cacheKey = () =>
+  `personal_horoscope_${todayISO()}_${authStore.state.user?.id || 'guest'}_${locale.value}`
 
 // --- birth date helpers ---
 function birthDateToISO(raw) {
@@ -192,20 +228,53 @@ function zodiacFromISO(iso) {
   return 'pisces'
 }
 
-// --- load profile ---
-async function loadProfile() {
-  const userId = authStore.state.user?.id
-  if (!userId) return
-  const { data } = await selectAppUser(userId, 6000, 'date_of_birth,zodiac_sign,interests')
-  const dob = data?.date_of_birth || ''
+function applyProfileData(profile = {}) {
+  const dob = String(profile?.date_of_birth || '').trim()
   dateOfBirth.value = dob
 
   const iso = birthDateToISO(dob)
   if (iso) {
     sign.value = zodiacFromISO(iso)
     moonSign.value = moonSignFromISO(iso)
-  } else if (data?.zodiac_sign) {
-    sign.value = data.zodiac_sign
+    return
+  }
+
+  sign.value = String(profile?.zodiac_sign || '').trim()
+  moonSign.value = ''
+}
+
+async function loadCachedProfile() {
+  try {
+    const { value } = await Preferences.get({ key: PROFILE_CACHE_KEY })
+    if (!value) return null
+    return JSON.parse(value)
+  } catch {
+    return null
+  }
+}
+
+// --- load profile ---
+async function loadProfile() {
+  const cachedProfile = await loadCachedProfile()
+  if (cachedProfile) {
+    applyProfileData(cachedProfile)
+  }
+
+  let userId = authStore.state.user?.id || ''
+  if (!userId) {
+    await authStore.syncSession({ refresh: false })
+    userId = authStore.state.user?.id || ''
+  }
+
+  if (!userId) return
+
+  try {
+    const { data } = await selectAppUser(userId, 6000, 'date_of_birth,zodiac_sign,interests')
+    if (data) {
+      applyProfileData(data)
+    }
+  } catch (e) {
+    console.warn('[PersonalHoroscope] profile load failed', e)
   }
 }
 
@@ -255,13 +324,49 @@ async function generate() {
   }
 }
 
+async function shareReading() {
+  if (!reading.value) return
+
+  const lines = [
+    tt('personalHoroscope.title'),
+    dateLabel.value,
+    signLabel.value,
+  ]
+
+  if (moonSign.value) {
+    lines.push(`${tt('personalHoroscope.moonLabel')} ${moonSignLabel.value}`)
+  }
+
+  for (const section of readingSections.value) {
+    lines.push('')
+    lines.push(section.label)
+    lines.push(section.text)
+  }
+
+  lines.push('')
+  lines.push(tt('shareSubInfo'))
+
+  try {
+    await Share.share({
+      title: tt('personalHoroscope.title'),
+      text: lines.join('\n'),
+    })
+  } catch (e) {
+    console.warn('[PersonalHoroscope] share cancelled/failed', e)
+  }
+}
+
 // --- navigation ---
 function onBack() { router.back() }
 function goToSettings() { router.push({ name: 'settings' }) }
 
 // --- init ---
 onMounted(async () => {
-  await loadProfile()
+  try {
+    await loadProfile()
+  } finally {
+    profileReady.value = true
+  }
 
   if (!hasBirthDate.value) return
 
@@ -284,67 +389,124 @@ onMounted(async () => {
   color: #fff;
 }
 
-.personal-bg {
+.personal-page::after {
+  content: '';
   position: fixed;
-  inset: 0;
-  background: radial-gradient(120% 55% at 50% 0%, #091828 0%, #060c18 45%, #040810 100%);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(22px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(5, 13, 21, 0), rgba(5, 13, 21, 0.98));
   pointer-events: none;
+  z-index: 3;
+}
+
+.readings-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
   z-index: 0;
 }
 
-.personal-wrap {
+.readings-content {
   position: relative;
   z-index: 1;
+  padding: calc(90px + env(safe-area-inset-top)) 16px calc(54px + env(safe-area-inset-bottom) + 230px);
+  max-width: 520px;
+  margin: 0 auto;
+  min-height: calc(100vh - env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  padding: 0 20px;
-  padding-bottom: calc(32px + env(safe-area-inset-bottom));
+  gap: 16px;
 }
 
-// --- header ---
-.personal-header {
-  display: flex;
+.readings-hero {
+  display: grid;
+  gap: 3px;
+}
+
+.readings-hero--with-back {
+  position: relative;
+  grid-template-columns: 1fr;
   align-items: center;
-  gap: 10px;
-  padding-top: calc(14px + env(safe-area-inset-top));
-  padding-bottom: 18px;
-
-  &__text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  &__title {
-    font-size: 16px;
-    font-weight: 680;
-    letter-spacing: -0.01em;
-    color: rgba(255, 255, 255, 0.92);
-  }
-
-  &__date {
-    font-size: 12px;
-    color: rgba(147, 197, 253, 0.55);
-    letter-spacing: 0.01em;
-  }
+  justify-items: center;
+  gap: 12px;
 }
 
-.personal-back {
-  flex-shrink: 0;
+.readings-hero__text {
+  text-align: center;
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+  padding: 0 44px;
+}
+
+.readings-title {
+  font-size: 18px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.readings-kicker {
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(214, 225, 242, 0.6);
+}
+
+.readings-back {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
   width: 36px;
   height: 36px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 14, 22, 0.7);
+  color: rgba(214, 225, 242, 0.8);
+  display: grid;
+  place-items: center;
 }
 
-// --- meta badges ---
+.personal-hero-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(120% 120% at 50% 0%, rgba(95, 161, 220, 0.18), rgba(95, 161, 220, 0) 54%),
+    linear-gradient(180deg, rgba(14, 25, 37, 0.98), rgba(8, 14, 23, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(197, 221, 255, 0.06),
+    0 22px 42px rgba(0, 0, 0, 0.28);
+  padding: 20px 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.personal-hero-card__eyebrow {
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(168, 203, 255, 0.56);
+}
+
+.personal-hero-card__title {
+  font-size: 26px;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: rgba(248, 251, 255, 0.96);
+}
+
+.personal-hero-card__text {
+  max-width: 32ch;
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(214, 225, 242, 0.68);
+}
+
 .personal-meta {
   display: flex;
   align-items: center;
@@ -373,58 +535,81 @@ onMounted(async () => {
   }
 }
 
-// --- sections ---
-.personal-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+.personal-panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(12, 20, 31, 0.96), rgba(7, 12, 20, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(197, 221, 255, 0.04),
+    0 18px 36px rgba(0, 0, 0, 0.24);
+  padding: 18px 16px;
 }
 
-.personal-section {
-  padding: 18px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-
-  &:last-of-type { border-bottom: none; }
-
-  &__label {
-    font-size: 11px;
-    font-weight: 660;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: rgba(147, 197, 253, 0.5);
-    margin-bottom: 10px;
-
-    &--love   { color: rgba(251, 182, 206, 0.7); }
-    &--career { color: rgba(167, 213, 255, 0.7); }
-    &--spirit { color: rgba(192, 167, 255, 0.7); }
-  }
-
-  &__text {
-    font-size: 15px;
-    line-height: 1.65;
-    color: rgba(255, 255, 255, 0.82);
-  }
-}
-
-.personal-generated-label {
-  margin-top: 28px;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.2);
-  text-align: center;
-  letter-spacing: 0.04em;
-}
-
-// --- start / empty states ---
-.personal-start {
-  flex: 1;
+.personal-panel--center {
+  min-height: 220px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.personal-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.personal-body--centered {
+  justify-content: center;
+}
+
+.personal-section {
+  display: grid;
+  gap: 12px;
+
+  &__label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(152, 189, 244, 0.62);
+  }
+
+  &__text {
+    font-size: 15px;
+    line-height: 1.72;
+    color: rgba(244, 248, 255, 0.86);
+  }
+}
+
+.personal-reading {
+  display: grid;
+  gap: 14px;
+}
+
+.personal-section--intro {
+  background:
+    radial-gradient(110% 120% at 0% 0%, rgba(123, 174, 232, 0.1), rgba(123, 174, 232, 0) 46%),
+    linear-gradient(180deg, rgba(12, 20, 31, 0.98), rgba(7, 12, 20, 0.98));
+}
+
+.personal-section--love .personal-section__label {
+  color: rgba(247, 185, 208, 0.76);
+}
+
+.personal-section--career .personal-section__label {
+  color: rgba(172, 214, 252, 0.76);
+}
+
+.personal-section--spirit .personal-section__label {
+  color: rgba(196, 188, 255, 0.78);
+}
+
+.personal-start {
   text-align: center;
   gap: 20px;
-  padding: 32px 0;
 
   &__subtitle {
     font-size: 14px;
@@ -435,14 +620,8 @@ onMounted(async () => {
 }
 
 .personal-empty {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   text-align: center;
   gap: 16px;
-  padding: 32px 0;
 
   &__icon { font-size: 36px; }
 
@@ -455,11 +634,6 @@ onMounted(async () => {
 }
 
 .personal-loading {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 16px;
 
   &__text {
@@ -469,38 +643,155 @@ onMounted(async () => {
   }
 }
 
-// --- CTA button ---
-.personal-cta {
-  padding: 14px 32px;
+.personal-sticky {
+  position: fixed;
+  left: 14px;
+  right: 14px;
+  bottom: 10px;
+  z-index: 4;
+  border: 1px solid transparent;
+  border-radius: 24px;
+  background:
+    linear-gradient(165deg, rgba(8, 12, 20, 0.98), rgba(4, 6, 12, 0.99)) padding-box,
+    linear-gradient(
+        132deg,
+        rgba(147, 203, 255, 0.34),
+        rgba(127, 162, 226, 0.2),
+        rgba(147, 203, 255, 0.08)
+      )
+      border-box;
+  backdrop-filter: blur(22px);
+  box-shadow:
+    inset 0 1px 0 rgba(186, 207, 247, 0.08),
+    0 22px 40px rgba(0, 0, 0, 0.44),
+    0 8px 20px rgba(0, 0, 0, 0.28);
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+  display: grid;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.personal-sticky::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(186, 207, 247, 0),
+    rgba(186, 207, 247, 0.46),
+    rgba(186, 207, 247, 0)
+  );
+  pointer-events: none;
+}
+
+.personal-sticky__actions {
+  display: grid;
+  gap: 10px;
+}
+
+.personal-sticky__actions--double {
+  grid-template-columns: 1fr 1fr;
+}
+
+.personal-sticky__action {
+  min-height: 56px;
   border-radius: 16px;
-  border: none;
-  background: linear-gradient(155deg, #3b82f6 0%, #1d4ed8 100%);
-  box-shadow: inset 0 1px 0 rgba(219, 234, 254, 0.28), 0 12px 28px rgba(29, 78, 216, 0.45);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 640;
-  cursor: pointer;
-  letter-spacing: -0.01em;
-
-  &--primary { min-width: 220px; }
-}
-
-// --- footer close ---
-.personal-footer {
-  padding-top: 24px;
-  display: flex;
+  border: 1px solid rgba(141, 176, 232, 0.24);
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  gap: 8px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  color: #eff6ff;
 }
 
-.personal-close {
-  min-height: 50px;
-  min-width: 160px;
-  border-radius: 14px;
-  border: 1px solid rgba(156, 184, 235, 0.25);
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.9), rgba(10, 15, 27, 0.96));
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
+.personal-sticky__action--primary {
+  border: 1px solid rgba(168, 224, 255, 0.56);
+  background: linear-gradient(180deg, rgba(88, 150, 231, 0.96), rgba(46, 102, 184, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(220, 236, 255, 0.28),
+    0 12px 22px rgba(8, 18, 34, 0.42);
+}
+
+.personal-sticky__action--secondary {
+  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
+  box-shadow: inset 0 1px 0 rgba(186, 207, 247, 0.08);
+}
+
+.personal-sticky__action:disabled {
+  opacity: 0.52;
+  pointer-events: none;
+}
+
+.sticky-purchase__close-wrap {
+  padding: 8px;
+  border-radius: 16px;
+  border: 1px solid rgba(106, 126, 164, 0.22);
+  background:
+    linear-gradient(180deg, rgba(9, 13, 21, 0.88), rgba(3, 6, 11, 0.95)),
+    linear-gradient(90deg, rgba(83, 112, 170, 0.1), rgba(83, 112, 170, 0));
+  box-shadow:
+    inset 0 1px 0 rgba(186, 207, 247, 0.08),
+    0 10px 24px rgba(0, 0, 0, 0.3);
+}
+
+.sticky-purchase__close {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 12px;
+  border: 1px solid rgba(156, 184, 235, 0.36);
+  padding: 12px 14px;
+  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
+  color: #e9edf4;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  box-shadow: none;
+}
+
+.sticky-purchase__close:active {
+  transform: translateY(1px);
+  border-color: rgba(156, 184, 235, 0.28);
+  filter: saturate(0.92);
+}
+
+@media (min-width: 620px) {
+  .personal-sticky {
+    left: 50%;
+    right: auto;
+    width: min(560px, calc(100vw - 22px));
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 460px) {
+  .readings-content {
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-bottom: calc(58px + env(safe-area-inset-bottom) + 236px);
+  }
+
+  .personal-hero-card {
+    padding: 18px 16px;
+  }
+
+  .personal-hero-card__title {
+    font-size: 24px;
+  }
+
+  .personal-sticky {
+    bottom: 12px;
+  }
+
+  .personal-sticky__actions--double {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

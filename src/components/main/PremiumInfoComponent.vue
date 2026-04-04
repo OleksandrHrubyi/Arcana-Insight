@@ -83,12 +83,12 @@
             <div class="compare-table__feat">{{ row.feature }}</div>
             <div class="compare-table__stack">
               <div class="compare-table__item compare-table__item--free">
-                <div class="compare-table__item-label">{{ tt('premiumPage.compare.free') }}</div>
+                <div class="compare-table__item-label">{{ tt('premiumAccess.model.labels.free') }}</div>
                 <div class="compare-table__val compare-table__val--free">{{ row.free }}</div>
               </div>
               <div class="compare-table__item compare-table__item--premium">
                 <div class="compare-table__item-label compare-table__item-label--premium">
-                  {{ tt('premiumPage.compare.premium') }}
+                  {{ tt('premiumAccess.model.labels.premium') }}
                 </div>
                 <div class="compare-table__val compare-table__val--premium">{{ row.premium }}</div>
               </div>
@@ -96,6 +96,16 @@
           </div>
         </div>
         <p class="compare-table__summary">{{ compareCardCopy.summary }}</p>
+
+        <!-- Tier descriptions for screen readers and SEO. Visually hidden. -->
+        <dl class="access-model-legend sr-only" :aria-label="tt('premiumPage.accessModel.title')">
+          <dt>{{ tt('premiumAccess.model.labels.free') }}</dt>
+          <dd>{{ tt('premiumPage.accessModel.free') }}</dd>
+          <dt>{{ tt('premiumAccess.model.labels.premium') }}</dt>
+          <dd>{{ tt('premiumPage.accessModel.premium') }}</dd>
+          <dt>{{ tt('premiumAccess.model.labels.purchase') }}</dt>
+          <dd>{{ tt('premiumPage.accessModel.purchasePrefix') }} {{ tt('premiumPage.accessModel.premium') }}</dd>
+        </dl>
       </section>
 
       <div class="premium-legal">

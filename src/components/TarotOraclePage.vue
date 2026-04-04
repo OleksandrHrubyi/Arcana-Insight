@@ -1753,7 +1753,7 @@ const saveReadingToDatabase = async (interpretationData, payload) => {
   try {
     const { data: user } = await getUserNative(8000)
     if (!user) {
-      console.log('User not logged in, skipping save to database')
+      // Not logged in — skip saving to database
       return
     }
 
@@ -1778,7 +1778,7 @@ const saveReadingToDatabase = async (interpretationData, payload) => {
       throw error
     }
 
-    console.log('Reading saved successfully')
+    // Reading saved successfully
   } catch (error) {
     console.error('Error saving reading to database:', error)
     throw error

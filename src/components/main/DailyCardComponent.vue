@@ -212,7 +212,7 @@ const todayLabel = computed(() => {
       day: 'numeric',
     }).format(now)
   } catch (e) {
-    console.log(e)
+    console.error('[DailyCard] date format failed:', e)
     return now.toDateString()
   }
 })
@@ -280,15 +280,13 @@ watch(
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 12px;
-  box-shadow:
-    0 -24px 56px rgba(0, 0, 0, 0.6),
-    0 -4px 16px rgba(60, 90, 140, 0.12),
-    inset 0 1px 0 rgba(186, 207, 247, 0.08);
-  border: 1px solid rgba(130, 156, 200, 0.22);
   color: #ffffff;
   pointer-events: auto;
   overflow: hidden;
-  background: linear-gradient(165deg, rgba(8, 12, 20, 0.98), rgba(4, 6, 12, 0.99));
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .oracle-actions--full {

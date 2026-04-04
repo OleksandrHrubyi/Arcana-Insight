@@ -38,13 +38,12 @@
           <q-icon name="edit" size="18px" class="account-row__icon" />
         </button>
 
-        <button type="button" class="account-row account-row--button" @click="openEdit('email')">
+        <div class="account-row">
           <span class="account-row__content">
             <span class="account-label">{{ tt('fields.email') }}</span>
             <span class="account-value">{{ profile.email || userEmail || '—' }}</span>
           </span>
-          <q-icon name="edit" size="18px" class="account-row__icon" />
-        </button>
+        </div>
 
         <button type="button" class="account-row account-row--button" @click="onOpenDateSheet">
           <span class="account-row__content">
@@ -616,6 +615,13 @@ export default defineComponent({
       this.editSaving = true
       const value = (this.draftValue || '').trim()
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+      // Email editing is disabled — changes require auth-level verification (not implemented)
+      if (this.editField === 'email') {
+        this.editSaving = false
+        this.editOpen = false
+        return
+      }
 
       if (this.editField === 'name' && value.length < 2) {
         this.editError = this.tt('errors.invalidName')

@@ -127,6 +127,7 @@ export default {
     },
 
     logAuth(step, payload) {
+      if (!import.meta.env.DEV) return
       if (payload !== undefined) {
         console.log(`[Auth][SignUp] ${step}`, payload)
       } else {
@@ -228,6 +229,7 @@ export default {
             email: this.trimmedEmail,
             name: this.trimmedName,
             dateOfBirth: this.trimmedDateOfBirth,
+            mode: 'signup',
           },
         })
       } catch (e) {

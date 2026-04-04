@@ -802,19 +802,14 @@ export default defineComponent({
 
     async onAccountClick () {
       try {
-        console.log('[Settings] onAccountClick start')
         void this.authStore.syncSession({ refresh: false })
-        const isAuthed = this.isLoggedIn
-        console.log('[Settings] onAccountClick session', { isAuthed })
-        const target = isAuthed ? { name: 'account' } : { name: 'login' }
+        const target = this.isLoggedIn ? { name: 'account' } : { name: 'login' }
         await this.$router.push(target)
-        console.log('[Settings] onAccountClick push ok', target)
       } catch (err) {
         console.warn('[Settings] onAccountClick navigation failed:', err)
         try {
           const target = this.isLoggedIn ? { name: 'account' } : { name: 'login' }
           await this.$router.replace(target)
-          console.log('[Settings] onAccountClick replace ok', target)
         } catch (e) {
           console.error('[Settings] onAccountClick replace failed:', e)
         }

@@ -68,6 +68,9 @@ export default {
     country() {
       return (this.$route.query.country || '').toString().trim();
     },
+    isSignUp() {
+      return (this.$route.query.mode || '').toString() === 'signup';
+    },
 
 
   },
@@ -94,18 +97,21 @@ export default {
         await this.hapticTap();
         this.loading = true;
         this.startResendCooldown(60);
+        const otpOptions = {
+          shouldCreateUser: this.isSignUp,
+          emailRedirectTo: null, // важливо для OTP-коду, а не magic link
+        };
+        if (this.isSignUp) {
+          otpOptions.data = {
+            name: this.name,
+            dateOfBirth: this.dateOfBirth,
+            cityOfBirth: this.cityOfBirth,
+            country: this.country,
+          };
+        }
         const { error } = await supabase.auth.signInWithOtp({
           email: this.email,
-          options: {
-            shouldCreateUser: true,
-            emailRedirectTo: null, // важливо для OTP-коду, а не magic link
-            data: {
-              name: this.name,
-              dateOfBirth: this.dateOfBirth,
-              cityOfBirth: this.cityOfBirth,
-              country: this.country,
-            },
-          },
+          options: otpOptions,
         });
 
         if (error) {
@@ -161,28 +167,24 @@ export default {
           return;
         }
 
-        console.log('[ConfirmCode] OTP verified, creating user profile...')
+        // Створюємо профіль тільки при реєстрації.
+        // При логіні — ensureUserProfile в authStore сам перевіряє існування профілю.
+        if (this.isSignUp) {
+          const userId = data.session.user.id
+          const userEmail = data.session.user.email
 
-        // Create or update user profile in app_users table
-        const userId = data.session.user.id
-        const userEmail = data.session.user.email
+          const profileData = {
+            id: userId,
+            email: userEmail || this.email,
+          }
+          if (this.name) profileData.name = this.name
+          if (this.dateOfBirth) profileData.date_of_birth = this.dateOfBirth
 
-        const profileData = {
-          id: userId,
-          email: userEmail || this.email,
-        }
-
-        // Add optional fields only if they exist
-        if (this.name) profileData.name = this.name
-        if (this.dateOfBirth) profileData.date_of_birth = this.dateOfBirth
-
-        const { error: profileError } = await upsertAppUser(profileData, 8000)
-
-        if (profileError) {
-          console.error('[ConfirmCode] Failed to create profile:', profileError)
-          // Don't block login if profile creation fails
-        } else {
-          console.log('[ConfirmCode] User profile created successfully')
+          const { error: profileError } = await upsertAppUser(profileData, 8000)
+          if (profileError) {
+            console.error('[ConfirmCode] Failed to create profile:', profileError)
+            // Не блокуємо — authStore.ensureUserProfile підхопить при наступній сесії
+          }
         }
 
         this.$router.push('/')

@@ -210,30 +210,31 @@
                 @click="setTheme('career')"
               ></button>
             </div>
-            <q-btn
-              round
-              dense
-              flat
-              :icon="isCurrentThemeLocked ? 'lock' : 'share'"
-              class="share-controls-btn"
-              :disable="!hasThemeText(themeTab)"
-              @click="handleShareControlsClick"
-            />
+            <div class="horoscope-controls-actions">
+              <q-btn
+                v-if="hasPremiumAccess"
+                round
+                dense
+                flat
+                icon="person"
+                class="share-controls-btn"
+                @click="goToPersonalReading"
+              />
+              <q-btn
+                round
+                dense
+                flat
+                :icon="isCurrentThemeLocked ? 'lock' : 'share'"
+                class="share-controls-btn"
+                :disable="!hasThemeText(themeTab)"
+                @click="handleShareControlsClick"
+              />
+            </div>
           </div>
 
-          <button
-            v-if="hasPremiumAccess"
-            type="button"
-            class="personal-reading-btn"
-            @click="goToPersonalReading"
-          >
-            <span class="personal-reading-btn__icon">✦</span>
-            {{ tt('personalHoroscope.title') }}
-          </button>
         </div>
       </div>
     </div>
-
     <div class="bottom-bg-wrap"></div>
   </div>
 </template>
@@ -2173,6 +2174,16 @@ export default {
   min-height: 40px;
 }
 
+.horoscope-controls-actions {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .dots {
   position: relative;
   display: inline-flex;
@@ -2222,10 +2233,6 @@ export default {
 }
 
 .share-controls-btn {
-  position: absolute;
-  right: 32px;
-  top: 50%;
-  transform: translateY(-50%);
   width: 34px;
   height: 34px;
   min-height: 34px;
@@ -2238,7 +2245,7 @@ export default {
 }
 
 .share-controls-btn:active {
-  transform: translateY(calc(-50% + 1px));
+  transform: translateY(1px);
 }
 
 .share-controls-btn.q-btn--disable {
@@ -2303,16 +2310,22 @@ export default {
 }
 
 .personal-reading-btn {
+  position: fixed;
+  bottom: calc(86px + env(safe-area-inset-bottom, 0px) + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  width: 100%;
-  margin-top: 14px;
+  width: calc(100% - 48px);
+  max-width: 360px;
   padding: 13px 20px;
   border-radius: 16px;
   border: 1px solid rgba(147, 197, 253, 0.2);
-  background: linear-gradient(155deg, rgba(37, 99, 235, 0.14), rgba(29, 78, 216, 0.08));
+  background: linear-gradient(155deg, rgba(37, 99, 235, 0.18), rgba(29, 78, 216, 0.10));
   color: rgba(147, 197, 253, 0.85);
   font-size: 14px;
   font-weight: 600;
@@ -2324,4 +2337,5 @@ export default {
     opacity: 0.7;
   }
 }
+
 </style>

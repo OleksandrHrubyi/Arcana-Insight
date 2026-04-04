@@ -37,6 +37,11 @@
                 :alt="dailyCardTitle"
               />
               <span v-else class="menu-daily-card__back" aria-hidden="true">
+                <span class="menu-daily-card__back-frame"></span>
+                <span class="menu-daily-card__back-frame menu-daily-card__back-frame--inner"></span>
+                <span class="menu-daily-card__back-band"></span>
+                <span class="menu-daily-card__back-core"></span>
+                <span class="menu-daily-card__back-core-ring"></span>
                 <img class="menu-daily-card__back-logo" :src="menuDailyBackLogo" alt="" />
               </span>
             </span>
@@ -468,7 +473,7 @@ export default defineComponent({
         had_daily_card_today: hasDailyCardToday.value,
       })
       await router.push({
-        name: 'daily',
+        name: 'myDay',
         query: { source: 'menu_daily_launcher', entry: 'menu_launcher' },
       })
     }
@@ -665,18 +670,85 @@ export default defineComponent({
 }
 
 .menu-daily-card__back {
+  position: relative;
   width: 100%;
   height: 100%;
   display: grid;
   place-items: center;
-  color: rgba(205, 232, 255, 0.9);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 24% 0%, rgba(157, 210, 255, 0.16), rgba(157, 210, 255, 0) 42%),
+    radial-gradient(circle at 76% 100%, rgba(84, 146, 214, 0.14), rgba(84, 146, 214, 0) 40%),
+    linear-gradient(160deg, rgba(22, 50, 74, 0.98), rgba(11, 23, 38, 0.99) 58%, rgba(8, 17, 28, 0.995));
+}
+
+.menu-daily-card__back::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0) 36%),
+    linear-gradient(180deg, rgba(125, 188, 255, 0.1), rgba(125, 188, 255, 0) 46%);
+  pointer-events: none;
+}
+
+.menu-daily-card__back-frame {
+  position: absolute;
+  inset: 5px;
+  border-radius: 9px;
+  border: 1px solid rgba(176, 210, 242, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.menu-daily-card__back-frame--inner {
+  inset: 10px;
+  border-radius: 7px;
+  border-color: rgba(142, 191, 236, 0.14);
+}
+
+.menu-daily-card__back-band {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  bottom: 14px;
+  width: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(255,255,255,0), rgba(192, 224, 255, 0.24), rgba(255,255,255,0));
+}
+
+.menu-daily-card__back-core,
+.menu-daily-card__back-core-ring {
+  position: absolute;
+  border-radius: 999px;
+}
+
+.menu-daily-card__back-core {
+  width: 52px;
+  height: 52px;
+  border: 1px solid rgba(194, 224, 255, 0.24);
+  background:
+    radial-gradient(circle at 50% 35%, rgba(219, 236, 255, 0.16), rgba(219, 236, 255, 0) 58%),
+    linear-gradient(180deg, rgba(33, 67, 98, 0.78), rgba(10, 22, 36, 0.5));
+  box-shadow:
+    0 0 16px rgba(131, 198, 255, 0.16),
+    inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.menu-daily-card__back-core-ring {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(196, 223, 252, 0.18);
 }
 
 .menu-daily-card__back-logo {
-  width: 50px;
-  height: 50px;
-  opacity: 0.98;
-  filter: drop-shadow(0 3px 9px rgba(3, 8, 15, 0.56));
+  position: relative;
+  z-index: 1;
+  width: 42px;
+  height: auto;
+  opacity: 1;
+  filter:
+    brightness(1.3)
+    drop-shadow(0 0 8px rgba(183, 223, 255, 0.2));
 }
 
 .menu-daily-card--opened {

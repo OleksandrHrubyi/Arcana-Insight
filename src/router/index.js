@@ -61,6 +61,18 @@ export default defineRouter(function (/* { store, ssrContext } */) {
 
   Router.beforeEach(async (to) => {
     const authStore = useAuthStore()
+
+    // On cold start the session restore runs in the background (auth boot is fire-and-forget).
+    // Wait for it to finish before making auth decisions, so we don't redirect
+    // an already-authenticated user to /login just because the session hasn't loaded yet.
+    if (!authStore.state.sessionLoaded) {
+      const SESSION_TIMEOUT_MS = 3000
+      await Promise.race([
+        authStore.waitForSession(),
+        new Promise((resolve) => setTimeout(resolve, SESSION_TIMEOUT_MS)),
+      ])
+    }
+
     const onboardingComplete = isOnboardingComplete()
     const hasUser = Boolean(authStore.state.user)
     return resolveRouteGuardDecision({

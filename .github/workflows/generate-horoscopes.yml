@@ -21,6 +21,7 @@ jobs:
           HTTP_CODE=$(curl --retry 5 --retry-delay 3 --retry-all-errors \
             -sS -L -X POST \
             "${{ secrets.SUPABASE_URL }}/functions/v1/build-astro-context" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json" \
             -d "{\"date\":\"$DATE\",\"days\":2}" \

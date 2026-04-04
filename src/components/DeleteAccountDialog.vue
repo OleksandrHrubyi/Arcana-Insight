@@ -73,12 +73,10 @@ export default defineComponent({
 
   methods: {
     onConfirm() {
-      console.log('[DeleteAccountDialog] Confirm clicked')
       this.$emit('confirm')
     },
 
     onCancel() {
-      console.log('[DeleteAccountDialog] Cancel clicked')
       this.$emit('cancel')
     }
   }

@@ -1,7 +1,9 @@
 <template>
   <div class="wrapper" :class="{ 'scene-ready': isPreloaded }">
     <div class="container bg-container" :class="{ 'scene-ready': isPreloaded }">
-      <div class="content-wrapper">
+
+      <!-- Phrase: shown only on first visit of day -->
+      <div v-if="isFirstVisitToday" class="content-wrapper">
         <div class="appear-content mono-text">
           <template v-for="token in fullTextTokens" :key="token.key">
             <span v-if="token.type === 'space'">{{ token.text }}</span>
@@ -10,9 +12,7 @@
                 v-for="(ch, i) in token.chars"
                 :key="token.start + i"
                 :class="{ 'char-hidden': !revealedSet.has(token.start + i) }"
-              >
-                {{ ch }}
-              </span>
+              >{{ ch }}</span>
             </span>
           </template>
         </div>
@@ -22,22 +22,18 @@
         <div class="shooting-star"></div>
       </div>
 
+      <!-- Logo -->
       <div class="logo-wrap no-pointer-events">
         <img :src="logo" :alt="tt('appName')" class="logo-img" />
       </div>
 
-      <div class="main-title mono-text no-pointer-events">
-        {{tt('betweenStars')}}
-        <div> {{tt('answerAppear')}}</div>
-      </div>
-
-      <!-- Apple-style horizontal scroll cards -->
-      <div v-if="astroCards.length" class="astro-cards" :class="{ 'astro-cards--visible': isPreloaded }">
+      <!-- Astro strip -->
+      <div v-if="astroCards.length" class="astro-cards" :class="{ 'astro-cards--visible': showAstroCards }">
         <div
           v-for="card in astroCards"
           :key="card.id"
           class="astro-card"
-          :style="{ background: card.bg, borderColor: card.border }"
+          :style="astroCardStyle(card)"
         >
           <span class="astro-card__label">{{ card.label }}</span>
           <span class="astro-card__icon">{{ card.icon }}</span>
@@ -46,16 +42,144 @@
         </div>
       </div>
 
+      <!-- Card in circle: main hero -->
+      <button
+        type="button"
+        class="circle-card"
+        :class="{ 'circle-card--visible': showHomeActions }"
+        @click="handleHeroCardClick"
+        :aria-label="hasDailyCardToday ? 'Open daily card interpretation' : 'Reveal daily card'"
+      >
+        <div class="circle-card__eyebrow">
+          {{ locale === 'uk' ? 'КАРТА ДНЯ' : 'CARD OF THE DAY' }}
+        </div>
+
+        <div class="circle-card__media">
+          <div
+            class="circle-card__img-wrap"
+            :class="{
+              'circle-card__img-wrap--revealed': hasDailyCardToday,
+            }"
+          >
+            <div class="circle-card__face circle-card__face--front">
+              <img
+                v-if="dailyCardData && dailyCardData.image"
+                class="circle-card__img"
+                :class="{ 'circle-card__img--reversed': dailyCardData && dailyCardData.orientation === 'reversed' }"
+                :src="dailyCardData.image"
+                :alt="dailyCardData ? dailyCardData.title : tt('dailyPage.title')"
+              />
+            </div>
+
+            <div class="circle-card__face circle-card__face--back">
+              <div class="circle-card__back">
+                <span class="circle-card__back-frame" aria-hidden="true"></span>
+                <span class="circle-card__back-frame circle-card__back-frame--inner" aria-hidden="true"></span>
+                <span class="circle-card__back-band" aria-hidden="true"></span>
+                <span class="circle-card__back-center" aria-hidden="true">
+                  <span class="circle-card__back-core"></span>
+                  <span class="circle-card__back-core-ring"></span>
+                  <img class="circle-card__back-logo" :src="logo" alt="" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <transition name="circle-card-name">
+          <div v-if="hasDailyCardToday" class="circle-card__info">
+            <div class="circle-card__name">
+              {{ dailyCardData ? dailyCardData.title : '' }}
+            </div>
+          </div>
+        </transition>
+
+        <div class="circle-card__cta">
+          {{ hasDailyCardToday ? (locale === 'uk' ? 'Читати значення' : 'Read interpretation') : (locale === 'uk' ? 'Розкрити карту' : 'Reveal card') }}
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M2 6h8M7 3.5l3 2.5-3 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </button>
+
+      <!-- Two compact action blocks -->
+      <div class="home-actions" :class="{ 'home-actions--visible': showHomeActions }">
+
+        <button type="button" class="home-action home-action--horoscope" @click="openHoroscope">
+          <span class="home-action__eyebrow">{{ locale === 'uk' ? 'ГОРОСКОП' : 'HOROSCOPE' }}</span>
+          <span class="home-action__title">
+            {{ horoscopeData ? horoscopeData.signLabel : (locale === 'uk' ? 'Ваш знак' : 'Your sign') }}
+          </span>
+          <span class="home-action__text">
+            {{ horoscopeData && horoscopeData.preview ? horoscopeData.preview : (locale === 'uk' ? 'Енергія дня для вашого знаку.' : 'Daily energy for your sign.') }}
+          </span>
+          <span class="home-action__cta">
+            {{ locale === 'uk' ? 'Читати' : 'Read' }}
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+              <path d="M2 5.5h7M6 3l3 2.5L6 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+
+        <button type="button" class="home-action home-action--tarot" @click="openTarot">
+          <span class="home-action__eyebrow">{{ landingCopy.secondaryEyebrow }}</span>
+          <span class="home-action__title">{{ landingCopy.secondaryTitle }}</span>
+          <span class="home-action__text">{{ landingCopy.secondaryText }}</span>
+          <span class="home-action__cta">
+            {{ locale === 'uk' ? 'Почати' : 'Start' }}
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+              <path d="M2 5.5h7M6 3l3 2.5L6 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+
+        <button type="button" class="home-action home-action--myday" @click="openMyDayPage">
+          <span class="home-action__eyebrow">{{ locale === 'uk' ? 'MY DAY' : 'MY DAY' }}</span>
+          <span class="home-action__title">{{ locale === 'uk' ? 'Твій день' : 'Your day' }}</span>
+          <span class="home-action__text">
+            {{ locale === 'uk' ? 'Карта, фокус і вечірній ритуал в одному місці.' : 'Card, focus, and evening ritual in one place.' }}
+          </span>
+          <span class="home-action__cta">
+            {{ locale === 'uk' ? 'Відкрити' : 'Open' }}
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+              <path d="M2 5.5h7M6 3l3 2.5L6 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+
+        <button type="button" class="home-action home-action--menu" @click="openMenu">
+          <span class="home-action__eyebrow">{{ locale === 'uk' ? 'МЕНЮ' : 'MENU' }}</span>
+          <span class="home-action__title">{{ locale === 'uk' ? 'Усі розділи' : 'All sections' }}</span>
+          <span class="home-action__text">
+            {{ locale === 'uk' ? 'Бібліотека карт, zodiac guide, rewards і налаштування.' : 'Card library, zodiac guide, rewards, and settings.' }}
+          </span>
+          <span class="home-action__cta">
+            {{ locale === 'uk' ? 'Перейти' : 'Open' }}
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+              <path d="M2 5.5h7M6 3l3 2.5L6 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+
+      </div>
     </div>
   </div>
 </template>
-
 <script>
 import logo from 'src/assets/images/logo.svg'
 import { useAuthStore } from 'src/stores/authStore.js'
 import { t, currentLocale } from 'src/i18n/index.js';
 import * as Astronomy from 'astronomy-engine';
-import { readDailyStreak, DAILY_ACTIVITY_KEYS } from 'src/helpers/dailyRitual.js';
+import { readDailyStreak, DAILY_ACTIVITY_KEYS, hasDailyActivityToday, markDailyActivity } from 'src/helpers/dailyRitual.js';
+import { loadDailyCardsSnapshot } from 'src/helpers/dailyCardCore.js';
+import { loadTarotData } from 'src/helpers/tarotData';
+import { loadHoroscopeRegistry } from 'src/helpers/horoscopeContentCore.js';
+import { loadLocal, saveLocal } from 'src/helpers/localStorageSaver.js';
+import { resolveUserSignSnapshot } from 'src/helpers/zodiacUserSignCore.js';
+import { selectAppUser, selectHoroscopes } from 'src/services/supabaseNative';
+import { localISODate } from 'src/helpers/date.ts';
+import { Preferences } from '@capacitor/preferences';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 export default {
   name: 'LandingScene',
@@ -136,6 +260,14 @@ export default {
       cycleTimeout: null,
       phraseQueue: [],
       phraseCursor: 0,
+      dailyCardData: null,
+      hasDailyCardToday: false,
+      horoscopeData: null,
+      ritualDone: { morning: false, evening: false },
+      isFirstVisitToday: false,
+      showHomeActions: false,
+      showAstroCards: false,
+      introSequenceComplete: false,
     };
   },
 
@@ -175,6 +307,39 @@ export default {
       return new Set(this.revealedIndices)
     },
 
+    landingCopy() {
+      if (this.locale === 'uk') {
+        return {
+          primaryEyebrow: 'ЩО ЗАРАЗ',
+          primaryTitle: 'Пройти свій день',
+          primaryText: 'Карта дня, енергія гороскопу, місяць і вечірній check-in в одному маршруті.',
+          secondaryEyebrow: 'ТАРО',
+          secondaryTitle: 'Поставити питання таро',
+          secondaryText: 'Енергія дня і одна чітка підказка.',
+          tarotEyebrow: 'ТАРО',
+          tarotTitle: 'Поставити питання',
+          tarotText: 'Коли потрібен розклад, а не просто настрій дня.',
+          menuEyebrow: 'МЕНЮ',
+          menuTitle: 'Усі розділи',
+          menuText: 'Бібліотека карт, zodiac guide, rewards, settings і решта фіч.',
+        }
+      }
+      return {
+        primaryEyebrow: 'WHAT NOW',
+        primaryTitle: 'Go through your day',
+        primaryText: 'Your daily card, horoscope energy, moon rhythm, and evening check-in in one route.',
+        secondaryEyebrow: 'TAROT',
+        secondaryTitle: 'Ask tarot a question',
+        secondaryText: 'Today energy and one clear hint.',
+        tarotEyebrow: 'TAROT',
+        tarotTitle: 'Ask a question',
+        tarotText: 'When you need a spread, not just the mood of the day.',
+        menuEyebrow: 'MENU',
+        menuTitle: 'All sections',
+        menuText: 'Card library, zodiac guide, rewards, settings, and the rest of the app.',
+      }
+    },
+
     astroCards() {
       if (!this.astroToday) return []
       const d = this.astroToday
@@ -192,6 +357,7 @@ export default {
         value: this.tt(`astro.phases.${d.moonPhaseKey}`),
         sub: `${this.tt('astro.moonIn')} ${this.tt(`zodiac.${d.moonSignKey}`)}`,
         bg: 'rgba(140, 170, 255, 0.09)',
+        glow: 'rgba(140, 170, 255, 0.12)',
         border: 'rgba(140, 170, 255, 0.18)',
       })
 
@@ -208,6 +374,7 @@ export default {
           value: when,
           sub: this.tt('astro.cards.remaining'),
           bg: 'rgba(255, 228, 130, 0.07)',
+          glow: 'rgba(255, 228, 130, 0.1)',
           border: 'rgba(255, 228, 130, 0.15)',
         })
       }
@@ -215,6 +382,7 @@ export default {
       // 3. Planetary day
       if (pd) {
         const pBg = { sun:'rgba(255,220,100,0.08)', moon:'rgba(140,180,255,0.08)', mars:'rgba(255,100,80,0.09)', mercury:'rgba(150,220,160,0.08)', jupiter:'rgba(255,200,100,0.08)', venus:'rgba(255,155,200,0.09)', saturn:'rgba(180,160,140,0.08)' }
+        const pGlow = { sun:'rgba(255,220,100,0.12)', moon:'rgba(140,180,255,0.12)', mars:'rgba(255,100,80,0.12)', mercury:'rgba(150,220,160,0.12)', jupiter:'rgba(255,200,100,0.12)', venus:'rgba(255,155,200,0.12)', saturn:'rgba(180,160,140,0.1)' }
         const pBd = { sun:'rgba(255,220,100,0.18)', moon:'rgba(140,180,255,0.18)', mars:'rgba(255,100,80,0.2)', mercury:'rgba(150,220,160,0.18)', jupiter:'rgba(255,200,100,0.18)', venus:'rgba(255,155,200,0.2)', saturn:'rgba(180,160,140,0.18)' }
         cards.push({
           id: 'planet',
@@ -223,6 +391,7 @@ export default {
           value: this.tt(`astro.planets.${pd.key}`),
           sub: this.tt(`astro.planetMeanings.${pd.key}`),
           bg: pBg[pd.key] || 'rgba(255,255,255,0.06)',
+          glow: pGlow[pd.key] || 'rgba(255,255,255,0.08)',
           border: pBd[pd.key] || 'rgba(255,255,255,0.12)',
         })
       }
@@ -235,11 +404,13 @@ export default {
         value: this.tt(`zodiac.${d.sunSignKey}`),
         sub: `${d.sunDegInSign}°`,
         bg: 'rgba(255, 218, 90, 0.07)',
+        glow: 'rgba(255, 218, 90, 0.1)',
         border: 'rgba(255, 218, 90, 0.15)',
       })
 
       // 5. Moon element
       const eBg = { fire:'rgba(255,105,55,0.1)', water:'rgba(75,155,255,0.1)', air:'rgba(185,170,255,0.1)', earth:'rgba(105,195,105,0.1)' }
+      const eGlow = { fire:'rgba(255,105,55,0.12)', water:'rgba(75,155,255,0.12)', air:'rgba(185,170,255,0.12)', earth:'rgba(105,195,105,0.12)' }
       const eBd = { fire:'rgba(255,105,55,0.22)', water:'rgba(75,155,255,0.22)', air:'rgba(185,170,255,0.22)', earth:'rgba(105,195,105,0.22)' }
       const eIco = { fire:'🔥', water:'🌊', air:'🌀', earth:'🌿' }
       cards.push({
@@ -249,6 +420,7 @@ export default {
         value: this.tt(`astro.elements.${d.elementKey}`),
         sub: this.tt(`astro.elementMeanings.${d.elementKey}`),
         bg: eBg[d.elementKey] || 'rgba(255,255,255,0.06)',
+        glow: eGlow[d.elementKey] || 'rgba(255,255,255,0.08)',
         border: eBd[d.elementKey] || 'rgba(255,255,255,0.12)',
       })
 
@@ -257,10 +429,11 @@ export default {
       cards.push({
         id: 'num',
         label: this.tt('astro.cards.dayNumber'),
-        icon: numIco[d.numerologyDay] || '✨',
+        icon: numIco[d.numerologyDay] || '✦',
         value: String(d.numerologyDay),
         sub: this.tt(`astro.numerology.${d.numerologyDay}`),
         bg: 'rgba(255,255,255,0.05)',
+        glow: 'rgba(255,255,255,0.08)',
         border: 'rgba(255,255,255,0.10)',
       })
 
@@ -273,6 +446,7 @@ export default {
           value: String(this.dailyStreak),
           sub: this.tt('astro.cards.streakSub'),
           bg: 'rgba(255, 205, 90, 0.09)',
+          glow: 'rgba(255, 205, 90, 0.12)',
           border: 'rgba(255, 205, 90, 0.2)',
         })
       }
@@ -286,6 +460,7 @@ export default {
           value: this.tt('astro.mercuryRetrograde'),
           sub: '',
           bg: 'rgba(195, 155, 255, 0.1)',
+          glow: 'rgba(195, 155, 255, 0.12)',
           border: 'rgba(195, 155, 255, 0.22)',
         })
       }
@@ -302,11 +477,27 @@ export default {
       readDailyStreak(DAILY_ACTIVITY_KEYS.horoscope).current,
       readDailyStreak(DAILY_ACTIVITY_KEYS.tarot).current,
     )
-    this.resetPhraseQueue()
-    this.setNextPhrase()
-    this.$nextTick(() => {
-      this.startRandomLetterReveal()
-    })
+
+    // First-visit-of-day: play phrase → then reveal blocks
+    const SEEN_KEY = 'arcana_landing_seen_v1'
+    const today = (typeof window !== 'undefined') ? new Date().toISOString().slice(0, 10) : ''
+    const lastSeen = (typeof window !== 'undefined') ? localStorage.getItem(SEEN_KEY) : ''
+
+    if (lastSeen !== today) {
+      // First visit today — phrase plays, then blocks appear via runIntroReveal
+      this.isFirstVisitToday = true
+      if (typeof window !== 'undefined') localStorage.setItem(SEEN_KEY, today)
+      this.resetPhraseQueue()
+      this.setNextPhrase()
+      this.$nextTick(() => { this.startRandomLetterReveal() })
+    } else {
+      // Repeat visit — show everything immediately, no phrase
+      this.showHomeActions = true
+      this.showAstroCards = true
+      this.introSequenceComplete = true
+    }
+
+    void this.loadLandingContent()
   },
 
   beforeUnmount() {
@@ -323,6 +514,216 @@ export default {
         await this.authStore.initAuth()
       } catch (error) {
         console.warn('[Landing] initAuth failed', error)
+      }
+    },
+
+    async triggerImpact(style) {
+      try {
+        await Haptics.impact({ style })
+      } catch (error) {
+        console.warn('[Landing] haptics failed', error)
+      }
+    },
+
+    openMyDay() {
+      void this.$router.push({ name: 'daily', query: { source: 'landing', entry: 'hero_card' } })
+    },
+
+    async handleHeroCardClick() {
+      if (!this.hasDailyCardToday) {
+        await this.triggerImpact(ImpactStyle.Medium)
+        markDailyActivity(DAILY_ACTIVITY_KEYS.dailyCard)
+        this.hasDailyCardToday = true
+        this.dailyStreak = Math.max(
+          readDailyStreak(DAILY_ACTIVITY_KEYS.dailyCard).current,
+          readDailyStreak(DAILY_ACTIVITY_KEYS.horoscope).current,
+          readDailyStreak(DAILY_ACTIVITY_KEYS.tarot).current,
+        )
+        return
+      }
+
+      await this.triggerImpact(ImpactStyle.Light)
+      this.openMyDay()
+    },
+
+    openTarot() {
+      void this.$router.push({ name: 'tarot', query: { source: 'landing', entry: 'secondary_cta' } })
+    },
+
+    openMyDayPage() {
+      void this.$router.push({ name: 'myDay', query: { source: 'landing', entry: 'my_day_card' } })
+    },
+
+    openHoroscope() {
+      void this.$router.push({ name: 'horoscope' })
+    },
+
+    openMenu() {
+      void this.$router.push({ name: 'menu' })
+    },
+
+    zodiacGlyph(signKey) {
+      const map = {
+        aries: '♈',
+        taurus: '♉',
+        gemini: '♊',
+        cancer: '♋',
+        leo: '♌',
+        virgo: '♍',
+        libra: '♎',
+        scorpio: '♏',
+        sagittarius: '♐',
+        capricorn: '♑',
+        aquarius: '♒',
+        pisces: '♓',
+      }
+      return map[signKey] || '☉'
+    },
+
+    moonPhaseGlyph(phaseKey) {
+      const map = {
+        new: '🌑',
+        waxingCrescent: '🌒',
+        firstQuarter: '🌓',
+        waxingGibbous: '🌔',
+        full: '🌕',
+        waningGibbous: '🌖',
+        lastQuarter: '🌗',
+        waningCrescent: '🌘',
+      }
+      return map[phaseKey] || '🌙'
+    },
+
+    astroCardStyle(card) {
+      return {
+        '--astro-card-base': card?.bg || 'rgba(14, 20, 32, 0.82)',
+        '--astro-card-glow': card?.glow || 'rgba(255, 255, 255, 0.08)',
+        '--astro-card-border': card?.border || 'rgba(255,255,255,0.12)',
+      }
+    },
+
+    compactPreview(text, maxChars = 52) {
+      const raw = String(text || '').replace(/\s+/g, ' ').trim()
+      if (!raw) return ''
+      if (raw.length <= maxChars) return raw
+      return `${raw.slice(0, maxChars).replace(/[.,;:!?-]+$/u, '').trim()}…`
+    },
+
+    _hashStr(value) {
+      let hash = 0
+      const raw = String(value || '')
+      for (let i = 0; i < raw.length; i++) {
+        hash = (hash * 31 + raw.charCodeAt(i)) >>> 0
+      }
+      return hash
+    },
+
+    _getAnonSeed() {
+      if (typeof window === 'undefined') return 'anon'
+      const stored = localStorage.getItem('arcana_daily_seed_v1')
+      if (stored) return stored
+      const next = (window.crypto?.randomUUID?.()) ||
+        `${Date.now()}-${Math.random().toString(36).slice(2)}`
+      localStorage.setItem('arcana_daily_seed_v1', next)
+      return next
+    },
+
+    _zodiacFromDate(rawDate) {
+      const raw = String(rawDate || '').trim()
+      if (!raw) return ''
+      let day = 0, month = 0
+      if (raw.includes('.')) {
+        const p = raw.split('.').map(v => parseInt(v, 10))
+        day = p[0] || 0; month = p[1] || 0
+      } else if (raw.includes('-')) {
+        const p = raw.split('-').map(v => parseInt(v, 10))
+        month = p[1] || 0; day = p[2] || 0
+      }
+      if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return 'aries'
+      if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return 'taurus'
+      if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return 'gemini'
+      if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return 'cancer'
+      if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return 'leo'
+      if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return 'virgo'
+      if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return 'libra'
+      if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return 'scorpio'
+      if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return 'sagittarius'
+      if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return 'capricorn'
+      if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return 'aquarius'
+      if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) return 'pisces'
+      return ''
+    },
+
+    async loadLandingContent() {
+      const locale = this.locale
+      const today = localISODate()
+      this.hasDailyCardToday = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.dailyCard)
+
+      // 1. Daily card
+      try {
+        const { cards } = await loadDailyCardsSnapshot({ loadTarotData })
+        if (cards.length) {
+          const userId = this.authStore?.state?.user?.id
+          const seed = userId || this._getAnonSeed()
+          const dailySeed = `${today}::${seed}`
+          const idx = this._hashStr(`${dailySeed}::card`) % cards.length
+          const ori = this._hashStr(`${dailySeed}::orientation`) % 2 === 0 ? 'upright' : 'reversed'
+          const card = cards[idx]
+          this.dailyCardData = {
+            title: card?.name?.[locale] || card?.name?.en || '',
+            image: card?.file ? `/images/cards/${card.file}` : '',
+            orientation: ori,
+            keywords: (card?.keywords?.[locale] || card?.keywords?.en || []).slice(0, 2),
+          }
+        }
+      } catch (e) {
+        console.warn('[Landing] daily card load failed', e)
+      }
+
+      // 2. Horoscope
+      try {
+        const snap = await resolveUserSignSnapshot({
+          readProfileCacheValue: async () => {
+            const { value } = await Preferences.get({ key: 'profile_cache_v1' })
+            return value
+          },
+          getCurrentUserId: () => this.authStore?.state?.user?.id || '',
+          fetchUserDateOfBirthById: async (userId) => {
+            const { data } = await selectAppUser(userId, 6000, 'date_of_birth')
+            return data?.[0]?.date_of_birth || ''
+          },
+          zodiacFromRawDate: (d) => this._zodiacFromDate(d),
+        })
+        if (snap.signKey) {
+          const result = await loadHoroscopeRegistry({
+            locale,
+            today,
+            loadLocal,
+            saveLocal,
+            selectHoroscopes,
+          })
+          const reg = result?.registry?.[snap.signKey] || {}
+          const rawText = reg?.general?.text || reg?.spirit?.text || reg?.love?.text || ''
+          const preview = rawText.split(/[.!?]/)[0]
+          this.horoscopeData = {
+            signKey: snap.signKey,
+            signLabel: this.tt(`zodiac.${snap.signKey}`),
+            preview: preview ? preview.trim() + '.' : '',
+          }
+        }
+      } catch (e) {
+        console.warn('[Landing] horoscope load failed', e)
+      }
+
+      // 3. Ritual status
+      try {
+        const [m, e] = await Promise.all([
+          Preferences.get({ key: `arcana_my_day_intention_v1:${today}` }),
+          Preferences.get({ key: `arcana_my_day_checkin_v1:${today}` }),
+        ])
+        this.ritualDone = { morning: Boolean(m?.value), evening: Boolean(e?.value) }
+      } catch (error) {
+        console.warn('[Landing] ritual status load failed', error)
       }
     },
 
@@ -510,16 +911,24 @@ export default {
           if (current >= shuffled.length) {
             clearInterval(this.hideTimer)
             this.hideTimer = null
-            this.cycleTimeout = setTimeout(() => {
-              this.setNextPhrase()
-              this.$nextTick(() => { this.startRandomLetterReveal() })
-            }, 3200)
+            this.runIntroReveal()
             return
           }
           this.revealedIndices = this.revealedIndices.filter(i => i !== shuffled[current])
           current++
         }, step)
       }, 4000)
+    },
+
+    runIntroReveal() {
+      if (this.introSequenceComplete) return
+      this.introSequenceComplete = true
+      this.cycleTimeout = setTimeout(() => {
+        this.showHomeActions = true
+        this.cycleTimeout = setTimeout(() => {
+          this.showAstroCards = true
+        }, 380)
+      }, 260)
     },
   }
 }
@@ -547,33 +956,348 @@ export default {
 
 /* ─── Logo ─────────────────────────────────────────────── */
 .logo-wrap {
-  margin-top: 80px;
   position: relative;
   z-index: 2;
   display: flex;
   justify-content: center;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 90px);
 }
-.logo-img { max-width: 170px; width: 170px; height: auto; display: block; }
+.logo-img { max-width: 140px; width: 140px; height: auto; display: block; }
 
-/* ─── Subtitle ─────────────────────────────────────────── */
-.main-title {
-  max-width: 300px;
-  text-align: center;
-  font-size: 13px;
-  line-height: 20px;
-  color: #ffffff;
-  margin: 24px auto;
-  position: relative;
-  z-index: 2;
-  opacity: 0.8;
-  letter-spacing: 0.08em;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ─── Circle card hero ─────────────────────────────────── */
+/* Positioned so the card image sits in the center of the large ring. */
+.circle-card {
+  position: absolute;
+  top: 55.5%;
+  left: 50%;
+  width: min(264px, calc(100vw - 48px));
+  min-height: 158px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 102px 0 0;
+
+  opacity: 0;
+  transition: opacity 0.9s ease 0.2s, transform 0.9s cubic-bezier(0.2,0.8,0.2,1) 0.2s;
+  transform: translate(-50%, -50%) translateY(12px);
+  will-change: opacity, transform;
 }
-.main-title div { opacity: 0.72; }
+.circle-card--visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) translateY(0);
+}
+
+.circle-card__media {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.55));
+  perspective: 1200px;
+}
+
+.circle-card__img-wrap {
+  position: relative;
+  width: 104px;
+  height: 168px;
+  border-radius: 12px;
+  transform-style: preserve-3d;
+  transition: transform 760ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.circle-card__img-wrap--revealed {
+  transform: rotateY(180deg);
+}
+
+.circle-card__face {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.15);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.circle-card__face--front {
+  transform: rotateY(180deg);
+  background: rgba(8, 14, 24, 0.96);
+}
+
+.circle-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.circle-card__img--reversed {
+  transform: rotate(180deg);
+}
+
+.circle-card__back {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 24% 0%, rgba(157, 210, 255, 0.16), rgba(157, 210, 255, 0) 42%),
+    radial-gradient(circle at 76% 100%, rgba(84, 146, 214, 0.14), rgba(84, 146, 214, 0) 40%),
+    linear-gradient(160deg, rgba(22, 50, 74, 0.98), rgba(11, 23, 38, 0.99) 58%, rgba(8, 17, 28, 0.995));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circle-card__back::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0) 36%),
+    linear-gradient(180deg, rgba(125, 188, 255, 0.1), rgba(125, 188, 255, 0) 46%);
+  pointer-events: none;
+}
+
+.circle-card__back-frame {
+  position: absolute;
+  inset: 7px;
+  border-radius: 9px;
+  border: 1px solid rgba(176, 210, 242, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+}
+
+.circle-card__back-frame--inner {
+  inset: 13px;
+  border-radius: 7px;
+  border-color: rgba(142, 191, 236, 0.14);
+}
+
+.circle-card__back-band {
+  position: absolute;
+  left: 50%;
+  top: 18px;
+  bottom: 18px;
+  width: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(255,255,255,0), rgba(192, 224, 255, 0.24), rgba(255,255,255,0));
+}
+
+.circle-card__back-center {
+  position: relative;
+  z-index: 1;
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+}
+
+.circle-card__back-core,
+.circle-card__back-core-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+}
+
+.circle-card__back-core {
+  border: 1px solid rgba(194, 224, 255, 0.24);
+  background:
+    radial-gradient(circle at 50% 35%, rgba(219, 236, 255, 0.16), rgba(219, 236, 255, 0) 58%),
+    linear-gradient(180deg, rgba(33, 67, 98, 0.78), rgba(10, 22, 36, 0.5));
+  box-shadow:
+    0 0 16px rgba(131, 198, 255, 0.16),
+    inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.circle-card__back-core-ring {
+  inset: 10px;
+  border: 1px solid rgba(196, 223, 252, 0.18);
+}
+
+.circle-card__back-logo {
+  position: relative;
+  z-index: 1;
+  width: 42px;
+  height: auto;
+  opacity: 1;
+  filter:
+    brightness(1.3)
+    drop-shadow(0 0 8px rgba(183, 223, 255, 0.2));
+}
+
+.circle-card__info {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.circle-card-name-enter-active,
+.circle-card-name-leave-active {
+  transition: opacity 240ms ease, transform 240ms ease;
+}
+
+.circle-card-name-enter-from,
+.circle-card-name-leave-to {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.circle-card__eyebrow {
+  position: absolute;
+  top: -112px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.44);
+  white-space: nowrap;
+}
+
+.circle-card__name {
+  width: 100%;
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.95);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+  text-wrap: balance;
+}
+
+.circle-card__cta {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.38);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ─── Action blocks ────────────────────────────────────── */
+.home-actions {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: calc(35px + env(safe-area-inset-bottom, 0px));
+  z-index: 4;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.9s ease 0.4s, transform 0.9s cubic-bezier(0.2,0.8,0.2,1) 0.4s;
+}
+.home-actions--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.home-action {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 13px 11px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: linear-gradient(180deg, rgba(14,20,32,0.90), rgba(7,11,19,0.82));
+  color: rgba(255,255,255,0.92);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.home-action--horoscope {
+  border-color: rgba(251,191,36,0.16);
+  background:
+    radial-gradient(circle at top right, rgba(251,191,36,0.14), rgba(251,191,36,0) 55%),
+    linear-gradient(180deg, rgba(20,17,8,0.92), rgba(10,8,4,0.84));
+}
+
+.home-action--tarot {
+  border-color: rgba(167,139,250,0.16);
+  background:
+    radial-gradient(circle at top right, rgba(167,139,250,0.14), rgba(167,139,250,0) 55%),
+    linear-gradient(180deg, rgba(14,12,22,0.92), rgba(7,6,12,0.84));
+}
+
+.home-action--myday {
+  border-color: rgba(96,165,250,0.18);
+  background:
+    radial-gradient(circle at top right, rgba(96,165,250,0.16), rgba(96,165,250,0) 55%),
+    linear-gradient(180deg, rgba(10,18,30,0.92), rgba(6,10,18,0.84));
+}
+
+.home-action--menu {
+  border-color: rgba(94,234,212,0.16);
+  background:
+    radial-gradient(circle at top right, rgba(94,234,212,0.12), rgba(94,234,212,0) 55%),
+    linear-gradient(180deg, rgba(9,18,20,0.92), rgba(5,10,12,0.84));
+}
+
+.home-action__eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.38);
+  line-height: 1;
+}
+
+.home-action__title {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: rgba(255,255,255,0.92);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.home-action__text {
+  font-size: 11px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.50);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.home-action__cta {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.38);
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+}
 
 /* ─── Cycling phrase ───────────────────────────────────── */
-.content-wrapper { position: absolute; inset: 0; z-index: 3; }
+.content-wrapper { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 .appear-content {
   position: absolute;
   top: 48%;
@@ -614,7 +1338,7 @@ export default {
 .astro-cards {
   --cards-pad: 20px;
   position: absolute;
-  bottom: calc(96px + env(safe-area-inset-bottom, 0px) + 12px);
+  top: calc(env(safe-area-inset-top, 0px) + 130px);
   left: 0;
   right: 0;
   z-index: 4;
@@ -628,17 +1352,15 @@ export default {
   scrollbar-width: none;
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity 1.0s ease 0.9s, transform 1.0s cubic-bezier(0.2, 0.8, 0.2, 1) 0.9s;
+  transition: opacity 1.0s ease 0.7s, transform 1.0s cubic-bezier(0.2,0.8,0.2,1) 0.7s;
 }
 .astro-cards::-webkit-scrollbar { display: none; }
-/* iOS WebKit fix: padding on overflow-x containers is unreliable — use pseudo-elements instead */
 .astro-cards::before,
 .astro-cards::after {
   content: '';
   flex-shrink: 0;
   width: var(--cards-pad);
 }
-
 .astro-cards--visible {
   opacity: 1;
   transform: translateY(0);
@@ -650,14 +1372,15 @@ export default {
   width: 106px;
   padding: 12px 12px 11px;
   border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.12);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid var(--astro-card-border, rgba(255,255,255,0.12));
+  background:
+    radial-gradient(circle at top right, var(--astro-card-glow, rgba(255,255,255,0.08)), transparent 58%),
+    linear-gradient(180deg, var(--astro-card-base, rgba(14, 20, 32, 0.82)), rgba(8, 12, 20, 0.76));
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   display: flex;
   flex-direction: column;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.09),
-    0 8px 28px rgba(0,0,0,0.22);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.09), 0 8px 28px rgba(0,0,0,0.22);
 }
 
 .astro-card__label {
@@ -669,13 +1392,7 @@ export default {
   line-height: 1;
   margin-bottom: 7px;
 }
-
-.astro-card__icon {
-  font-size: 22px;
-  line-height: 1;
-  margin-bottom: 6px;
-}
-
+.astro-card__icon { font-size: 22px; line-height: 1; margin-bottom: 6px; }
 .astro-card__value {
   font-size: 13px;
   font-weight: 500;
@@ -687,7 +1404,6 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .astro-card__sub {
   font-size: 11px;
   color: rgba(255,255,255,0.42);
@@ -697,18 +1413,26 @@ export default {
   -webkit-font-smoothing: antialiased;
 }
 
+.no-pointer-events { pointer-events: none; }
+
 @media (max-width: 390px) {
-  .astro-cards {
-    --cards-pad: 16px;
-    bottom: calc(70px + env(safe-area-inset-bottom, 0px) + 10px);
-    gap: 7px;
-  }
-  .astro-card { width: 98px; padding: 10px 10px 9px; }
-  .astro-card__icon { font-size: 20px; }
-  .astro-card__value { font-size: 12px; }
+  .circle-card { width: min(236px, calc(100vw - 40px)); }
+  .circle-card { min-height: 146px; padding-top: 92px; }
+  .circle-card__img-wrap { width: 92px; height: 148px; }
+  .circle-card__back-logo { width: 50px; }
+  .circle-card__eyebrow { top: -98px; }
+  .circle-card__name { font-size: 14px; }
+  .home-action { padding: 10px 11px 9px; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .astro-cards { transition: none; }
+@media (max-height: 700px) {
+  .circle-card { top: 51.5%; min-height: 144px; padding-top: 88px; }
+  .circle-card__img-wrap { width: 90px; height: 146px; }
+  .circle-card__back-logo { width: 50px; }
+  .circle-card__eyebrow { top: -96px; }
+  .home-actions {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+  .astro-cards { top: calc(env(safe-area-inset-top, 0px) + 104px); }
 }
 </style>
