@@ -11,10 +11,16 @@ REPO_ROOT="${CI_WORKSPACE:-$(cd "$(dirname "$0")/../../.." && pwd)}"
 echo "Repo root: $REPO_ROOT"
 
 # ── Node / npm ────────────────────────────────────────────────────────────────
-# Xcode Cloud has Homebrew available; install Node if missing.
+# Xcode Cloud has Homebrew available; install supported Node LTS if missing.
 if ! command -v node >/dev/null 2>&1; then
-  echo "Node not found — installing via Homebrew..."
-  brew install node
+  echo "Node not found — installing supported LTS via Homebrew..."
+  export HOMEBREW_NO_AUTO_UPDATE=1
+  if brew list node@24 >/dev/null 2>&1; then
+    export PATH="$(brew --prefix node@24)/bin:$PATH"
+  else
+    brew install node@24
+    export PATH="$(brew --prefix node@24)/bin:$PATH"
+  fi
 fi
 
 echo "Node: $(node --version)"
