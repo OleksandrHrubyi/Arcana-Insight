@@ -19,6 +19,8 @@ jobs:
           echo "Building astro context from date=$DATE for 2 days..."
 
           HTTP_CODE=$(curl --retry 5 --retry-delay 3 --retry-all-errors \
+            --connect-timeout 20 \
+            --max-time 240 \
             -sS -L -X POST \
             "${{ secrets.SUPABASE_URL }}/functions/v1/build-astro-context" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
@@ -57,6 +59,8 @@ jobs:
           echo "Generate for date=$DATE (will generate en+uk)"
 
           HTTP_CODE=$(curl --retry 5 --retry-delay 3 --retry-all-errors \
+            --connect-timeout 20 \
+            --max-time 240 \
             -sS -L -X POST "${{ secrets.SUPABASE_FUNCTION_URL }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \

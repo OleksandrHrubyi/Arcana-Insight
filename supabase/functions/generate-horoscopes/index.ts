@@ -244,36 +244,38 @@ async function loadAstroContextFull(supabase: any, dateISO: string) {
 
 type HoroscopeItem = { sign: Sign; theme: Theme; summary: string; detailed: string };
 
-const HORO_SCHEMA = {
-  type: "object",
-  additionalProperties: false,
-  required: ["items"],
-  properties: {
-    items: {
-      type: "array",
-      minItems: 36,
-      maxItems: 36,
+function makeHoroSchema(count: number) {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: ["items"],
+    properties: {
       items: {
-        type: "object",
-        additionalProperties: false,
-        required: ["sign", "theme", "summary", "detailed"],
-        properties: {
-          sign: { type: "string", enum: [...SIGNS] },
-          theme: { type: "string", enum: [...THEMES] },
-          summary: { type: "string" },
-          detailed: { type: "string" },
+        type: "array",
+        minItems: count,
+        maxItems: count,
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["sign", "theme", "summary", "detailed"],
+          properties: {
+            sign: { type: "string", enum: [...SIGNS] },
+            theme: { type: "string", enum: [...THEMES] },
+            summary: { type: "string" },
+            detailed: { type: "string" },
+          },
         },
       },
     },
-  },
-} as const;
+  } as const;
+}
 
-function validate36(items: any, label: string): HoroscopeItem[] {
-  if (!Array.isArray(items) || items.length !== 36) {
-    throw new Error(`${label}: expected 36 items, got ${items?.length}`);
+function validateItems(items: any, label: string, expectedCount: number): HoroscopeItem[] {
+  if (!Array.isArray(items) || items.length !== expectedCount) {
+    throw new Error(`${label}: expected ${expectedCount} items, got ${items?.length}`);
   }
   const keySet = new Set(items.map((x: any) => `${x.sign}:${x.theme}`));
-  if (keySet.size !== 36) throw new Error(`${label}: duplicate sign/theme pairs`);
+  if (keySet.size !== expectedCount) throw new Error(`${label}: duplicate sign/theme pairs`);
   return items as HoroscopeItem[];
 }
 
@@ -288,24 +290,40 @@ async function callOpenAIJsonSchema(params: {
 }) {
   const apiKey = Deno.env.get("OPENAI_API_KEY");
   if (!apiKey) throw new Error("Missing OPENAI_API_KEY");
+  const timeoutMs = Math.max(15000, Number(Deno.env.get("OPENAI_TIMEOUT_MS") ?? 90000));
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(`OpenAI timeout after ${timeoutMs}ms`), timeoutMs);
 
-  const resp = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      model: params.model,
-      store: false,
-      input: [
-        { role: "system", content: params.system },
-        { role: "user", content: params.user },
-      ],
-      text: {
-        format: { type: "json_schema", name: params.schemaName, strict: true, schema: params.schema },
-      },
-      temperature: params.temperature,
-      max_output_tokens: params.maxTokens,
-    }),
-  });
+  console.log(`[generate-horoscopes] OpenAI start: ${params.schemaName}, model=${params.model}`);
+
+  let resp: Response;
+  try {
+    resp = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: params.model,
+        store: false,
+        input: [
+          { role: "system", content: params.system },
+          { role: "user", content: params.user },
+        ],
+        text: {
+          format: { type: "json_schema", name: params.schemaName, strict: true, schema: params.schema },
+        },
+        temperature: params.temperature,
+        max_output_tokens: params.maxTokens,
+      }),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    clearTimeout(timeout);
+    throw new Error(`OpenAI fetch failed (${params.schemaName}): ${err instanceof Error ? err.message : String(err)}`);
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  console.log(`[generate-horoscopes] OpenAI done: ${params.schemaName}, status=${resp.status}`);
 
   if (!resp.ok) {
     const err = await resp.text().catch(() => "");
@@ -328,7 +346,11 @@ async function callOpenAIJsonSchema(params: {
   return parsed;
 }
 
-async function generateDay36En(params: { date: string; astroCompact: any | null }): Promise<HoroscopeItem[]> {
+async function generateTheme12En(params: {
+  date: string;
+  theme: Theme;
+  astroCompact: any | null;
+}): Promise<HoroscopeItem[]> {
   const model = Deno.env.get("OPENAI_MODEL") ?? "gpt-4o-mini";
 
   const astroLine = params.astroCompact
@@ -338,6 +360,7 @@ async function generateDay36En(params: { date: string; astroCompact: any | null 
   const user = `
 Date (UTC): ${params.date}
 Language: en
+Theme: ${params.theme}
 
 Themes (definitions — stay within these boundaries):
 - love: romantic relationships, emotional connections, intimacy, attraction, communication with a partner or potential partner
@@ -346,7 +369,7 @@ Themes (definitions — stay within these boundaries):
 
 ${astroLine}
 
-Generate EXACTLY 36 items: 12 signs × 3 themes.
+Generate EXACTLY 12 items: one for each zodiac sign, all with theme "${params.theme}".
 Return valid JSON strictly matching the schema.
 `.trim();
 
@@ -354,13 +377,29 @@ Return valid JSON strictly matching the schema.
     model,
     system: rulesEn(),
     user,
-    schemaName: "horoscopes_day_en",
-    schema: HORO_SCHEMA,
+    schemaName: `horoscopes_day_en_${params.theme}`,
+    schema: makeHoroSchema(12),
     temperature: 0.85,
-    maxTokens: 4000,
+    maxTokens: 1800,
   });
 
-  return validate36(parsed?.items, "OpenAI generate EN");
+  const items = validateItems(parsed?.items, `OpenAI generate EN ${params.theme}`, 12);
+  for (const item of items) {
+    if (item.theme !== params.theme) {
+      throw new Error(`OpenAI generate EN ${params.theme}: returned wrong theme "${item.theme}"`);
+    }
+  }
+  return items;
+}
+
+async function generateDay36En(params: { date: string; astroCompact: any | null }): Promise<HoroscopeItem[]> {
+  const out: HoroscopeItem[] = [];
+  for (const theme of THEMES) {
+    console.log(`[generate-horoscopes] Generating EN theme=${theme} date=${params.date}`);
+    const items = await generateTheme12En({ date: params.date, theme, astroCompact: params.astroCompact });
+    out.push(...items);
+  }
+  return validateItems(out, "OpenAI generate EN all themes", 36);
 }
 
 async function translateChunkEnToUk(params: { date: string; itemsEn: HoroscopeItem[] }): Promise<HoroscopeItem[]> {
@@ -381,18 +420,9 @@ ${JSON.stringify({ items: params.itemsEn })}
     system: rulesTranslateUk(),
     user,
     schemaName: "horoscopes_translate_uk",
-    schema: {
-      ...HORO_SCHEMA,
-      properties: {
-        items: {
-          ...HORO_SCHEMA.properties.items,
-          minItems: params.itemsEn.length,
-          maxItems: params.itemsEn.length,
-        },
-      },
-    },
+    schema: makeHoroSchema(params.itemsEn.length),
     temperature: 0,
-    maxTokens: 4000,
+    maxTokens: 2000,
   });
 
   const itemsUk = parsed?.items;
@@ -415,16 +445,20 @@ ${JSON.stringify({ items: params.itemsEn })}
 }
 
 async function translateDay36EnToUk(params: { date: string; itemsEn: HoroscopeItem[] }): Promise<HoroscopeItem[]> {
-  // Chunking makes it much more reliable than translating all 36 at once
-  const a = params.itemsEn.slice(0, 18);
-  const b = params.itemsEn.slice(18);
+  // Smaller chunks reduce edge runtime spikes and OpenAI latency.
+  const chunks = [
+    params.itemsEn.slice(0, 12),
+    params.itemsEn.slice(12, 24),
+    params.itemsEn.slice(24, 36),
+  ];
 
-  const [ukA, ukB] = await Promise.all([
-    translateChunkEnToUk({ date: params.date, itemsEn: a }),
-    translateChunkEnToUk({ date: params.date, itemsEn: b }),
-  ]);
+  const itemsUk: HoroscopeItem[] = [];
+  for (const [index, chunk] of chunks.entries()) {
+    console.log(`[generate-horoscopes] Translating UK chunk ${index + 1}/${chunks.length} date=${params.date}`);
+    const part = await translateChunkEnToUk({ date: params.date, itemsEn: chunk });
+    itemsUk.push(...part);
+  }
 
-  const itemsUk = [...ukA, ...ukB];
   if (itemsUk.length !== 36) throw new Error(`Translate: expected 36 items, got ${itemsUk.length}`);
 
   const keySet = new Set(itemsUk.map((x) => `${x.sign}:${x.theme}`));
