@@ -279,6 +279,12 @@ function validateItems(items: any, label: string, expectedCount: number): Horosc
   return items as HoroscopeItem[];
 }
 
+function chunkArray<T>(items: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < items.length; i += size) chunks.push(items.slice(i, i + size));
+  return chunks;
+}
+
 async function callOpenAIJsonSchema(params: {
   model: string;
   system: string;
@@ -444,18 +450,47 @@ ${JSON.stringify({ items: params.itemsEn })}
   })) as HoroscopeItem[];
 }
 
+async function translateChunkEnToUkWithRetry(
+  params: { date: string; itemsEn: HoroscopeItem[] },
+  depth = 0,
+): Promise<HoroscopeItem[]> {
+  try {
+    return await translateChunkEnToUk(params);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const shouldSplit =
+      params.itemsEn.length > 1 &&
+      (
+        message.includes("JSON.parse failed") ||
+        message.includes("OpenAI fetch failed") ||
+        message.includes("OpenAI timeout") ||
+        /OpenAI error:\s*5\d\d/.test(message)
+      );
+
+    if (!shouldSplit) throw error;
+
+    const mid = Math.ceil(params.itemsEn.length / 2);
+    const left = params.itemsEn.slice(0, mid);
+    const right = params.itemsEn.slice(mid);
+
+    console.warn(
+      `[generate-horoscopes] Retrying translate chunk by splitting size=${params.itemsEn.length} -> ${left.length}+${right.length}, depth=${depth}, reason=${message.slice(0, 180)}`,
+    );
+
+    const leftPart = await translateChunkEnToUkWithRetry({ date: params.date, itemsEn: left }, depth + 1);
+    const rightPart = await translateChunkEnToUkWithRetry({ date: params.date, itemsEn: right }, depth + 1);
+    return [...leftPart, ...rightPart];
+  }
+}
+
 async function translateDay36EnToUk(params: { date: string; itemsEn: HoroscopeItem[] }): Promise<HoroscopeItem[]> {
-  // Smaller chunks reduce edge runtime spikes and OpenAI latency.
-  const chunks = [
-    params.itemsEn.slice(0, 12),
-    params.itemsEn.slice(12, 24),
-    params.itemsEn.slice(24, 36),
-  ];
+  // Smaller chunks reduce truncation risk during strict JSON translation.
+  const chunks = chunkArray(params.itemsEn, 6);
 
   const itemsUk: HoroscopeItem[] = [];
   for (const [index, chunk] of chunks.entries()) {
     console.log(`[generate-horoscopes] Translating UK chunk ${index + 1}/${chunks.length} date=${params.date}`);
-    const part = await translateChunkEnToUk({ date: params.date, itemsEn: chunk });
+    const part = await translateChunkEnToUkWithRetry({ date: params.date, itemsEn: chunk });
     itemsUk.push(...part);
   }
 
