@@ -13,7 +13,7 @@
 
 // @ts-nocheck
 import { createClient } from "npm:@supabase/supabase-js@2";
-import Astronomy from "npm:astronomy-engine";
+import * as Astronomy from "npm:astronomy-engine";
 
 /* ─── Types ──────────────────────────────────────────────────────────── */
 
