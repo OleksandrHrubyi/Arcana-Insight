@@ -657,14 +657,14 @@ export default defineComponent({
   width: 72px;
   aspect-ratio: 0.64 / 1;
   border-radius: 12px;
-  border: 1px solid rgba(176, 210, 242, 0.34);
+  border: 1px solid rgba(145, 178, 210, 0.26);
   overflow: hidden;
   box-shadow:
     0 14px 24px rgba(1, 5, 10, 0.52),
     0 0 0 1px rgba(255, 255, 255, 0.03) inset;
   background:
-    radial-gradient(circle at 20% 0%, rgba(157, 210, 255, 0.2), rgba(11, 18, 28, 0) 55%),
-    linear-gradient(160deg, #16324a, #0b1726 56%, #08111c);
+    radial-gradient(circle at 20% 0%, rgba(118, 162, 212, 0.11), rgba(11, 18, 28, 0) 55%),
+    linear-gradient(160deg, rgba(15, 29, 44, 0.99), rgba(9, 18, 31, 0.995) 56%, rgba(5, 11, 20, 1));
   transform: rotate(-8deg);
   transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
 }
@@ -677,9 +677,9 @@ export default defineComponent({
   place-items: center;
   overflow: hidden;
   background:
-    radial-gradient(circle at 24% 0%, rgba(157, 210, 255, 0.16), rgba(157, 210, 255, 0) 42%),
-    radial-gradient(circle at 76% 100%, rgba(84, 146, 214, 0.14), rgba(84, 146, 214, 0) 40%),
-    linear-gradient(160deg, rgba(22, 50, 74, 0.98), rgba(11, 23, 38, 0.99) 58%, rgba(8, 17, 28, 0.995));
+    radial-gradient(circle at 20% 0%, rgba(118, 162, 212, 0.12), rgba(118, 162, 212, 0) 42%),
+    radial-gradient(circle at 82% 100%, rgba(68, 104, 150, 0.1), rgba(68, 104, 150, 0) 40%),
+    linear-gradient(160deg, rgba(15, 29, 44, 0.99), rgba(9, 18, 31, 0.995) 58%, rgba(5, 11, 20, 1));
 }
 
 .menu-daily-card__back::before {
@@ -687,8 +687,8 @@ export default defineComponent({
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0) 36%),
-    linear-gradient(180deg, rgba(125, 188, 255, 0.1), rgba(125, 188, 255, 0) 46%);
+    linear-gradient(135deg, rgba(255,255,255,0.045), rgba(255,255,255,0) 36%),
+    linear-gradient(180deg, rgba(98, 145, 198, 0.11), rgba(98, 145, 198, 0) 46%);
   pointer-events: none;
 }
 
@@ -696,14 +696,14 @@ export default defineComponent({
   position: absolute;
   inset: 5px;
   border-radius: 9px;
-  border: 1px solid rgba(176, 210, 242, 0.22);
+  border: 1px solid rgba(160, 194, 226, 0.24);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
 .menu-daily-card__back-frame--inner {
   inset: 10px;
   border-radius: 7px;
-  border-color: rgba(142, 191, 236, 0.14);
+  border-color: rgba(136, 173, 208, 0.16);
 }
 
 .menu-daily-card__back-band {
@@ -713,7 +713,7 @@ export default defineComponent({
   bottom: 14px;
   width: 1px;
   transform: translateX(-50%);
-  background: linear-gradient(180deg, rgba(255,255,255,0), rgba(192, 224, 255, 0.24), rgba(255,255,255,0));
+  background: linear-gradient(180deg, rgba(255,255,255,0), rgba(182, 214, 244, 0.24), rgba(255,255,255,0));
 }
 
 .menu-daily-card__back-core,
@@ -725,19 +725,19 @@ export default defineComponent({
 .menu-daily-card__back-core {
   width: 52px;
   height: 52px;
-  border: 1px solid rgba(194, 224, 255, 0.24);
+  border: 1px solid rgba(184, 214, 242, 0.24);
   background:
-    radial-gradient(circle at 50% 35%, rgba(219, 236, 255, 0.16), rgba(219, 236, 255, 0) 58%),
-    linear-gradient(180deg, rgba(33, 67, 98, 0.78), rgba(10, 22, 36, 0.5));
+    radial-gradient(circle at 50% 35%, rgba(214, 231, 248, 0.14), rgba(214, 231, 248, 0) 58%),
+    linear-gradient(180deg, rgba(24, 45, 68, 0.86), rgba(8, 17, 28, 0.62));
   box-shadow:
-    0 0 16px rgba(131, 198, 255, 0.16),
-    inset 0 0 0 1px rgba(255,255,255,0.05);
+    0 0 14px rgba(96, 145, 198, 0.16),
+    inset 0 0 0 1px rgba(255,255,255,0.045);
 }
 
 .menu-daily-card__back-core-ring {
   width: 32px;
   height: 32px;
-  border: 1px solid rgba(196, 223, 252, 0.18);
+  border: 1px solid rgba(183, 210, 238, 0.18);
 }
 
 .menu-daily-card__back-logo {
@@ -745,19 +745,19 @@ export default defineComponent({
   z-index: 1;
   width: 42px;
   height: auto;
-  opacity: 1;
+  opacity: 0.98;
   filter:
-    brightness(1.3)
-    drop-shadow(0 0 8px rgba(183, 223, 255, 0.2));
+    brightness(1.24)
+    drop-shadow(0 0 7px rgba(170, 212, 248, 0.18));
 }
 
 .menu-daily-card--opened {
   transform: rotate(-2deg);
-  border-color: rgba(219, 234, 255, 0.56);
+  border-color: rgba(191, 214, 238, 0.42);
   box-shadow:
     0 18px 30px rgba(1, 5, 10, 0.58),
-    0 0 26px rgba(131, 198, 255, 0.24),
-    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+    0 0 18px rgba(96, 145, 198, 0.16),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
 }
 
 .menu-daily-card--reversed .menu-daily-card__img {

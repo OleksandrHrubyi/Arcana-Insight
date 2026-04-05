@@ -137,7 +137,7 @@
           <span class="home-action__eyebrow">{{ locale === 'uk' ? 'MY DAY' : 'MY DAY' }}</span>
           <span class="home-action__title">{{ locale === 'uk' ? 'Твій день' : 'Your day' }}</span>
           <span class="home-action__text">
-            {{ locale === 'uk' ? 'Карта, фокус і вечірній ритуал в одному місці.' : 'Card, focus, and evening ritual in one place.' }}
+            {{ locale === 'uk' ? 'Карта, фокус і ритуал дня.' : 'Card, focus, and daily ritual.' }}
           </span>
           <span class="home-action__cta">
             {{ locale === 'uk' ? 'Відкрити' : 'Open' }}
@@ -151,7 +151,7 @@
           <span class="home-action__eyebrow">{{ locale === 'uk' ? 'МЕНЮ' : 'MENU' }}</span>
           <span class="home-action__title">{{ locale === 'uk' ? 'Усі розділи' : 'All sections' }}</span>
           <span class="home-action__text">
-            {{ locale === 'uk' ? 'Бібліотека карт, zodiac guide, rewards і налаштування.' : 'Card library, zodiac guide, rewards, and settings.' }}
+            {{ locale === 'uk' ? 'Карти, guide, rewards.' : 'Cards, guide, rewards.' }}
           </span>
           <span class="home-action__cta">
             {{ locale === 'uk' ? 'Перейти' : 'Open' }}
@@ -356,9 +356,9 @@ export default {
         icon: phaseEmoji[d.moonPhaseKey] || '🌙',
         value: this.tt(`astro.phases.${d.moonPhaseKey}`),
         sub: `${this.tt('astro.moonIn')} ${this.tt(`zodiac.${d.moonSignKey}`)}`,
-        bg: 'rgba(140, 170, 255, 0.09)',
-        glow: 'rgba(140, 170, 255, 0.12)',
-        border: 'rgba(140, 170, 255, 0.18)',
+        bg: 'rgba(140, 170, 255, 0.14)',
+        glow: 'rgba(140, 170, 255, 0.18)',
+        border: 'rgba(140, 170, 255, 0.24)',
       })
 
       // 2. Next full moon
@@ -373,17 +373,17 @@ export default {
           icon: '🌕',
           value: when,
           sub: this.tt('astro.cards.remaining'),
-          bg: 'rgba(255, 228, 130, 0.07)',
-          glow: 'rgba(255, 228, 130, 0.1)',
-          border: 'rgba(255, 228, 130, 0.15)',
+          bg: 'rgba(255, 228, 130, 0.12)',
+          glow: 'rgba(255, 228, 130, 0.16)',
+          border: 'rgba(255, 228, 130, 0.22)',
         })
       }
 
       // 3. Planetary day
       if (pd) {
-        const pBg = { sun:'rgba(255,220,100,0.08)', moon:'rgba(140,180,255,0.08)', mars:'rgba(255,100,80,0.09)', mercury:'rgba(150,220,160,0.08)', jupiter:'rgba(255,200,100,0.08)', venus:'rgba(255,155,200,0.09)', saturn:'rgba(180,160,140,0.08)' }
-        const pGlow = { sun:'rgba(255,220,100,0.12)', moon:'rgba(140,180,255,0.12)', mars:'rgba(255,100,80,0.12)', mercury:'rgba(150,220,160,0.12)', jupiter:'rgba(255,200,100,0.12)', venus:'rgba(255,155,200,0.12)', saturn:'rgba(180,160,140,0.1)' }
-        const pBd = { sun:'rgba(255,220,100,0.18)', moon:'rgba(140,180,255,0.18)', mars:'rgba(255,100,80,0.2)', mercury:'rgba(150,220,160,0.18)', jupiter:'rgba(255,200,100,0.18)', venus:'rgba(255,155,200,0.2)', saturn:'rgba(180,160,140,0.18)' }
+        const pBg = { sun:'rgba(255,220,100,0.13)', moon:'rgba(140,180,255,0.13)', mars:'rgba(255,100,80,0.14)', mercury:'rgba(150,220,160,0.13)', jupiter:'rgba(255,200,100,0.13)', venus:'rgba(255,155,200,0.14)', saturn:'rgba(180,160,140,0.13)' }
+        const pGlow = { sun:'rgba(255,220,100,0.17)', moon:'rgba(140,180,255,0.17)', mars:'rgba(255,100,80,0.17)', mercury:'rgba(150,220,160,0.17)', jupiter:'rgba(255,200,100,0.17)', venus:'rgba(255,155,200,0.17)', saturn:'rgba(180,160,140,0.15)' }
+        const pBd = { sun:'rgba(255,220,100,0.24)', moon:'rgba(140,180,255,0.24)', mars:'rgba(255,100,80,0.25)', mercury:'rgba(150,220,160,0.24)', jupiter:'rgba(255,200,100,0.24)', venus:'rgba(255,155,200,0.25)', saturn:'rgba(180,160,140,0.22)' }
         cards.push({
           id: 'planet',
           label: this.tt('astro.cards.dayRuler'),
@@ -403,15 +403,15 @@ export default {
         icon: '☀️',
         value: this.tt(`zodiac.${d.sunSignKey}`),
         sub: `${d.sunDegInSign}°`,
-        bg: 'rgba(255, 218, 90, 0.07)',
-        glow: 'rgba(255, 218, 90, 0.1)',
-        border: 'rgba(255, 218, 90, 0.15)',
+        bg: 'rgba(255, 218, 90, 0.12)',
+        glow: 'rgba(255, 218, 90, 0.16)',
+        border: 'rgba(255, 218, 90, 0.22)',
       })
 
       // 5. Moon element
-      const eBg = { fire:'rgba(255,105,55,0.1)', water:'rgba(75,155,255,0.1)', air:'rgba(185,170,255,0.1)', earth:'rgba(105,195,105,0.1)' }
-      const eGlow = { fire:'rgba(255,105,55,0.12)', water:'rgba(75,155,255,0.12)', air:'rgba(185,170,255,0.12)', earth:'rgba(105,195,105,0.12)' }
-      const eBd = { fire:'rgba(255,105,55,0.22)', water:'rgba(75,155,255,0.22)', air:'rgba(185,170,255,0.22)', earth:'rgba(105,195,105,0.22)' }
+      const eBg = { fire:'rgba(255,105,55,0.14)', water:'rgba(75,155,255,0.14)', air:'rgba(185,170,255,0.14)', earth:'rgba(105,195,105,0.14)' }
+      const eGlow = { fire:'rgba(255,105,55,0.17)', water:'rgba(75,155,255,0.17)', air:'rgba(185,170,255,0.17)', earth:'rgba(105,195,105,0.17)' }
+      const eBd = { fire:'rgba(255,105,55,0.26)', water:'rgba(75,155,255,0.26)', air:'rgba(185,170,255,0.26)', earth:'rgba(105,195,105,0.26)' }
       const eIco = { fire:'🔥', water:'🌊', air:'🌀', earth:'🌿' }
       cards.push({
         id: 'element',
@@ -432,9 +432,9 @@ export default {
         icon: numIco[d.numerologyDay] || '✦',
         value: String(d.numerologyDay),
         sub: this.tt(`astro.numerology.${d.numerologyDay}`),
-        bg: 'rgba(255,255,255,0.05)',
-        glow: 'rgba(255,255,255,0.08)',
-        border: 'rgba(255,255,255,0.10)',
+        bg: 'rgba(255,255,255,0.09)',
+        glow: 'rgba(255,255,255,0.12)',
+        border: 'rgba(255,255,255,0.14)',
       })
 
       // 7. Streak
@@ -445,9 +445,9 @@ export default {
           icon: '⚡',
           value: String(this.dailyStreak),
           sub: this.tt('astro.cards.streakSub'),
-          bg: 'rgba(255, 205, 90, 0.09)',
-          glow: 'rgba(255, 205, 90, 0.12)',
-          border: 'rgba(255, 205, 90, 0.2)',
+          bg: 'rgba(255, 205, 90, 0.14)',
+          glow: 'rgba(255, 205, 90, 0.18)',
+          border: 'rgba(255, 205, 90, 0.26)',
         })
       }
 
@@ -459,9 +459,9 @@ export default {
           icon: '☿',
           value: this.tt('astro.mercuryRetrograde'),
           sub: '',
-          bg: 'rgba(195, 155, 255, 0.1)',
-          glow: 'rgba(195, 155, 255, 0.12)',
-          border: 'rgba(195, 155, 255, 0.22)',
+          bg: 'rgba(195, 155, 255, 0.15)',
+          glow: 'rgba(195, 155, 255, 0.19)',
+          border: 'rgba(195, 155, 255, 0.28)',
         })
       }
 
@@ -596,9 +596,9 @@ export default {
 
     astroCardStyle(card) {
       return {
-        '--astro-card-base': card?.bg || 'rgba(14, 20, 32, 0.82)',
-        '--astro-card-glow': card?.glow || 'rgba(255, 255, 255, 0.08)',
-        '--astro-card-border': card?.border || 'rgba(255,255,255,0.12)',
+        '--astro-card-base': card?.bg || 'rgba(30, 40, 62, 0.7)',
+        '--astro-card-glow': card?.glow || 'rgba(255, 255, 255, 0.12)',
+        '--astro-card-border': card?.border || 'rgba(255,255,255,0.16)',
       }
     },
 
@@ -1047,9 +1047,9 @@ export default {
   height: 100%;
   overflow: hidden;
   background:
-    radial-gradient(circle at 24% 0%, rgba(157, 210, 255, 0.16), rgba(157, 210, 255, 0) 42%),
-    radial-gradient(circle at 76% 100%, rgba(84, 146, 214, 0.14), rgba(84, 146, 214, 0) 40%),
-    linear-gradient(160deg, rgba(22, 50, 74, 0.98), rgba(11, 23, 38, 0.99) 58%, rgba(8, 17, 28, 0.995));
+    radial-gradient(circle at 20% 0%, rgba(118, 162, 212, 0.12), rgba(118, 162, 212, 0) 42%),
+    radial-gradient(circle at 82% 100%, rgba(68, 104, 150, 0.1), rgba(68, 104, 150, 0) 40%),
+    linear-gradient(160deg, rgba(15, 29, 44, 0.99), rgba(9, 18, 31, 0.995) 58%, rgba(5, 11, 20, 1));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1060,8 +1060,8 @@ export default {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0) 36%),
-    linear-gradient(180deg, rgba(125, 188, 255, 0.1), rgba(125, 188, 255, 0) 46%);
+    linear-gradient(135deg, rgba(255,255,255,0.045), rgba(255,255,255,0) 36%),
+    linear-gradient(180deg, rgba(98, 145, 198, 0.11), rgba(98, 145, 198, 0) 46%);
   pointer-events: none;
 }
 
@@ -1069,14 +1069,14 @@ export default {
   position: absolute;
   inset: 7px;
   border-radius: 9px;
-  border: 1px solid rgba(176, 210, 242, 0.22);
+  border: 1px solid rgba(160, 194, 226, 0.24);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
 }
 
 .circle-card__back-frame--inner {
   inset: 13px;
   border-radius: 7px;
-  border-color: rgba(142, 191, 236, 0.14);
+  border-color: rgba(136, 173, 208, 0.16);
 }
 
 .circle-card__back-band {
@@ -1086,7 +1086,7 @@ export default {
   bottom: 18px;
   width: 1px;
   transform: translateX(-50%);
-  background: linear-gradient(180deg, rgba(255,255,255,0), rgba(192, 224, 255, 0.24), rgba(255,255,255,0));
+  background: linear-gradient(180deg, rgba(255,255,255,0), rgba(182, 214, 244, 0.24), rgba(255,255,255,0));
 }
 
 .circle-card__back-center {
@@ -1106,18 +1106,18 @@ export default {
 }
 
 .circle-card__back-core {
-  border: 1px solid rgba(194, 224, 255, 0.24);
+  border: 1px solid rgba(184, 214, 242, 0.24);
   background:
-    radial-gradient(circle at 50% 35%, rgba(219, 236, 255, 0.16), rgba(219, 236, 255, 0) 58%),
-    linear-gradient(180deg, rgba(33, 67, 98, 0.78), rgba(10, 22, 36, 0.5));
+    radial-gradient(circle at 50% 35%, rgba(214, 231, 248, 0.14), rgba(214, 231, 248, 0) 58%),
+    linear-gradient(180deg, rgba(24, 45, 68, 0.86), rgba(8, 17, 28, 0.62));
   box-shadow:
-    0 0 16px rgba(131, 198, 255, 0.16),
-    inset 0 0 0 1px rgba(255,255,255,0.05);
+    0 0 14px rgba(96, 145, 198, 0.16),
+    inset 0 0 0 1px rgba(255,255,255,0.045);
 }
 
 .circle-card__back-core-ring {
   inset: 10px;
-  border: 1px solid rgba(196, 223, 252, 0.18);
+  border: 1px solid rgba(183, 210, 238, 0.18);
 }
 
 .circle-card__back-logo {
@@ -1125,10 +1125,10 @@ export default {
   z-index: 1;
   width: 42px;
   height: auto;
-  opacity: 1;
+  opacity: 0.98;
   filter:
-    brightness(1.3)
-    drop-shadow(0 0 8px rgba(183, 223, 255, 0.2));
+    brightness(1.24)
+    drop-shadow(0 0 7px rgba(170, 212, 248, 0.18));
 }
 
 .circle-card__info {
@@ -1222,8 +1222,6 @@ export default {
   background: linear-gradient(180deg, rgba(14,20,32,0.90), rgba(7,11,19,0.82));
   color: rgba(255,255,255,0.92);
   box-shadow: 0 8px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
   cursor: pointer;
   overflow: hidden;
 }
@@ -1283,6 +1281,12 @@ export default {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.home-action--myday .home-action__text,
+.home-action--menu .home-action__text {
+  font-size: 10px;
+  line-height: 1.35;
 }
 
 .home-action__cta {
@@ -1374,20 +1378,17 @@ export default {
   border-radius: 20px;
   border: 1px solid var(--astro-card-border, rgba(255,255,255,0.12));
   background:
-    radial-gradient(circle at top right, var(--astro-card-glow, rgba(255,255,255,0.08)), transparent 58%),
-    linear-gradient(180deg, var(--astro-card-base, rgba(14, 20, 32, 0.82)), rgba(8, 12, 20, 0.76));
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+    radial-gradient(circle at top right, var(--astro-card-glow, rgba(255,255,255,0.12)), transparent 58%),
+    linear-gradient(180deg, var(--astro-card-base, rgba(30, 40, 62, 0.7)), rgba(17, 24, 38, 0.56));
   display: flex;
   flex-direction: column;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.09), 0 8px 28px rgba(0,0,0,0.22);
 }
 
 .astro-card__label {
   font-size: 9px;
   letter-spacing: 0.11em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.36);
+  color: rgba(255,255,255,0.44);
   -webkit-font-smoothing: antialiased;
   line-height: 1;
   margin-bottom: 7px;
@@ -1396,7 +1397,7 @@ export default {
 .astro-card__value {
   font-size: 13px;
   font-weight: 500;
-  color: rgba(255,255,255,0.88);
+  color: rgba(255,255,255,0.93);
   letter-spacing: 0.01em;
   line-height: 1.25;
   -webkit-font-smoothing: antialiased;
@@ -1406,7 +1407,7 @@ export default {
 }
 .astro-card__sub {
   font-size: 11px;
-  color: rgba(255,255,255,0.42);
+  color: rgba(255,255,255,0.5);
   letter-spacing: 0.02em;
   line-height: 1.25;
   margin-top: 2px;
