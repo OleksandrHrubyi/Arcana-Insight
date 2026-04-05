@@ -501,7 +501,7 @@ export const messages = {
 
     love: 'Love',
     career: 'Career',
-    spirit: 'Spirit',
+    energy: 'Energy',
     theme: 'Theme',
     shareSubInfo: 'If it resonates — forward it to someone who needs it.',
     tarotCard: 'TAROT CARD',
@@ -993,12 +993,12 @@ export const messages = {
           purchase: 'Premium subscription with compatibility insights and advanced breakdown.',
         },
         horoscopeLove: {
-          free: 'Only daily spirit theme.',
+          free: 'Only daily energy theme.',
           premium: 'Daily love-focused insights and deeper emotional guidance.',
           purchase: 'Premium subscription with all daily horoscope themes.',
         },
         horoscopeCareer: {
-          free: 'Only daily spirit theme.',
+          free: 'Only daily energy theme.',
           premium: 'Daily career-focused guidance and next-step focus.',
           purchase: 'Premium subscription with all daily horoscope themes.',
         },
@@ -1077,7 +1077,7 @@ export const messages = {
         career: 'Career-focused horoscope theme and practical direction',
         money: 'Tarot focus on finances, stability, and decisions',
         self: 'Daily guidance for reflection and personal clarity',
-        spirit: 'Spirit-centered horoscope for your inner path',
+        energy: 'Energy-focused horoscope for your inner rhythm',
         future: 'Tarot focus on choices and next-step direction',
       },
     },
@@ -1090,7 +1090,7 @@ export const messages = {
       },
       accessModel: {
         title: 'Access model',
-        free: 'Free: daily card, spirit horoscope, and one 1-card tarot reading per day.',
+        free: 'Free: daily card, energy horoscope, and one 1-card tarot reading per day.',
         premium:
           'Premium: unlimited tarot sessions, all horoscope themes, full history, and compatibility insights.',
         purchasePrefix: 'Purchase:',
@@ -1121,7 +1121,7 @@ export const messages = {
       },
       free: {
         dailyCard: 'Daily card',
-        horoscope: 'Daily horoscope: spirit theme',
+        horoscope: 'Daily horoscope: energy theme',
         tarotOne: 'Tarot: 1 reading per day (1 card)',
         cardsLibrary: 'Card library',
         zodiacGuide: 'Zodiac signs guide',
@@ -1141,7 +1141,7 @@ export const messages = {
         },
         horoscopeThemes: {
           title: 'All horoscope themes, daily',
-          text: 'Unlock love and career every day, not only the free spirit theme.',
+          text: 'Unlock love and career every day, not only the free energy theme.',
         },
         spreads: {
           title: '3-card and 5-card spreads',
@@ -1285,7 +1285,7 @@ export const messages = {
         includesTitle: 'Every plan includes:',
         includes: {
           unlimitedReadings: 'Unlimited tarot readings (1, 3, and 5 cards)',
-          horoscopeThemes: 'All daily horoscope themes: spirit, love, and career',
+          horoscopeThemes: 'All daily horoscope themes: energy, love, and career',
           deepInterpretation: 'Deeper AI interpretations with practical action points',
           structuredInterpretation: 'Extended structured interpretations with clear next actions',
           compatibility: 'Premium compatibility with full score breakdown',
@@ -1467,7 +1467,7 @@ export const messages = {
         career: 'Career',
         money: 'Money',
         self: 'Self',
-        energy: 'Spirit',
+        energy: 'Energy',
         future: 'Future',
       },
     },
@@ -1477,7 +1477,7 @@ export const messages = {
       sectionIntro: 'Overview',
       sectionLove: 'Love',
       sectionCareer: 'Career',
-      sectionSpirit: 'Spirit',
+      sectionEnergy: 'Energy',
       btnGenerate: 'Get my personal reading',
       btnRegenerate: 'Refresh reading',
       loading: 'Reading the sky for you\u2026',
@@ -1979,7 +1979,7 @@ export const messages = {
 
     love: 'Кохання',
     career: 'Карʼєра',
-    spirit: 'Дух',
+    energy: 'Енергія',
     theme: 'Тема',
     shareSubInfo: 'Якщо відгукнулося — перешли тому, кому це потрібно',
     tarotCard: 'КАРТА ТАРО',
@@ -2552,7 +2552,7 @@ export const messages = {
         career: 'Тема гороскопу про карʼєру з практичним напрямом',
         money: 'Таро-фокус на фінансах, стабільності та рішеннях',
         self: 'Щоденний напрям для рефлексії та особистої ясності',
-        spirit: 'Гороскоп про дух та внутрішній стан на день',
+        energy: 'Гороскоп про внутрішній ритм та енергію дня',
         future: 'Таро-фокус на виборі та напрямі наступного кроку',
       },
     },
@@ -2949,7 +2949,7 @@ export const messages = {
       sectionIntro: 'Огляд дня',
       sectionLove: 'Кохання',
       sectionCareer: 'Кар\u2019єра',
-      sectionSpirit: 'Дух',
+      sectionEnergy: 'Енергія',
       btnGenerate: 'Отримати особисте читання',
       btnRegenerate: 'Оновити читання',
       loading: 'Читаємо небо для тебе\u2026',

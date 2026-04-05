@@ -16,13 +16,18 @@ const SIGNS = [
   "pisces",
 ] as const;
 
-const THEMES = ["love", "career", "spirit"] as const;
+const THEMES = ["love", "career", "energy"] as const;
 
 type Sign = typeof SIGNS[number];
 type Theme = typeof THEMES[number];
 
-function isTheme(value: unknown): value is Theme {
-  return typeof value === "string" && (THEMES as readonly string[]).includes(value);
+function normalizeTheme(value: unknown): Theme | null {
+  const key = String(value ?? "").trim().toLowerCase();
+  if (!key) return null;
+  if (key === "self" || key === "energy") return "energy";
+  if (key === "career" || key === "work") return "career";
+  if (key === "love") return "love";
+  return null;
 }
 
 function isoTodayUTC(): string {
@@ -289,6 +294,16 @@ function chunkArray<T>(items: T[], size: number): T[][] {
   return chunks;
 }
 
+function serializeError(error: any) {
+  if (!error) return null;
+  return {
+    message: String(error.message ?? ""),
+    details: error.details ?? null,
+    hint: error.hint ?? null,
+    code: error.code ?? null,
+  };
+}
+
 async function callOpenAIJsonSchema(params: {
   model: string;
   system: string;
@@ -375,7 +390,7 @@ Theme: ${params.theme}
 Themes (definitions — stay within these boundaries):
 - love: romantic relationships, emotional connections, intimacy, attraction, communication with a partner or potential partner
 - career: work, ambition, productivity, professional decisions, colleagues, goals
-- spirit: inner state, intuition, spiritual clarity, connection to self, inner voice, sense of meaning — NOT physical health, NOT energy levels
+- energy: inner state, emotional rhythm, intuition, mental clarity, connection to self — NOT physical health, NOT romantic or career advice
 
 ${astroLine}
 
@@ -528,27 +543,26 @@ Deno.serve(async (req) => {
       body?.date && /^\d{4}-\d{2}-\d{2}$/.test(body.date) ? String(body.date) : addDaysISO(isoTodayUTC(), 1);
 
     const force = body?.force === true;
-    const requestedTheme: Theme | null = isTheme(body?.theme) ? body.theme : null;
+    const requestedTheme: Theme | null = normalizeTheme(body?.theme);
     const themesToGenerate: Theme[] = requestedTheme ? [requestedTheme] : [...THEMES];
     const expectedPerLocale = themesToGenerate.length * SIGNS.length;
 
-    // We always generate BOTH locales: en + uk. Theme can be narrowed for lighter jobs.
-    if (!force) {
+    // We always generate BOTH locales: en + uk. Theme-specific runs skip the count check:
+    // upsert is idempotent and this avoids fragile filtered count queries in production.
+    if (!force && !requestedTheme) {
       const makeCountQuery = (locale: "en" | "uk") => {
-        let query = supabase
+        return supabase
           .from("horoscopes")
           .select("*", { count: "exact", head: true })
           .eq("date", date)
           .eq("locale", locale);
-        if (requestedTheme) query = query.eq("theme", requestedTheme);
-        return query;
       };
 
       const [enCountRes, ukCountRes] = await Promise.all([makeCountQuery("en"), makeCountQuery("uk")]);
 
       if (enCountRes.error || ukCountRes.error) {
         return new Response(
-          JSON.stringify({ ok: false, step: "count", date, error: enCountRes.error ?? ukCountRes.error }),
+          JSON.stringify({ ok: false, step: "count", date, error: serializeError(enCountRes.error ?? ukCountRes.error) }),
           { status: 500, headers: { "Content-Type": "application/json" } },
         );
       }
@@ -613,7 +627,7 @@ Deno.serve(async (req) => {
     });
 
     if (upsertErr) {
-      return new Response(JSON.stringify({ ok: false, step: "upsert", date, error: upsertErr }), {
+      return new Response(JSON.stringify({ ok: false, step: "upsert", date, error: serializeError(upsertErr) }), {
         status: 500,
         headers: { "Content-Type": "application/json" },
       });

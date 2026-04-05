@@ -703,7 +703,7 @@ export default {
             selectHoroscopes,
           })
           const reg = result?.registry?.[snap.signKey] || {}
-          const rawText = reg?.general?.text || reg?.spirit?.text || reg?.love?.text || ''
+          const rawText = reg?.energy?.text || reg?.general?.text || reg?.love?.text || ''
           const preview = rawText.split(/[.!?]/)[0]
           this.horoscopeData = {
             signKey: snap.signKey,

@@ -90,7 +90,6 @@ export const PREMIUM_MODEL_LIMITS = Object.freeze({
   freeTarotSessionsPerDay: 1,
   freeTarotMaxCards: 1,
   premiumTarotMaxCards: 5,
-  freeHoroscopeThemes: ['spirit'],
+  freeHoroscopeThemes: ['energy'],
   premiumHoroscopeThemes: ['love', 'career'],
 })
-

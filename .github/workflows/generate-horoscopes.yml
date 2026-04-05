@@ -49,7 +49,7 @@ jobs:
       max-parallel: 1
       matrix:
         offset: [1, 2]
-        theme: [love, career, spirit]
+        theme: [love, career, energy]
 
     steps:
       - name: Call Supabase Edge Function (generate-horoscopes)

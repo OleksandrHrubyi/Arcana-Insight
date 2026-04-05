@@ -182,7 +182,7 @@ const ANON_DAILY_SEED_KEY = 'arcana_daily_seed_v1'
 const cards = ref([])
 const signKey = ref('')
 const horoscopeSummaryRaw = ref('')
-const horoscopeThemeKey = ref('spirit')
+const horoscopeThemeKey = ref('energy')
 const moonPhaseKey = ref('new')
 const moonSignKey = ref('')
 const planetaryDayKey = ref('moon')
@@ -456,13 +456,13 @@ const orientationLabel = computed(() =>
   dailyOrientation.value === 'reversed' ? tt('cardsPage.reversed') : tt('cardsPage.upright'),
 )
 
-const horoscopeTheme = computed(() => horoscopeThemeKey.value || 'spirit')
+const horoscopeTheme = computed(() => horoscopeThemeKey.value || 'energy')
 const horoscopeTitle = computed(() => {
   const key = horoscopeTheme.value === 'career'
     ? 'career'
     : horoscopeTheme.value === 'love'
       ? 'love'
-      : 'spirit'
+      : 'energy'
   return tt(key)
 })
 const horoscopeSummary = computed(() => horoscopeSummaryRaw.value || copy.value.horoscopeFallback)
@@ -684,8 +684,8 @@ async function loadHoroscope() {
     selectHoroscopes,
   })
   const themes = registry?.[activeSign] || {}
-  const preferredOrder = ['spirit', 'love', 'career']
-  const chosenTheme = preferredOrder.find((key) => String(themes?.[key]?.summary || '').trim()) || 'spirit'
+  const preferredOrder = ['energy', 'love', 'career']
+  const chosenTheme = preferredOrder.find((key) => String(themes?.[key]?.summary || '').trim()) || 'energy'
   horoscopeThemeKey.value = chosenTheme
   horoscopeSummaryRaw.value = String(themes?.[chosenTheme]?.summary || '').trim()
 }

@@ -103,12 +103,12 @@ function compactAstroContext(full: any) {
 const PERSONAL_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["intro", "love", "career", "spirit"],
+  required: ["intro", "love", "career", "energy"],
   properties: {
     intro:   { type: "string" },
     love:    { type: "string" },
     career:  { type: "string" },
-    spirit:  { type: "string" },
+    energy:  { type: "string" },
   },
 } as const;
 
@@ -119,7 +119,7 @@ async function generatePersonalReading(params: {
   astroCompact: any | null;
   interests: string[];
   locale: string;
-}): Promise<{ intro: string; love: string; career: string; spirit: string }> {
+}): Promise<{ intro: string; love: string; career: string; energy: string }> {
   const apiKey = Deno.env.get("OPENAI_API_KEY");
   if (!apiKey) throw new Error("Missing OPENAI_API_KEY");
   const model = Deno.env.get("OPENAI_MODEL") ?? "gpt-4o-mini";
@@ -163,7 +163,7 @@ SECTION DEFINITIONS:
 - intro: A personal overview of the day — inner state, overall energy, what this day holds for this sign specifically. (3–4 sentences)
 - love: Romantic or emotional connections, intimacy, communication with partner or potential partner. (2–3 sentences)
 - career: Work, ambition, productivity, professional decisions. (2–3 sentences)
-- spirit: Inner state, intuition, spiritual clarity, connection to self — NOT physical health, NOT energy levels. (2–3 sentences)
+- energy: Inner state, emotional rhythm, intuition, clarity, and connection to self — NOT physical health, NOT romantic or career advice. (2–3 sentences)
 
 Return JSON only (no markdown).
 `.trim();
@@ -173,7 +173,7 @@ Date: ${params.date}
 ${astroLine}
 ${interestLine}
 
-Generate a personal reading with 4 sections: intro, love, career, spirit.
+Generate a personal reading with 4 sections: intro, love, career, energy.
 `.trim();
 
   const resp = await fetch("https://api.openai.com/v1/responses", {
@@ -213,7 +213,7 @@ Generate a personal reading with 4 sections: intro, love, career, spirit.
     throw new Error(`JSON parse failed: ${String(e)}`);
   }
 
-  if (!parsed?.intro || !parsed?.love || !parsed?.career || !parsed?.spirit) {
+  if (!parsed?.intro || !parsed?.love || !parsed?.career || !parsed?.energy) {
     throw new Error("Incomplete response from OpenAI");
   }
 
@@ -221,7 +221,7 @@ Generate a personal reading with 4 sections: intro, love, career, spirit.
     intro:  String(parsed.intro).trim(),
     love:   String(parsed.love).trim(),
     career: String(parsed.career).trim(),
-    spirit: String(parsed.spirit).trim(),
+    energy: String(parsed.energy).trim(),
   };
 }
 

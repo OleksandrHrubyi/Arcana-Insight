@@ -82,22 +82,22 @@
             v-touch-swipe:[themeSwipeSensitivity].horizontal="handleThemeSwipe"
             class="bg-transparent horoscope-panels"
           >
-            <q-tab-panel name="spirit" class="q-pa-none">
+            <q-tab-panel name="energy" class="q-pa-none">
               <div class="panel-inner">
-                <div class="horoscope-info-title">{{ tt('spirit') }}</div>
+                <div class="horoscope-info-title">{{ tt('energy') }}</div>
                 <div class="horoscope-divider"></div>
 
                 <div
                   class="horoscope-info-style"
-                  :class="{ 'horoscope-info-style--loading': !hasThemeText('spirit') }"
+                  :class="{ 'horoscope-info-style--loading': !hasThemeText('energy') }"
                 >
-                  <template v-if="hasThemeText('spirit')">
-                    {{ getThemeText('spirit') }}
+                  <template v-if="hasThemeText('energy')">
+                    {{ getThemeText('energy') }}
                   </template>
                   <div v-else class="horoscope-text-skeleton" aria-hidden="true">
                     <span
                       v-for="index in 6"
-                      :key="`spirit-skeleton-${index}`"
+                      :key="`energy-skeleton-${index}`"
                       class="horoscope-text-skeleton__line"
                     ></span>
                   </div>
@@ -196,8 +196,8 @@
             <div class="dots">
               <button
                 class="dot"
-                :class="{ active: themeTab === 'spirit', 'dot--locked': isThemeLocked('spirit') }"
-                @click="setTheme('spirit')"
+                :class="{ active: themeTab === 'energy', 'dot--locked': isThemeLocked('energy') }"
+                @click="setTheme('energy')"
               ></button>
               <button
                 class="dot"
@@ -291,10 +291,10 @@ const ZODIAC_EMOJI = {
 const THEME_META = {
   love: { emoji: '💖', label: 'Кохання' },
   career: { emoji: '💼', label: 'Кар\u2019єра' },
-  spirit: { emoji: '✨', label: 'Дух' },
+  energy: { emoji: '⚡', label: 'Енергія' },
 }
-const FREE_HOROSCOPE_THEME = 'spirit'
-const THEME_TABS = ['spirit', 'love', 'career']
+const FREE_HOROSCOPE_THEME = 'energy'
+const THEME_TABS = ['energy', 'love', 'career']
 const ZODIAC_SIGN_CACHE_KEY = 'horoscope_sign_key_v1'
 const PROFILE_CACHE_KEY = 'profile_cache_v1'
 const premiumAccessStore = usePremiumAccess()

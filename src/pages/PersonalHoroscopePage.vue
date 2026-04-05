@@ -176,10 +176,10 @@ const readingSections = computed(() => {
       className: 'personal-section--career',
     },
     {
-      key: 'spirit',
-      label: tt('personalHoroscope.sectionSpirit'),
-      text: reading.value.spirit || '',
-      className: 'personal-section--spirit',
+      key: 'energy',
+      label: tt('personalHoroscope.sectionEnergy'),
+      text: reading.value.energy || '',
+      className: 'personal-section--energy',
     },
   ].filter((section) => String(section.text || '').trim())
 })
@@ -603,7 +603,7 @@ onMounted(async () => {
   color: rgba(172, 214, 252, 0.76);
 }
 
-.personal-section--spirit .personal-section__label {
+.personal-section--energy .personal-section__label {
   color: rgba(196, 188, 255, 0.78);
 }
 

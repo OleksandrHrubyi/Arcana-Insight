@@ -312,9 +312,9 @@ export default defineComponent({
         key: 'focus-energy',
         icon: 'bolt',
         labelKey: 'onboardingPage.interests.energy',
-        hintKey: 'menuPage.personalizedHints.spirit',
+        hintKey: 'menuPage.personalizedHints.energy',
         routeName: 'horoscope',
-        query: { theme: 'spirit', source: 'menu_interest_energy', entry: 'personalized' },
+        query: { theme: 'energy', source: 'menu_interest_energy', entry: 'personalized' },
       },
       future: {
         key: 'focus-future',

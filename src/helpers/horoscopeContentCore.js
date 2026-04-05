@@ -4,7 +4,7 @@ export const normalizeHoroscopeThemeKey = (value) => {
     .toLowerCase()
 
   if (!key) return ''
-  if (key === 'energy' || key === 'self' || key === 'spirit') return 'spirit'
+  if (key === 'energy' || key === 'self') return 'energy'
   if (key === 'work' || key === 'career') return 'career'
   if (key === 'love') return 'love'
   return ''
