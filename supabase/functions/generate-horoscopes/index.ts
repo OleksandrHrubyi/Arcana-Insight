@@ -498,10 +498,12 @@ async function translateDay36EnToUk(params: { date: string; itemsEn: HoroscopeIt
     itemsUk.push(...part);
   }
 
-  if (itemsUk.length !== 36) throw new Error(`Translate: expected 36 items, got ${itemsUk.length}`);
+  if (itemsUk.length !== params.itemsEn.length) {
+    throw new Error(`Translate: expected ${params.itemsEn.length} items, got ${itemsUk.length}`);
+  }
 
   const keySet = new Set(itemsUk.map((x) => `${x.sign}:${x.theme}`));
-  if (keySet.size !== 36) throw new Error("Translate: duplicate sign/theme pairs");
+  if (keySet.size !== params.itemsEn.length) throw new Error("Translate: duplicate sign/theme pairs");
 
   return itemsUk;
 }
