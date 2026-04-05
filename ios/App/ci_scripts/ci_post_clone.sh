@@ -6,9 +6,9 @@ set -eu
 
 echo "=== ci_post_clone.sh ==="
 echo "Working dir: $(pwd)"
-echo "Xcode Cloud repo root: $CI_WORKSPACE"
 
 REPO_ROOT="${CI_WORKSPACE:-$(cd "$(dirname "$0")/../../.." && pwd)}"
+echo "Repo root: $REPO_ROOT"
 
 # ── Node / npm ────────────────────────────────────────────────────────────────
 # Xcode Cloud has Homebrew available; install Node if missing.
