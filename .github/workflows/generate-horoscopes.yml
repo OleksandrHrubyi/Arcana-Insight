@@ -49,6 +49,7 @@ jobs:
       max-parallel: 1
       matrix:
         offset: [1, 2]
+        theme: [love, career, spirit]
 
     steps:
       - name: Call Supabase Edge Function (generate-horoscopes)
@@ -56,7 +57,8 @@ jobs:
         run: |
           set -e
           DATE=$(date -u -d "+${{ matrix.offset }} day" +%F)
-          echo "Generate for date=$DATE (will generate en+uk)"
+          THEME="${{ matrix.theme }}"
+          echo "Generate for date=$DATE theme=$THEME (will generate en+uk)"
 
           HTTP_CODE=$(curl --retry 5 --retry-delay 3 --retry-all-errors \
             --connect-timeout 20 \
@@ -65,7 +67,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json" \
-            -d "{\"date\":\"$DATE\"}" \
+            -d "{\"date\":\"$DATE\",\"theme\":\"$THEME\"}" \
             -o response.json \
             -w "%{http_code}")
 

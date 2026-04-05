@@ -21,6 +21,10 @@ const THEMES = ["love", "career", "spirit"] as const;
 type Sign = typeof SIGNS[number];
 type Theme = typeof THEMES[number];
 
+function isTheme(value: unknown): value is Theme {
+  return typeof value === "string" && (THEMES as readonly string[]).includes(value);
+}
+
 function isoTodayUTC(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -522,13 +526,23 @@ Deno.serve(async (req) => {
       body?.date && /^\d{4}-\d{2}-\d{2}$/.test(body.date) ? String(body.date) : addDaysISO(isoTodayUTC(), 1);
 
     const force = body?.force === true;
+    const requestedTheme: Theme | null = isTheme(body?.theme) ? body.theme : null;
+    const themesToGenerate: Theme[] = requestedTheme ? [requestedTheme] : [...THEMES];
+    const expectedPerLocale = themesToGenerate.length * SIGNS.length;
 
-    // We always generate BOTH locales: en + uk
+    // We always generate BOTH locales: en + uk. Theme can be narrowed for lighter jobs.
     if (!force) {
-      const [enCountRes, ukCountRes] = await Promise.all([
-        supabase.from("horoscopes").select("*", { count: "exact", head: true }).eq("date", date).eq("locale", "en"),
-        supabase.from("horoscopes").select("*", { count: "exact", head: true }).eq("date", date).eq("locale", "uk"),
-      ]);
+      const makeCountQuery = (locale: "en" | "uk") => {
+        let query = supabase
+          .from("horoscopes")
+          .select("*", { count: "exact", head: true })
+          .eq("date", date)
+          .eq("locale", locale);
+        if (requestedTheme) query = query.eq("theme", requestedTheme);
+        return query;
+      };
+
+      const [enCountRes, ukCountRes] = await Promise.all([makeCountQuery("en"), makeCountQuery("uk")]);
 
       if (enCountRes.error || ukCountRes.error) {
         return new Response(
@@ -537,11 +551,21 @@ Deno.serve(async (req) => {
         );
       }
 
-      if ((enCountRes.count ?? 0) >= 36 && (ukCountRes.count ?? 0) >= 36) {
-        return new Response(JSON.stringify({ ok: true, skipped: true, date, enCount: enCountRes.count, ukCount: ukCountRes.count }), {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        });
+      if ((enCountRes.count ?? 0) >= expectedPerLocale && (ukCountRes.count ?? 0) >= expectedPerLocale) {
+        return new Response(
+          JSON.stringify({
+            ok: true,
+            skipped: true,
+            date,
+            theme: requestedTheme,
+            enCount: enCountRes.count,
+            ukCount: ukCountRes.count,
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          },
+        );
       }
     }
 
@@ -550,7 +574,9 @@ Deno.serve(async (req) => {
     const astroCompact = compactContext(astroFull);
 
     // generate EN (canonical)
-    const itemsEn = await generateDay36En({ date, astroCompact });
+    const itemsEn = requestedTheme
+      ? await generateTheme12En({ date, theme: requestedTheme, astroCompact })
+      : await generateDay36En({ date, astroCompact });
 
     // translate EN -> UK (robust: chunked + sanitized)
     const itemsUk = await translateDay36EnToUk({ date, itemsEn });
@@ -594,8 +620,9 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         ok: true,
-        inserted: rows.length, // 72
+        inserted: rows.length,
         date,
+        theme: requestedTheme,
         locales: ["en", "uk"],
         hasAstro: !!astroFull,
         compactAspectsCount: Array.isArray(astroCompact?.aspects) ? astroCompact.aspects.length : 0,
