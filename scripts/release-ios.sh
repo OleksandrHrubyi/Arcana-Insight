@@ -52,6 +52,8 @@ fi
 
 ok "All pre-flight checks passed."
 
+WEB_BUILD=$(node -p "JSON.parse(require('fs').readFileSync('capacitor.config.json', 'utf8')).webDir || 'dist/spa'")
+
 # ── Git status warning ────────────────────────────────────────────────────────
 step "Git status"
 if git diff --quiet && git diff --cached --quiet; then
@@ -88,10 +90,10 @@ if ! npm run build; then
 fi
 
 # Verify dist was produced
-if [[ ! -d "dist/capacitor/www" ]]; then
-  fail "dist/capacitor/www not found after build. Check quasar.config.js outputDir."
+if [[ ! -d "$WEB_BUILD" ]]; then
+  fail "$WEB_BUILD not found after build. Check capacitor.config.json webDir and quasar output."
 fi
-ok "Web build succeeded → dist/capacitor/www"
+ok "Web build succeeded → $WEB_BUILD"
 
 # ── Capacitor sync ────────────────────────────────────────────────────────────
 step "Capacitor sync (cap sync ios)"
@@ -105,7 +107,6 @@ ok "Capacitor sync complete."
 step "Asset freshness check"
 
 IOS_WWW="ios/App/App/public"
-WEB_BUILD="dist/capacitor/www"
 
 if [[ ! -d "$IOS_WWW" ]]; then
   warn "iOS www folder not found at $IOS_WWW — skipping timestamp check."
