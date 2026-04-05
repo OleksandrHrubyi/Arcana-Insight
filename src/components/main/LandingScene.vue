@@ -3,7 +3,11 @@
     <div class="container bg-container" :class="{ 'scene-ready': isPreloaded }">
 
       <!-- Phrase: shown only on first visit of day -->
-      <div v-if="isFirstVisitToday" class="content-wrapper">
+      <div
+        v-if="isFirstVisitToday"
+        class="content-wrapper"
+        :class="{ 'content-wrapper--fade-out': isPhraseFadingOut }"
+      >
         <div class="appear-content mono-text">
           <template v-for="token in fullTextTokens" :key="token.key">
             <span v-if="token.type === 'space'">{{ token.text }}</span>
@@ -29,17 +33,19 @@
 
       <!-- Astro strip -->
       <div v-if="astroCards.length" class="astro-cards" :class="{ 'astro-cards--visible': showAstroCards }">
-        <div
+        <button
           v-for="card in astroCards"
           :key="card.id"
+          type="button"
           class="astro-card"
           :style="astroCardStyle(card)"
+          @click="openAstroSheet(card)"
         >
           <span class="astro-card__label">{{ card.label }}</span>
           <span class="astro-card__icon">{{ card.icon }}</span>
           <span class="astro-card__value">{{ card.value }}</span>
           <span v-if="card.sub" class="astro-card__sub">{{ card.sub }}</span>
-        </div>
+        </button>
       </div>
 
       <!-- Card in circle: main hero -->
@@ -134,8 +140,8 @@
         </button>
 
         <button type="button" class="home-action home-action--myday" @click="openMyDayPage">
-          <span class="home-action__eyebrow">{{ locale === 'uk' ? 'MY DAY' : 'MY DAY' }}</span>
-          <span class="home-action__title">{{ locale === 'uk' ? 'Твій день' : 'Your day' }}</span>
+          <span class="home-action__eyebrow">{{ locale === 'uk' ? 'МІЙ ДЕНЬ' : 'MY DAY' }}</span>
+          <span class="home-action__title">{{ locale === 'uk' ? 'Мій день' : 'My Day' }}</span>
           <span class="home-action__text">
             {{ locale === 'uk' ? 'Карта, фокус і ритуал дня.' : 'Card, focus, and daily ritual.' }}
           </span>
@@ -162,6 +168,59 @@
         </button>
 
       </div>
+
+      <q-dialog v-model="astroSheetOpen" position="bottom" class="astro-sheet-dialog">
+        <div v-if="astroSheetContent" class="astro-sheet" :style="astroSheetStyle()">
+          <div class="astro-sheet__grabber"></div>
+          <div class="astro-sheet__eyebrow">{{ astroSheetContent.label }}</div>
+
+          <div class="astro-sheet__header">
+            <div class="astro-sheet__icon">{{ astroSheetContent.icon }}</div>
+            <div class="astro-sheet__title-wrap">
+              <div class="astro-sheet__title">{{ astroSheetContent.title }}</div>
+              <div v-if="astroSheetContent.subtitle" class="astro-sheet__subtitle">
+                {{ astroSheetContent.subtitle }}
+              </div>
+            </div>
+          </div>
+
+          <div class="astro-sheet__section">
+            <div class="astro-sheet__section-title">
+              {{ locale === 'uk' ? 'Факти' : 'Facts' }}
+            </div>
+            <ul class="astro-sheet__facts">
+              <li v-for="fact in astroSheetContent.facts" :key="fact" class="astro-sheet__fact">
+                {{ fact }}
+              </li>
+            </ul>
+          </div>
+
+          <div v-if="astroSheetContent.summary" class="astro-sheet__section">
+            <div class="astro-sheet__section-title">
+              {{ locale === 'uk' ? 'На сьогодні' : 'Today' }}
+            </div>
+            <div class="astro-sheet__text">{{ astroSheetContent.summary }}</div>
+          </div>
+
+          <button
+            v-if="astroSheetContent.action"
+            type="button"
+            class="astro-sheet__cta"
+            :class="{
+              'astro-sheet__cta--myday': astroSheetContent.action.type === 'myDay',
+            }"
+            @click="onAstroSheetActionClick"
+          >
+            {{ astroSheetContent.action.label }}
+          </button>
+
+          <div class="astro-sheet__close-wrap">
+            <button type="button" class="astro-sheet__close" @click="closeAstroSheet">
+              {{ tt('common.close') }}
+            </button>
+          </div>
+        </div>
+      </q-dialog>
     </div>
   </div>
 </template>
@@ -265,9 +324,12 @@ export default {
       horoscopeData: null,
       ritualDone: { morning: false, evening: false },
       isFirstVisitToday: false,
+      isPhraseFadingOut: false,
       showHomeActions: false,
       showAstroCards: false,
       introSequenceComplete: false,
+      astroSheetOpen: false,
+      astroSheetCardId: '',
     };
   },
 
@@ -340,6 +402,11 @@ export default {
       }
     },
 
+    astroSheetContent() {
+      if (!this.astroSheetCardId || !this.astroToday) return null
+      return this.buildAstroSheetContent(this.astroSheetCardId)
+    },
+
     astroCards() {
       if (!this.astroToday) return []
       const d = this.astroToday
@@ -387,7 +454,7 @@ export default {
         cards.push({
           id: 'planet',
           label: this.tt('astro.cards.dayRuler'),
-          icon: pd.symbol,
+          icon: this.planetaryGlyph(pd.key),
           value: this.tt(`astro.planets.${pd.key}`),
           sub: this.tt(`astro.planetMeanings.${pd.key}`),
           bg: pBg[pd.key] || 'rgba(255,255,255,0.06)',
@@ -562,6 +629,254 @@ export default {
       void this.$router.push({ name: 'menu' })
     },
 
+    async openAstroSheet(card) {
+      if (!card?.id) return
+      await this.triggerImpact(ImpactStyle.Light)
+      this.astroSheetCardId = card.id
+      this.astroSheetOpen = true
+    },
+
+    handleAstroSheetAction() {
+      const action = this.astroSheetContent?.action
+      this.astroSheetOpen = false
+      if (!action?.type) return
+      if (action.type === 'myDay') this.openMyDayPage()
+      if (action.type === 'horoscope') this.openHoroscope()
+    },
+
+    async closeAstroSheet() {
+      await this.triggerImpact(ImpactStyle.Light)
+      this.astroSheetOpen = false
+    },
+
+    async onAstroSheetActionClick() {
+      await this.triggerImpact(ImpactStyle.Light)
+      this.handleAstroSheetAction()
+    },
+
+    buildAstroSheetContent(cardId) {
+      const d = this.astroToday
+      if (!d) return null
+
+      const uk = this.locale === 'uk'
+      const planetDomains = {
+        sun: uk ? 'видимість, воля, самовираження' : 'visibility, will, expression',
+        moon: uk ? 'настрій, побут, емоційний ритм' : 'mood, home, emotional rhythm',
+        mars: uk ? 'дія, імпульс, напруга' : 'action, impulse, tension',
+        mercury: uk ? 'слова, логістика, повідомлення' : 'words, logistics, messages',
+        jupiter: uk ? 'сенс, масштаб, перспектива' : 'meaning, scale, perspective',
+        venus: uk ? 'стосунки, смак, гармонія' : 'relationships, taste, harmony',
+        saturn: uk ? 'структура, межі, відповідальність' : 'structure, boundaries, responsibility',
+      }
+      const elementDomains = {
+        fire: uk ? 'дія і швидка реакція' : 'action and fast reaction',
+        water: uk ? 'емоції та інтуїція' : 'emotion and intuition',
+        air: uk ? 'думки та комунікація' : 'thought and communication',
+        earth: uk ? 'стабільність і практичність' : 'stability and practicality',
+      }
+      const modalityMap = {
+        aries: uk ? 'кардинальний' : 'cardinal',
+        cancer: uk ? 'кардинальний' : 'cardinal',
+        libra: uk ? 'кардинальний' : 'cardinal',
+        capricorn: uk ? 'кардинальний' : 'cardinal',
+        taurus: uk ? 'фіксований' : 'fixed',
+        leo: uk ? 'фіксований' : 'fixed',
+        scorpio: uk ? 'фіксований' : 'fixed',
+        aquarius: uk ? 'фіксований' : 'fixed',
+        gemini: uk ? 'мутабельний' : 'mutable',
+        virgo: uk ? 'мутабельний' : 'mutable',
+        sagittarius: uk ? 'мутабельний' : 'mutable',
+        pisces: uk ? 'мутабельний' : 'mutable',
+      }
+      const elementFamilySigns = {
+        fire: ['aries', 'leo', 'sagittarius'],
+        water: ['cancer', 'scorpio', 'pisces'],
+        air: ['gemini', 'libra', 'aquarius'],
+        earth: ['taurus', 'virgo', 'capricorn'],
+      }
+      const numerologySummaryUk = {
+        1: 'Число 1 підсвічує старт, вибір напряму і самостійність.',
+        2: 'Число 2 підсвічує баланс, партнерство і тонке налаштування.',
+        3: 'Число 3 підсвічує вираження, рух і комунікацію.',
+        4: 'Число 4 підсвічує структуру, порядок і форму.',
+        5: 'Число 5 підсвічує зміни, рух і гнучкість.',
+        6: 'Число 6 підсвічує турботу, близькість і гармонію.',
+        7: 'Число 7 підсвічує спостереження, аналіз і тишу.',
+        8: 'Число 8 підсвічує силу, результат і концентрацію.',
+        9: 'Число 9 підсвічує завершення, відпускання і підсумок.',
+      }
+      const numerologySummaryEn = {
+        1: 'Number 1 highlights beginnings, direction, and self-drive.',
+        2: 'Number 2 highlights balance, partnership, and subtle adjustment.',
+        3: 'Number 3 highlights expression, movement, and communication.',
+        4: 'Number 4 highlights structure, order, and form.',
+        5: 'Number 5 highlights change, movement, and flexibility.',
+        6: 'Number 6 highlights care, closeness, and harmony.',
+        7: 'Number 7 highlights observation, analysis, and quiet.',
+        8: 'Number 8 highlights strength, results, and concentration.',
+        9: 'Number 9 highlights completion, release, and reflection.',
+      }
+      const weekday = new Intl.DateTimeFormat(uk ? 'uk-UA' : 'en-US', { weekday: 'long' }).format(new Date())
+      const lunarDateLabel = d.nextLunarEvent?.date
+        ? new Intl.DateTimeFormat(uk ? 'uk-UA' : 'en-US', { day: 'numeric', month: 'long' }).format(d.nextLunarEvent.date)
+        : ''
+      const lunarTimeLabel = d.nextLunarEvent?.date
+        ? new Intl.DateTimeFormat(uk ? 'uk-UA' : 'en-US', { hour: '2-digit', minute: '2-digit' }).format(d.nextLunarEvent.date)
+        : ''
+      const lunarHoursUntil = d.nextLunarEvent?.date
+        ? Math.max(0, Math.round((d.nextLunarEvent.date.getTime() - Date.now()) / 3600000))
+        : null
+      const signElement = this._astroElement(d.sunSignKey)
+      const todayDate = new Date()
+      const dateDigits = `${todayDate.getFullYear()}${todayDate.getMonth() + 1}${todayDate.getDate()}`.split('').map(Number)
+      const firstNumerologySum = dateDigits.reduce((sum, digit) => sum + digit, 0)
+      const finalNumerologyDigits = String(firstNumerologySum).split('').map(Number)
+      const factsFor = (...items) => items.filter(Boolean)
+
+      switch (cardId) {
+        case 'moon': {
+          const phase = d.moonPhaseKey
+          const moonSign = this.tt(`zodiac.${d.moonSignKey}`)
+          return {
+            label: this.tt('astro.cards.moonPhase'),
+            icon: this.moonPhaseGlyph(phase),
+            title: uk ? 'Місячний фон дня' : 'Moon backdrop for today',
+            subtitle: uk ? 'Що формує емоційний тон' : 'What shapes the emotional tone',
+            facts: factsFor(
+              uk ? `Освітленість диска Місяця: ${d.moonIlluminationPct}%.` : `Moon illumination: ${d.moonIlluminationPct}%.`,
+              uk ? `Місяць пройшов ${d.moonDegInSign}° у знаку ${moonSign}.` : `The Moon has moved ${d.moonDegInSign}° through ${moonSign}.`,
+              uk ? `Модальність знаку Місяця: ${modalityMap[d.moonSignKey]}.` : `Moon sign modality: ${modalityMap[d.moonSignKey]}.`,
+            ),
+            summary: uk
+              ? `Фаза показує місце в циклі, а знак Місяця показує, яким способом цей фон проживається.`
+              : 'The phase shows where the cycle is, while the Moon sign shows how that tone is expressed.',
+            action: { type: 'myDay', label: uk ? 'Відкрити Мій день' : 'Open My Day' },
+          }
+        }
+        case 'lunar': {
+          const days = d.nextLunarEvent?.daysUntil ?? -1
+          const subtitle = days <= 0
+            ? this.tt('astro.tonight')
+            : days === 1
+              ? this.tt('astro.tomorrow')
+              : `${days} ${this._astroDaysWord(days)}`
+          return {
+            label: uk ? 'Місячний ритм' : 'Lunar rhythm',
+            icon: '🌕',
+            title: uk ? 'Календар повні' : 'Full moon calendar',
+            subtitle: lunarDateLabel || subtitle,
+            facts: factsFor(
+              lunarDateLabel ? (uk ? `Наступна повня: ${lunarDateLabel}${lunarTimeLabel ? ` о ${lunarTimeLabel}` : ''}.` : `Next full moon: ${lunarDateLabel}${lunarTimeLabel ? ` at ${lunarTimeLabel}` : ''}.`) : '',
+              uk ? `До неї залишилось: ${subtitle}.` : `Time left: ${subtitle}.`,
+              lunarHoursUntil !== null ? (uk ? `Це приблизно ${lunarHoursUntil} годин від зараз.` : `That is about ${lunarHoursUntil} hours from now.`) : '',
+            ),
+            summary: uk
+              ? 'Ця картка чисто календарна: вона потрібна, щоб бачити дистанцію до повні, а не емоційний тон дня.'
+              : 'This card is purely calendar-based: it shows your distance to the full moon, not the mood of the day.',
+          }
+        }
+        case 'planet': {
+          const key = d.planetaryDay?.key || 'moon'
+          return {
+            label: this.tt('astro.cards.dayRuler'),
+            icon: this.planetaryGlyph(key),
+            title: uk ? 'Ритм цього дня' : 'Rhythm of the day',
+            subtitle: weekday,
+            facts: factsFor(
+              uk ? `Керівна планета дня: ${this.tt(`astro.planets.${key}`)}.` : `Day ruler: ${this.tt(`astro.planets.${key}`)}.`,
+              uk ? `У класичній астрології вона відповідає за: ${planetDomains[key]}.` : `In classical astrology it is linked with: ${planetDomains[key]}.`,
+              uk ? `День тижня: ${weekday}.` : `Weekday: ${weekday}.`,
+            ),
+            summary: uk
+              ? 'Керівник дня дає загальний ритм, але не замінює ні гороскоп, ні карту дня.'
+              : 'The day ruler gives a broad rhythm, but it does not replace your horoscope or daily card.',
+          }
+        }
+        case 'sun':
+          return {
+            label: this.tt('astro.cards.sunPath'),
+            icon: '☀️',
+            title: uk ? 'Сезон Сонця' : 'Solar season',
+            subtitle: uk ? 'Ширший фон цього періоду' : 'The wider tone of this period',
+            facts: factsFor(
+              uk ? `${this.tt(`zodiac.${d.sunSignKey}`)} — це ${this.tt(`astro.elements.${signElement}`).toLowerCase()} знак.` : `${this.tt(`zodiac.${d.sunSignKey}`)} is a ${this.tt(`astro.elements.${signElement}`).toLowerCase()} sign.`,
+              uk ? `Модальність знаку: ${modalityMap[d.sunSignKey]}.` : `Sign modality: ${modalityMap[d.sunSignKey]}.`,
+              uk ? `До переходу Сонця в наступний знак приблизно ${Math.max(0, 30 - d.sunDegInSign)} днів.` : `About ${Math.max(0, 30 - d.sunDegInSign)} days remain until the Sun changes sign.`,
+            ),
+            summary: uk
+              ? 'Сонце тут показує не “настрій на сьогодні”, а сезонний фон, який тримається довше.'
+              : 'The Sun here shows a seasonal background, not just a one-day mood.',
+          }
+        case 'element': {
+          const key = d.elementKey
+          const familySigns = (elementFamilySigns[key] || []).map((sign) => this.tt(`zodiac.${sign}`)).join(', ')
+          return {
+            label: this.tt('astro.cards.moonEnergy'),
+            icon: { fire: '🔥', water: '🌊', air: '🌀', earth: '🌿' }[key] || '◇',
+            title: uk ? 'Елемент настрою' : 'Element of the mood',
+            subtitle: uk ? 'Звідки береться цей тон' : 'Where this tone comes from',
+            facts: factsFor(
+              uk ? `До цієї стихії входять знаки: ${familySigns}.` : `Signs in this element: ${familySigns}.`,
+              uk ? `Для цієї стихії типові теми: ${elementDomains[key]}.` : `Typical topics for this element: ${elementDomains[key]}.`,
+              uk ? `Це окремий шар від фази місяця: стихія показує стиль реакції.` : 'This is separate from the moon phase: the element shows the reaction style.',
+            ),
+            summary: uk
+              ? 'Елемент показує тип реакції дня: емоційний, ментальний, практичний або імпульсивний.'
+              : 'The element shows the reaction style of the day: emotional, mental, practical, or impulsive.',
+          }
+        }
+        case 'num': {
+          return {
+            label: this.tt('astro.cards.dayNumber'),
+            icon: { 1:'🌟', 2:'☯️', 3:'🎨', 4:'🏛️', 5:'🦋', 6:'🌸', 7:'🔮', 8:'💫', 9:'🌀' }[d.numerologyDay] || '✦',
+            title: uk ? 'Код дати' : 'Date code',
+            subtitle: localISODate(todayDate),
+            facts: factsFor(
+              uk ? `Формула: ${dateDigits.join('+')} = ${firstNumerologySum}.` : `Formula: ${dateDigits.join('+')} = ${firstNumerologySum}.`,
+              firstNumerologySum > 9 ? (uk ? `${finalNumerologyDigits.join('+')} = ${d.numerologyDay}.` : `${finalNumerologyDigits.join('+')} = ${d.numerologyDay}.`) : '',
+              uk ? `Ключ числа: ${this.tt(`astro.numerology.${d.numerologyDay}`)}.` : `Number key: ${this.tt(`astro.numerology.${d.numerologyDay}`)}.`,
+            ),
+            summary: (uk ? numerologySummaryUk : numerologySummaryEn)[d.numerologyDay] || (uk ? numerologySummaryUk[7] : numerologySummaryEn[7]),
+          }
+        }
+        case 'streak':
+          return {
+            label: this.tt('astro.cards.yourStreak'),
+            icon: '⚡',
+            title: uk ? 'Ритм практики' : 'Practice rhythm',
+            subtitle: uk ? 'Що вже зроблено сьогодні' : 'What is already done today',
+            facts: factsFor(
+              uk ? `Поточний streak: ${this.dailyStreak} ${this._astroDaysWord(this.dailyStreak) || ''}.` : `Current streak: ${this.dailyStreak} day${this.dailyStreak === 1 ? '' : 's'}.`,
+              uk ? `Карта дня сьогодні: ${hasDailyActivityToday(DAILY_ACTIVITY_KEYS.dailyCard) ? 'так' : 'ні'}.` : `Daily card today: ${hasDailyActivityToday(DAILY_ACTIVITY_KEYS.dailyCard) ? 'yes' : 'no'}.`,
+              uk ? `Гороскоп сьогодні: ${hasDailyActivityToday(DAILY_ACTIVITY_KEYS.horoscope) ? 'так' : 'ні'}.` : `Horoscope today: ${hasDailyActivityToday(DAILY_ACTIVITY_KEYS.horoscope) ? 'yes' : 'no'}.`,
+              uk ? `Таро сьогодні: ${hasDailyActivityToday(DAILY_ACTIVITY_KEYS.tarot) ? 'так' : 'ні'}.` : `Tarot today: ${hasDailyActivityToday(DAILY_ACTIVITY_KEYS.tarot) ? 'yes' : 'no'}.`,
+            ),
+            summary: uk
+              ? 'Ця картка не астрологічна: вона показує, як ти реально взаємодієш з апкою сьогодні.'
+              : 'This is not an astrology card. It shows how you are actually engaging with the app today.',
+            action: { type: 'myDay', label: uk ? 'Продовжити Мій день' : 'Continue in My Day' },
+          }
+        case 'retro':
+          return {
+            label: this.tt('astro.cards.headsUp'),
+            icon: this.planetaryGlyph('mercury'),
+            title: uk ? 'Статус Меркурія' : 'Mercury status',
+            subtitle: uk ? 'Що саме означає retrograde' : 'What retrograde actually means',
+            facts: factsFor(
+              uk ? 'Ретроградність означає видимий з Землі зворотний рух планети.' : 'Retrograde means the planet appears to move backward from Earth.',
+              uk ? 'Меркурій у традиції пов’язаний із повідомленнями, дорогами і деталями.' : 'Mercury is traditionally linked with messages, travel, and details.',
+              uk ? 'Поточний статус: ретроградний рух активний.' : 'Current status: retrograde motion is active.',
+            ),
+            summary: uk
+              ? 'Ця картка не про страх, а про те, на яких темах дня варто бути уважнішим.'
+              : 'This card is not about fear. It shows which themes of the day need more attention.',
+            action: { type: 'horoscope', label: uk ? 'Відкрити гороскоп' : 'Open horoscope' },
+          }
+        default:
+          return null
+      }
+    },
+
     zodiacGlyph(signKey) {
       const map = {
         aries: '♈',
@@ -594,11 +909,38 @@ export default {
       return map[phaseKey] || '🌙'
     },
 
+    planetaryGlyph(planetKey) {
+      const map = {
+        sun: '☀️',
+        moon: '🌙',
+        mars: '♂',
+        mercury: '☿',
+        jupiter: '♃',
+        venus: '♀',
+        saturn: '♄',
+      }
+      return map[planetKey] || '☿'
+    },
+
     astroCardStyle(card) {
       return {
         '--astro-card-base': card?.bg || 'rgba(30, 40, 62, 0.7)',
         '--astro-card-glow': card?.glow || 'rgba(255, 255, 255, 0.12)',
         '--astro-card-border': card?.border || 'rgba(255,255,255,0.16)',
+      }
+    },
+
+    astroSheetStyle() {
+      const selectedCard = this.astroCards.find((card) => card.id === this.astroSheetCardId)
+      const selected = {
+        accent: selectedCard?.glow || 'rgba(138, 176, 255, 0.22)',
+        accentSoft: selectedCard?.bg || 'rgba(138, 176, 255, 0.1)',
+        border: selectedCard?.border || 'rgba(148, 184, 244, 0.18)',
+      }
+      return {
+        '--astro-sheet-accent': selected.accent,
+        '--astro-sheet-accent-soft': selected.accentSoft,
+        '--astro-sheet-border': selected.border,
       }
     },
 
@@ -737,10 +1079,13 @@ export default {
         const merc1   = this._astroEclipticLon(Astronomy.Body.Mercury, t1)
         const elong   = this._astroAbsDiff(moonLon, sunLon)
         const moonSignKey = this._astroSignKey(moonLon)
+        const moonNorm = ((moonLon % 360) + 360) % 360
         const sunNorm = ((sunLon % 360) + 360) % 360
         this.astroToday = {
           moonPhaseKey:      this._astroPhaseKey(elong),
           moonSignKey,
+          moonDegInSign:     Math.round(moonNorm % 30),
+          moonIlluminationPct: Math.round(((1 - Math.cos((elong * Math.PI) / 180)) / 2) * 100),
           mercuryRetrograde: this._astroSignedDelta(merc1, merc0) < 0,
           nextLunarEvent:    this._astroNextLunarEvent(now),
           planetaryDay:      this._astroPlanetaryDay(),
@@ -789,8 +1134,9 @@ export default {
       try {
         const fullMoonTime = Astronomy.SearchMoonPhase(180, now, 40)
         if (!fullMoonTime) return null
-        const daysUntil = Math.max(0, Math.ceil((fullMoonTime.date.getTime() - now.getTime()) / 86400000))
-        return { daysUntil }
+        const eventDate = fullMoonTime.date
+        const daysUntil = Math.max(0, Math.ceil((eventDate.getTime() - now.getTime()) / 86400000))
+        return { daysUntil, date: eventDate }
       } catch {
         return null
       }
@@ -872,6 +1218,7 @@ export default {
 
     startRandomLetterReveal() {
       this.clearAnimTimers()
+      this.isPhraseFadingOut = false
       const indices = []
       for (let i = 0; i < this.fullText.length; i++) {
         if (this.fullText[i] !== ' ') indices.push(i)
@@ -884,40 +1231,32 @@ export default {
       this.revealedIndices = []
       this.revealTimeout = setTimeout(() => {
         let current = 0
-        const totalDuration = 4000
-        const minInterval = 90
+        const totalDuration = 2600
+        const minInterval = 58
         const step = Math.max(minInterval, Math.floor(totalDuration / indices.length))
         this.lettersTimer = setInterval(() => {
           if (current >= indices.length) {
             clearInterval(this.lettersTimer)
             this.lettersTimer = null
-            this.startRandomLetterHide(indices)
+            this.startPhraseFadeOut()
             return
           }
           this.revealedIndices = [...this.revealedIndices, indices[current]]
           current++
         }, step)
-      }, 800)
+      }, 380)
     },
 
-    startRandomLetterHide(indices) {
-      const shuffled = [...indices]
-      let current = 0
-      const totalDuration = 3500
-      const minInterval = 90
-      const step = Math.max(minInterval, Math.floor(totalDuration / shuffled.length))
+    startPhraseFadeOut() {
       this.hideTimeout = setTimeout(() => {
-        this.hideTimer = setInterval(() => {
-          if (current >= shuffled.length) {
-            clearInterval(this.hideTimer)
-            this.hideTimer = null
-            this.runIntroReveal()
-            return
-          }
-          this.revealedIndices = this.revealedIndices.filter(i => i !== shuffled[current])
-          current++
-        }, step)
-      }, 4000)
+        this.isPhraseFadingOut = true
+        this.hideTimer = setTimeout(() => {
+          this.isFirstVisitToday = false
+          this.isPhraseFadingOut = false
+          this.runIntroReveal()
+          this.hideTimer = null
+        }, 420)
+      }, 2600)
     },
 
     runIntroReveal() {
@@ -1241,10 +1580,31 @@ export default {
 }
 
 .home-action--myday {
-  border-color: rgba(96,165,250,0.18);
+  border-color: rgba(138, 192, 255, 0.3);
   background:
-    radial-gradient(circle at top right, rgba(96,165,250,0.16), rgba(96,165,250,0) 55%),
-    linear-gradient(180deg, rgba(10,18,30,0.92), rgba(6,10,18,0.84));
+    radial-gradient(circle at top right, rgba(112, 182, 255, 0.24), rgba(112, 182, 255, 0) 58%),
+    radial-gradient(circle at bottom left, rgba(72, 124, 235, 0.16), rgba(72, 124, 235, 0) 54%),
+    linear-gradient(180deg, rgba(16, 28, 46, 0.96), rgba(8, 14, 26, 0.9));
+  box-shadow:
+    0 12px 28px rgba(4, 10, 22, 0.34),
+    0 0 0 1px rgba(120, 178, 248, 0.06),
+    inset 0 1px 0 rgba(220, 236, 255, 0.08);
+}
+
+.home-action--myday .home-action__eyebrow {
+  color: rgba(192, 221, 255, 0.62);
+}
+
+.home-action--myday .home-action__title {
+  color: rgba(247, 251, 255, 0.98);
+}
+
+.home-action--myday .home-action__text {
+  color: rgba(215, 231, 250, 0.72);
+}
+
+.home-action--myday .home-action__cta {
+  color: rgba(208, 228, 255, 0.88);
 }
 
 .home-action--menu {
@@ -1301,7 +1661,19 @@ export default {
 }
 
 /* ─── Cycling phrase ───────────────────────────────────── */
-.content-wrapper { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.content-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 420ms ease;
+}
+
+.content-wrapper--fade-out {
+  opacity: 0;
+}
+
 .appear-content {
   position: absolute;
   top: 48%;
@@ -1382,6 +1754,14 @@ export default {
     linear-gradient(180deg, var(--astro-card-base, rgba(30, 40, 62, 0.7)), rgba(17, 24, 38, 0.56));
   display: flex;
   flex-direction: column;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--astro-card-border, rgba(255,255,255,0.12));
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
 }
 
 .astro-card__label {
@@ -1412,6 +1792,229 @@ export default {
   line-height: 1.25;
   margin-top: 2px;
   -webkit-font-smoothing: antialiased;
+}
+
+.astro-sheet-dialog :deep(.q-dialog__inner--bottom) {
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
+.astro-sheet {
+  position: relative;
+  overflow: hidden;
+  width: min(100vw - 20px, 440px);
+  margin: 0 auto;
+  padding: 12px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+  border-radius: 28px 28px 22px 22px;
+  border: 1px solid var(--astro-sheet-border, rgba(255,255,255,0.08));
+  background:
+    radial-gradient(circle at top right, var(--astro-sheet-accent), rgba(255,255,255,0) 42%),
+    radial-gradient(circle at 18% 0%, var(--astro-sheet-accent-soft), rgba(255,255,255,0) 36%),
+    linear-gradient(180deg, rgba(16, 22, 34, 0.98), rgba(7, 11, 18, 0.995));
+  box-shadow:
+    0 24px 60px rgba(1, 5, 10, 0.48),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.92);
+}
+
+.astro-sheet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255,255,255,0.08), rgba(255,255,255,0) 34%),
+    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0) 26%);
+}
+
+.astro-sheet__grabber {
+  position: relative;
+  z-index: 1;
+  width: 42px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.18);
+  margin: 0 auto 12px;
+}
+
+.astro-sheet__close-wrap {
+  position: relative;
+  z-index: 1;
+  margin-top: 14px;
+  margin-bottom: 4px;
+  padding: 6px;
+  border-radius: 16px;
+  border: 1px solid rgba(106, 126, 164, 0.16);
+  background:
+    linear-gradient(180deg, rgba(10, 14, 22, 0.72), rgba(4, 7, 12, 0.82)),
+    linear-gradient(90deg, rgba(83, 112, 170, 0.06), rgba(83, 112, 170, 0));
+  box-shadow:
+    inset 0 1px 0 rgba(186, 207, 247, 0.04),
+    0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.astro-sheet__close {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(156, 184, 235, 0.18);
+  padding: 10px 14px;
+  background: linear-gradient(180deg, rgba(22, 31, 49, 0.72), rgba(8, 13, 23, 0.84));
+  color: rgba(233, 237, 244, 0.82);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  box-shadow: none;
+}
+
+.astro-sheet__close:active {
+  transform: translateY(1px);
+  border-color: rgba(156, 184, 235, 0.28);
+  filter: saturate(0.92);
+}
+
+.astro-sheet__eyebrow {
+  position: relative;
+  z-index: 1;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.38);
+  margin-bottom: 12px;
+}
+
+.astro-sheet__header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.astro-sheet__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255,255,255,0.14), rgba(255,255,255,0.02) 48%),
+    linear-gradient(180deg, rgba(24, 32, 48, 0.92), rgba(10, 16, 28, 0.96));
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow:
+    0 12px 24px rgba(0,0,0,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.07);
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.astro-sheet__title-wrap {
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.astro-sheet__title {
+  font-size: 20px;
+  line-height: 1.16;
+  font-weight: 650;
+  color: rgba(255,255,255,0.96);
+  letter-spacing: -0.02em;
+}
+
+.astro-sheet__subtitle {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.54);
+}
+
+.astro-sheet__section + .astro-sheet__section {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.astro-sheet__section-title {
+  position: relative;
+  z-index: 1;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.42);
+  margin-bottom: 9px;
+}
+
+.astro-sheet__facts {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.astro-sheet__fact {
+  position: relative;
+  padding: 12px 14px 12px 30px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    linear-gradient(180deg, rgba(23, 31, 46, 0.88), rgba(9, 14, 24, 0.92)),
+    radial-gradient(circle at top right, var(--astro-sheet-accent-soft), rgba(255,255,255,0) 48%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    0 10px 22px rgba(0,0,0,0.16);
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.86);
+}
+
+.astro-sheet__fact::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  background: rgba(177, 208, 240, 0.78);
+  box-shadow: 0 0 12px rgba(177, 208, 240, 0.28);
+}
+
+.astro-sheet__text {
+  position: relative;
+  z-index: 1;
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.8);
+}
+
+.astro-sheet__cta {
+  position: relative;
+  z-index: 1;
+  margin-top: 18px;
+  width: 100%;
+  border: 0;
+  border-radius: 16px;
+  padding: 13px 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.11), rgba(255,255,255,0.07));
+  color: rgba(255,255,255,0.94);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.astro-sheet__cta--myday {
+  background:
+    radial-gradient(circle at top right, rgba(132, 194, 255, 0.26), rgba(132, 194, 255, 0) 54%),
+    linear-gradient(180deg, rgba(58, 101, 176, 0.96), rgba(22, 48, 94, 0.98));
+  color: rgba(247, 251, 255, 0.98);
+  box-shadow:
+    0 14px 28px rgba(7, 15, 32, 0.32),
+    inset 0 1px 0 rgba(233, 243, 255, 0.18);
 }
 
 .no-pointer-events { pointer-events: none; }
