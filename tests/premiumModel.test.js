@@ -38,5 +38,5 @@ test('premium constants define stable free and compare lists', () => {
   assert.equal(PREMIUM_COMPARE_ROWS.length, 3)
   assert.equal(PREMIUM_MODEL_LIMITS.freeTarotSessionsPerDay, 1)
   assert.equal(PREMIUM_MODEL_LIMITS.premiumTarotMaxCards, 5)
-  assert.deepEqual(PREMIUM_MODEL_LIMITS.freeHoroscopeThemes, ['spirit'])
+  assert.deepEqual(PREMIUM_MODEL_LIMITS.freeHoroscopeThemes, ['energy'])
 })

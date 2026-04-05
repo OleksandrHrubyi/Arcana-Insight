@@ -6,7 +6,7 @@ test('rowsToRegistry and registryToRows convert data shape predictably', async (
   const { rowsToRegistry, registryToRows } = await importModule('src/helpers/horoscopeContentCore.js')
 
   const rows = [
-    { sign: 'aries', theme: 'spirit', summary: 's1', detailed: 'd1' },
+    { sign: 'aries', theme: 'energy', summary: 's1', detailed: 'd1' },
     { sign: 'aries', theme: 'love', summary: 's2', detailed: 'd2' },
     { sign: '', theme: 'career', summary: 'bad', detailed: 'bad' },
     { sign: 'taurus', theme: null, summary: 'bad2', detailed: 'bad2' },
@@ -15,13 +15,13 @@ test('rowsToRegistry and registryToRows convert data shape predictably', async (
   const registry = rowsToRegistry(rows)
   assert.deepEqual(registry, {
     aries: {
-      spirit: { summary: 's1', detailed: 'd1' },
+      energy: { summary: 's1', detailed: 'd1' },
       love: { summary: 's2', detailed: 'd2' },
     },
   })
 
   assert.deepEqual(registryToRows(registry), [
-    { sign: 'aries', theme: 'spirit', summary: 's1', detailed: 'd1' },
+    { sign: 'aries', theme: 'energy', summary: 's1', detailed: 'd1' },
     { sign: 'aries', theme: 'love', summary: 's2', detailed: 'd2' },
   ])
 })
@@ -37,7 +37,7 @@ test('getNextISODate handles month/year boundaries', async () => {
 test('loadHoroscopeRegistry returns cache when it is fresh and matching locale', async () => {
   const { loadHoroscopeRegistry } = await importModule('src/helpers/horoscopeContentCore.js')
 
-  const cachedRows = [{ sign: 'aries', theme: 'spirit', summary: 'A', detailed: 'B' }]
+  const cachedRows = [{ sign: 'aries', theme: 'energy', summary: 'A', detailed: 'B' }]
   const selectCalls = []
   const saveCalls = []
 
@@ -56,7 +56,7 @@ test('loadHoroscopeRegistry returns cache when it is fresh and matching locale',
 
   assert.equal(result.source, 'cache')
   assert.deepEqual(result.registry, {
-    aries: { spirit: { summary: 'A', detailed: 'B' } },
+    aries: { energy: { summary: 'A', detailed: 'B' } },
   })
   assert.equal(selectCalls.length, 0)
   assert.equal(saveCalls.length, 0)
@@ -75,7 +75,7 @@ test('loadHoroscopeRegistry bypasses cache when forceNetwork is true', async () 
     loadLocal: async () => ({
       date: '2026-03-25',
       locale: 'en',
-      rows: [{ sign: 'aries', theme: 'spirit', summary: 'cache', detailed: 'cache' }],
+      rows: [{ sign: 'aries', theme: 'energy', summary: 'cache', detailed: 'cache' }],
     }),
     saveLocal: async (payload) => {
       saveCalls.push(payload)
@@ -83,7 +83,7 @@ test('loadHoroscopeRegistry bypasses cache when forceNetwork is true', async () 
     selectHoroscopes: async (date, locale, timeoutMs) => {
       selectCalls.push({ date, locale, timeoutMs })
       return {
-        data: [{ sign: 'leo', theme: 'spirit', summary: 'network', detailed: 'network-full' }],
+        data: [{ sign: 'leo', theme: 'energy', summary: 'network', detailed: 'network-full' }],
         error: null,
       }
     },
@@ -91,14 +91,14 @@ test('loadHoroscopeRegistry bypasses cache when forceNetwork is true', async () 
 
   assert.equal(result.source, 'network')
   assert.deepEqual(result.registry, {
-    leo: { spirit: { summary: 'network', detailed: 'network-full' } },
+    leo: { energy: { summary: 'network', detailed: 'network-full' } },
   })
   assert.deepEqual(selectCalls, [{ date: '2026-03-25', locale: 'en', timeoutMs: 8000 }])
   assert.equal(saveCalls.length, 1)
   assert.deepEqual(saveCalls[0], {
     date: '2026-03-25',
     locale: 'en',
-    rows: [{ sign: 'leo', theme: 'spirit', summary: 'network', detailed: 'network-full' }],
+    rows: [{ sign: 'leo', theme: 'energy', summary: 'network', detailed: 'network-full' }],
   })
 })
 
@@ -117,7 +117,7 @@ test('loadHoroscopeRegistry falls back to next day when today has no rows', asyn
       if (date === '2026-03-25') return { data: [], error: null }
       if (date === '2026-03-26') {
         return {
-          data: [{ sign: 'taurus', theme: 'spirit', summary: 'next-day', detailed: 'next-day-full' }],
+          data: [{ sign: 'taurus', theme: 'energy', summary: 'next-day', detailed: 'next-day-full' }],
           error: null,
         }
       }
@@ -127,7 +127,7 @@ test('loadHoroscopeRegistry falls back to next day when today has no rows', asyn
 
   assert.deepEqual(selectCalls, ['2026-03-25', '2026-03-26'])
   assert.deepEqual(result.registry, {
-    taurus: { spirit: { summary: 'next-day', detailed: 'next-day-full' } },
+    taurus: { energy: { summary: 'next-day', detailed: 'next-day-full' } },
   })
 })
 
