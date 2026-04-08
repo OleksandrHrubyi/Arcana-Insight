@@ -6,7 +6,6 @@ import {
   createWebHashHistory,
 } from 'vue-router'
 import routes from './routes'
-import { scroll } from 'quasar'
 import { analytics } from 'src/services/analytics'
 import { useAuthStore } from 'stores/authStore.js'
 import { isOnboardingComplete } from 'src/helpers/onboardingPrefs'
@@ -22,30 +21,11 @@ import { resolveRouteGuardDecision } from './guard'
  */
 
 export default defineRouter(function (/* { store, ssrContext } */) {
-  const { setVerticalScrollPosition } = scroll
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : process.env.VUE_ROUTER_MODE === 'history'
       ? createWebHistory
       : createWebHashHistory
-
-  const forceScrollTop = () => {
-    if (typeof window === 'undefined') return
-    const targets = [
-      window,
-      document.scrollingElement,
-      document.documentElement,
-      document.body,
-      document.querySelector('.q-page-container'),
-      document.querySelector('.q-layout__section--main'),
-    ]
-    const seen = new Set()
-    targets.forEach((target) => {
-      if (!target || seen.has(target)) return
-      seen.add(target)
-      setVerticalScrollPosition(target, 0, 0)
-    })
-  }
 
   const Router = createRouter({
     scrollBehavior () {
@@ -85,10 +65,6 @@ export default defineRouter(function (/* { store, ssrContext } */) {
   Router.afterEach((to) => {
     const screenName = to.name || to.path
     analytics.logScreenView(screenName, to.meta?.analyticsClass || screenName)
-    requestAnimationFrame(() => {
-      forceScrollTop()
-      requestAnimationFrame(forceScrollTop)
-    })
   })
 
   return Router

@@ -332,8 +332,8 @@ onBeforeUnmount(() => {
   background: transparent;
   box-shadow: none !important;
   border: 0;
-  padding: 0 0 env(safe-area-inset-bottom);
-  height: calc(86px + env(safe-area-inset-bottom, 0px));
+  padding: 0 0 calc(env(safe-area-inset-bottom, 0px) + 14px);
+  height: calc(78px + env(safe-area-inset-bottom, 0px));
   position: relative;
   z-index: 3;
   pointer-events: auto;
@@ -358,8 +358,9 @@ onBeforeUnmount(() => {
   left: 0;
   right: 0;
   bottom: -1px;
-  height: 86px;
-  background: linear-gradient(180deg, rgba(5, 13, 21, 0.35) 0%, rgba(5, 13, 21, 0.94) 55%, rgba(5, 13, 21, 1) 100%);
+  height: 108px;
+  background:
+    linear-gradient(180deg, rgba(5, 13, 21, 0) 0%, rgba(5, 13, 21, 0.52) 28%, rgba(5, 13, 21, 0.92) 62%, rgba(5, 13, 21, 1) 100%);
   pointer-events: none;
 }
 
@@ -367,15 +368,39 @@ onBeforeUnmount(() => {
 .telegram-pill {
   margin: 0 auto;
   width: 100%;
-  max-width: 448px;
+  max-width: 394px;
 
   display: flex;
   align-items: center;
   justify-content: space-around;
-  gap: 2px;
-  padding: 0 12px 16px;
+  gap: 3px;
+  padding: 6px 8px 8px;
   position: relative;
   pointer-events: auto;
+  border-radius: 22px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(140% 160% at 50% -30%, rgba(94, 132, 186, 0.12) 0%, rgba(94, 132, 186, 0) 48%),
+    linear-gradient(160deg, rgba(15, 22, 35, 0.94) 0%, rgba(8, 13, 22, 0.98) 100%);
+  border: 1px solid rgba(164, 195, 232, 0.12);
+  box-shadow:
+    0 14px 30px rgba(2, 7, 14, 0.36),
+    0 4px 12px rgba(1, 6, 12, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+}
+
+.telegram-pill::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: 21px;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.012) 22%, rgba(255, 255, 255, 0) 44%),
+    radial-gradient(120% 100% at 50% -16%, rgba(158, 198, 244, 0.05) 0%, rgba(158, 198, 244, 0) 54%);
 }
 
 /* таб як button */
@@ -389,10 +414,11 @@ onBeforeUnmount(() => {
 
   min-width: 0;
   flex: 1;
-  padding: 8px 4px 10px;
-  gap: 4px;
+  min-height: 44px;
+  padding: 4px 4px 5px;
+  gap: 2px;
 
-  border-radius: 16px;
+  border-radius: 15px;
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -402,24 +428,82 @@ onBeforeUnmount(() => {
   border: 0;
   outline: none;
 
-  color: rgba(156, 163, 175, 0.7);
-  transition: color 500ms ease;
+  color: rgba(188, 201, 221, 0.6);
+  transition:
+    color 260ms ease,
+    transform 260ms ease;
+  z-index: 1;
+}
+
+.telegram-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transform: scale(0.98);
+  background:
+    radial-gradient(120% 140% at 50% -40%, rgba(129, 171, 230, 0.1) 0%, rgba(129, 171, 230, 0) 46%),
+    linear-gradient(180deg, rgba(26, 35, 49, 0.9) 0%, rgba(15, 20, 31, 0.96) 100%);
+  border: 1px solid rgba(164, 195, 232, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 6px 12px rgba(0, 0, 0, 0.12);
+  transition:
+    opacity 260ms ease,
+    transform 260ms ease,
+    border-color 260ms ease,
+    box-shadow 260ms ease;
+}
+
+.telegram-item::after {
+  content: '';
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  top: 3px;
+  height: 16px;
+  border-radius: 999px;
+  opacity: 0;
+  background: linear-gradient(180deg, rgba(196, 225, 255, 0.1) 0%, rgba(196, 225, 255, 0) 100%);
+  filter: blur(5px);
+  transition: opacity 260ms ease;
 }
 
 .telegram-visual {
   width: 100%;
-  height: 40px;
-  flex: 0 0 40px;
+  height: 28px;
+  flex: 0 0 28px;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+}
+
+.telegram-visual::before {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(180, 214, 255, 0.16) 0%, rgba(180, 214, 255, 0) 72%);
+  transition:
+    opacity 260ms ease,
+    transform 260ms ease,
+    background 260ms ease,
+    box-shadow 260ms ease;
 }
 
 .telegram-icon {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   display: block;
-  transition: filter 280ms ease;
+  position: relative;
+  z-index: 1;
+  transition:
+    filter 280ms ease,
+    transform 280ms ease;
 }
 
 .telegram-icon--material {
@@ -432,10 +516,16 @@ onBeforeUnmount(() => {
 }
 
 .telegram-label {
-  font-size: 11px;
+  font-size: 9px;
   line-height: 1;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.015em;
+  font-weight: 500;
   white-space: nowrap;
+  position: relative;
+  z-index: 1;
+  transition:
+    color 240ms ease,
+    transform 240ms ease;
 }
 
 .energy-orb {
@@ -554,7 +644,49 @@ onBeforeUnmount(() => {
 }
 
 .telegram-item--active {
-  color: #ffffff;
+  color: rgba(245, 248, 255, 0.98);
+}
+
+.telegram-item--active::before {
+  opacity: 1;
+  transform: scale(1);
+  border-color: rgba(184, 216, 251, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 8px 16px rgba(1, 7, 15, 0.16);
+}
+
+.telegram-item--active::after {
+  opacity: 0.55;
+}
+
+.telegram-item--active .telegram-visual::before {
+  opacity: 0.42;
+  transform: scale(1.06);
+  background: radial-gradient(circle, rgba(193, 223, 255, 0.18) 0%, rgba(193, 223, 255, 0) 72%);
+}
+
+.telegram-item--active .telegram-label {
+  color: rgba(245, 248, 255, 0.98);
+}
+
+.telegram-item:focus-visible {
+  color: rgba(245, 248, 252, 0.96);
+}
+
+.telegram-item:focus-visible::before {
+  opacity: 1;
+  transform: scale(1);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.telegram-item:active {
+  transform: translateY(0);
+}
+
+.telegram-item:active::before {
+  opacity: 0.92;
+  transform: scale(0.985);
 }
 
 @keyframes iconWiggle {
@@ -576,7 +708,10 @@ onBeforeUnmount(() => {
 }
 
 .telegram-item--active .telegram-icon {
-  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.8));
+  transform: scale(1.01);
+  filter:
+    drop-shadow(0 1px 4px rgba(255, 255, 255, 0.1))
+    drop-shadow(0 0 8px rgba(128, 174, 235, 0.08));
 }
 
 .telegram-item--energy.telegram-item--active .energy-orb {
@@ -668,15 +803,15 @@ onBeforeUnmount(() => {
 .telegram-indicator {
   position: absolute;
   left: 0;
-  bottom: 12px;
+  bottom: 4px;
 
-  width: 10px;
-  height: 4px;
+  width: 14px;
+  height: 2px;
   border-radius: 999px;
-  opacity: 0.95;
+  opacity: 0.58;
 
-  background: #ffffff;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  background: linear-gradient(90deg, rgba(198, 223, 255, 0.18) 0%, rgba(245, 249, 255, 0.82) 50%, rgba(198, 223, 255, 0.18) 100%);
+  box-shadow: 0 0 8px rgba(175, 210, 255, 0.12);
 
   pointer-events: none;
   will-change: transform, opacity;
@@ -686,9 +821,21 @@ onBeforeUnmount(() => {
     opacity 180ms ease;
 }
 
-.telegram-icon{
-  width: 28px;
-  height: 28px;
+@media (max-width: 380px) {
+  .telegram-pill {
+    margin-inline: 12px;
+    padding-inline: 6px;
+    border-radius: 20px;
+  }
+
+  .telegram-item {
+    min-height: 42px;
+    padding-inline: 3px;
+  }
+
+  .telegram-label {
+    font-size: 8px;
+  }
 }
 
 :deep(.nav-energy-dialog .q-dialog__backdrop) {

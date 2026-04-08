@@ -8,8 +8,8 @@ export default {
   computed: {
     showNavigation() {
       return !this.$route.meta?.hideBottomNav
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -40,12 +40,25 @@ export default {
   right: 0;
   bottom: 0;
   z-index: 9999;
+  isolation: isolate;
+}
+
+.bottom-nav-wrap::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(132px + env(safe-area-inset-bottom, 0px));
+  background:
+    linear-gradient(180deg, rgba(5, 13, 21, 0) 0%, rgba(5, 13, 21, 0.84) 42%, rgba(5, 13, 21, 1) 72%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 :global(body.hide-bottom-nav .bottom-nav-wrap) {
   display: none;
 }
-
 
 /* анімація появи знизу */
 .nav-up-enter-active,

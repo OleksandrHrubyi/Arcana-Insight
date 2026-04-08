@@ -1,164 +1,185 @@
 <template>
   <q-page class="myday-page">
-    <div class="myday-bg" aria-hidden="true"></div>
+    <div class="myday-bg" :class="bgTintClass" aria-hidden="true"></div>
 
+    <q-pull-to-refresh @refresh="onPullRefresh" color="blue-4">
     <div class="myday-shell">
 
-      <!-- 1. Topbar -->
-      <header class="myday-topbar">
-        <button type="button" class="myday-back" @click="goBack">
+      <!-- 1. Header (matches DailyCard) -->
+      <header class="myday-hero myday-anim" style="--d:0">
+        <button type="button" class="myday-back" @click="goBack" aria-label="Back">
           <q-icon name="chevron_left" size="20px" />
         </button>
-        <div class="myday-topbar__center">
-          <span class="myday-topbar__title">{{ copy.title }}</span>
-          <span class="myday-topbar__date">{{ todayLabel }}</span>
+        <div class="myday-hero__text">
+          <div class="myday-title">{{ greetingLine }}</div>
+          <div class="myday-kicker">{{ todayLabel }}</div>
+          <span v-if="streakLabel" class="myday-streak">{{ streakLabel }}</span>
         </div>
-        <div class="myday-topbar__ghost"></div>
       </header>
 
-      <!-- 2. Hero launcher (stretches to fill remaining space) -->
-      <button type="button" class="myday-launcher" @click="openDailyCard">
-        <span class="myday-launcher__top">
-          <span class="myday-chips">
-            <span class="myday-chip">{{ signLabel }}</span>
-            <span class="myday-chip">{{ moonPhaseLabel }}</span>
-          </span>
-          <span class="myday-launcher__eyebrow">{{ copy.heroEyebrow }}</span>
-        </span>
-
-        <span class="myday-launcher__body">
-          <span class="myday-launcher__copy">
-            <span class="myday-launcher__title">{{ cardTitle }}</span>
-            <span class="myday-launcher__meta">{{ orientationLabel }}</span>
-            <span class="myday-launcher__hint">{{ heroSummary }}</span>
-            <span v-if="cardKeywords.length" class="myday-launcher__tags">
-              <span v-for="word in cardKeywords" :key="word" class="myday-tag">{{ word }}</span>
+      <!-- 2. Card of the Day -->
+      <template v-if="ready">
+        <div class="myday-card-wrap myday-anim" style="--d:1">
+          <button type="button" class="myday-card" @click="openDailyCard">
+            <span class="myday-card__visual">
+              <span
+                class="myday-card__thumb"
+                :class="{ 'myday-card__thumb--rev': dailyOrientation === 'reversed' }"
+              >
+                <img
+                  v-if="cardImage"
+                  class="myday-card__img"
+                  :src="cardImage"
+                  :alt="cardTitle"
+                />
+                <span v-else class="myday-card__placeholder" aria-hidden="true"></span>
+              </span>
             </span>
-          </span>
-          <span class="myday-launcher__visual">
-            <span
-              class="myday-card-thumb"
-              :class="{ 'myday-card-thumb--reversed': dailyOrientation === 'reversed' }"
-            >
-              <img
-                v-if="cardImage"
-                class="myday-card-thumb__img"
-                :src="cardImage"
-                :alt="cardTitle"
-              />
-              <span v-else class="myday-card-thumb__back" aria-hidden="true"></span>
+            <span class="myday-card__info">
+              <span class="myday-card__eyebrow">{{ heroEyebrow }}</span>
+              <span class="myday-card__name">{{ cardTitle }}</span>
+              <span class="myday-card__meta">{{ orientationLabel }}</span>
+              <span class="myday-card__meaning">{{ heroSummary }}</span>
             </span>
-          </span>
-        </span>
+            <q-icon class="myday-card__chevron" name="chevron_right" size="16px" />
+          </button>
+          <button type="button" class="myday-share" @click="shareDailyCard" :aria-label="copy.shareLabel">
+            <q-icon name="ios_share" size="14px" />
+          </button>
+        </div>
+      </template>
+      <template v-else>
+        <div class="myday-skel myday-skel--card myday-anim" style="--d:1"></div>
+      </template>
 
-        <span class="myday-launcher__signals">
-          <span class="myday-signal-item">
-            <span class="myday-signal-item__label">{{ copy.labels.focus }}</span>
-            <span class="myday-signal-item__val">{{ signalFocus }}</span>
-          </span>
-          <span class="myday-signal-sep" aria-hidden="true">·</span>
-          <span class="myday-signal-item">
-            <span class="myday-signal-item__label">{{ copy.labels.watch }}</span>
-            <span class="myday-signal-item__val">{{ signalWatch }}</span>
-          </span>
-          <span class="myday-signal-sep" aria-hidden="true">·</span>
-          <span class="myday-signal-item myday-signal-item--accent">
-            <span class="myday-signal-item__label">{{ copy.labels.action }}</span>
-            <span class="myday-signal-item__val">{{ signalAction }}</span>
-          </span>
-        </span>
+      <!-- 3. Cosmic strip -->
+      <div class="myday-cosmic myday-anim" style="--d:2">
+        <div v-if="dailyEnergyLabel" class="myday-cosmic__item">
+          <span class="myday-cosmic__dot" :style="{ background: dailyEnergyColor }"></span>
+          <span class="myday-cosmic__text">{{ dailyEnergyLabel }}</span>
+        </div>
+        <span v-if="dailyEnergyLabel" class="myday-cosmic__sep" aria-hidden="true"></span>
+        <div class="myday-cosmic__item">
+          <span class="myday-cosmic__glyph">{{ moonPhaseEmoji }}</span>
+          <span class="myday-cosmic__text">{{ moonPhaseLabel }}</span>
+        </div>
+        <span class="myday-cosmic__sep" aria-hidden="true"></span>
+        <div class="myday-cosmic__item">
+          <span class="myday-cosmic__glyph">{{ planetaryEmoji }}</span>
+          <span class="myday-cosmic__text">{{ planetaryDayLabel }}</span>
+        </div>
+        <span class="myday-cosmic__sep" aria-hidden="true"></span>
+        <div class="myday-cosmic__item">
+          <span class="myday-cosmic__glyph">{{ moonSignEmoji }}</span>
+          <span class="myday-cosmic__text">{{ moonSignLabel }}</span>
+        </div>
+        <template v-if="fullMoonLabel">
+          <span class="myday-cosmic__sep" aria-hidden="true"></span>
+          <div class="myday-cosmic__item">
+            <span class="myday-cosmic__glyph">&#x1F315;</span>
+            <span class="myday-cosmic__text">{{ fullMoonLabel }}</span>
+          </div>
+        </template>
+      </div>
 
-        <span class="myday-launcher__cta">
-          <span>{{ copy.cta.openCard }}</span>
-          <q-icon name="chevron_right" size="13px" />
+      <!-- 4. Progress -->
+      <div class="myday-progress myday-anim" style="--d:3">
+        <button
+          v-for="step in progressSteps"
+          :key="step.key"
+          type="button"
+          class="myday-progress__step"
+          :class="{ 'myday-progress__step--done': step.done }"
+          @click="step.action"
+        >
+          <span class="myday-progress__dot">
+            <q-icon v-if="step.done" name="check" size="10px" />
+          </span>
+          <span class="myday-progress__label">{{ step.label }}</span>
+        </button>
+      </div>
+
+      <!-- 5. Guidance cards -->
+      <div class="myday-guidance myday-anim" style="--d:4">
+        <div class="myday-guidance__item">
+          <span class="myday-guidance__tag">{{ copy.labels.watch }}</span>
+          <span class="myday-guidance__body">{{ watchAdvice }}</span>
+        </div>
+        <div class="myday-guidance__item">
+          <span class="myday-guidance__tag">{{ copy.labels.action }}</span>
+          <span class="myday-guidance__body">{{ actionAdvice }}</span>
+        </div>
+      </div>
+
+      <!-- 6. Horoscope (auth-aware) -->
+      <button
+        v-if="isLoggedIn && horoscopeSummary"
+        type="button"
+        class="myday-horo myday-anim"
+        style="--d:5"
+        @click="openHoroscope"
+      >
+        <span class="myday-horo__left">
+          <span class="myday-horo__tag">{{ signLabel }}</span>
+          <span class="myday-horo__text">{{ horoscopeSnippet }}</span>
         </span>
+        <q-icon class="myday-horo__chevron" name="chevron_right" size="14px" />
       </button>
 
-      <!-- 3. Action dock -->
-      <div class="myday-action-dock">
-        <button
-          type="button"
-          class="myday-action-tile myday-action-tile--horoscope"
-          @click="openHoroscope"
-        >
-          <span class="myday-action-tile__eyebrow">{{ copy.sections.horoscope }}</span>
-          <span class="myday-action-tile__title">{{ horoscopeTitle }}</span>
-          <span class="myday-action-tile__text">{{ horoscopePreview }}</span>
-        </button>
-        <button
-          type="button"
-          class="myday-action-tile myday-action-tile--tarot"
-          @click="openTarot"
-        >
-          <span class="myday-action-tile__eyebrow">{{ copy.sections.tarot }}</span>
-          <span class="myday-action-tile__title">{{ copy.tarotTitle }}</span>
-          <span class="myday-action-tile__text">{{ copy.tarotText }}</span>
-        </button>
+      <button
+        v-else-if="isLoggedIn && !horoscopeSummary"
+        type="button"
+        class="myday-horo myday-anim"
+        style="--d:5"
+        @click="openHoroscope"
+      >
+        <span class="myday-horo__left">
+          <span class="myday-horo__tag">{{ signLabel }}</span>
+          <span class="myday-horo__text myday-horo__text--dim">{{ copy.horoEmptyHint }}</span>
+        </span>
+        <q-icon class="myday-horo__chevron" name="chevron_right" size="14px" />
+      </button>
+
+      <button
+        v-else-if="!isLoggedIn"
+        type="button"
+        class="myday-horo myday-horo--locked myday-anim"
+        style="--d:5"
+        @click="openSignUp"
+      >
+        <span class="myday-horo__left">
+          <span class="myday-horo__tag">{{ copy.horoLockedTag }}</span>
+          <span class="myday-horo__text myday-horo__text--dim">{{ copy.horoLockedHint }}</span>
+        </span>
+        <q-icon class="myday-horo__chevron" name="chevron_right" size="14px" />
+      </button>
+
+      <!-- 7. Daily reflection prompt -->
+      <div class="myday-reflect myday-anim" style="--d:6">
+        <span class="myday-reflect__tag">{{ moonPhaseEmoji }} {{ moonPhaseLabel }}</span>
+        <span class="myday-reflect__prompt">{{ dailyPrompt }}</span>
       </div>
 
-      <!-- 4. Ritual -->
-      <div class="myday-ritual">
-        <div class="myday-ritual__head">
-          <span class="myday-ritual__title">{{ ritualHeading }}</span>
-          <span v-if="ritualSavedLabel" class="myday-saved-badge">{{ ritualSavedLabel }}</span>
-          <div class="myday-ritual-switch">
-            <button
-              type="button"
-              :class="['myday-switch-btn', { 'myday-switch-btn--active': ritualMode === 'intention' }]"
-              @click="ritualMode = 'intention'"
-            >{{ copy.ritualMorning }}</button>
-            <button
-              type="button"
-              :class="['myday-switch-btn', { 'myday-switch-btn--active': ritualMode === 'checkin' }]"
-              @click="ritualMode = 'checkin'"
-            >{{ copy.ritualEvening }}</button>
-          </div>
-        </div>
+      <!-- 8. Tarot CTA -->
+      <button type="button" class="myday-tarot myday-anim" :class="{ 'myday-tarot--done': hasTarotToday }" style="--d:7" @click="openTarot">
+        <span class="myday-tarot__text">{{ tarotCtaText }}</span>
+        <q-icon name="chevron_right" size="14px" />
+      </button>
 
-        <div class="myday-ritual__inputs">
-          <div v-if="ritualMode === 'checkin'" class="myday-mood-row">
-            <button
-              v-for="option in moodOptions"
-              :key="option.value"
-              type="button"
-              :class="['myday-mood-chip', { 'myday-mood-chip--active': selectedMood === option.value }]"
-              @click="selectedMood = option.value"
-            >{{ option.emoji }}</button>
-          </div>
-
-          <div class="myday-input-row">
-            <input
-              v-if="ritualMode === 'intention'"
-              v-model="intentionNote"
-              class="myday-ritual-input"
-              :placeholder="copy.intentionPlaceholder"
-              maxlength="140"
-            />
-            <input
-              v-else
-              v-model="checkInNote"
-              class="myday-ritual-input"
-              :placeholder="copy.checkInPlaceholder"
-              maxlength="160"
-            />
-            <button type="button" class="myday-ritual-save" @click="saveActiveRitual">
-              {{ ritualButtonLabel }}
-            </button>
-          </div>
-        </div>
-      </div>
-
+      <div class="myday-end" aria-hidden="true"></div>
     </div>
+    </q-pull-to-refresh>
   </q-page>
 </template>
 
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Preferences } from '@capacitor/preferences'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
+import { Share } from '@capacitor/share'
 import * as Astronomy from 'astronomy-engine'
 import { currentLocale, t } from 'src/i18n'
 import { localISODate } from 'src/helpers/date.ts'
@@ -167,16 +188,22 @@ import { loadTarotData } from 'src/helpers/tarotData'
 import { loadHoroscopeRegistry } from 'src/helpers/horoscopeContentCore.js'
 import { loadLocal, saveLocal } from 'src/helpers/localStorageSaver.js'
 import { resolveUserSignSnapshot } from 'src/helpers/zodiacUserSignCore.js'
+import { DAILY_ACTIVITY_KEYS, hasDailyActivityToday, readDailyStreak } from 'src/helpers/dailyRitual'
 import { useAuthStore } from 'stores/authStore.js'
 import { selectAppUser, selectHoroscopes } from 'src/services/supabaseNative'
 
+// ── Core state ──────────────────────────────────────────────────
 const router = useRouter()
 const authStore = useAuthStore()
 const locale = computed(() => (currentLocale.value || 'en').toLowerCase().startsWith('uk') ? 'uk' : 'en')
 const tt = (key) => t(locale.value, key)
 
-const CHECKIN_KEY_PREFIX = 'arcana_my_day_checkin_v1'
-const INTENTION_KEY_PREFIX = 'arcana_my_day_intention_v1'
+const isLoggedIn = computed(() => Boolean(authStore.state.user))
+const userName = computed(() => {
+  const meta = authStore.state.user?.user_metadata
+  return meta?.name || meta?.full_name || ''
+})
+
 const ANON_DAILY_SEED_KEY = 'arcana_daily_seed_v1'
 
 const cards = ref([])
@@ -187,51 +214,49 @@ const moonPhaseKey = ref('new')
 const moonSignKey = ref('')
 const planetaryDayKey = ref('moon')
 const nextLunarEventDays = ref(-1)
-const selectedMood = ref('')
-const checkInNote = ref('')
-const savedCheckInAt = ref('')
-const intentionNote = ref('')
-const savedIntentionAt = ref('')
-const ritualMode = ref(new Date().getHours() >= 18 ? 'checkin' : 'intention')
+const ready = ref(false)
+const currentHour = ref(new Date().getHours())
+const streakCount = ref(0)
+const hasDailyCardToday = ref(false)
+const hasHoroscopeToday = ref(false)
+const hasTarotToday = ref(false)
 
+// ── Copy ────────────────────────────────────────────────────────
 const copyByLocale = {
   en: {
-    title: 'My Day',
-    heroEyebrow: 'TODAY SIGNAL',
+    greetingNight: 'Good night',
+    greetingMorning: 'Good morning',
+    greetingAfternoon: 'Good afternoon',
+    greetingEvening: 'Good evening',
+    greetingDefault: 'Your day',
+    heroEyebrow: 'CARD OF THE DAY',
+    heroEyebrowDone: 'REVEALED',
     fallbackSign: 'Your sign',
-    horoscopeFallbackTitle: 'Today energy',
-    horoscopeFallback: 'Your horoscope will appear here once your sign and daily content are ready.',
-    cardFallbackTitle: 'Today card',
-    cardFallbackMeaning: 'Your daily card will appear here once the deck is ready.',
-    savedPrefix: 'Saved',
-    labels: {
-      sign: 'Sign',
-      moon: 'Moon',
-      focus: 'Focus',
-      watch: 'Notice',
-      action: 'Move',
-    },
-    sections: {
-      horoscope: 'HOROSCOPE',
-      tarot: 'TAROT',
-      ritual: 'QUICK RITUAL',
-    },
+    horoscopeFallback: '',
+    cardFallbackTitle: 'Your card',
+    cardFallbackMeaning: 'Your daily card will appear once the deck is ready.',
+    labels: { watch: 'Notice', action: 'Move' },
     cta: {
-      openCard: 'Open your card',
-      openHoroscope: 'Open horoscope',
+      openCard: 'Open card',
+      viewCard: 'View card',
+      openHoroscope: 'Read horoscope',
+      viewHoroscope: 'View horoscope',
       askTarot: 'Ask tarot',
+      viewTarot: 'View tarot',
     },
-    tarotTitle: 'Ask a real question',
-    tarotText: 'Go deeper when the day needs more than a mood.',
-    ritualMorning: 'Morning',
-    ritualEvening: 'Evening',
-    ritualHeadingIntention: 'Set the tone for the day',
-    ritualHeadingCheckIn: 'Close the day consciously',
-    intentionPlaceholder: 'What do you want to embody today?',
-    checkInPlaceholder: 'How did the day actually feel?',
-    checkInPrompt: 'Choose the mood that matched the day, then leave one short note.',
-    returnTomorrowTonight: 'Tonight is already shifting. Come back tomorrow for a new signal.',
-    returnTomorrowDefault: 'A new card and new cosmic weather will meet you tomorrow.',
+    progressItems: { dailyCard: 'Card', horoscope: 'Horoscope', tarot: 'Tarot' },
+    tarotTitle: 'Need more depth? Ask tarot',
+    tarotDoneTitle: 'Your tarot reading',
+    streakLabel: '{n}-day streak',
+    shareLabel: 'Share',
+    energyLabels: {
+      fiery: 'Energetic', grounded: 'Grounded', flowing: 'Flowing',
+      expansive: 'Expansive', reflective: 'Reflective', structured: 'Structured',
+    },
+    shareText: 'My card of the day: {card} ({orientation})\n{meaning}\n\n\u2728 Arcana Insight',
+    horoLockedTag: 'Horoscope',
+    horoLockedHint: 'Sign up to unlock your personal horoscope',
+    horoEmptyHint: 'Your horoscope will appear soon',
     watchByPhase: {
       new: 'Protect your energy and keep beginnings simple.',
       waxingCrescent: 'Trust what feels alive before you explain it.',
@@ -251,6 +276,18 @@ const copyByLocale = {
       venus: 'Nurture beauty, closeness, or softness on purpose.',
       saturn: 'Bring structure to the area that feels unstable.',
     },
+    moonPhaseNames: {
+      new: 'New Moon', waxingCrescent: 'Waxing Crescent', firstQuarter: 'First Quarter',
+      waxingGibbous: 'Waxing Gibbous', full: 'Full Moon', waningGibbous: 'Waning Gibbous',
+      lastQuarter: 'Last Quarter', waningCrescent: 'Waning Crescent',
+    },
+    planetaryDayNames: {
+      sun: 'Sun', moon: 'Moon', mars: 'Mars', mercury: 'Mercury',
+      jupiter: 'Jupiter', venus: 'Venus', saturn: 'Saturn',
+    },
+    moonIn: 'in',
+    fullMoonIn: 'Full Moon in {n}d',
+    fullMoonToday: 'Full Moon today',
     promptsByPhase: {
       new: 'What wants a quiet beginning today?',
       waxingCrescent: 'What deserves trust before full certainty?',
@@ -261,124 +298,122 @@ const copyByLocale = {
       lastQuarter: 'What are you finally ready to release?',
       waningCrescent: 'Where would softness help more than force?',
     },
-    moods: [
-      { value: 'grounded', emoji: '🌿', label: 'Grounded' },
-      { value: 'open', emoji: '☀️', label: 'Open' },
-      { value: 'tender', emoji: '🌙', label: 'Tender' },
-      { value: 'overthinking', emoji: '🫧', label: 'Overthinking' },
-    ],
-    save: {
-      idle: 'Save check-in',
-      done: 'Saved',
-    },
-    intentionSave: {
-      idle: 'Save',
-      done: 'Saved',
-    },
   },
   uk: {
-    title: 'My Day',
-    heroEyebrow: 'СИГНАЛ ДНЯ',
-    fallbackSign: 'Твій знак',
-    horoscopeFallbackTitle: 'Енергія дня',
-    horoscopeFallback: 'Твій гороскоп з’явиться тут, коли будуть готові знак і денний контент.',
-    cardFallbackTitle: 'Карта на сьогодні',
-    cardFallbackMeaning: 'Твоя карта дня з’явиться тут, щойно колода буде готова.',
-    savedPrefix: 'Збережено',
-    labels: {
-      sign: 'Знак',
-      moon: 'Місяць',
-      focus: 'Фокус',
-      watch: 'Помічай',
-      action: 'Крок',
-    },
-    sections: {
-      horoscope: 'ГОРОСКОП',
-      tarot: 'ТАРО',
-      ritual: 'ШВИДКИЙ РИТУАЛ',
-    },
+    greetingNight: 'Доброї ночі',
+    greetingMorning: 'Доброго ранку',
+    greetingAfternoon: 'Добрий день',
+    greetingEvening: 'Добрий вечір',
+    greetingDefault: 'Твій день',
+    heroEyebrow: '\u041A\u0410\u0420\u0422\u0410 \u0414\u041D\u042F',
+    heroEyebrowDone: '\u0412\u0406\u0414\u041A\u0420\u0418\u0422\u041E',
+    fallbackSign: '\u0422\u0432\u0456\u0439 \u0437\u043D\u0430\u043A',
+    horoscopeFallback: '',
+    cardFallbackTitle: '\u0422\u0432\u043E\u044F \u043A\u0430\u0440\u0442\u0430',
+    cardFallbackMeaning: '\u041A\u0430\u0440\u0442\u0430 \u0434\u043D\u044F \u0437\u2019\u044F\u0432\u0438\u0442\u044C\u0441\u044F, \u0449\u043E\u0439\u043D\u043E \u043A\u043E\u043B\u043E\u0434\u0430 \u0431\u0443\u0434\u0435 \u0433\u043E\u0442\u043E\u0432\u0430.',
+    labels: { watch: '\u041F\u043E\u043C\u0456\u0447\u0430\u0439', action: '\u041A\u0440\u043E\u043A' },
     cta: {
-      openCard: 'Відкрити карту',
-      openHoroscope: 'Відкрити гороскоп',
-      askTarot: 'Запитати таро',
+      openCard: '\u0412\u0456\u0434\u043A\u0440\u0438\u0442\u0438',
+      viewCard: '\u041F\u0435\u0440\u0435\u0433\u043B\u044F\u043D\u0443\u0442\u0438',
+      openHoroscope: '\u0427\u0438\u0442\u0430\u0442\u0438 \u0433\u043E\u0440\u043E\u0441\u043A\u043E\u043F',
+      viewHoroscope: '\u041F\u0435\u0440\u0435\u0433\u043B\u044F\u043D\u0443\u0442\u0438',
+      askTarot: '\u0417\u0430\u043F\u0438\u0442\u0430\u0442\u0438 \u0442\u0430\u0440\u043E',
+      viewTarot: '\u0412\u0456\u0434\u043A\u0440\u0438\u0442\u0438 \u0442\u0430\u0440\u043E',
     },
-    tarotTitle: 'Поставити справжнє питання',
-    tarotText: 'Йди глибше, коли дня вже мало і потрібен чесний інсайт.',
-    ritualMorning: 'Ранок',
-    ritualEvening: 'Вечір',
-    ritualHeadingIntention: 'Задай тон своєму дню',
-    ritualHeadingCheckIn: 'Свідомо закрий цей день',
-    intentionPlaceholder: 'Що ти хочеш уособлювати сьогодні?',
-    checkInPlaceholder: 'Як день відчувався насправді?',
-    checkInPrompt: 'Обери настрій дня і залиш одну коротку нотатку.',
-    returnTomorrowTonight: 'Ніч уже змінює ритм. Завтра тут буде новий сигнал.',
-    returnTomorrowDefault: 'Завтра на тебе чекатимуть нова карта і нова космічна погода.',
+    progressItems: { dailyCard: '\u041A\u0430\u0440\u0442\u0430', horoscope: '\u0413\u043E\u0440\u043E\u0441\u043A\u043E\u043F', tarot: '\u0422\u0430\u0440\u043E' },
+    tarotTitle: '\u041F\u043E\u0442\u0440\u0456\u0431\u043D\u043E \u0433\u043B\u0438\u0431\u0448\u0435? \u0417\u0430\u043F\u0438\u0442\u0430\u0439 \u0442\u0430\u0440\u043E',
+    tarotDoneTitle: '\u0422\u0432\u0456\u0439 \u0440\u043E\u0437\u043A\u043B\u0430\u0434 \u0442\u0430\u0440\u043E',
+    streakLabel: '{n} \u0434\u043D\u0456\u0432 \u043F\u043E\u0441\u043F\u0456\u043B\u044C',
+    shareLabel: '\u041F\u043E\u0434\u0456\u043B\u0438\u0442\u0438\u0441\u044F',
+    energyLabels: {
+      fiery: '\u0415\u043D\u0435\u0440\u0433\u0456\u0439\u043D\u0438\u0439', grounded: '\u0417\u0435\u043C\u043D\u0438\u0439', flowing: '\u041F\u043B\u0438\u043D\u043D\u0438\u0439',
+      expansive: '\u0420\u043E\u0437\u0448\u0438\u0440\u044E\u044E\u0447\u0438\u0439', reflective: '\u0420\u0435\u0444\u043B\u0435\u043A\u0441\u0438\u0432\u043D\u0438\u0439', structured: '\u0421\u0442\u0440\u0443\u043A\u0442\u0443\u0440\u043D\u0438\u0439',
+    },
+    shareText: '\u041C\u043E\u044F \u043A\u0430\u0440\u0442\u0430 \u0434\u043D\u044F: {card} ({orientation})\n{meaning}\n\n\u2728 Arcana Insight',
+    horoLockedTag: '\u0413\u043E\u0440\u043E\u0441\u043A\u043E\u043F',
+    horoLockedHint: '\u0417\u0430\u0440\u0435\u0454\u0441\u0442\u0440\u0443\u0439\u0441\u044F, \u0449\u043E\u0431 \u043E\u0442\u0440\u0438\u043C\u0430\u0442\u0438 \u043E\u0441\u043E\u0431\u0438\u0441\u0442\u0438\u0439 \u0433\u043E\u0440\u043E\u0441\u043A\u043E\u043F',
+    horoEmptyHint: '\u0422\u0432\u0456\u0439 \u0433\u043E\u0440\u043E\u0441\u043A\u043E\u043F \u0441\u043A\u043E\u0440\u043E \u0437\u2019\u044F\u0432\u0438\u0442\u044C\u0441\u044F',
     watchByPhase: {
-      new: 'Бережи енергію і тримай початки простими.',
-      waxingCrescent: 'Йди за тим, що оживає, ще до пояснень.',
-      firstQuarter: 'Напруга сьогодні просить вибору.',
-      waxingGibbous: 'Уточнюй те, що росте, а не запускай ще більше.',
-      full: 'Емоції гучніші зазвичай; чесність приносить ясність.',
-      waningGibbous: 'Помічай те, що просить завершення або вдячності.',
-      lastQuarter: 'Відпусти результати, які вже дали свій урок.',
-      waningCrescent: 'Відпочинь, спростись і слухай перед дією.',
+      new: '\u0411\u0435\u0440\u0435\u0436\u0438 \u0435\u043D\u0435\u0440\u0433\u0456\u044E \u0456 \u0442\u0440\u0438\u043C\u0430\u0439 \u043F\u043E\u0447\u0430\u0442\u043A\u0438 \u043F\u0440\u043E\u0441\u0442\u0438\u043C\u0438.',
+      waxingCrescent: '\u0419\u0434\u0438 \u0437\u0430 \u0442\u0438\u043C, \u0449\u043E \u043E\u0436\u0438\u0432\u0430\u0454, \u0449\u0435 \u0434\u043E \u043F\u043E\u044F\u0441\u043D\u0435\u043D\u044C.',
+      firstQuarter: '\u041D\u0430\u043F\u0440\u0443\u0433\u0430 \u0441\u044C\u043E\u0433\u043E\u0434\u043D\u0456 \u043F\u0440\u043E\u0441\u0438\u0442\u044C \u0432\u0438\u0431\u043E\u0440\u0443.',
+      waxingGibbous: '\u0423\u0442\u043E\u0447\u043D\u044E\u0439 \u0442\u0435, \u0449\u043E \u0440\u043E\u0441\u0442\u0435, \u0430 \u043D\u0435 \u0437\u0430\u043F\u0443\u0441\u043A\u0430\u0439 \u0449\u0435 \u0431\u0456\u043B\u044C\u0448\u0435.',
+      full: '\u0415\u043C\u043E\u0446\u0456\u0457 \u0433\u0443\u0447\u043D\u0456\u0448\u0456; \u0447\u0435\u0441\u043D\u0456\u0441\u0442\u044C \u043F\u0440\u0438\u043D\u043E\u0441\u0438\u0442\u044C \u044F\u0441\u043D\u0456\u0441\u0442\u044C.',
+      waningGibbous: '\u041F\u043E\u043C\u0456\u0447\u0430\u0439 \u0442\u0435, \u0449\u043E \u043F\u0440\u043E\u0441\u0438\u0442\u044C \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u043D\u044F \u0430\u0431\u043E \u0432\u0434\u044F\u0447\u043D\u043E\u0441\u0442\u0456.',
+      lastQuarter: '\u0412\u0456\u0434\u043F\u0443\u0441\u0442\u0438 \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u0438, \u044F\u043A\u0456 \u0432\u0436\u0435 \u0434\u0430\u043B\u0438 \u0441\u0432\u0456\u0439 \u0443\u0440\u043E\u043A.',
+      waningCrescent: '\u0412\u0456\u0434\u043F\u043E\u0447\u0438\u043D\u044C, \u0441\u043F\u0440\u043E\u0441\u0442\u0438\u0441\u044C \u0456 \u0441\u043B\u0443\u0445\u0430\u0439 \u043F\u0435\u0440\u0435\u0434 \u0434\u0456\u0454\u044E.',
     },
     actionByPlanet: {
-      sun: 'Зроби один видимий крок до того, чого хочеш.',
-      moon: 'Спочатку назви своє справжнє відчуття.',
-      mars: 'Заверши одну складну справу, а не розкидайся.',
-      mercury: 'Надішли повідомлення або запиши думку.',
-      jupiter: 'Обери ширший погляд і підтримай сміливу ідею.',
-      venus: 'Свідомо додай у день красу, ніжність або близькість.',
-      saturn: 'Дай структуру тій зоні, де зараз хитко.',
+      sun: '\u0417\u0440\u043E\u0431\u0438 \u043E\u0434\u0438\u043D \u0432\u0438\u0434\u0438\u043C\u0438\u0439 \u043A\u0440\u043E\u043A \u0434\u043E \u0442\u043E\u0433\u043E, \u0447\u043E\u0433\u043E \u0445\u043E\u0447\u0435\u0448.',
+      moon: '\u0421\u043F\u043E\u0447\u0430\u0442\u043A\u0443 \u043D\u0430\u0437\u0432\u0438 \u0441\u0432\u043E\u0454 \u0441\u043F\u0440\u0430\u0432\u0436\u043D\u0454 \u0432\u0456\u0434\u0447\u0443\u0442\u0442\u044F.',
+      mars: '\u0417\u0430\u0432\u0435\u0440\u0448\u0438 \u043E\u0434\u043D\u0443 \u0441\u043A\u043B\u0430\u0434\u043D\u0443 \u0441\u043F\u0440\u0430\u0432\u0443, \u0430 \u043D\u0435 \u0440\u043E\u0437\u043A\u0438\u0434\u0430\u0439\u0441\u044F.',
+      mercury: '\u041D\u0430\u0434\u0456\u0448\u043B\u0438 \u043F\u043E\u0432\u0456\u0434\u043E\u043C\u043B\u0435\u043D\u043D\u044F \u0430\u0431\u043E \u0437\u0430\u043F\u0438\u0448\u0438 \u0434\u0443\u043C\u043A\u0443.',
+      jupiter: '\u041E\u0431\u0435\u0440\u0438 \u0448\u0438\u0440\u0448\u0438\u0439 \u043F\u043E\u0433\u043B\u044F\u0434 \u0456 \u043F\u0456\u0434\u0442\u0440\u0438\u043C\u0430\u0439 \u0441\u043C\u0456\u043B\u0438\u0432\u0443 \u0456\u0434\u0435\u044E.',
+      venus: '\u0421\u0432\u0456\u0434\u043E\u043C\u043E \u0434\u043E\u0434\u0430\u0439 \u0443 \u0434\u0435\u043D\u044C \u043A\u0440\u0430\u0441\u0443, \u043D\u0456\u0436\u043D\u0456\u0441\u0442\u044C \u0430\u0431\u043E \u0431\u043B\u0438\u0437\u044C\u043A\u0456\u0441\u0442\u044C.',
+      saturn: '\u0414\u0430\u0439 \u0441\u0442\u0440\u0443\u043A\u0442\u0443\u0440\u0443 \u0442\u0456\u0439 \u0437\u043E\u043D\u0456, \u0434\u0435 \u0437\u0430\u0440\u0430\u0437 \u0445\u0438\u0442\u043A\u043E.',
     },
+    moonPhaseNames: {
+      new: '\u041D\u043E\u0432\u0438\u0439 \u041C\u0456\u0441\u044F\u0446\u044C', waxingCrescent: '\u041C\u043E\u043B\u043E\u0434\u0438\u0439', firstQuarter: '\u041F\u0435\u0440\u0448\u0430 \u0447\u0432\u0435\u0440\u0442\u044C',
+      waxingGibbous: '\u0417\u0440\u043E\u0441\u0442\u0430\u044E\u0447\u0438\u0439', full: '\u041F\u043E\u0432\u043D\u0438\u0439 \u041C\u0456\u0441\u044F\u0446\u044C', waningGibbous: '\u0421\u043F\u0430\u0434\u0430\u044E\u0447\u0438\u0439',
+      lastQuarter: '\u041E\u0441\u0442\u0430\u043D\u043D\u044F \u0447\u0432\u0435\u0440\u0442\u044C', waningCrescent: '\u0421\u0442\u0430\u0440\u0438\u0439 \u041C\u0456\u0441\u044F\u0446\u044C',
+    },
+    planetaryDayNames: {
+      sun: '\u0421\u043E\u043D\u0446\u0435', moon: '\u041C\u0456\u0441\u044F\u0446\u044C', mars: '\u041C\u0430\u0440\u0441', mercury: '\u041C\u0435\u0440\u043A\u0443\u0440\u0456\u0439',
+      jupiter: '\u042E\u043F\u0456\u0442\u0435\u0440', venus: '\u0412\u0435\u043D\u0435\u0440\u0430', saturn: '\u0421\u0430\u0442\u0443\u0440\u043D',
+    },
+    moonIn: '\u0443',
+    fullMoonIn: '\u041F\u043E\u0432\u043D\u0438\u0439 \u041C\u0456\u0441\u044F\u0446\u044C \u0447\u0435\u0440\u0435\u0437 {n}\u0434',
+    fullMoonToday: '\u041F\u043E\u0432\u043D\u0438\u0439 \u041C\u0456\u0441\u044F\u0446\u044C \u0441\u044C\u043E\u0433\u043E\u0434\u043D\u0456',
     promptsByPhase: {
-      new: 'Що сьогодні хоче тихого початку?',
-      waxingCrescent: 'Чому сьогодні варто довіритись раніше за ясність?',
-      firstQuarter: 'Яке рішення чекає на твою сміливість?',
-      waxingGibbous: 'Що просить уточнення, а не тиску?',
-      full: 'Яка правда просить чесного голосу?',
-      waningGibbous: 'За що можна подякувати перед відпусканням?',
-      lastQuarter: 'Що ти вже готовий відпустити?',
-      waningCrescent: 'Де м’якість допоможе більше, ніж сила?',
-    },
-    moods: [
-      { value: 'grounded', emoji: '🌿', label: 'Заземлено' },
-      { value: 'open', emoji: '☀️', label: 'Відкрито' },
-      { value: 'tender', emoji: '🌙', label: 'Тонко' },
-      { value: 'overthinking', emoji: '🫧', label: 'Перемислення' },
-    ],
-    save: {
-      idle: 'Зберегти',
-      done: 'Збережено',
-    },
-    intentionSave: {
-      idle: 'Зберегти',
-      done: 'Збережено',
+      new: '\u0429\u043E \u0441\u044C\u043E\u0433\u043E\u0434\u043D\u0456 \u0445\u043E\u0447\u0435 \u0442\u0438\u0445\u043E\u0433\u043E \u043F\u043E\u0447\u0430\u0442\u043A\u0443?',
+      waxingCrescent: '\u0427\u043E\u043C\u0443 \u0441\u044C\u043E\u0433\u043E\u0434\u043D\u0456 \u0432\u0430\u0440\u0442\u043E \u0434\u043E\u0432\u0456\u0440\u0438\u0442\u0438\u0441\u044C \u0440\u0430\u043D\u0456\u0448\u0435 \u0437\u0430 \u044F\u0441\u043D\u0456\u0441\u0442\u044C?',
+      firstQuarter: '\u042F\u043A\u0435 \u0440\u0456\u0448\u0435\u043D\u043D\u044F \u0447\u0435\u043A\u0430\u0454 \u043D\u0430 \u0442\u0432\u043E\u044E \u0441\u043C\u0456\u043B\u0438\u0432\u0456\u0441\u0442\u044C?',
+      waxingGibbous: '\u0429\u043E \u043F\u0440\u043E\u0441\u0438\u0442\u044C \u0443\u0442\u043E\u0447\u043D\u0435\u043D\u043D\u044F, \u0430 \u043D\u0435 \u0442\u0438\u0441\u043A\u0443?',
+      full: '\u042F\u043A\u0430 \u043F\u0440\u0430\u0432\u0434\u0430 \u043F\u0440\u043E\u0441\u0438\u0442\u044C \u0447\u0435\u0441\u043D\u043E\u0433\u043E \u0433\u043E\u043B\u043E\u0441\u0443?',
+      waningGibbous: '\u0417\u0430 \u0449\u043E \u043C\u043E\u0436\u043D\u0430 \u043F\u043E\u0434\u044F\u043A\u0443\u0432\u0430\u0442\u0438 \u043F\u0435\u0440\u0435\u0434 \u0432\u0456\u0434\u043F\u0443\u0441\u043A\u0430\u043D\u043D\u044F\u043C?',
+      lastQuarter: '\u0429\u043E \u0442\u0438 \u0432\u0436\u0435 \u0433\u043E\u0442\u043E\u0432\u0438\u0439 \u0432\u0456\u0434\u043F\u0443\u0441\u0442\u0438\u0442\u0438?',
+      waningCrescent: '\u0414\u0435 \u043C\u2019\u044F\u043A\u0456\u0441\u0442\u044C \u0434\u043E\u043F\u043E\u043C\u043E\u0436\u0435 \u0431\u0456\u043B\u044C\u0448\u0435, \u043D\u0456\u0436 \u0441\u0438\u043B\u0430?',
     },
   },
 }
 
 const copy = computed(() => copyByLocale[locale.value] || copyByLocale.en)
-const moodOptions = computed(() => copy.value.moods)
 
+// ── Greeting ────────────────────────────────────────────────────
+const greetingLine = computed(() => {
+  const hour = new Date().getHours()
+  let base
+  if (hour < 5) base = copy.value.greetingNight
+  else if (hour < 12) base = copy.value.greetingMorning
+  else if (hour < 17) base = copy.value.greetingAfternoon
+  else if (hour < 22) base = copy.value.greetingEvening
+  else base = copy.value.greetingNight
+  const name = userName.value
+  return name ? `${base}, ${name}` : base
+})
+
+const todayLabel = computed(() => {
+  try {
+    return new Intl.DateTimeFormat(locale.value === 'uk' ? 'uk-UA' : 'en-US', {
+      weekday: 'long', month: 'long', day: 'numeric',
+    }).format(new Date())
+  } catch {
+    return localISODate()
+  }
+})
+
+// ── Zodiac helper ───────────────────────────────────────────────
 const zodiacFromRawDate = (rawDate) => {
   const raw = String(rawDate || '').trim()
   if (!raw) return ''
-
-  let day = 0
-  let month = 0
-
+  let day = 0, month = 0
   if (raw.includes('.')) {
-    const parts = raw.split('.').map((value) => parseInt(value, 10))
-    day = parts[0] || 0
-    month = parts[1] || 0
+    const p = raw.split('.').map(v => parseInt(v, 10))
+    day = p[0] || 0; month = p[1] || 0
   } else if (raw.includes('-')) {
-    const parts = raw.split('-').map((value) => parseInt(value, 10))
-    month = parts[1] || 0
-    day = parts[2] || 0
+    const p = raw.split('-').map(v => parseInt(v, 10))
+    month = p[1] || 0; day = p[2] || 0
   }
-
   if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return 'aries'
   if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return 'taurus'
   if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return 'gemini'
@@ -394,12 +429,11 @@ const zodiacFromRawDate = (rawDate) => {
   return ''
 }
 
+// ── Daily seed & card ───────────────────────────────────────────
 const hashString = (value) => {
   let hash = 0
   const raw = String(value || '')
-  for (let i = 0; i < raw.length; i += 1) {
-    hash = (hash * 31 + raw.charCodeAt(i)) >>> 0
-  }
+  for (let i = 0; i < raw.length; i += 1) hash = (hash * 31 + raw.charCodeAt(i)) >>> 0
   return hash
 }
 
@@ -407,212 +441,142 @@ const getOrCreateAnonSeed = () => {
   if (typeof window === 'undefined') return 'anon'
   const stored = localStorage.getItem(ANON_DAILY_SEED_KEY)
   if (stored) return stored
-
-  const next =
-    (window.crypto &&
-      typeof window.crypto.randomUUID === 'function' &&
-      window.crypto.randomUUID()) ||
-    `${Date.now()}-${Math.random().toString(36).slice(2)}`
-
+  const next = (window.crypto?.randomUUID?.()) || `${Date.now()}-${Math.random().toString(36).slice(2)}`
   localStorage.setItem(ANON_DAILY_SEED_KEY, next)
   return next
 }
 
-const dailySeed = computed(() => {
-  const userId = authStore.state.user?.id
-  const identity = userId || getOrCreateAnonSeed()
-  return `${localISODate()}::${identity}`
-})
-
-const dailyIndex = computed(() => {
-  if (!cards.value.length) return 0
-  return hashString(`${dailySeed.value}::card`) % cards.value.length
-})
-
-const dailyOrientation = computed(() => {
-  const hash = hashString(`${dailySeed.value}::orientation`)
-  return hash % 2 === 0 ? 'upright' : 'reversed'
-})
-
+const dailySeed = computed(() => `${localISODate()}::${authStore.state.user?.id || getOrCreateAnonSeed()}`)
+const dailyIndex = computed(() => cards.value.length ? hashString(`${dailySeed.value}::card`) % cards.value.length : 0)
+const dailyOrientation = computed(() => hashString(`${dailySeed.value}::orientation`) % 2 === 0 ? 'upright' : 'reversed')
 const dailyCard = computed(() => cards.value[dailyIndex.value] || null)
-const cardTitle = computed(
-  () => dailyCard.value?.name?.[locale.value] || dailyCard.value?.name?.en || copy.value.cardFallbackTitle,
-)
-const cardImage = computed(() => {
-  const file = dailyCard.value?.file
-  return file ? `/images/cards/${file}` : ''
-})
-const cardMeaning = computed(
-  () =>
-    dailyCard.value?.meaning?.[dailyOrientation.value]?.[locale.value] ||
-    dailyCard.value?.meaning?.[dailyOrientation.value]?.en ||
-    copy.value.cardFallbackMeaning,
-)
-const cardKeywords = computed(() => {
-  const raw = dailyCard.value?.keywords?.[locale.value] || dailyCard.value?.keywords?.en || []
-  return raw.slice(0, 3)
-})
-const orientationLabel = computed(() =>
-  dailyOrientation.value === 'reversed' ? tt('cardsPage.reversed') : tt('cardsPage.upright'),
-)
 
-const horoscopeTheme = computed(() => horoscopeThemeKey.value || 'energy')
-const horoscopeTitle = computed(() => {
-  const key = horoscopeTheme.value === 'career'
-    ? 'career'
-    : horoscopeTheme.value === 'love'
-      ? 'love'
-      : 'energy'
-  return tt(key)
-})
-const horoscopeSummary = computed(() => horoscopeSummaryRaw.value || copy.value.horoscopeFallback)
-const horoscopePreview = computed(() => firstSentence(horoscopeSummary.value))
+const cardTitle = computed(() => dailyCard.value?.name?.[locale.value] || dailyCard.value?.name?.en || copy.value.cardFallbackTitle)
+const cardImage = computed(() => { const f = dailyCard.value?.file; return f ? `/images/cards/${f}` : '' })
+const cardMeaning = computed(() =>
+  dailyCard.value?.meaning?.[dailyOrientation.value]?.[locale.value] ||
+  dailyCard.value?.meaning?.[dailyOrientation.value]?.en ||
+  copy.value.cardFallbackMeaning,
+)
+const orientationLabel = computed(() => dailyOrientation.value === 'reversed' ? tt('cardsPage.reversed') : tt('cardsPage.upright'))
 
+const heroEyebrow = computed(() => hasDailyCardToday.value ? copy.value.heroEyebrowDone : copy.value.heroEyebrow)
 const signLabel = computed(() => signKey.value ? tt(`zodiac.${signKey.value}`) : copy.value.fallbackSign)
-
-const phaseEmoji = {
-  new: '🌑',
-  waxingCrescent: '🌒',
-  firstQuarter: '🌓',
-  waxingGibbous: '🌔',
-  full: '🌕',
-  waningGibbous: '🌖',
-  lastQuarter: '🌗',
-  waningCrescent: '🌘',
-}
-
-const moonPhaseLabel = computed(() => {
-  const title = tt(`astro.phases.${moonPhaseKey.value}`)
-  return `${phaseEmoji[moonPhaseKey.value] || '🌙'} ${title}`
-})
-
-const dailyFocus = computed(() => firstSentence(horoscopeSummary.value) || copy.value.horoscopeFallback)
-const watchFor = computed(() => copy.value.watchByPhase[moonPhaseKey.value] || copy.value.horoscopeFallback)
-const dailyAction = computed(() => copy.value.actionByPlanet[planetaryDayKey.value] || copy.value.actionByPlanet.moon)
-const heroSummary = computed(() => firstSentence(cardMeaning.value) || dailyFocus.value)
-const signalFocus = computed(() => compactText(dailyFocus.value, 6, 40))
-const signalWatch = computed(() => compactText(watchFor.value, 6, 40))
-const signalAction = computed(() => compactText(dailyAction.value, 6, 40))
-
-const todayLabel = computed(() => {
-  try {
-    return new Intl.DateTimeFormat(locale.value === 'uk' ? 'uk-UA' : 'en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-    }).format(new Date())
-  } catch {
-    return localISODate()
-  }
-})
-
-const saveButtonLabel = computed(() => savedCheckInAt.value ? copy.value.save.done : copy.value.save.idle)
-const intentionButtonLabel = computed(() =>
-  savedIntentionAt.value ? copy.value.intentionSave.done : copy.value.intentionSave.idle,
-)
-const savedCheckInAtLabel = computed(() => {
-  if (!savedCheckInAt.value) return ''
-  const date = new Date(savedCheckInAt.value)
-  if (Number.isNaN(date.getTime())) return copy.value.savedPrefix
-  try {
-    const formatted = new Intl.DateTimeFormat(locale.value === 'uk' ? 'uk-UA' : 'en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date)
-    return `${copy.value.savedPrefix} ${formatted}`
-  } catch {
-    return copy.value.savedPrefix
-  }
-})
-const savedIntentionAtLabel = computed(() => {
-  if (!savedIntentionAt.value) return ''
-  const date = new Date(savedIntentionAt.value)
-  if (Number.isNaN(date.getTime())) return copy.value.savedPrefix
-  try {
-    const formatted = new Intl.DateTimeFormat(locale.value === 'uk' ? 'uk-UA' : 'en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date)
-    return `${copy.value.savedPrefix} ${formatted}`
-  } catch {
-    return copy.value.savedPrefix
-  }
-})
-const ritualHeading = computed(() =>
-  ritualMode.value === 'intention' ? copy.value.ritualHeadingIntention : copy.value.ritualHeadingCheckIn,
-)
-const ritualButtonLabel = computed(() =>
-  ritualMode.value === 'intention' ? intentionButtonLabel.value : saveButtonLabel.value,
-)
-const ritualSavedLabel = computed(() =>
-  ritualMode.value === 'intention' ? savedIntentionAtLabel.value : savedCheckInAtLabel.value,
-)
 
 function firstSentence(value) {
   const text = String(value || '').replace(/\s+/g, ' ').trim()
   if (!text) return ''
-  const match = text.match(/.*?[.!?](\s|$)/)
-  return match ? match[0].trim() : text
+  const m = text.match(/.*?[.!?](\s|$)/)
+  return m ? m[0].trim() : text
 }
 
-function compactText(value, maxWords = 7, maxChars = 56) {
-  const text = String(value || '').replace(/\s+/g, ' ').trim()
+const heroSummary = computed(() => firstSentence(cardMeaning.value))
+
+// ── Horoscope ───────────────────────────────────────────────────
+const horoscopeSummary = computed(() => horoscopeSummaryRaw.value || '')
+const horoscopeSnippet = computed(() => {
+  const text = horoscopeSummary.value
   if (!text) return ''
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text]
+  return sentences.slice(0, 2).join(' ').trim()
+})
+// ── Astro display ───────────────────────────────────────────────
+const moonPhaseEmojis = { new: '\uD83C\uDF11', waxingCrescent: '\uD83C\uDF12', firstQuarter: '\uD83C\uDF13', waxingGibbous: '\uD83C\uDF14', full: '\uD83C\uDF15', waningGibbous: '\uD83C\uDF16', lastQuarter: '\uD83C\uDF17', waningCrescent: '\uD83C\uDF18' }
+const planetaryGlyphs = { sun: '\u2609', moon: '\u263D', mars: '\u2642', mercury: '\u263F', jupiter: '\u2643', venus: '\u2640', saturn: '\u2644' }
+const zodiacGlyphs = { aries: '\u2648', taurus: '\u2649', gemini: '\u264A', cancer: '\u264B', leo: '\u264C', virgo: '\u264D', libra: '\u264E', scorpio: '\u264F', sagittarius: '\u2650', capricorn: '\u2651', aquarius: '\u2652', pisces: '\u2653' }
 
-  const words = text.split(' ').filter(Boolean)
-  let next = words.slice(0, maxWords).join(' ')
-  if (next.length > maxChars) next = next.slice(0, maxChars).trim()
+const moonPhaseEmoji = computed(() => moonPhaseEmojis[moonPhaseKey.value] || '\uD83C\uDF11')
+const moonPhaseLabel = computed(() => copy.value.moonPhaseNames?.[moonPhaseKey.value] || '')
+const planetaryEmoji = computed(() => planetaryGlyphs[planetaryDayKey.value] || '\u2609')
+const planetaryDayLabel = computed(() => copy.value.planetaryDayNames?.[planetaryDayKey.value] || '')
+const moonSignEmoji = computed(() => zodiacGlyphs[moonSignKey.value] || '\u263D')
+const moonSignLabel = computed(() => {
+  if (!moonSignKey.value) return ''
+  return `${copy.value.moonIn} ${tt(`zodiac.${moonSignKey.value}`)}`
+})
 
-  if (next.length < text.length) {
-    return `${next.replace(/[.,;:!?-]+$/u, '').trim()}…`
+const fullMoonLabel = computed(() => {
+  const n = nextLunarEventDays.value
+  if (n < 0) return ''
+  if (n === 0) return copy.value.fullMoonToday
+  return copy.value.fullMoonIn.replace('{n}', n)
+})
+
+// ── Daily energy ────────────────────────────────────────────────
+const PLANET_ENERGY = { sun: 'fiery', moon: 'flowing', mars: 'fiery', mercury: 'reflective', jupiter: 'expansive', venus: 'grounded', saturn: 'structured' }
+const PHASE_ENERGY = { new: 'reflective', waxingCrescent: 'flowing', firstQuarter: 'fiery', waxingGibbous: 'expansive', full: 'fiery', waningGibbous: 'grounded', lastQuarter: 'structured', waningCrescent: 'reflective' }
+const ENERGY_DOTS = { fiery: '#f59e42', grounded: '#6ec07a', flowing: '#5db8d9', expansive: '#c084fc', reflective: '#8eafc4', structured: '#94a3b8' }
+
+const dailyEnergyKey = computed(() => {
+  const planet = PLANET_ENERGY[planetaryDayKey.value] || 'reflective'
+  const phase = PHASE_ENERGY[moonPhaseKey.value] || 'reflective'
+  return planet === phase ? planet : phase
+})
+const dailyEnergyLabel = computed(() => copy.value.energyLabels?.[dailyEnergyKey.value] || '')
+const dailyEnergyColor = computed(() => ENERGY_DOTS[dailyEnergyKey.value] || '#8eafc4')
+
+// ── Streak ──────────────────────────────────────────────────────
+const streakLabel = computed(() => {
+  if (streakCount.value < 2) return ''
+  return copy.value.streakLabel.replace('{n}', streakCount.value)
+})
+
+// ── Tarot CTA ───────────────────────────────────────────────────
+const tarotCtaText = computed(() => hasTarotToday.value ? copy.value.tarotDoneTitle : copy.value.tarotTitle)
+
+// ── Background tint by time of day ─────────────────────────────
+const bgTintClass = computed(() => {
+  const h = currentHour.value
+  if (h < 5) return 'myday-bg--night'
+  if (h < 12) return 'myday-bg--morning'
+  if (h < 17) return 'myday-bg--day'
+  if (h < 22) return 'myday-bg--evening'
+  return 'myday-bg--night'
+})
+
+const watchAdvice = computed(() => copy.value.watchByPhase?.[moonPhaseKey.value] || '')
+const actionAdvice = computed(() => copy.value.actionByPlanet?.[planetaryDayKey.value] || '')
+
+// ── Progress ────────────────────────────────────────────────────
+const progressSteps = computed(() => {
+  const steps = [
+    { key: 'card', label: copy.value.progressItems.dailyCard, done: hasDailyCardToday.value, action: openDailyCard },
+  ]
+  if (isLoggedIn.value) {
+    steps.push({ key: 'horo', label: copy.value.progressItems.horoscope, done: hasHoroscopeToday.value, action: openHoroscope })
   }
-  return next
-}
+  steps.push({ key: 'tarot', label: copy.value.progressItems.tarot, done: hasTarotToday.value, action: openTarot })
+  return steps
+})
 
+// ── Daily reflection prompt ─────────────────────────────────────
+const dailyPrompt = computed(() => copy.value.promptsByPhase?.[moonPhaseKey.value] || '')
+
+// ── Astro compute ───────────────────────────────────────────────
 function computeAstro() {
   const now = new Date()
-  const t1 = new Date(now.getTime() + 24 * 60 * 60 * 1000)
-  const sunLon = astroEclipticLon(Astronomy.Body.Sun, now)
-  const moonLon = astroEclipticLon(Astronomy.Body.Moon, now)
-  const merc0 = astroEclipticLon(Astronomy.Body.Mercury, now)
-  const merc1 = astroEclipticLon(Astronomy.Body.Mercury, t1)
-  const elong = astroAbsDiff(moonLon, sunLon)
-  const nextLunarEvent = astroNextLunarEvent(now)
+  const sunLon = eclipticLon(Astronomy.Body.Sun, now)
+  const moonLon = eclipticLon(Astronomy.Body.Moon, now)
+  const elong = absDiff(moonLon, sunLon)
 
-  moonPhaseKey.value = astroPhaseKey(elong)
-  moonSignKey.value = astroSignKey(moonLon)
-  nextLunarEventDays.value = nextLunarEvent?.daysUntil ?? -1
+  moonPhaseKey.value = phaseKey(elong)
+  moonSignKey.value = signKeyFromLon(moonLon)
+
+  try {
+    const fm = Astronomy.SearchMoonPhase(180, now, 40)
+    nextLunarEventDays.value = fm ? Math.max(0, Math.ceil((fm.date.getTime() - now.getTime()) / 86400000)) : -1
+  } catch { nextLunarEventDays.value = -1 }
 
   const rulers = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']
-  planetaryDayKey.value = rulers[new Date().getDay()]
-
-  if (astroSignedDelta(merc1, merc0) < 0 && !horoscopeSummaryRaw.value) {
-    horoscopeSummaryRaw.value = locale.value === 'uk'
-      ? 'Сьогодні краще говорити простіше і перевіряти деталі двічі.'
-      : 'Today works better when you keep communication simple and double-check details.'
-  }
+  planetaryDayKey.value = rulers[now.getDay()]
 }
 
-function astroEclipticLon(body, date) {
-  const time = typeof Astronomy.MakeTime === 'function'
-    ? Astronomy.MakeTime(date)
-    : new Astronomy.AstroTime(date)
+function eclipticLon(body, date) {
+  const time = typeof Astronomy.MakeTime === 'function' ? Astronomy.MakeTime(date) : new Astronomy.AstroTime(date)
   return Astronomy.Ecliptic(Astronomy.GeoVector(body, time, false)).elon
 }
-
-function astroAbsDiff(a, b) {
-  let d = Math.abs(a - b) % 360
-  return d > 180 ? 360 - d : d
-}
-
-function astroSignedDelta(next, prev) {
-  let d = (next - prev) % 360
-  if (d > 180) d -= 360
-  if (d < -180) d += 360
-  return d
-}
-
-function astroPhaseKey(elong) {
+function absDiff(a, b) { let d = Math.abs(a - b) % 360; return d > 180 ? 360 - d : d }
+function phaseKey(elong) {
   const x = ((elong % 360) + 360) % 360
   if (x < 22.5 || x >= 337.5) return 'new'
   if (x < 67.5) return 'waxingCrescent'
@@ -623,690 +587,375 @@ function astroPhaseKey(elong) {
   if (x < 292.5) return 'lastQuarter'
   return 'waningCrescent'
 }
-
-function astroNextLunarEvent(now) {
-  try {
-    const fullMoonTime = Astronomy.SearchMoonPhase(180, now, 40)
-    if (!fullMoonTime) return null
-    const daysUntil = Math.max(0, Math.ceil((fullMoonTime.date.getTime() - now.getTime()) / 86400000))
-    return { daysUntil }
-  } catch {
-    return null
-  }
-}
-
-function astroSignKey(lon) {
+function signKeyFromLon(lon) {
   const signs = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces']
   return signs[Math.floor(((lon % 360) + 360) % 360 / 30) % 12]
 }
 
+// ── Haptics ─────────────────────────────────────────────────────
 async function hapticTap() {
   if (!Capacitor.isNativePlatform()) return
-  try {
-    await Haptics.impact({ style: ImpactStyle.Light })
-  } catch {
-    // ignore haptic errors
-  }
+  try { await Haptics.impact({ style: ImpactStyle.Light }) } catch { /* noop */ }
 }
 
+// ── Data loaders ────────────────────────────────────────────────
 async function loadSignSnapshot() {
-  if (!authStore.state.user && !authStore.state.sessionLoaded) {
-    await authStore.syncSession({ refresh: false })
-  }
+  if (!authStore.state.user && !authStore.state.sessionLoaded) await authStore.syncSession({ refresh: false })
   const snapshot = await resolveUserSignSnapshot({
-    readProfileCacheValue: async () => {
-      const { value } = await Preferences.get({ key: 'profile_cache_v1' })
-      return value
-    },
+    readProfileCacheValue: async () => { const { value } = await Preferences.get({ key: 'profile_cache_v1' }); return value },
     getCurrentUserId: () => authStore.state.user?.id || '',
-    fetchUserDateOfBirthById: async (userId) => {
-      const { data } = await selectAppUser(userId, 6000, 'date_of_birth')
-      return data?.date_of_birth || ''
-    },
+    fetchUserDateOfBirthById: async (userId) => { const { data } = await selectAppUser(userId, 6000, 'date_of_birth'); return data?.date_of_birth || '' },
     zodiacFromRawDate,
   })
   signKey.value = snapshot.signKey || ''
 }
 
-async function loadDailyCard() {
-  const { cards: nextCards } = await loadDailyCardsSnapshot({ loadTarotData })
-  cards.value = nextCards
-}
+async function loadDailyCard() { const { cards: c } = await loadDailyCardsSnapshot({ loadTarotData }); cards.value = c }
 
 async function loadHoroscope() {
-  const activeSign = signKey.value
-  if (!activeSign) return
-  const { registry } = await loadHoroscopeRegistry({
-    locale: locale.value,
-    today: localISODate(),
-    loadLocal,
-    saveLocal,
-    selectHoroscopes,
-  })
-  const themes = registry?.[activeSign] || {}
-  const preferredOrder = ['energy', 'love', 'career']
-  const chosenTheme = preferredOrder.find((key) => String(themes?.[key]?.summary || '').trim()) || 'energy'
-  horoscopeThemeKey.value = chosenTheme
-  horoscopeSummaryRaw.value = String(themes?.[chosenTheme]?.summary || '').trim()
+  horoscopeThemeKey.value = 'energy'
+  horoscopeSummaryRaw.value = ''
+  if (!signKey.value) return
+  const { registry } = await loadHoroscopeRegistry({ locale: locale.value, today: localISODate(), loadLocal, saveLocal, selectHoroscopes })
+  const themes = registry?.[signKey.value] || {}
+  const chosen = ['energy', 'love', 'career'].find(k => String(themes?.[k]?.summary || '').trim()) || 'energy'
+  horoscopeThemeKey.value = chosen
+  horoscopeSummaryRaw.value = String(themes?.[chosen]?.summary || '').trim()
 }
 
-async function loadCheckIn() {
-  const { value } = await Preferences.get({ key: `${CHECKIN_KEY_PREFIX}:${localISODate()}` })
-  if (!value) return
+function refreshActivitySnapshot() {
+  hasDailyCardToday.value = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.dailyCard)
+  hasHoroscopeToday.value = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.horoscope)
+  hasTarotToday.value = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.tarot)
+  const streak = readDailyStreak(DAILY_ACTIVITY_KEYS.dailyCard)
+  streakCount.value = streak.current || 0
+  currentHour.value = new Date().getHours()
+}
+
+async function refreshMyDayState({ includeRemote = false } = {}) {
+  refreshActivitySnapshot()
+  if (includeRemote || !signKey.value) { await loadSignSnapshot(); await loadHoroscope() }
+}
+
+// ── Navigation ──────────────────────────────────────────────────
+async function goBack() { await hapticTap(); window?.history?.length > 1 ? router.back() : await router.replace({ name: 'menu' }) }
+async function openDailyCard() { await hapticTap(); await router.push({ name: 'daily', query: { source: 'my_day' } }) }
+async function openHoroscope() { await hapticTap(); await router.push({ name: 'horoscope', query: { source: 'my_day' } }) }
+async function openTarot() { await hapticTap(); await router.push({ name: 'tarot', query: { source: 'my_day' } }) }
+async function openSignUp() { await hapticTap(); await router.push({ name: 'signUp', query: { source: 'my_day_horo' } }) }
+
+// ── Share ───────────────────────────────────────────────────────
+async function shareDailyCard() {
+  await hapticTap()
+  const text = copy.value.shareText
+    .replace('{card}', cardTitle.value)
+    .replace('{orientation}', orientationLabel.value)
+    .replace('{meaning}', firstSentence(cardMeaning.value))
   try {
-    const parsed = JSON.parse(value)
-    selectedMood.value = String(parsed?.mood || '')
-    checkInNote.value = String(parsed?.note || '')
-    savedCheckInAt.value = String(parsed?.savedAt || '')
-  } catch {
-    // ignore malformed saved check-in
-  }
+    await Share.share({ text })
+  } catch { /* user cancelled or share unavailable */ }
 }
 
-async function loadIntention() {
-  const { value } = await Preferences.get({ key: `${INTENTION_KEY_PREFIX}:${localISODate()}` })
-  if (!value) return
-  try {
-    const parsed = JSON.parse(value)
-    intentionNote.value = String(parsed?.note || '')
-    savedIntentionAt.value = String(parsed?.savedAt || '')
-  } catch {
-    // ignore malformed saved intention
-  }
+// ── Pull to refresh ─────────────────────────────────────────────
+async function onPullRefresh(done) {
+  computeAstro()
+  await Promise.all([loadDailyCard(), refreshMyDayState({ includeRemote: true })])
+  done()
 }
 
-async function saveCheckIn() {
-  await hapticTap()
-  const payload = {
-    mood: selectedMood.value,
-    note: String(checkInNote.value || '').trim(),
-    savedAt: new Date().toISOString(),
-  }
-  await Preferences.set({
-    key: `${CHECKIN_KEY_PREFIX}:${localISODate()}`,
-    value: JSON.stringify(payload),
-  })
-  savedCheckInAt.value = payload.savedAt
-}
-
-async function saveIntention() {
-  await hapticTap()
-  const payload = {
-    note: String(intentionNote.value || '').trim(),
-    savedAt: new Date().toISOString(),
-  }
-  await Preferences.set({
-    key: `${INTENTION_KEY_PREFIX}:${localISODate()}`,
-    value: JSON.stringify(payload),
-  })
-  savedIntentionAt.value = payload.savedAt
-}
-
-async function saveActiveRitual() {
-  if (ritualMode.value === 'intention') {
-    await saveIntention()
-    return
-  }
-  await saveCheckIn()
-}
-
-async function goBack() {
-  await hapticTap()
-  if (typeof window !== 'undefined' && window.history.length > 1) {
-    router.back()
-    return
-  }
-  await router.replace({ name: 'menu' })
-}
-
-async function openDailyCard() {
-  await hapticTap()
-  await router.push({ name: 'daily', query: { source: 'my_day', entry: 'hero_card' } })
-}
-
-async function openHoroscope() {
-  await hapticTap()
-  await router.push({ name: 'horoscope', query: { source: 'my_day', theme: horoscopeTheme.value } })
-}
-
-async function openTarot() {
-  await hapticTap()
-  await router.push({ name: 'tarot', query: { source: 'my_day', focus: horoscopeTheme.value } })
-}
+// ── Lifecycle ───────────────────────────────────────────────────
+const onFocus = () => { void refreshMyDayState({ includeRemote: true }) }
+const onVisChange = () => { if (document?.visibilityState === 'visible') void refreshMyDayState({ includeRemote: true }) }
 
 onMounted(async () => {
   computeAstro()
-  await loadIntention()
-  await loadCheckIn()
-  await loadSignSnapshot()
   await loadDailyCard()
-  await loadHoroscope()
+  ready.value = true
+  await refreshMyDayState({ includeRemote: true })
+  window.addEventListener('focus', onFocus, { passive: true })
+  document.addEventListener('visibilitychange', onVisChange, { passive: true })
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('focus', onFocus)
+  document.removeEventListener('visibilitychange', onVisChange)
 })
 </script>
 
 
-
 <style scoped lang="scss">
-// ── Page shell ────────────────────────────────────────────────
-.myday-page {
-  height: 100svh;
-  overflow: hidden;
-  background: #050d15;
-  position: relative;
-}
+/* ── Shell ───────────────────────────────────────────────────── */
+.myday-page { min-height: 100svh; background: #050d15; position: relative; }
 
 .myday-bg {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
-  pointer-events: none;
+  position: fixed; inset: 0; pointer-events: none;
+  transition: background 0.6s ease;
+  background:
+    radial-gradient(110% 54% at 50% 0%, rgba(28, 70, 105, 0.30) 0%, rgba(11, 22, 33, 0.12) 40%, transparent 68%),
+    linear-gradient(180deg, #08131d, #050d15);
+}
+.myday-bg--morning {
+  background:
+    radial-gradient(110% 54% at 50% 0%, rgba(60, 90, 130, 0.28) 0%, rgba(11, 22, 33, 0.12) 40%, transparent 68%),
+    linear-gradient(180deg, #0a1520, #050d15);
+}
+.myday-bg--day {
+  background:
+    radial-gradient(110% 54% at 50% 0%, rgba(40, 80, 120, 0.22) 0%, rgba(11, 22, 33, 0.10) 40%, transparent 68%),
+    linear-gradient(180deg, #09141e, #050d15);
+}
+.myday-bg--evening {
+  background:
+    radial-gradient(110% 54% at 50% 0%, rgba(60, 40, 90, 0.28) 0%, rgba(18, 12, 28, 0.14) 40%, transparent 68%),
+    linear-gradient(180deg, #0b101a, #050d15);
+}
+.myday-bg--night {
+  background:
+    radial-gradient(110% 54% at 50% 0%, rgba(16, 30, 52, 0.34) 0%, rgba(8, 14, 22, 0.16) 40%, transparent 68%),
+    linear-gradient(180deg, #060b12, #040a10);
 }
 
-// Padding matches /daily: top = 90px + safe-area, bottom = bottom-nav 86px + safe-area
 .myday-shell {
-  position: relative;
-  height: 100%;
-  box-sizing: border-box;
-  padding:
-    calc(90px + env(safe-area-inset-top, 0px))
-    16px
-    calc(86px + env(safe-area-inset-bottom, 0px) + 8px);
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto auto;
-  gap: 10px;
-  max-width: 450px;
-  margin: 0 auto;
-  overflow: hidden;
+  position: relative; box-sizing: border-box;
+  padding: calc(90px + env(safe-area-inset-top, 0px)) 18px calc(env(safe-area-inset-bottom, 0px) + 18px);
+  display: flex; flex-direction: column; gap: 14px;
+  max-width: 440px; margin: 0 auto;
+  overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
 }
 
-// ── Topbar ────────────────────────────────────────────────────
-.myday-topbar {
-  display: grid;
-  grid-template-columns: 36px 1fr 36px;
-  align-items: center;
-  gap: 4px;
+.myday-end { height: 8px; flex-shrink: 0; }
+
+/* ── 1. Header (DailyCard style) ─────────────────────────────── */
+.myday-hero {
+  position: relative; display: grid; gap: 12px;
+  grid-template-columns: 1fr; align-items: center; justify-items: center;
+  flex-shrink: 0;
 }
 
 .myday-back {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  flex-shrink: 0;
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 14, 22, 0.7);
+  color: rgba(214, 225, 242, 0.8);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; padding: 0;
 }
 
-.myday-topbar__center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
+.myday-hero__text {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 4px; padding: 0 44px; text-align: center;
+}
+.myday-title {
+  font-family: var(--font-accent), serif;
+  font-size: 22px; font-weight: 400; letter-spacing: 0.04em;
+  color: rgba(235, 242, 255, 0.96); line-height: 1.2;
+}
+.myday-kicker {
+  font-size: 12px; letter-spacing: 0.04em; text-transform: capitalize;
+  color: rgba(214, 225, 242, 0.68);
+}
+.myday-streak {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 999px; margin-top: 2px;
+  background: rgba(245, 158, 66, 0.10); border: 1px solid rgba(245, 158, 66, 0.18);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+  color: rgba(245, 186, 100, 0.82);
 }
 
-.myday-topbar__title {
-  font-size: 15px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
-  letter-spacing: 0.01em;
-  line-height: 1.2;
+/* ── 2. Card of the Day ──────────────────────────────────────── */
+.myday-card-wrap {
+  position: relative; flex-shrink: 0;
 }
 
-.myday-topbar__date {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.38);
-  letter-spacing: 0.02em;
-  line-height: 1;
-}
-
-.myday-topbar__ghost {
-  width: 36px;
-}
-
-// ── Hero launcher ─────────────────────────────────────────────
-.myday-launcher {
-  min-height: 0;
-  width: 100%;
-  padding: 14px 16px;
-  border-radius: 20px;
-  border: 1px solid rgba(163, 212, 255, 0.18);
+.myday-card {
+  width: 100%; padding: 14px; border-radius: 20px; cursor: pointer;
+  border: 1px solid rgba(134,177,221,0.12);
   background:
-    radial-gradient(120% 160% at 100% 0%, rgba(125, 188, 255, 0.22) 0%, rgba(125, 188, 255, 0) 55%),
-    linear-gradient(164deg, rgba(11, 18, 30, 0.97), rgba(7, 12, 22, 0.99));
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+    radial-gradient(100% 130% at 100% 0%, rgba(80,134,181,0.16) 0%, transparent 54%),
+    linear-gradient(160deg, rgba(11,19,30,0.96), rgba(7,13,22,0.98));
+  box-shadow: 0 14px 36px rgba(0,0,0,0.20);
+  display: flex; align-items: center; gap: 14px;
   text-align: left;
-  overflow: hidden;
 }
 
-.myday-launcher__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  flex-shrink: 0;
-}
+.myday-card__visual { flex-shrink: 0; }
 
-.myday-chips {
-  display: flex;
-  gap: 5px;
-  flex-wrap: nowrap;
+.myday-card__thumb {
+  display: block; width: 72px; height: 116px; border-radius: 10px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.24);
 }
+.myday-card__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.myday-card__thumb--rev .myday-card__img { transform: rotate(180deg); }
+.myday-card__placeholder { display: block; width: 100%; height: 100%; background: linear-gradient(145deg, rgba(66,96,133,0.3), rgba(34,50,68,0.7)); }
 
-.myday-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 8px;
-  border-radius: 8px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  background: rgba(147, 197, 253, 0.1);
-  border: 1px solid rgba(147, 197, 253, 0.18);
-  color: rgba(147, 197, 253, 0.75);
-  white-space: nowrap;
+.myday-card__info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.myday-card__eyebrow {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(191,216,240,0.48);
 }
-
-.myday-launcher__eyebrow {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(147, 197, 253, 0.5);
-  white-space: nowrap;
+.myday-card__name {
+  font-family: var(--font-accent), serif;
+  font-size: 19px; font-weight: 400; letter-spacing: 0.02em;
+  color: rgba(255,255,255,0.94); line-height: 1.2;
 }
-
-.myday-launcher__body {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.myday-launcher__copy {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.myday-launcher__title {
-  font-size: 20px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.95);
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
-
-.myday-launcher__meta {
-  font-size: 11px;
-  color: rgba(147, 197, 253, 0.55);
-  font-weight: 500;
-}
-
-.myday-launcher__hint {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.55);
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.myday-launcher__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+.myday-card__meta { font-size: 11px; font-weight: 600; color: rgba(178,202,226,0.44); }
+.myday-card__meaning {
+  font-size: 12px; color: rgba(237,244,252,0.48); line-height: 1.48;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   margin-top: 2px;
 }
+.myday-card__chevron { flex-shrink: 0; color: rgba(255,255,255,0.24); }
 
-.myday-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 7px;
-  border-radius: 6px;
-  font-size: 10px;
-  font-weight: 500;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.5);
+.myday-share {
+  position: absolute; right: 10px; bottom: -14px;
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(10,14,22,0.85); color: rgba(214,225,242,0.6);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; padding: 0; transition: all 0.15s;
+  &:active { transform: scale(0.92); }
 }
 
-// Card thumbnail
-.myday-launcher__visual {
+/* ── Skeleton ───────────────────────────────────────────────────── */
+.myday-skel {
+  border-radius: 20px; flex-shrink: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+.myday-skel--card { height: 144px; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ── 3. Cosmic strip ─────────────────────────────────────────── */
+.myday-cosmic {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 6px 0; flex-shrink: 0; flex-wrap: wrap;
+}
+.myday-cosmic__item { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.myday-cosmic__dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.myday-cosmic__glyph { font-size: 13px; line-height: 1; opacity: 0.6; }
+.myday-cosmic__text { font-size: 11px; font-weight: 600; color: rgba(200,218,238,0.46); white-space: nowrap; }
+.myday-cosmic__sep { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.14); flex-shrink: 0; }
+
+/* ── 4. Progress ─────────────────────────────────────────────── */
+.myday-progress {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
   flex-shrink: 0;
 }
 
-.myday-card-thumb {
-  display: block;
-  width: 62px;
-  height: 100px;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
+.myday-progress__step {
+  display: flex; align-items: center; gap: 5px;
+  padding: 7px 12px; border-radius: 999px; cursor: pointer;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+  transition: all 0.18s;
 }
-
-.myday-card-thumb__img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.myday-progress__step--done {
+  background: rgba(110,165,214,0.10); border-color: rgba(110,165,214,0.22);
 }
-
-.myday-card-thumb--reversed .myday-card-thumb__img {
-  transform: rotate(180deg);
+.myday-progress__dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.14); background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.4); font-size: 10px; transition: all 0.18s;
 }
-
-.myday-card-thumb__back {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(100, 149, 237, 0.15), rgba(72, 61, 139, 0.2));
+.myday-progress__step--done .myday-progress__dot {
+  border-color: rgba(110,165,214,0.5); background: rgba(110,165,214,0.16); color: rgba(174,214,252,0.9);
 }
-
-// Signals strip (inside hero)
-.myday-launcher__signals {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-  flex-wrap: nowrap;
-  overflow: hidden;
-}
-
-.myday-signal-sep {
-  color: rgba(255, 255, 255, 0.2);
-  font-size: 10px;
-  flex-shrink: 0;
-}
-
-.myday-signal-item {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-  flex-shrink: 1;
-  overflow: hidden;
-}
-
-.myday-signal-item__label {
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.28);
-  white-space: nowrap;
-}
-
-.myday-signal-item__val {
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.myday-signal-item--accent .myday-signal-item__val {
-  color: rgba(147, 197, 253, 0.8);
-}
-
-// CTA row
-.myday-launcher__cta {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(147, 197, 253, 0.7);
+.myday-progress__label {
+  font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.38);
   letter-spacing: 0.01em;
-  flex-shrink: 0;
-  align-self: flex-end;
+}
+.myday-progress__step--done .myday-progress__label { color: rgba(174,214,252,0.70); }
+
+/* ── 5. Guidance ─────────────────────────────────────────────── */
+.myday-guidance { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex-shrink: 0; }
+
+.myday-guidance__item {
+  padding: 12px; border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.03);
+  display: flex; flex-direction: column; gap: 5px;
+}
+.myday-guidance__tag {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(178,202,226,0.38);
+}
+.myday-guidance__body { font-size: 12px; line-height: 1.5; color: rgba(237,244,252,0.56); }
+
+/* ── 6. Horoscope ────────────────────────────────────────────── */
+.myday-horo {
+  width: 100%; padding: 14px; border-radius: 16px; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.03);
+  display: flex; align-items: center; gap: 12px; text-align: left; flex-shrink: 0;
+}
+.myday-horo--locked { border-color: rgba(134,177,221,0.10); }
+.myday-horo__left { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.myday-horo__tag {
+  font-size: 12px; font-weight: 700; color: rgba(174,206,237,0.62); line-height: 1;
+}
+.myday-horo__text {
+  font-size: 12px; line-height: 1.48; color: rgba(237,244,252,0.52);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.myday-horo__text--dim { color: rgba(255,255,255,0.32); }
+.myday-horo__chevron { flex-shrink: 0; color: rgba(255,255,255,0.2); }
+
+/* ── 7. Reflection prompt ────────────────────────────────────── */
+.myday-reflect {
+  padding: 16px; border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.03);
+  text-align: center; flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 6px; align-items: center;
+}
+.myday-reflect__tag {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+  color: rgba(178,202,226,0.36);
+}
+.myday-reflect__prompt {
+  font-family: var(--font-accent), serif;
+  font-size: 15px; font-style: italic; font-weight: 400;
+  line-height: 1.55; letter-spacing: 0.01em;
+  color: rgba(214, 225, 242, 0.54);
 }
 
-// ── Action dock ───────────────────────────────────────────────
-.myday-action-dock {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+/* ── 8. Tarot CTA ────────────────────────────────────────────── */
+.myday-tarot {
+  width: 100%; padding: 13px 16px; border-radius: 14px; cursor: pointer;
+  border: 1px solid rgba(134,177,221,0.08);
+  background: radial-gradient(140% 100% at 0% 100%, rgba(90,60,140,0.10) 0%, transparent 48%), rgba(255,255,255,0.03);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  flex-shrink: 0; color: rgba(214,229,245,0.64);
+}
+.myday-tarot__text { font-size: 13px; font-weight: 600; }
+.myday-tarot--done {
+  border-color: rgba(110,165,214,0.14);
+  background: rgba(110,165,214,0.05);
 }
 
-.myday-action-tile {
-  padding: 12px 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.04);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  text-align: left;
-  overflow: hidden;
-  transition: background 0.15s;
-
-  &:active {
-    background: rgba(255, 255, 255, 0.07);
-  }
+/* ── Entrance animation ──────────────────────────────────────── */
+.myday-anim {
+  opacity: 0; transform: translateY(12px);
+  animation: myday-in 0.45s ease-out forwards;
+  animation-delay: calc(var(--d, 0) * 0.06s + 0.05s);
+}
+@keyframes myday-in {
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.myday-action-tile--horoscope {
-  border-color: rgba(251, 191, 36, 0.18);
-  background: linear-gradient(145deg, rgba(251, 191, 36, 0.07), rgba(251, 191, 36, 0.03));
-}
-
-.myday-action-tile--tarot {
-  border-color: rgba(167, 139, 250, 0.18);
-  background: linear-gradient(145deg, rgba(167, 139, 250, 0.08), rgba(167, 139, 250, 0.03));
-}
-
-.myday-action-tile__eyebrow {
-  display: block;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.3);
-  line-height: 1;
-}
-
-.myday-action-tile__title {
-  display: block;
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.88);
-  line-height: 1.25;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.myday-action-tile__text {
-  display: block;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-// ── Ritual ────────────────────────────────────────────────────
-.myday-ritual {
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.03);
-  padding: 10px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  overflow: hidden;
-}
-
-.myday-ritual__head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: nowrap;
-}
-
-.myday-ritual__title {
-  font-size: 12px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.65);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.myday-saved-badge {
-  font-size: 10px;
-  font-weight: 600;
-  color: rgba(74, 222, 128, 0.8);
-  background: rgba(74, 222, 128, 0.1);
-  border: 1px solid rgba(74, 222, 128, 0.2);
-  border-radius: 6px;
-  padding: 2px 6px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.myday-ritual-switch {
-  display: flex;
-  gap: 4px;
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
-.myday-switch-btn {
-  padding: 4px 10px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: transparent;
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.35);
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
-
-  &--active {
-    background: rgba(147, 197, 253, 0.15);
-    border-color: rgba(147, 197, 253, 0.3);
-    color: rgba(147, 197, 253, 0.9);
-  }
-}
-
-.myday-ritual__inputs {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.myday-mood-row {
-  display: flex;
-  gap: 6px;
-}
-
-.myday-mood-chip {
-  width: 36px;
-  height: 32px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
-
-  &--active {
-    background: rgba(147, 197, 253, 0.15);
-    border-color: rgba(147, 197, 253, 0.35);
-  }
-}
-
-.myday-input-row {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-.myday-ritual-input {
-  flex: 1;
-  min-width: 0;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 10px;
-  padding: 0 12px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
-  outline: none;
-
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.25);
-  }
-
-  &:focus {
-    border-color: rgba(147, 197, 253, 0.35);
-    background: rgba(147, 197, 253, 0.06);
-  }
-}
-
-.myday-ritual-save {
-  flex-shrink: 0;
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(147, 197, 253, 0.3);
-  background: rgba(147, 197, 253, 0.12);
-  font-size: 12px;
-  font-weight: 700;
-  color: rgba(147, 197, 253, 0.9);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s;
-
-  &:active {
-    background: rgba(147, 197, 253, 0.2);
-  }
-}
-
-// ── Responsive ───────────────────────────────────────────────
-@media (max-height: 780px) {
-  .myday-shell { gap: 8px; }
-  .myday-launcher { padding: 11px 14px; }
-  .myday-launcher__title { font-size: 18px; }
-  .myday-launcher__hint { -webkit-line-clamp: 2; }
-  .myday-card-thumb { height: 88px; width: 54px; }
-  .myday-action-tile { padding: 10px 12px; }
-  .myday-ritual { padding: 8px 12px; gap: 6px; }
-}
-
+/* ── Responsive ──────────────────────────────────────────────── */
 @media (max-height: 700px) {
-  .myday-shell { gap: 6px; }
-  .myday-topbar__date { display: none; }
-  .myday-launcher__tags { display: none; }
-  .myday-launcher__signals { display: none; }
-  .myday-card-thumb { height: 76px; width: 48px; }
+  .myday-shell { gap: 10px; }
+  .myday-card { padding: 12px; }
+  .myday-card__thumb { height: 96px; width: 60px; }
+  .myday-card__name { font-size: 17px; }
+  .myday-guidance__item { padding: 10px; }
 }
 
 @media (hover: hover) {
-  .myday-launcher:hover { border-color: rgba(163, 212, 255, 0.3); }
-  .myday-action-tile:hover { background: rgba(255, 255, 255, 0.07); }
+  .myday-card:hover { border-color: rgba(134,177,221,0.22); }
+  .myday-progress__step:hover { border-color: rgba(255,255,255,0.12); }
+  .myday-horo:hover { border-color: rgba(255,255,255,0.10); }
+  .myday-tarot:hover { border-color: rgba(134,177,221,0.16); }
+  .myday-share:hover { color: rgba(214,225,242,0.9); border-color: rgba(255,255,255,0.18); }
 }
 </style>

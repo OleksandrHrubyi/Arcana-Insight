@@ -257,19 +257,26 @@ export default defineComponent({
     const personalizedInterests = ref(readOnboardingInterests())
 
     const mainItems = [
-      { key: 'arcana', labelKey: 'arcana', icon: 'auto_awesome', routeName: 'arcana' },
-      { key: 'horoscope', labelKey: 'horoscope', icon: 'nightlight_round', routeName: 'horoscope' },
-      { key: 'tarot', labelKey: 'tarot', icon: 'style', routeName: 'tarot' },
-      { key: 'daily', labelKey: 'nav.daily', icon: 'calendar_today', routeName: 'daily' },
+      {
+        key: 'myDay',
+        labelKey: 'nav.myDay',
+        icon: 'today',
+        routeName: 'myDay',
+      },
       {
         key: 'compatibility',
         labelKey: 'nav.compatibility',
         icon: 'favorite',
         routeName: 'compatibility',
       },
-      { key: 'cards', labelKey: 'nav.cards', icon: 'auto_stories', routeName: 'cards' },
-      { key: 'zodiacGuide', labelKey: 'nav.zodiacGuide', icon: 'stars', routeName: 'zodiacGuide' },
+      {
+        key: 'cards',
+        labelKey: 'nav.cards',
+        icon: 'auto_stories',
+        routeName: 'cards',
+      },
       { key: 'readings', labelKey: 'nav.readings', icon: 'history', routeName: 'readings' },
+      { key: 'zodiacGuide', labelKey: 'nav.zodiacGuide', icon: 'stars', routeName: 'zodiacGuide' },
       { key: 'rewards', labelKey: 'nav.rewards', icon: 'redeem', routeName: 'ritualRewards' },
       { key: 'premium', labelKey: 'nav.premium', icon: 'workspace_premium', routeName: 'premium' },
     ]
@@ -527,7 +534,9 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .menu-page {
+  height: 100svh;
   min-height: 100vh;
+  min-height: 100svh;
   color: #e9edf4;
   position: relative;
   overflow: hidden;
@@ -543,9 +552,15 @@ export default defineComponent({
 .menu-content {
   position: relative;
   z-index: 1;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
   padding: calc(90px + env(safe-area-inset-top)) 18px calc(32px + env(safe-area-inset-bottom) + 84px);
   max-width: 540px;
   margin: 0 auto;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .menu-hero {
