@@ -409,9 +409,21 @@ const getExtraTarotSpreadTokens = () => {
   )
 }
 
-function onExit() {
+const hasRouterBackTarget = () => {
+  try {
+    return typeof window !== 'undefined' && typeof window.history.state?.back === 'string' && window.history.state.back.length > 0
+  } catch {
+    return false
+  }
+}
+
+async function onExit() {
   void impact(ImpactStyle.Light)
-  router.push('/')
+  if (hasRouterBackTarget()) {
+    router.back()
+    return
+  }
+  await router.push({ name: 'arcana' }).catch(() => {})
 }
 
 const getTodayKey = () => {

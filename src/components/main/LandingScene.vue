@@ -230,7 +230,7 @@ import { useAuthStore } from 'src/stores/authStore.js'
 import { t, currentLocale } from 'src/i18n/index.js';
 import * as Astronomy from 'astronomy-engine';
 import { readDailyStreak, DAILY_ACTIVITY_KEYS, hasDailyActivityToday, markDailyActivity } from 'src/helpers/dailyRitual.js';
-import { loadDailyCardsSnapshot } from 'src/helpers/dailyCardCore.js';
+import { getDeterministicDailyCardSelection, loadDailyCardsSnapshot } from 'src/helpers/dailyCardCore.js';
 import { loadTarotData } from 'src/helpers/tarotData';
 import { loadHoroscopeRegistry } from 'src/helpers/horoscopeContentCore.js';
 import { loadLocal, saveLocal } from 'src/helpers/localStorageSaver.js';
@@ -321,6 +321,8 @@ export default {
       phraseCursor: 0,
       dailyCardData: null,
       hasDailyCardToday: false,
+      hasHoroscopeToday: false,
+      hasTarotToday: false,
       horoscopeData: null,
       ritualDone: { morning: false, evening: false },
       isFirstVisitToday: false,
@@ -592,6 +594,12 @@ export default {
       }
     },
 
+    refreshHomeProgressState() {
+      this.hasDailyCardToday = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.dailyCard)
+      this.hasHoroscopeToday = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.horoscope)
+      this.hasTarotToday = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.tarot)
+    },
+
     openMyDay() {
       void this.$router.push({ name: 'daily', query: { source: 'landing', entry: 'hero_card' } })
     },
@@ -600,7 +608,7 @@ export default {
       if (!this.hasDailyCardToday) {
         await this.triggerImpact(ImpactStyle.Medium)
         markDailyActivity(DAILY_ACTIVITY_KEYS.dailyCard)
-        this.hasDailyCardToday = true
+        this.refreshHomeProgressState()
         this.dailyStreak = Math.max(
           readDailyStreak(DAILY_ACTIVITY_KEYS.dailyCard).current,
           readDailyStreak(DAILY_ACTIVITY_KEYS.horoscope).current,
@@ -951,15 +959,6 @@ export default {
       return `${raw.slice(0, maxChars).replace(/[.,;:!?-]+$/u, '').trim()}…`
     },
 
-    _hashStr(value) {
-      let hash = 0
-      const raw = String(value || '')
-      for (let i = 0; i < raw.length; i++) {
-        hash = (hash * 31 + raw.charCodeAt(i)) >>> 0
-      }
-      return hash
-    },
-
     _getAnonSeed() {
       if (typeof window === 'undefined') return 'anon'
       const stored = localStorage.getItem('arcana_daily_seed_v1')
@@ -999,7 +998,7 @@ export default {
     async loadLandingContent() {
       const locale = this.locale
       const today = localISODate()
-      this.hasDailyCardToday = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.dailyCard)
+      this.refreshHomeProgressState()
 
       // 1. Daily card
       try {
@@ -1007,14 +1006,16 @@ export default {
         if (cards.length) {
           const userId = this.authStore?.state?.user?.id
           const seed = userId || this._getAnonSeed()
-          const dailySeed = `${today}::${seed}`
-          const idx = this._hashStr(`${dailySeed}::card`) % cards.length
-          const ori = this._hashStr(`${dailySeed}::orientation`) % 2 === 0 ? 'upright' : 'reversed'
-          const card = cards[idx]
+          const { index, orientation } = getDeterministicDailyCardSelection({
+            dateKey: today,
+            identity: seed,
+            cardsLength: cards.length,
+          })
+          const card = cards[index]
           this.dailyCardData = {
             title: card?.name?.[locale] || card?.name?.en || '',
             image: card?.file ? `/images/cards/${card.file}` : '',
-            orientation: ori,
+            orientation,
             keywords: (card?.keywords?.[locale] || card?.keywords?.en || []).slice(0, 2),
           }
         }
@@ -1529,12 +1530,13 @@ export default {
 
 /* ─── Action blocks ────────────────────────────────────── */
 .home-actions {
+  display: none;
   position: absolute;
   left: 16px;
   right: 16px;
   bottom: calc(35px + env(safe-area-inset-bottom, 0px));
   z-index: 4;
-  display: grid;
+  //display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 9px;
   max-width: 420px;

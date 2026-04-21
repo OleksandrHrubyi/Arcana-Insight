@@ -3,174 +3,165 @@
     <div class="compat-bg" aria-hidden="true"></div>
 
     <div class="compat-content">
-      <header class="compat-hero compat-hero--with-back">
+      <header class="compat-topbar">
         <button type="button" class="compat-back" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
-        <div class="compat-hero__text">
-          <div class="compat-title">{{ tt('compatibilityPage.title') }}</div>
-          <div class="compat-kicker">{{ tt('compatibilityPage.subtitle') }}</div>
+        <div class="compat-topbar__text">
+          <div class="compat-topbar__title">{{ copy.title }}</div>
+          <div class="compat-topbar__subtitle">{{ copy.subtitle }}</div>
         </div>
+        <div class="compat-topbar__ghost"></div>
       </header>
 
-      <section v-if="hasPremiumAccess" class="compat-stack">
-        <div class="compat-panel compat-panel--pair">
-          <div class="compat-panel__title">
-            {{ tt('compatibilityPage.sections.match') }}
+      <section class="compat-shell">
+        <div class="compat-card compat-card--hero">
+          <div class="compat-card__eyebrow">{{ copy.heroEyebrow }}</div>
+
+          <div class="compat-hero-copy">
+            <div class="compat-hero-copy__title">{{ copy.heroTitle }}</div>
+            <div class="compat-hero-copy__text">{{ copy.heroText }}</div>
           </div>
 
-          <div class="compat-pick-group">
-            <button type="button" class="compat-pick" @click="openPicker('a')">
-              <span class="compat-pick__content">
-                <span class="compat-pick__label">{{ tt('compatibilityPage.you') }}</span>
-                <span class="compat-pick__value">{{ selectedLabelA }}</span>
-              </span>
-              <q-icon name="chevron_right" size="18px" class="compat-chevron" />
+          <div class="compat-pair-stage">
+            <button type="button" class="compat-sign-pill" @click="openPicker('a')">
+              <span class="compat-sign-pill__label">{{ copy.you }}</span>
+              <span class="compat-sign-pill__value">{{ selectedLabelA }}</span>
             </button>
 
-            <button type="button" class="compat-pick" @click="openPicker('b')">
-              <span class="compat-pick__content">
-                <span class="compat-pick__label">{{ tt('compatibilityPage.partner') }}</span>
-                <span class="compat-pick__value">{{ selectedLabelB }}</span>
-              </span>
-              <q-icon name="chevron_right" size="18px" class="compat-chevron" />
+            <button
+              type="button"
+              class="compat-swap"
+              :disabled="!hasPair"
+              :aria-label="copy.swap"
+              @click="swapSigns"
+            >
+              <q-icon name="swap_horiz" size="18px" />
+            </button>
+
+            <button type="button" class="compat-sign-pill" @click="openPicker('b')">
+              <span class="compat-sign-pill__label">{{ copy.partner }}</span>
+              <span class="compat-sign-pill__value">{{ selectedLabelB }}</span>
             </button>
           </div>
 
-          <button type="button" class="compat-cta" :class="{ 'compat-cta--active': showResult }" @click="showCompatibility">
-            <q-icon :name="showResult ? 'refresh' : 'auto_awesome'" size="18px" class="compat-cta__icon" />
-            <span>{{ showResult ? tt('compatibilityPage.ctaUpdate') : tt('compatibilityPage.cta') }}</span>
-          </button>
-        </div>
-
-        <div class="compat-panel compat-panel--result">
-          <div class="compat-panel__title">
-            {{ tt('compatibilityPage.sections.preview') }}
-          </div>
-          <div class="compat-preview" :class="{ 'compat-preview--active': showResult }">
-            <div v-if="!showResult" class="compat-empty">
-              <div class="compat-empty__icon">✦</div>
-              <div class="compat-empty__title">{{ tt('compatibilityPage.previewTitle') }}</div>
-              <div class="compat-empty__text">{{ tt('compatibilityPage.previewText') }}</div>
-            </div>
-
-            <div v-if="showResult" class="compat-report compat-report--animate" :style="resultStyle">
-              <div class="compat-result-header">
-                <div class="compat-result-header__title">
-                  {{ formatText(tt('compatibilityPage.resultTitle'), { a: selectedLabelA, b: selectedLabelB }) }}
-                </div>
-                <div class="compat-result-header__subtitle">
-                  {{ tt('compatibilityPage.resultSub') }}
-                </div>
-              </div>
-
-              <div class="compat-report__header">
-                <div class="compat-report__score">
-                  <div class="compat-score">
-                    <span class="compat-score__value">{{ displayScore }}</span>
-                    <span class="compat-score__unit">%</span>
-                  </div>
-                  <div class="compat-score__meta">{{ confidenceLabel }}</div>
-                </div>
-                <div class="compat-report__meta">
-                  <div class="compat-report__summary">{{ summaryText }}</div>
-                  <div class="compat-report__line">{{ elementLine }}</div>
-                </div>
-              </div>
-
-              <div class="compat-meter">
-                <span class="compat-meter__fill" :style="{ width: `${displayScore}%` }"></span>
-              </div>
-
-              <div class="compat-description">
-                <div class="compat-description__text">{{ resultText }}</div>
-              </div>
-
-              <div class="compat-tags">
-                <span class="compat-tag compat-tag--element">{{ elementA }}</span>
-                <span class="compat-tag compat-tag--element">{{ elementB }}</span>
-                <span class="compat-tag compat-tag--modality">{{ modalityLine }}</span>
-              </div>
-
-              <div class="compat-insight">
-                <div class="compat-insight__label">{{ tt('compatibilityPage.insightLabel') }}</div>
-                <div class="compat-insight__text">{{ insightText }}</div>
-              </div>
-
-              <div class="compat-metrics-section">
-                <div class="compat-metrics-section__title">{{ tt('compatibilityPage.spheres.title') }}</div>
-                <div class="compat-metrics">
-                  <div class="compat-metric" v-for="item in sphereItems" :key="item.key">
-                    <div class="compat-metric__header">
-                      <div class="compat-metric__label">
-                        <q-icon :name="item.icon" size="14px" class="compat-metric__icon" />
-                        <span>{{ tt(item.labelKey) }}</span>
-                      </div>
-                      <div class="compat-metric__value">{{ item.value }}%</div>
-                    </div>
-                    <div class="compat-metric__bar">
-                      <span class="compat-metric__fill" :style="{ width: `${item.value}%` }"></span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="compat-balance">
-                <div class="compat-balance__label">{{ tt('compatibilityPage.balanceLabel') }}</div>
-                <div class="compat-balance__rows">
-                  <div class="compat-balance__row">
-                    <span class="compat-balance__name">{{ elementA }}</span>
-                    <div class="compat-balance__bar">
-                      <span class="compat-balance__fill" :style="{ width: `${balanceA}%` }"></span>
-                    </div>
-                    <span class="compat-balance__percent">{{ balanceA }}%</span>
-                  </div>
-                  <div class="compat-balance__row">
-                    <span class="compat-balance__name">{{ elementB }}</span>
-                    <div class="compat-balance__bar">
-                      <span class="compat-balance__fill" :style="{ width: `${balanceB}%` }"></span>
-                    </div>
-                    <span class="compat-balance__percent">{{ balanceB }}%</span>
-                  </div>
-                </div>
-              </div>
-
-              <button type="button" class="compat-details-link" @click="onDetailsOpen">
-                <q-icon name="info" size="16px" class="compat-details-link__icon" />
-                <span>{{ tt('compatibilityPage.detailsCta') }}</span>
+          <div v-if="recentPairsWithLabels.length" class="compat-recents">
+            <div class="compat-recents__label">{{ copy.recentTitle }}</div>
+            <div class="compat-recents__row">
+              <button
+                v-for="pair in recentPairsWithLabels"
+                :key="pair.key"
+                type="button"
+                class="compat-recent-chip"
+                @click="applyRecentPair(pair)"
+              >
+                {{ pair.label }}
               </button>
             </div>
           </div>
         </div>
-      </section>
 
-      <section v-else class="compat-lock">
-        <div class="compat-lock__badge">{{ tt('premiumAccess.badge') }}</div>
-        <div class="compat-lock__title">{{ tt('premiumAccess.compatibility.title') }}</div>
-        <p class="compat-lock__text">{{ tt('premiumAccess.compatibility.text') }}</p>
-        <div class="compat-lock__model">
-          <div v-for="row in compatibilityAccessModelRows" :key="row.key" class="compat-lock__model-row">
-            <span class="compat-lock__model-label">{{ row.label }}</span>
-            <span class="compat-lock__model-text">{{ row.text }}</span>
+        <div class="compat-card compat-card--preview">
+          <template v-if="hasPair">
+            <div class="compat-preview-top">
+              <div class="compat-preview-top__copy">
+                <div class="compat-card__eyebrow">{{ copy.previewEyebrow }}</div>
+                <div class="compat-preview-top__title">{{ pairTitle }}</div>
+                <div class="compat-preview-top__line">{{ pairLine }}</div>
+              </div>
+              <div class="compat-preview-top__meta">{{ confidenceLabel }}</div>
+            </div>
+
+            <div class="compat-score-shell" :style="resultStyle">
+              <div class="compat-score-block">
+                <div class="compat-score-block__value">
+                  <span>{{ displayScore }}</span>
+                  <small>%</small>
+                </div>
+                <div class="compat-score-block__label">{{ copy.scoreLabel }}</div>
+              </div>
+
+              <div class="compat-score-copy">
+                <div class="compat-score-copy__headline">{{ overallLabel }}</div>
+                <div class="compat-score-copy__summary">{{ summaryText }}</div>
+                <div class="compat-score-copy__hint">{{ cautionText }}</div>
+              </div>
+            </div>
+
+            <div class="compat-meter">
+              <span class="compat-meter__fill" :style="{ width: `${displayScore}%` }"></span>
+            </div>
+
+            <div class="compat-spheres">
+              <div v-for="item in sphereItems" :key="item.key" class="compat-sphere-card">
+                <div class="compat-sphere-card__header">
+                  <span class="compat-sphere-card__title">{{ item.label }}</span>
+                  <span class="compat-sphere-card__value">{{ item.value }}%</span>
+                </div>
+                <div class="compat-sphere-card__bar">
+                  <span :style="{ width: `${item.value}%` }"></span>
+                </div>
+                <div class="compat-sphere-card__text">{{ item.text }}</div>
+              </div>
+            </div>
+
+            <div class="compat-advice-grid">
+              <div class="compat-advice-card">
+                <div class="compat-advice-card__label">{{ copy.advice.strength }}</div>
+                <div class="compat-advice-card__text">{{ strengthText }}</div>
+              </div>
+
+              <div class="compat-advice-card">
+                <div class="compat-advice-card__label">{{ copy.advice.tension }}</div>
+                <div class="compat-advice-card__text">{{ cautionText }}</div>
+              </div>
+
+              <div class="compat-advice-card">
+                <div class="compat-advice-card__label">{{ copy.advice.approach }}</div>
+                <div class="compat-advice-card__text">{{ approachText }}</div>
+              </div>
+            </div>
+
+            <div v-if="hasPremiumAccess" class="compat-deep-card">
+              <div class="compat-deep-card__title">{{ copy.deepTitle }}</div>
+              <div class="compat-deep-card__row">
+                <div class="compat-deep-card__label">{{ copy.deepLabels.chemistry }}</div>
+                <div class="compat-deep-card__text">{{ resultText }}</div>
+              </div>
+              <div class="compat-deep-card__row">
+                <div class="compat-deep-card__label">{{ copy.deepLabels.rhythm }}</div>
+                <div class="compat-deep-card__text">{{ paceText }}</div>
+              </div>
+              <div class="compat-deep-card__row">
+                <div class="compat-deep-card__label">{{ copy.deepLabels.support }}</div>
+                <div class="compat-deep-card__text">{{ insightText }}</div>
+              </div>
+            </div>
+
+            <div v-else class="compat-premium-card">
+              <div class="compat-premium-card__badge">{{ tt('premiumAccess.badge') }}</div>
+              <div class="compat-premium-card__title">{{ copy.premiumTitle }}</div>
+              <div class="compat-premium-card__text">{{ copy.premiumText }}</div>
+              <ul class="compat-premium-card__list">
+                <li v-for="item in premiumBullets" :key="item">{{ item }}</li>
+              </ul>
+              <button type="button" class="compat-premium-card__cta" @click="goPremium">
+                <q-icon name="workspace_premium" size="16px" />
+                <span>{{ tt('premiumAccess.cta') }}</span>
+              </button>
+            </div>
+
+            <button type="button" class="compat-details-link" @click="onDetailsOpen">
+              <q-icon name="info" size="16px" />
+              <span>{{ copy.detailsCta }}</span>
+            </button>
+          </template>
+
+          <div v-else class="compat-empty">
+            <div class="compat-empty__title">{{ copy.emptyTitle }}</div>
+            <div class="compat-empty__text">{{ copy.emptyText }}</div>
           </div>
         </div>
-        <ul class="compat-lock__bullets">
-          <li v-for="item in compatibilityLockBullets" :key="item" class="compat-lock__bullet">
-            {{ item }}
-          </li>
-        </ul>
-        <div class="compat-lock__preview">
-          <div class="compat-lock__preview-line">{{ tt('compatibilityPage.spheres.emotion') }} · 82%</div>
-          <div class="compat-lock__preview-line">{{ tt('compatibilityPage.spheres.communication') }} · 76%</div>
-          <div class="compat-lock__preview-line">{{ tt('compatibilityPage.spheres.stability') }} · 71%</div>
-          <div class="compat-lock__meter" aria-hidden="true">
-            <span class="compat-lock__meter-fill"></span>
-          </div>
-        </div>
-        <button type="button" class="compat-lock__cta" @click="goPremium">
-          <q-icon name="workspace_premium" size="16px" />
-          <span>{{ tt('premiumAccess.cta') }}</span>
-        </button>
       </section>
     </div>
 
@@ -179,12 +170,12 @@
       position="bottom"
       transition-show="slide-up"
       transition-hide="slide-down"
-      :transition-duration="440"
+      :transition-duration="420"
       class="oracle-actions-dialog"
     >
       <section class="oracle-actions">
         <div class="sheet-handle" aria-hidden="true"></div>
-        <div class="sheet-title">{{ tt('compatibilityPage.pickSign') }}</div>
+        <div class="sheet-title">{{ activePicker === 'a' ? copy.pickYou : copy.pickPartner }}</div>
 
         <div class="oracle-wheel">
           <div class="oracle-wheel__window" aria-hidden="true"></div>
@@ -205,8 +196,8 @@
         </div>
 
         <div class="oracle-actions__footer">
-          <button type="button" class="oracle-actions__ok" @click="confirmWheel">
-            {{ tt('tarotOracle.choices.ok') }}
+          <button type="button" class="oracle-actions__ok" @click="sheetOpen = false">
+            {{ tt('common.close') }}
           </button>
         </div>
       </section>
@@ -217,12 +208,12 @@
       position="bottom"
       transition-show="slide-up"
       transition-hide="slide-down"
-      :transition-duration="440"
+      :transition-duration="420"
       class="oracle-actions-dialog oracle-actions-dialog--details"
     >
       <section class="oracle-actions">
         <div class="sheet-handle" aria-hidden="true"></div>
-        <div class="sheet-title">{{ tt('compatibilityPage.detailsTitle') }}</div>
+        <div class="sheet-title">{{ copy.detailsTitle }}</div>
 
         <div class="details-tabs">
           <button
@@ -233,84 +224,77 @@
             :class="{ 'details-tab--active': detailsTab === tab.id }"
             @click="onDetailsTabClick(tab.id)"
           >
-            {{ tt(tab.labelKey) }}
+            {{ tab.label }}
           </button>
         </div>
 
         <div class="details-body">
-          <div v-if="detailsTab === 'basic'">
+          <div v-if="detailsTab === 'chemistry'" class="details-stack">
+            <div class="details-card">
+              <div class="details-card__label">{{ copy.detailsSections.pair }}</div>
+              <div class="details-card__title">{{ pairTitle }}</div>
+              <div class="details-card__text">{{ pairLine }}</div>
+            </div>
+
+            <div class="details-card">
+              <div class="details-card__label">{{ copy.detailsSections.chemistry }}</div>
+              <div class="details-card__title">{{ strengthText }}</div>
+              <div class="details-card__text">{{ resultText }}</div>
+            </div>
+
+            <div class="details-card">
+              <div class="details-card__label">{{ copy.detailsSections.support }}</div>
+              <div class="details-card__title">{{ copy.advice.approach }}</div>
+              <div class="details-card__text">{{ approachText }}</div>
+            </div>
+          </div>
+
+          <div v-else-if="detailsTab === 'rhythm'" class="details-stack">
+            <div class="details-card">
+              <div class="details-card__label">{{ copy.detailsSections.rhythm }}</div>
+              <div class="details-card__title">{{ modalityPairLabel }}</div>
+              <div class="details-card__text">{{ paceText }}</div>
+            </div>
+
+            <div class="details-card">
+              <div class="details-card__label">{{ copy.detailsSections.watch }}</div>
+              <div class="details-card__title">{{ overallLabel }}</div>
+              <div class="details-card__text">{{ cautionText }}</div>
+            </div>
+          </div>
+
+          <div v-else class="details-stack">
+            <div class="details-card">
+              <div class="details-card__label">{{ copy.detailsSections.method }}</div>
+              <div class="details-card__title">{{ copy.methodTitle }}</div>
+              <div class="details-card__text">{{ copy.methodText }}</div>
+            </div>
+
             <div class="details-card">
               <div class="details-row">
-                <span class="details-label">{{ tt('compatibilityPage.details.signs') }}</span>
-                <span class="details-value">{{ selectedLabelA }} + {{ selectedLabelB }}</span>
+                <span class="details-row__label">{{ copy.methodScores.element }}</span>
+                <span class="details-row__value">{{ elementScore }}%</span>
               </div>
-            <div class="details-row">
-              <span class="details-label">{{ tt('compatibilityPage.details.elements') }}</span>
-              <span class="details-value">{{ elementA }} + {{ elementB }}</span>
-            </div>
-            <div class="details-row">
-              <span class="details-label">{{ tt('compatibilityPage.details.modalities') }}</span>
-              <span class="details-value">{{ modalityLine }}</span>
-            </div>
-          </div>
-
-          <div class="details-card">
-            <div class="details-row">
-              <span class="details-label">{{ tt('compatibilityPage.details.elementScore') }}</span>
-              <span class="details-value">{{ elementScore }}%</span>
-            </div>
-            <div class="details-row">
-              <span class="details-label">{{ tt('compatibilityPage.details.modalityScore') }}</span>
-              <span class="details-value">{{ modalityScore }}%</span>
-            </div>
-            <div class="details-row details-row--final">
-              <span class="details-label">{{ tt('compatibilityPage.details.final') }}</span>
-              <span class="details-value">{{ compatibilityScore }}%</span>
-            </div>
-          </div>
-
-          <div class="details-notes">
-            <div class="details-notes__title">{{ tt('compatibilityPage.details.formula') }}</div>
-            <ul class="details-notes__list">
-              <li>{{ tt('compatibilityPage.details.formulaText') }}</li>
-              <li>{{ tt('compatibilityPage.details.modalityNote') }}</li>
-            </ul>
-          </div>
-          </div>
-
-          <div v-else-if="detailsTab === 'extended'" class="details-extended">
-            <div class="details-card">
-              <div class="details-row details-row--stack">
-                <span class="details-label">{{ tt('compatibilityPage.details.elementPair') }}</span>
-                <span class="details-value">{{ elementA }} + {{ elementB }}</span>
+              <div class="details-row">
+                <span class="details-row__label">{{ copy.methodScores.modality }}</span>
+                <span class="details-row__value">{{ modalityScore }}%</span>
               </div>
-            <div class="details-explain">{{ resultText }}</div>
-          </div>
-
-          <div class="details-card">
-            <div class="details-row details-row--stack">
-              <span class="details-label">{{ tt('compatibilityPage.details.modalityPair') }}</span>
-              <span class="details-value">{{ modalityLabelA }} + {{ modalityLabelB }}</span>
+              <div class="details-row details-row--final">
+                <span class="details-row__label">{{ copy.methodScores.final }}</span>
+                <span class="details-row__value">{{ compatibilityScore }}%</span>
+              </div>
             </div>
-            <div class="details-explain">{{ modalityExplain }}</div>
-          </div>
 
             <div class="details-card">
-              <div class="details-row details-row--stack">
-                <span class="details-label">{{ tt('compatibilityPage.details.resultSummary') }}</span>
-                <span class="details-value">{{ compatibilityScore }}%</span>
-              </div>
-              <div class="details-explain">
-                {{ tt('compatibilityPage.details.resultExplain') }}
-              </div>
+              <div class="details-card__label">{{ copy.detailsSections.transparency }}</div>
+              <div class="details-card__text">{{ copy.transparencyText }}</div>
             </div>
           </div>
-
         </div>
 
         <div class="oracle-actions__footer">
           <button type="button" class="oracle-actions__ok" @click="onDetailsClose">
-            {{ tt('tarotOracle.choices.ok') }}
+            {{ copy.confirm }}
           </button>
         </div>
       </section>
@@ -319,39 +303,231 @@
 </template>
 
 <script setup>
-import { computed, ref, nextTick, watch, onBeforeUnmount } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
 
-const locale = computed(() => currentLocale.value || 'en')
-const tt = (key) => t(locale.value, key)
 const router = useRouter()
 const { hasPremiumAccess } = usePremiumAccess()
-const compatibilityLockBullets = computed(() => [
-  tt('premiumAccess.compatibility.bullets.report'),
-  tt('premiumAccess.compatibility.bullets.scores'),
-  tt('premiumAccess.compatibility.bullets.insight'),
-])
-const compatibilityAccessModelRows = computed(() => [
-  {
-    key: 'free',
-    label: tt('premiumAccess.model.labels.free'),
-    text: tt('premiumAccess.model.compatibility.free'),
+
+const locale = computed(() => (currentLocale.value || 'en').toLowerCase().startsWith('uk') ? 'uk' : 'en')
+const tt = (key) => t(locale.value, key)
+
+const copyByLocale = {
+  en: {
+    title: 'Compatibility',
+    subtitle: 'Read the dynamic between two signs in a clearer, more useful way.',
+    heroEyebrow: 'Relationship insight',
+    heroTitle: 'Compare two signs',
+    heroText: 'Pick your sign and the other person to see the emotional flow, communication style, and long-term rhythm.',
+    you: 'You',
+    partner: 'Partner',
+    pickPlaceholder: 'Choose sign',
+    swap: 'Swap signs',
+    recentTitle: 'Recent pairs',
+    previewEyebrow: 'Live preview',
+    scoreLabel: 'Overall resonance',
+    emptyTitle: 'Pick two signs',
+    emptyText: 'Select both signs to unlock the preview with strengths, tension points, and the best approach for this pair.',
+    premiumTitle: 'Unlock the full compatibility reading',
+    premiumText: 'The free preview shows the core dynamic. Premium adds deeper relationship guidance and a clearer explanation of where friction comes from.',
+    detailsCta: 'Why this match looks like this',
+    detailsTitle: 'Compatibility details',
+    detailsTabs: {
+      chemistry: 'Chemistry',
+      rhythm: 'Rhythm',
+      method: 'Method',
+    },
+    advice: {
+      strength: 'Strength',
+      tension: 'Watch',
+      approach: 'Best approach',
+    },
+    approaches: {
+      high: 'Lean into what already works, but keep the connection intentional so ease does not become autopilot.',
+      mid: 'This pair works best when expectations are named clearly and both sides adjust pace instead of assuming.',
+      low: 'Slow the dynamic down, name the difference early, and treat clarity as part of care instead of conflict.',
+    },
+    deepTitle: 'Premium depth',
+    deepLabels: {
+      chemistry: 'Element chemistry',
+      rhythm: 'Relationship pace',
+      support: 'What helps this pair',
+    },
+    overall: {
+      high: 'High resonance',
+      mid: 'Good potential',
+      low: 'Contrast with growth',
+    },
+    warnings: {
+      cardinal_cardinal: 'Both people want to lead. Decisions work better when control is shared early.',
+      cardinal_fixed: 'One pushes forward while the other stabilizes. Pace matters more than intensity here.',
+      cardinal_mutable: 'This pair moves easily, but direction has to stay clear or energy scatters.',
+      fixed_fixed: 'Strong loyalty is here, but stubborn moments can freeze the connection.',
+      fixed_mutable: 'Different pace is the main tension: one protects, the other shifts.',
+      mutable_mutable: 'There is flexibility and ease, but the pair needs structure to stay grounded.',
+    },
+    strengths: {
+      air_air: 'Fast mental chemistry and easy conversation create momentum quickly.',
+      air_earth: 'Ideas meet structure, so this pair can turn thoughts into something tangible.',
+      air_fire: 'There is spark, movement, and strong inspiration between these two signs.',
+      air_water: 'This pair brings thought and feeling together when both sides stay patient.',
+      earth_earth: 'Consistency and trust grow naturally here and become a strong base.',
+      earth_fire: 'One brings drive, the other turns it into real-world progress.',
+      earth_water: 'Care and stability support each other well in this match.',
+      fire_fire: 'High energy and mutual courage make this pair feel alive fast.',
+      fire_water: 'Intensity and sensitivity create depth when the tone stays gentle.',
+      water_water: 'This is naturally intuitive, emotionally rich, and deeply receptive.',
+    },
+    spheres: {
+      emotion: {
+        high: 'Warm and emotionally available.',
+        mid: 'Feelings work, but need a little translation.',
+        low: 'Sensitivity needs more care and patience.',
+      },
+      communication: {
+        high: 'Talking things through feels natural.',
+        mid: 'Works best with timing and clarity.',
+        low: 'Misreads happen when reactions are too fast.',
+      },
+      stability: {
+        high: 'Strong long-term potential.',
+        mid: 'Needs shared rhythm and routines.',
+        low: 'Different needs can pull in separate directions.',
+      },
+    },
+    detailsSections: {
+      pair: 'Selected pair',
+      chemistry: 'Element chemistry',
+      support: 'Best support',
+      rhythm: 'Relationship rhythm',
+      watch: 'Main tension',
+      method: 'Calculation',
+      transparency: 'Transparency',
+    },
+    methodTitle: 'The score blends element chemistry and modality pace.',
+    methodText: 'Element chemistry carries 65% of the score, while modality pace carries 35%. Then the page translates that into a clearer relationship preview.',
+    methodScores: {
+      element: 'Element score',
+      modality: 'Modality score',
+      final: 'Final score',
+    },
+    transparencyText: 'This is still a sun-sign compatibility model, not a full synastry chart. It should feel like guidance, not a final verdict.',
+    pickYou: 'Pick your sign',
+    pickPartner: 'Pick the other sign',
+    confirm: 'OK',
   },
-  {
-    key: 'premium',
-    label: tt('premiumAccess.model.labels.premium'),
-    text: tt('premiumAccess.model.compatibility.premium'),
+  uk: {
+    title: 'Сумісність',
+    subtitle: 'Подивись на динаміку між двома знаками більш зрозуміло й корисно.',
+    heroEyebrow: 'Інсайт стосунків',
+    heroTitle: 'Порівняй два знаки',
+    heroText: 'Обери свій знак і знак іншої людини, щоб побачити емоційну динаміку, стиль комунікації та довгий ритм пари.',
+    you: 'Ти',
+    partner: 'Партнер',
+    pickPlaceholder: 'Обрати знак',
+    swap: 'Поміняти знаки місцями',
+    recentTitle: 'Останні пари',
+    previewEyebrow: 'Живий preview',
+    scoreLabel: 'Загальний резонанс',
+    emptyTitle: 'Обери два знаки',
+    emptyText: 'Вибери обидва знаки, щоб відкрити preview з сильними сторонами, точками напруги й найкращим підходом для цієї пари.',
+    premiumTitle: 'Відкрий повне читання сумісності',
+    premiumText: 'Безкоштовний preview показує базову динаміку. Преміум додає глибше пояснення стосунків і чіткіше показує, звідки береться напруга.',
+    detailsCta: 'Чому ця пара виглядає саме так',
+    detailsTitle: 'Деталі сумісності',
+    detailsTabs: {
+      chemistry: 'Хімія',
+      rhythm: 'Ритм',
+      method: 'Метод',
+    },
+    advice: {
+      strength: 'Сила',
+      tension: 'Слабке місце',
+      approach: 'Найкращий підхід',
+    },
+    approaches: {
+      high: 'Спирайтесь на те, що вже працює, але тримайте зв’язок усвідомленим, щоб легкість не стала автопілотом.',
+      mid: 'Ця пара працює найкраще, коли очікування озвучені прямо, а обидві сторони підлаштовують темп замість здогадок.',
+      low: 'Сповільніть динаміку, рано називайте відмінності й сприймайте ясність як частину турботи, а не конфлікту.',
+    },
+    deepTitle: 'Преміум-глибина',
+    deepLabels: {
+      chemistry: 'Хімія елементів',
+      rhythm: 'Ритм стосунків',
+      support: 'Що допомагає цій парі',
+    },
+    overall: {
+      high: 'Сильний резонанс',
+      mid: 'Хороший потенціал',
+      low: 'Контраст із точкою росту',
+    },
+    warnings: {
+      cardinal_cardinal: 'Обидва хочуть вести. Рішення працюють краще, коли контроль ділиться з самого початку.',
+      cardinal_fixed: 'Один штовхає вперед, інший стабілізує. Тут темп важливіший за інтенсивність.',
+      cardinal_mutable: 'Пара рухається легко, але напрямок має лишатися ясним, інакше енергія розсіюється.',
+      fixed_fixed: 'Тут є сильна вірність, але вперті моменти можуть заморожувати зв’язок.',
+      fixed_mutable: 'Головна напруга тут у різному темпі: один тримає, інший змінює.',
+      mutable_mutable: 'Тут є гнучкість і легкість, але парі потрібна структура, щоб не втрачати ґрунт.',
+    },
+    strengths: {
+      air_air: 'Сильна ментальна хімія й легка розмова швидко запускають зв’язок.',
+      air_earth: 'Ідеї зустрічаються зі структурою, тому ця пара може втілювати думки в реальність.',
+      air_fire: 'Між цими знаками є іскра, рух і сильне взаємне натхнення.',
+      air_water: 'Ця пара зводить думку й почуття разом, коли обидві сторони не поспішають.',
+      earth_earth: 'Стабільність і довіра тут ростуть природно й стають сильною базою.',
+      earth_fire: 'Один приносить драйв, інший перетворює його на реальний результат.',
+      earth_water: 'Турбота й стабільність добре підтримують одна одну в цій парі.',
+      fire_fire: 'Висока енергія й взаємна сміливість швидко роблять цю пару живою.',
+      fire_water: 'Інтенсивність і чутливість створюють глибину, якщо тон лишається м’яким.',
+      water_water: 'Тут природно багато інтуїції, емоційної глибини й чутливості.',
+    },
+    spheres: {
+      emotion: {
+        high: 'Тепло й емоційна відкритість.',
+        mid: 'Почуття працюють, але їм треба трохи перекладу.',
+        low: 'Чутливість потребує більше делікатності й терпіння.',
+      },
+      communication: {
+        high: 'Домовлятися між собою тут природно.',
+        mid: 'Найкраще працює з таймінгом і ясністю.',
+        low: 'Непорозуміння з’являються, коли реакції занадто швидкі.',
+      },
+      stability: {
+        high: 'Сильний потенціал на довгу дистанцію.',
+        mid: 'Потрібні спільний ритм і звички.',
+        low: 'Різні потреби можуть тягнути в різні боки.',
+      },
+    },
+    detailsSections: {
+      pair: 'Обрана пара',
+      chemistry: 'Хімія елементів',
+      support: 'Найкраща підтримка',
+      rhythm: 'Ритм стосунків',
+      watch: 'Головна напруга',
+      method: 'Розрахунок',
+      transparency: 'Прозорість',
+    },
+    methodTitle: 'Оцінка поєднує хімію елементів і ритм модальностей.',
+    methodText: 'Хімія елементів дає 65% оцінки, а ритм модальностей 35%. Потім сторінка переводить це в більш людський preview стосунків.',
+    methodScores: {
+      element: 'Бал елементів',
+      modality: 'Бал модальностей',
+      final: 'Фінальний бал',
+    },
+    transparencyText: 'Це все ще модель сумісності по сонячних знаках, а не повна синастрія. Її краще сприймати як підказку, а не остаточний вердикт.',
+    pickYou: 'Обери свій знак',
+    pickPartner: 'Обери інший знак',
+    confirm: 'OK',
   },
-  {
-    key: 'purchase',
-    label: tt('premiumAccess.model.labels.purchase'),
-    text: tt('premiumAccess.model.compatibility.purchase'),
-  },
-])
+}
+
+const copy = computed(() => copyByLocale[locale.value] || copyByLocale.en)
+
+const RECENT_PAIRS_KEY = 'arcana_compatibility_recent_pairs_v1'
 
 const signs = [
   { key: 'aries', element: 'fire', modality: 'cardinal' },
@@ -369,38 +545,56 @@ const signs = [
 ]
 
 const signLabels = computed(() => signs.map((sign) => tt(`zodiac.${sign.key}`)))
-
-const selectedIndexA = ref(0)
-const selectedIndexB = ref(8)
+const selectedIndexA = ref(null)
+const selectedIndexB = ref(null)
 const selectedWheelIndex = ref(0)
 const activePicker = ref('a')
-const lastHapticAt = ref(0)
 const sheetOpen = ref(false)
-const wheelRef = ref(null)
-const showResult = ref(false)
 const detailsOpen = ref(false)
-const detailsTab = ref('basic')
+const detailsTab = ref('chemistry')
+const wheelRef = ref(null)
+const lastHapticAt = ref(0)
 const displayScore = ref(0)
+const recentPairs = ref([])
 let scoreAnimFrame = 0
-const detailsTabs = [
-  { id: 'basic', labelKey: 'compatibilityPage.details.tabs.basic' },
-  { id: 'extended', labelKey: 'compatibilityPage.details.tabs.extended' },
-]
 
-const selectedLabelA = computed(() => signLabels.value[selectedIndexA.value] || '')
-const selectedLabelB = computed(() => signLabels.value[selectedIndexB.value] || '')
-const elementAKey = computed(() => signs[selectedIndexA.value]?.element || 'fire')
-const elementBKey = computed(() => signs[selectedIndexB.value]?.element || 'air')
-const modalityAKey = computed(() => signs[selectedIndexA.value]?.modality || 'cardinal')
-const modalityBKey = computed(() => signs[selectedIndexB.value]?.modality || 'fixed')
+const premiumBullets = computed(() => [
+  tt('premiumAccess.compatibility.bullets.report'),
+  tt('premiumAccess.compatibility.bullets.scores'),
+  tt('premiumAccess.compatibility.bullets.insight'),
+])
 
-const elementA = computed(() => tt(`compatibilityPage.elements.${elementAKey.value}`))
-const elementB = computed(() => tt(`compatibilityPage.elements.${elementBKey.value}`))
-const modalityLine = computed(() => tt(`compatibilityPage.modalities.${modalityAKey.value}`))
-const modalityLabelA = computed(() => tt(`compatibilityPage.modalities.${modalityAKey.value}`))
-const modalityLabelB = computed(() => tt(`compatibilityPage.modalities.${modalityBKey.value}`))
+const selectedSignA = computed(() => (selectedIndexA.value == null ? null : signs[selectedIndexA.value] || null))
+const selectedSignB = computed(() => (selectedIndexB.value == null ? null : signs[selectedIndexB.value] || null))
+const hasPair = computed(() => Boolean(selectedSignA.value && selectedSignB.value))
 
-const elementLine = computed(() => formatText(tt('compatibilityPage.elementLine'), { a: elementA.value, b: elementB.value }))
+const selectedLabelAReal = computed(() => (selectedSignA.value ? tt(`zodiac.${selectedSignA.value.key}`) : ''))
+const selectedLabelBReal = computed(() => (selectedSignB.value ? tt(`zodiac.${selectedSignB.value.key}`) : ''))
+const selectedLabelA = computed(() => selectedLabelAReal.value || copy.value.pickPlaceholder)
+const selectedLabelB = computed(() => selectedLabelBReal.value || copy.value.pickPlaceholder)
+
+const elementAKey = computed(() => selectedSignA.value?.element || '')
+const elementBKey = computed(() => selectedSignB.value?.element || '')
+const modalityAKey = computed(() => selectedSignA.value?.modality || '')
+const modalityBKey = computed(() => selectedSignB.value?.modality || '')
+
+const elementPairKey = computed(() => (hasPair.value ? [elementAKey.value, elementBKey.value].sort().join('_') : ''))
+const modalityPairKey = computed(() => (hasPair.value ? [modalityAKey.value, modalityBKey.value].sort().join('_') : ''))
+
+const elementA = computed(() => (elementAKey.value ? tt(`compatibilityPage.elements.${elementAKey.value}`) : ''))
+const elementB = computed(() => (elementBKey.value ? tt(`compatibilityPage.elements.${elementBKey.value}`) : ''))
+const modalityLabelA = computed(() => (modalityAKey.value ? tt(`compatibilityPage.modalities.${modalityAKey.value}`) : ''))
+const modalityLabelB = computed(() => (modalityBKey.value ? tt(`compatibilityPage.modalities.${modalityBKey.value}`) : ''))
+const modalityPairLabel = computed(() =>
+  hasPair.value ? `${modalityLabelA.value} + ${modalityLabelB.value}` : '',
+)
+
+const pairTitle = computed(() => (hasPair.value ? `${selectedLabelAReal.value} + ${selectedLabelBReal.value}` : ''))
+const pairLine = computed(() =>
+  hasPair.value
+    ? formatText(tt('compatibilityPage.elementLine'), { a: elementA.value, b: elementB.value })
+    : '',
+)
 
 const elementScoreMap = {
   air_air: 84,
@@ -425,128 +619,196 @@ const modalityScoreMap = {
 }
 
 const elementScore = computed(() => {
-  const elementPair = [elementAKey.value, elementBKey.value].sort().join('_')
-  return elementScoreMap[elementPair] ?? 70
+  if (!hasPair.value) return 0
+  return elementScoreMap[elementPairKey.value] ?? 70
 })
 
 const modalityScore = computed(() => {
-  const modalityPair = [modalityAKey.value, modalityBKey.value].sort().join('_')
-  return modalityScoreMap[modalityPair] ?? 70
+  if (!hasPair.value) return 0
+  return modalityScoreMap[modalityPairKey.value] ?? 70
 })
 
 const compatibilityScore = computed(() => {
+  if (!hasPair.value) return 0
   return Math.round(elementScore.value * 0.65 + modalityScore.value * 0.35)
 })
 
-const resultText = computed(() => {
-  const elementPair = [elementAKey.value, elementBKey.value].sort().join('_')
-  return tt(`compatibilityPage.elementTexts.${elementPair}`)
+const scoreTier = computed(() => {
+  if (compatibilityScore.value >= 82) return 'high'
+  if (compatibilityScore.value >= 70) return 'mid'
+  return 'low'
 })
 
-const summaryText = computed(() => {
-  const score = compatibilityScore.value
-  if (score >= 82) return tt('compatibilityPage.summary.high')
-  if (score >= 70) return tt('compatibilityPage.summary.mid')
-  return tt('compatibilityPage.summary.low')
-})
-
-const confidenceLabel = computed(() => {
-  const score = compatibilityScore.value
-  if (score >= 82) return tt('compatibilityPage.confidence.high')
-  if (score >= 70) return tt('compatibilityPage.confidence.mid')
-  return tt('compatibilityPage.confidence.low')
-})
-
-const insightText = computed(() => {
-  const elementPair = [elementAKey.value, elementBKey.value].sort().join('_')
-  return tt(`compatibilityPage.insights.${elementPair}`)
-})
-
-const sphereItems = computed(() => {
-  const scores = getSphereScores()
-  return [
-    { key: 'emotion', labelKey: 'compatibilityPage.spheres.emotion', value: scores.emotion, icon: 'favorite' },
-    { key: 'communication', labelKey: 'compatibilityPage.spheres.communication', value: scores.communication, icon: 'forum' },
-    { key: 'stability', labelKey: 'compatibilityPage.spheres.stability', value: scores.stability, icon: 'shield' },
-  ]
-})
-
-const balanceA = computed(() => getElementBalance().a)
-const balanceB = computed(() => getElementBalance().b)
-
-const modalityExplain = computed(() => {
-  const pair = [modalityAKey.value, modalityBKey.value].sort().join('_')
-  return tt(`compatibilityPage.modalityTexts.${pair}`)
-})
+const overallLabel = computed(() => copy.value.overall[scoreTier.value])
+const summaryText = computed(() => (hasPair.value ? tt(`compatibilityPage.summary.${scoreTier.value}`) : ''))
+const confidenceLabel = computed(() => (hasPair.value ? tt(`compatibilityPage.confidence.${scoreTier.value}`) : ''))
+const resultText = computed(() => (hasPair.value ? tt(`compatibilityPage.elementTexts.${elementPairKey.value}`) : ''))
+const insightText = computed(() => (hasPair.value ? tt(`compatibilityPage.insights.${elementPairKey.value}`) : ''))
+const paceText = computed(() => (hasPair.value ? tt(`compatibilityPage.modalityTexts.${modalityPairKey.value}`) : ''))
+const strengthText = computed(() => (hasPair.value ? copy.value.strengths[elementPairKey.value] : ''))
+const cautionText = computed(() => (hasPair.value ? copy.value.warnings[modalityPairKey.value] : ''))
+const approachText = computed(() => (hasPair.value ? copy.value.approaches[scoreTier.value] : ''))
 
 const elementColorMap = {
-  fire: '#F28C6B',
-  earth: '#9AD39F',
-  air: '#9AC9F4',
-  water: '#7FA2F2',
+  fire: '#F18E72',
+  earth: '#99CF9D',
+  air: '#8DBEF0',
+  water: '#7A9FF1',
 }
 
 const resultStyle = computed(() => ({
-  '--element-color-a': elementColorMap[elementAKey.value] || '#9AC9F4',
-  '--element-color-b': elementColorMap[elementBKey.value] || '#7FA2F2',
+  '--compat-accent-a': elementColorMap[elementAKey.value] || '#8DBEF0',
+  '--compat-accent-b': elementColorMap[elementBKey.value] || '#7A9FF1',
 }))
 
-const formatText = (template, vars) => {
+const sphereItems = computed(() => {
+  if (!hasPair.value) return []
+  const scores = getSphereScores()
+  return [
+    {
+      key: 'emotion',
+      label: tt('compatibilityPage.spheres.emotion'),
+      value: scores.emotion,
+      text: getSphereText('emotion', scores.emotion),
+    },
+    {
+      key: 'communication',
+      label: tt('compatibilityPage.spheres.communication'),
+      value: scores.communication,
+      text: getSphereText('communication', scores.communication),
+    },
+    {
+      key: 'stability',
+      label: tt('compatibilityPage.spheres.stability'),
+      value: scores.stability,
+      text: getSphereText('stability', scores.stability),
+    },
+  ]
+})
+
+const recentPairsWithLabels = computed(() =>
+  recentPairs.value
+    .map((pair) => {
+      const first = signs[pair.a]
+      const second = signs[pair.b]
+      if (!first || !second) return null
+      return {
+        ...pair,
+        key: `${pair.a}-${pair.b}`,
+        label: `${tt(`zodiac.${first.key}`)} + ${tt(`zodiac.${second.key}`)}`,
+      }
+    })
+    .filter(Boolean),
+)
+
+const detailsTabs = computed(() => [
+  { id: 'chemistry', label: copy.value.detailsTabs.chemistry },
+  { id: 'rhythm', label: copy.value.detailsTabs.rhythm },
+  { id: 'method', label: copy.value.detailsTabs.method },
+])
+
+function formatText(template, vars) {
   if (!template) return ''
-  return Object.entries(vars || {}).reduce((acc, [key, value]) => {
-    return acc.replaceAll(`{${key}}`, value)
-  }, template)
+  return Object.entries(vars || {}).reduce((acc, [key, value]) => acc.replaceAll(`{${key}}`, value), template)
 }
 
-const clamp = (value) => Math.max(30, Math.min(90, Math.round(value)))
+function clamp(value) {
+  return Math.max(30, Math.min(90, Math.round(value)))
+}
 
-const getSphereScores = () => {
+function getSphereScores() {
   const elements = [elementAKey.value, elementBKey.value]
-  const emotion = clamp(50 + elements.filter((el) => el === 'water').length * 18 - elements.filter((el) => el === 'air').length * 6)
-  const communication = clamp(50 + elements.filter((el) => el === 'air').length * 18 - elements.filter((el) => el === 'earth').length * 6)
-  const stability = clamp(50 + elements.filter((el) => el === 'earth').length * 18 - elements.filter((el) => el === 'fire').length * 6)
-  return { emotion, communication, stability }
+  return {
+    emotion: clamp(50 + elements.filter((el) => el === 'water').length * 18 - elements.filter((el) => el === 'air').length * 6),
+    communication: clamp(50 + elements.filter((el) => el === 'air').length * 18 - elements.filter((el) => el === 'earth').length * 6),
+    stability: clamp(50 + elements.filter((el) => el === 'earth').length * 18 - elements.filter((el) => el === 'fire').length * 6),
+  }
 }
 
-const getElementBalance = () => {
-  const pair = [elementAKey.value, elementBKey.value].sort().join('_')
-  if (elementAKey.value === elementBKey.value) {
-    return { a: 50, b: 50 }
-  }
-  if (pair === 'air_fire' || pair === 'earth_water') {
-    return { a: 55, b: 45 }
-  }
-  if (pair === 'air_water' || pair === 'earth_fire') {
-    return { a: 52, b: 48 }
-  }
-  if (pair === 'air_earth' || pair === 'fire_water') {
-    return { a: 65, b: 35 }
-  }
-  return { a: 55, b: 45 }
+function getSphereText(key, score) {
+  if (score >= 78) return copy.value.spheres[key].high
+  if (score >= 62) return copy.value.spheres[key].mid
+  return copy.value.spheres[key].low
 }
 
 async function hapticSelect() {
   if (!Capacitor.isNativePlatform()) return
   try {
     await Haptics.impact({ style: ImpactStyle.Light })
-  } catch (e) {
-    console.error(e)
+  } catch {
+    // ignore haptic failures
   }
+}
+
+function setHideBottomNav(enabled) {
+  if (typeof document === 'undefined') return
+  document.body.classList.toggle('hide-bottom-nav', enabled)
+}
+
+function loadRecentPairs() {
+  if (typeof window === 'undefined') return
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(RECENT_PAIRS_KEY) || '[]')
+    if (!Array.isArray(parsed)) return
+    recentPairs.value = parsed
+      .filter((item) => Number.isInteger(item?.a) && Number.isInteger(item?.b))
+      .filter((item) => item.a >= 0 && item.a < signs.length && item.b >= 0 && item.b < signs.length)
+      .slice(0, 4)
+  } catch {
+    recentPairs.value = []
+  }
+}
+
+function persistRecentPairs() {
+  if (typeof window === 'undefined') return
+  window.localStorage.setItem(RECENT_PAIRS_KEY, JSON.stringify(recentPairs.value))
+}
+
+function rememberPair(a, b) {
+  if (!Number.isInteger(a) || !Number.isInteger(b)) return
+  recentPairs.value = [{ a, b }, ...recentPairs.value.filter((item) => item.a !== a || item.b !== b)].slice(0, 4)
+  persistRecentPairs()
+}
+
+function animateScore(target) {
+  if (typeof requestAnimationFrame !== 'function') {
+    displayScore.value = target
+    return
+  }
+  cancelAnimationFrame(scoreAnimFrame)
+  const start = performance.now()
+  const from = displayScore.value
+  const duration = 480
+  const tick = (now) => {
+    const progress = Math.min(1, (now - start) / duration)
+    displayScore.value = Math.round(from + (target - from) * progress)
+    if (progress < 1) {
+      scoreAnimFrame = requestAnimationFrame(tick)
+    }
+  }
+  scoreAnimFrame = requestAnimationFrame(tick)
 }
 
 async function onBack() {
   await hapticSelect()
-  router.back()
+  if (typeof window !== 'undefined' && window.history.length > 1) {
+    router.back()
+    return
+  }
+  await router.replace({ name: 'menu' })
 }
 
 async function goPremium() {
   await hapticSelect()
-  await router.push({ name: 'premium', query: { source: 'compatibility_lock', entry: 'secondary' } })
+  await router.push({
+    name: 'premium',
+    query: { source: hasPair.value ? 'compatibility_preview' : 'compatibility_entry', entry: 'compatibility' },
+  })
 }
 
 function openPicker(which) {
   activePicker.value = which
-  selectedWheelIndex.value = which === 'a' ? selectedIndexA.value : selectedIndexB.value
+  selectedWheelIndex.value = which === 'a' ? selectedIndexA.value ?? 0 : selectedIndexB.value ?? 0
   sheetOpen.value = true
   void hapticSelect()
   nextTick(() => scrollWheelTo(selectedWheelIndex.value, false))
@@ -569,6 +831,7 @@ function onWheelScroll() {
 function onWheelItemTap(index) {
   selectedWheelIndex.value = index
   scrollWheelTo(index, true)
+  applyWheelSelection(index)
   void hapticSelect()
 }
 
@@ -579,565 +842,398 @@ function scrollWheelTo(index, smooth) {
   wheel.scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' })
 }
 
-function confirmWheel() {
-  void hapticSelect()
+function applyWheelSelection(nextIndex) {
   if (activePicker.value === 'a') {
-    selectedIndexA.value = selectedWheelIndex.value
+    selectedIndexA.value = nextIndex
   } else {
-    selectedIndexB.value = selectedWheelIndex.value
+    selectedIndexB.value = nextIndex
   }
-  sheetOpen.value = false
-}
-
-function showCompatibility() {
-  if (showResult.value) {
-    showResult.value = false
-    if (typeof requestAnimationFrame !== 'undefined') {
-      requestAnimationFrame(() => {
-        showResult.value = true
-      })
-    } else {
-      showResult.value = true
-    }
-  } else {
-    showResult.value = true
+  if ((activePicker.value === 'a' ? nextIndex : selectedIndexA.value) != null && (activePicker.value === 'b' ? nextIndex : selectedIndexB.value) != null) {
+    rememberPair(
+      activePicker.value === 'a' ? nextIndex : selectedIndexA.value,
+      activePicker.value === 'b' ? nextIndex : selectedIndexB.value,
+    )
   }
-  void hapticSelect()
-}
-
-function onDetailsOpen() {
-  detailsOpen.value = true
-  void hapticSelect()
-}
-
-function onDetailsClose() {
   detailsOpen.value = false
-  void hapticSelect()
+  detailsTab.value = 'chemistry'
 }
 
-function onDetailsTabClick(tabId) {
+async function swapSigns() {
+  if (!hasPair.value) return
+  const nextA = selectedIndexB.value
+  const nextB = selectedIndexA.value
+  selectedIndexA.value = nextA
+  selectedIndexB.value = nextB
+  rememberPair(nextA, nextB)
+  await hapticSelect()
+}
+
+async function applyRecentPair(pair) {
+  selectedIndexA.value = pair.a
+  selectedIndexB.value = pair.b
+  detailsOpen.value = false
+  detailsTab.value = 'chemistry'
+  rememberPair(pair.a, pair.b)
+  await hapticSelect()
+}
+
+async function onDetailsOpen() {
+  if (!hasPair.value) return
+  detailsOpen.value = true
+  await hapticSelect()
+}
+
+async function onDetailsClose() {
+  detailsOpen.value = false
+  await hapticSelect()
+}
+
+async function onDetailsTabClick(tabId) {
   detailsTab.value = tabId
-  void hapticSelect()
+  await hapticSelect()
 }
 
 watch(
-  () => sheetOpen.value,
-  (val) => {
-    document.body.classList.toggle('hide-bottom-nav', val)
-  }
+  () => sheetOpen.value || detailsOpen.value,
+  (value) => {
+    setHideBottomNav(value)
+  },
 )
 
 watch(
-  () => detailsOpen.value,
-  (val) => {
-    document.body.classList.toggle('hide-bottom-nav', val)
-  }
+  [selectedIndexA, selectedIndexB],
+  () => {
+    detailsOpen.value = false
+    detailsTab.value = 'chemistry'
+    if (!hasPair.value) {
+      displayScore.value = 0
+      cancelAnimationFrame(scoreAnimFrame)
+      return
+    }
+    animateScore(compatibilityScore.value)
+  },
+  { immediate: true },
 )
 
 watch(
   () => hasPremiumAccess.value,
-  (next) => {
-    if (next) return
-    sheetOpen.value = false
+  (enabled) => {
+    if (enabled) return
     detailsOpen.value = false
-    showResult.value = false
-    detailsTab.value = 'basic'
-  }
+  },
 )
 
-watch([selectedIndexA, selectedIndexB], () => {
-  showResult.value = false
-  detailsOpen.value = false
-  detailsTab.value = 'basic'
+onMounted(() => {
+  loadRecentPairs()
 })
 
-watch(
-  () => showResult.value,
-  (val) => {
-    if (!val) {
-      displayScore.value = 0
-      return
-    }
-    const target = compatibilityScore.value
-    const start = performance.now()
-    const from = 0
-    const duration = 720
-    const tick = (now) => {
-      const progress = Math.min(1, (now - start) / duration)
-      displayScore.value = Math.round(from + (target - from) * progress)
-      if (progress < 1) {
-        scoreAnimFrame = requestAnimationFrame(tick)
-      }
-    }
-    cancelAnimationFrame(scoreAnimFrame)
-    scoreAnimFrame = requestAnimationFrame(tick)
-  }
-)
-
 onBeforeUnmount(() => {
-  document.body.classList.remove('hide-bottom-nav')
+  cancelAnimationFrame(scoreAnimFrame)
+  setHideBottomNav(false)
 })
 </script>
 
 <style scoped lang="scss">
 .compat-page {
   min-height: 100vh;
-  color: #e9edf4;
   position: relative;
   overflow: hidden;
+  color: #edf2f8;
+  background: #050d15;
 }
 
 .compat-bg {
   position: absolute;
   inset: 0;
-  background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
-  z-index: 0;
+  background:
+    radial-gradient(110% 58% at 50% 0%, rgba(28, 70, 105, 0.32) 0%, rgba(11, 22, 33, 0.14) 42%, rgba(5, 13, 21, 0) 72%),
+    linear-gradient(180deg, #08131d 0%, #050d15 100%);
 }
 
 .compat-content {
   position: relative;
   z-index: 1;
-  padding: calc(90px + env(safe-area-inset-top)) 18px calc(32px + env(safe-area-inset-bottom, 0px) + 84px);
-  max-width: 540px;
+  padding:
+    calc(90px + env(safe-area-inset-top, 0px))
+    16px
+    calc(86px + env(safe-area-inset-bottom, 0px) + 10px);
+  max-width: 520px;
   margin: 0 auto;
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
-.compat-hero {
+.compat-topbar {
   display: grid;
-  gap: 3px;
-}
-
-.compat-hero--with-back {
-  position: relative;
-  grid-template-columns: 1fr;
+  grid-template-columns: 36px 1fr 36px;
+  gap: 8px;
   align-items: center;
-  justify-items: center;
-  gap: 12px;
-}
-
-.compat-hero__text {
-  text-align: center;
-  display: grid;
-  gap: 3px;
-  justify-items: center;
-  padding: 0 44px;
-}
-
-.compat-title {
-  font-size: 18px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.compat-kicker {
-  font-size: 9px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
 }
 
 .compat-back {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
   width: 36px;
   height: 36px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(10, 14, 22, 0.7);
-  color: rgba(214, 225, 242, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(240, 245, 252, 0.82);
   display: grid;
   place-items: center;
 }
 
-.compat-stack {
-  display: grid;
-  gap: 16px;
-}
-
-.compat-lock {
-  position: relative;
-  overflow: hidden;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background:
-    radial-gradient(120% 90% at 20% 0%, rgba(112, 156, 255, 0.18) 0%, rgba(12, 18, 30, 0.12) 42%, transparent 100%),
-    linear-gradient(160deg, rgba(14, 20, 32, 0.92), rgba(6, 10, 18, 0.98));
-  box-shadow:
-    0 18px 40px rgba(2, 6, 12, 0.52),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  padding: 22px 18px 20px;
-  display: grid;
-  gap: 12px;
-}
-
-.compat-lock::before {
-  content: '';
-  position: absolute;
-  inset: -140% auto auto -50%;
-  width: 240px;
-  height: 240px;
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(145, 188, 255, 0.28) 0%, rgba(145, 188, 255, 0) 70%);
-  pointer-events: none;
-}
-
-.compat-lock__badge {
-  justify-self: start;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(186, 207, 247, 0.34);
-  background: rgba(87, 123, 190, 0.2);
-  color: rgba(226, 236, 255, 0.95);
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  font-weight: 600;
-}
-
-.compat-lock__title {
-  font-size: 18px;
-  line-height: 1.25;
-  letter-spacing: 0.03em;
-  color: rgba(238, 244, 255, 0.96);
-  font-weight: 600;
-}
-
-.compat-lock__text {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
-  color: rgba(216, 228, 247, 0.78);
-}
-
-.compat-lock__model {
-  border-radius: 12px;
-  border: 1px solid rgba(165, 196, 245, 0.2);
-  background: rgba(7, 12, 20, 0.56);
-  padding: 10px;
-  display: grid;
-  gap: 8px;
-}
-
-.compat-lock__model-row {
+.compat-topbar__text {
   display: grid;
   gap: 3px;
-}
-
-.compat-lock__model-label {
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(173, 210, 255, 0.86);
-  font-weight: 600;
-}
-
-.compat-lock__model-text {
-  font-size: 12px;
-  line-height: 1.4;
-  color: rgba(224, 234, 251, 0.82);
-}
-
-.compat-lock__bullets {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 6px;
-}
-
-.compat-lock__bullet {
-  font-size: 12px;
-  line-height: 1.45;
-  color: rgba(224, 234, 251, 0.86);
-  display: inline-flex;
-  align-items: flex-start;
-  gap: 6px;
-}
-
-.compat-lock__bullet::before {
-  content: '✦';
-  color: rgba(173, 210, 255, 0.88);
-  line-height: 1.2;
-}
-
-.compat-lock__preview {
-  border-radius: 14px;
-  border: 1px solid rgba(165, 196, 245, 0.22);
-  background: rgba(7, 12, 20, 0.62);
-  padding: 12px;
-  display: grid;
-  gap: 8px;
-}
-
-.compat-lock__preview-line {
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(221, 232, 250, 0.72);
-}
-
-.compat-lock__meter {
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-  margin-top: 2px;
-}
-
-.compat-lock__meter-fill {
-  display: block;
-  height: 100%;
-  width: 78%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(121, 181, 255, 0.95), rgba(255, 216, 152, 0.92));
-  box-shadow: 0 0 12px rgba(134, 186, 255, 0.45);
-}
-
-.compat-lock__cta {
-  width: 100%;
-  margin-top: 6px;
-  border-radius: 14px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  padding: 14px 16px;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: #e9edf4;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: transform 180ms ease;
-}
-
-.compat-lock__cta:active {
-  transform: scale(0.98);
-}
-
-.compat-panel {
-  padding: 20px 18px 18px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: linear-gradient(160deg, rgba(14, 20, 32, 0.92), rgba(6, 10, 18, 0.98));
-  box-shadow:
-    0 18px 40px rgba(2, 6, 12, 0.52),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  display: grid;
-  gap: 14px;
-}
-
-.compat-panel__title {
-  font-size: 10px;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.62);
-  font-weight: 600;
-}
-
-.compat-pick-group {
-  display: grid;
-  gap: 10px;
-}
-
-.compat-pick {
-  width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(8, 12, 20, 0.78);
-  border-radius: 14px;
-  padding: 14px 14px;
-  display: grid;
-  grid-template-columns: 1fr 24px;
-  align-items: center;
-  gap: 10px;
-  color: rgba(235, 242, 255, 0.92);
-  text-align: left;
-  transition: all 180ms ease;
-}
-
-.compat-pick:active {
-  transform: scale(0.98);
-  background: rgba(12, 16, 26, 0.85);
-}
-
-.compat-pick__content {
-  display: grid;
-  gap: 4px;
-}
-
-.compat-pick__label {
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.56);
-  font-weight: 500;
-}
-
-.compat-pick__value {
-  font-size: 15px;
-  letter-spacing: 0.02em;
-  color: rgba(235, 242, 255, 0.94);
-  font-weight: 500;
-}
-
-.compat-chevron {
-  color: rgba(214, 225, 242, 0.4);
-}
-
-.compat-cta {
-  width: 100%;
-  margin-top: 4px;
-  border-radius: 14px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  padding: 14px 16px;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: #e9edf4;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 180ms ease;
-}
-
-.compat-cta:active {
-  transform: scale(0.98);
-}
-
-.compat-cta--active {
-  border-color: rgba(156, 184, 235, 0.22);
-  background: linear-gradient(180deg, rgba(16, 24, 38, 0.85), rgba(8, 12, 22, 0.92));
-  color: rgba(214, 225, 242, 0.9);
-}
-
-.compat-cta__icon {
-  color: rgba(173, 210, 255, 0.8);
-}
-
-.compat-empty {
-  display: grid;
-  gap: 10px;
-  text-align: center;
   justify-items: center;
-  padding: 32px 20px;
+  text-align: center;
 }
 
-.compat-empty__icon {
-  font-size: 32px;
-  color: rgba(173, 210, 255, 0.3);
-  margin-bottom: 4px;
+.compat-topbar__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.94);
 }
 
-.compat-empty__title {
-  font-size: 14px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(235, 242, 255, 0.82);
-  font-weight: 600;
-}
-
-.compat-empty__text {
-  font-size: 13px;
-  line-height: 1.6;
-  color: rgba(214, 225, 242, 0.65);
+.compat-topbar__subtitle {
+  font-size: 11px;
+  line-height: 1.35;
+  color: rgba(219, 229, 242, 0.48);
   max-width: 280px;
 }
 
-.compat-preview--active {
-  padding: 0;
+.compat-topbar__ghost {
+  width: 36px;
 }
 
-.compat-result-header {
+.compat-shell {
+  display: grid;
+  gap: 14px;
+}
+
+.compat-card {
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    radial-gradient(120% 120% at 100% 0%, rgba(83, 123, 170, 0.16) 0%, rgba(83, 123, 170, 0) 55%),
+    linear-gradient(160deg, rgba(12, 20, 31, 0.96), rgba(6, 11, 19, 0.98));
+  box-shadow:
+    0 18px 38px rgba(1, 6, 12, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  padding: 16px;
+}
+
+.compat-card--hero {
+  display: grid;
+  gap: 14px;
+}
+
+.compat-card--preview {
+  display: grid;
+  gap: 14px;
+}
+
+.compat-card__eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(186, 207, 232, 0.56);
+}
+
+.compat-hero-copy {
+  display: grid;
+  gap: 5px;
+}
+
+.compat-hero-copy__title {
+  font-size: 24px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.96);
+  letter-spacing: -0.02em;
+}
+
+.compat-hero-copy__text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(230, 238, 248, 0.62);
+}
+
+.compat-pair-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+}
+
+.compat-sign-pill {
+  min-height: 76px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 12px 14px;
+  display: grid;
+  gap: 6px;
+  text-align: left;
+}
+
+.compat-sign-pill__label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(186, 207, 232, 0.5);
+}
+
+.compat-sign-pill__value {
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: rgba(248, 250, 253, 0.94);
+}
+
+.compat-swap {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(218, 230, 245, 0.86);
+  display: grid;
+  place-items: center;
+}
+
+.compat-swap:disabled {
+  opacity: 0.4;
+}
+
+.compat-recents {
+  display: grid;
+  gap: 8px;
+}
+
+.compat-recents__label {
+  font-size: 11px;
+  color: rgba(214, 225, 242, 0.52);
+}
+
+.compat-recents__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.compat-recent-chip {
+  padding: 8px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(236, 242, 251, 0.8);
+  font-size: 12px;
+}
+
+.compat-preview-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.compat-preview-top__copy {
   display: grid;
   gap: 4px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.compat-result-header__title {
-  font-size: 14px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(235, 242, 255, 0.88);
+.compat-preview-top__title {
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.96);
+  letter-spacing: -0.02em;
+}
+
+.compat-preview-top__line {
+  font-size: 12px;
+  color: rgba(214, 225, 242, 0.54);
+}
+
+.compat-preview-top__meta {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(230, 238, 248, 0.78);
+  font-size: 11px;
   font-weight: 600;
 }
 
-.compat-result-header__subtitle {
-  font-size: 13px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
-}
-
-.compat-report {
+.compat-score-shell {
   display: grid;
-  gap: 16px;
-  position: relative;
-}
-
-.compat-report__header {
-  display: grid;
-  gap: 14px;
   grid-template-columns: auto 1fr;
-  align-items: start;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background:
+    radial-gradient(110% 160% at 0% 0%, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0) 54%),
+    linear-gradient(135deg, rgba(7, 12, 20, 0.9), rgba(9, 14, 24, 0.98));
 }
 
-.compat-report__meta {
-  display: grid;
-  gap: 6px;
-}
-
-.compat-report__score {
+.compat-score-block {
   display: grid;
   gap: 4px;
-  justify-items: start;
+  min-width: 94px;
 }
 
-.compat-report--animate .compat-score {
-  animation: scorePop 420ms ease-out;
-}
-
-.compat-report--animate .compat-meter__fill {
-  animation: meterFill 520ms ease-out;
-}
-
-.compat-score {
+.compat-score-block__value {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   gap: 4px;
   font-size: 48px;
-  letter-spacing: 0.02em;
+  line-height: 0.95;
   font-weight: 700;
-  background: linear-gradient(135deg, rgba(173, 210, 255, 1), rgba(110, 166, 255, 0.9));
+  background: linear-gradient(135deg, var(--compat-accent-a), var(--compat-accent-b));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.compat-score__meta {
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
-  font-weight: 500;
+.compat-score-block__value small {
+  font-size: 18px;
+  line-height: 1.2;
 }
 
-.compat-score__unit {
-  font-size: 20px;
-  letter-spacing: 0.1em;
-  opacity: 0.7;
+.compat-score-block__label {
+  font-size: 11px;
+  color: rgba(214, 225, 242, 0.52);
+}
+
+.compat-score-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.compat-score-copy__headline {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.compat-score-copy__summary {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(231, 238, 249, 0.8);
+}
+
+.compat-score-copy__hint {
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(205, 218, 235, 0.56);
 }
 
 .compat-meter {
-  position: relative;
   height: 6px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
@@ -1145,392 +1241,205 @@ onBeforeUnmount(() => {
 }
 
 .compat-meter__fill {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(110, 166, 255, 0.9), rgba(173, 210, 255, 0.9));
-  box-shadow: 0 0 14px rgba(110, 166, 255, 0.45);
-  transition: width 480ms ease;
-  transform-origin: left center;
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--compat-accent-a), var(--compat-accent-b));
+  box-shadow: 0 0 12px rgba(123, 172, 232, 0.26);
+  transition: width 380ms ease;
 }
 
-.compat-report__line {
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.55);
-}
-
-.compat-report__summary {
-  font-size: 15px;
-  line-height: 1.5;
-  color: rgba(235, 242, 255, 0.94);
-  font-weight: 600;
-}
-
-.compat-description {
-  padding: 14px 16px;
-  border-radius: 14px;
-  background: rgba(8, 12, 20, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.compat-description__text {
-  font-size: 13px;
-  line-height: 1.65;
-  color: rgba(224, 234, 251, 0.82);
-}
-
-.compat-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.compat-tag {
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 13px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  font-weight: 500;
-}
-
-.compat-tag--element {
-  border: 1px solid rgba(173, 210, 255, 0.24);
-  background: rgba(110, 166, 255, 0.12);
-  color: rgba(173, 210, 255, 0.9);
-}
-
-.compat-tag--modality {
-  border: 1px solid rgba(156, 184, 235, 0.2);
-  background: rgba(83, 112, 170, 0.12);
-  color: rgba(186, 207, 247, 0.85);
-}
-
-.compat-insight {
-  display: grid;
-  gap: 6px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(8, 12, 20, 0.7);
-}
-
-.compat-insight__label {
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
-  font-weight: 600;
-}
-
-.compat-insight__text {
-  font-size: 13px;
-  line-height: 1.65;
-  color: rgba(224, 234, 251, 0.84);
-}
-
-.compat-metrics-section {
+.compat-spheres {
   display: grid;
   gap: 10px;
 }
 
-.compat-metrics-section__title {
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
-  font-weight: 600;
+.compat-sphere-card {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 12px;
+  display: grid;
+  gap: 8px;
 }
 
-.compat-metrics {
+.compat-sphere-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.compat-sphere-card__title {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(245, 248, 252, 0.88);
+}
+
+.compat-sphere-card__value {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(212, 226, 244, 0.72);
+}
+
+.compat-sphere-card__bar {
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.compat-sphere-card__bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(121, 177, 233, 0.92), rgba(185, 218, 248, 0.96));
+}
+
+.compat-sphere-card__text {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(215, 227, 242, 0.6);
+}
+
+.compat-advice-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.compat-advice-card,
+.compat-deep-card,
+.compat-premium-card,
+.details-card {
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.compat-advice-card {
+  padding: 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.compat-advice-card__label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(186, 207, 232, 0.54);
+}
+
+.compat-advice-card__text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(236, 242, 251, 0.82);
+}
+
+.compat-deep-card,
+.compat-premium-card {
+  padding: 14px;
   display: grid;
   gap: 12px;
 }
 
-.compat-metric {
-  display: grid;
-  gap: 8px;
+.compat-deep-card__title,
+.compat-premium-card__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.94);
 }
 
-.compat-metric__header {
+.compat-deep-card__row {
   display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 10px;
+  gap: 4px;
 }
 
-.compat-metric__label {
-  font-size: 13px;
+.compat-deep-card__label,
+.compat-premium-card__badge {
+  font-size: 10px;
+  font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.7);
+  color: rgba(186, 207, 232, 0.54);
+}
+
+.compat-deep-card__text,
+.compat-premium-card__text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(236, 242, 251, 0.76);
+}
+
+.compat-premium-card__badge {
+  justify-self: start;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(186, 207, 247, 0.2);
+  background: rgba(87, 123, 190, 0.18);
+  color: rgba(238, 245, 255, 0.86);
+}
+
+.compat-premium-card__list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: rgba(236, 242, 251, 0.76);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.compat-premium-card__cta,
+.compat-details-link,
+.oracle-actions__ok {
+  min-height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(156, 184, 235, 0.24);
+  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
+  color: #edf2f8;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-weight: 500;
-}
-
-.compat-metric__icon {
-  color: rgba(173, 210, 255, 0.8);
-}
-
-.compat-metric__bar {
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  overflow: hidden;
-}
-
-.compat-metric__fill {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(110, 166, 255, 0.9), rgba(173, 210, 255, 0.9));
-  box-shadow: 0 0 10px rgba(110, 166, 255, 0.28);
-  transition: width 480ms ease;
-}
-
-.compat-metric__value {
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: rgba(235, 242, 255, 0.8);
-  font-weight: 600;
-}
-
-.compat-balance {
-  display: grid;
-  gap: 10px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  background: rgba(8, 12, 20, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.compat-balance__label {
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
-  font-weight: 600;
-}
-
-.compat-balance__rows {
-  display: grid;
-  gap: 10px;
-}
-
-.compat-balance__row {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 10px;
-  align-items: center;
-}
-
-.compat-balance__name {
+  justify-content: center;
+  gap: 8px;
   font-size: 13px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(224, 234, 251, 0.8);
-  font-weight: 500;
-  min-width: 60px;
-}
-
-.compat-balance__bar {
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  overflow: hidden;
-}
-
-.compat-balance__fill {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--element-color-a), var(--element-color-b));
-  transition: width 480ms ease;
-}
-
-.compat-balance__percent {
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  color: rgba(214, 225, 242, 0.7);
   font-weight: 600;
-  min-width: 36px;
-  text-align: right;
 }
 
 .compat-details-link {
   width: 100%;
-  margin-top: 2px;
-  padding: 12px 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(156, 184, 235, 0.24);
-  background: rgba(28, 38, 58, 0.5);
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(235, 242, 255, 0.88);
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: all 180ms ease;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.07);
 }
 
-.compat-details-link:active {
-  transform: scale(0.98);
-  background: rgba(28, 38, 58, 0.7);
-}
-
-.compat-details-link__icon {
-  color: rgba(173, 210, 255, 0.8);
-}
-
-.details-card {
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(7, 11, 18, 0.98);
-  padding: 12px 14px;
+.compat-empty {
+  padding: 32px 14px;
+  text-align: center;
   display: grid;
   gap: 10px;
-  margin-top: 10px;
 }
 
-.details-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+.compat-empty__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
 }
 
-.details-row--stack {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-}
-
-.details-row--final .details-value {
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.details-label {
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
-}
-
-.details-value {
+.compat-empty__text {
   font-size: 13px;
-  letter-spacing: 0.04em;
-  color: rgba(224, 236, 255, 0.9);
-}
-
-.details-explain {
-  font-size: 12px;
-  line-height: 1.5;
-  color: rgba(214, 225, 242, 0.7);
-}
-
-.details-tabs {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.details-body {
-  min-height: 360px;
-  display: grid;
-  align-content: start;
-  gap: 10px;
-}
-
-.details-tab {
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(9, 13, 20, 0.7);
-  padding: 8px 6px;
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  line-height: 1.55;
   color: rgba(214, 225, 242, 0.6);
-}
-
-.details-tab--active {
-  color: #fff;
-  border-color: rgba(159, 216, 246, 0.45);
-  box-shadow: 0 0 12px rgba(159, 216, 246, 0.2);
-}
-
-.details-extended {
-  display: grid;
-  gap: 10px;
-}
-
-.details-notes {
-  margin-top: 12px;
-  padding: 12px 14px 10px;
-  border-radius: 14px;
-  border: 1px solid rgba(156, 184, 235, 0.2);
-  background: rgba(5, 9, 15, 0.98);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.details-notes__title {
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
-}
-
-.details-notes__list {
-  margin: 8px 0 0;
-  padding-left: 18px;
-  display: grid;
-  gap: 6px;
-  font-size: 12px;
-  line-height: 1.5;
-  color: rgba(224, 234, 251, 0.8);
-}
-
-@keyframes compatGlow {
-  0%, 100% { transform: translateY(0); opacity: 0.45; }
-  50% { transform: translateY(-8px); opacity: 0.75; }
-}
-
-@keyframes compatSweep {
-  0% { transform: translateX(-120%); opacity: 0; }
-  45% { opacity: 0.35; }
-  100% { transform: translateX(120%); opacity: 0; }
-}
-
-@keyframes scorePop {
-  0% { transform: translateY(6px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes meterFill {
-  0% { transform: scaleX(0.2); opacity: 0.5; }
-  100% { transform: scaleX(1); opacity: 1; }
 }
 
 .oracle-actions {
   width: 100vw;
   max-width: 100vw;
-  margin: 0 auto;
   border-radius: 22px 22px 0 0;
-  padding: 8px 12px calc(env(safe-area-inset-bottom, 0px) + 24px);
-  box-shadow: 0 -16px 46px rgba(0, 0, 0, 0.42);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #ffffff;
-  pointer-events: auto;
+  padding: 8px 12px calc(env(safe-area-inset-bottom, 0px) + 20px);
   background: #050d15;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.36);
+  color: #fff;
 }
 
 .oracle-actions-dialog--details .oracle-actions {
@@ -1547,17 +1456,15 @@ onBeforeUnmount(() => {
   width: 36px;
   height: 3px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.2);
   margin: 0 auto 10px;
 }
 
 .sheet-title {
   text-align: center;
   font-size: 13px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.74);
-  margin-bottom: 6px;
+  color: rgba(255, 255, 255, 0.76);
+  margin-bottom: 8px;
 }
 
 .oracle-wheel {
@@ -1580,10 +1487,12 @@ onBeforeUnmount(() => {
 
 .oracle-wheel::before {
   top: 0;
+  background: linear-gradient(180deg, rgba(5, 13, 21, 0.96), rgba(5, 13, 21, 0));
 }
 
 .oracle-wheel::after {
   bottom: 0;
+  background: linear-gradient(0deg, rgba(5, 13, 21, 0.96), rgba(5, 13, 21, 0));
 }
 
 .oracle-wheel__window {
@@ -1609,7 +1518,7 @@ onBeforeUnmount(() => {
 
 .oracle-wheel__scroll {
   position: relative;
-  height: 152px;
+  height: 220px;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -1620,8 +1529,12 @@ onBeforeUnmount(() => {
   overscroll-behavior-y: contain;
 }
 
+.oracle-wheel__scroll::-webkit-scrollbar {
+  display: none;
+}
+
 .oracle-wheel__spacer {
-  height: 54px;
+  height: 88px;
 }
 
 .oracle-wheel__item {
@@ -1637,16 +1550,14 @@ onBeforeUnmount(() => {
   font-size: 15px;
   line-height: 1.2;
   scroll-snap-align: center;
-  transition: color 140ms ease, transform 140ms ease;
+  transition:
+    color 140ms ease,
+    transform 140ms ease;
 }
 
 .oracle-wheel__item--active {
   color: rgba(244, 238, 227, 0.97);
   transform: scale(1.01);
-}
-
-.oracle-wheel__scroll::-webkit-scrollbar {
-  display: none;
 }
 
 .oracle-actions__footer {
@@ -1662,17 +1573,112 @@ onBeforeUnmount(() => {
     0 10px 24px rgba(0, 0, 0, 0.3);
 }
 
-.oracle-actions__ok {
-  width: 100%;
-  min-height: 48px;
+.details-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.details-tab {
+  min-height: 40px;
   border-radius: 12px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  padding: 12px 14px;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: #e9edf4;
-  font-size: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(218, 228, 242, 0.6);
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: none;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.details-tab--active {
+  color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(159, 216, 246, 0.25);
+  background: rgba(104, 142, 191, 0.16);
+}
+
+.details-body {
+  min-height: 340px;
+  padding-top: 10px;
+}
+
+.details-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.details-card {
+  padding: 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.details-card__label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(186, 207, 232, 0.54);
+}
+
+.details-card__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.details-card__text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(236, 242, 251, 0.74);
+}
+
+.details-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.details-row__label {
+  font-size: 12px;
+  color: rgba(214, 225, 242, 0.62);
+}
+
+.details-row__value {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(244, 248, 252, 0.9);
+}
+
+.details-row--final .details-row__value {
+  color: rgba(255, 255, 255, 0.98);
+}
+
+@media (max-height: 760px) {
+  .compat-content {
+    gap: 12px;
+  }
+
+  .compat-hero-copy__title,
+  .compat-preview-top__title {
+    font-size: 20px;
+  }
+
+  .compat-sign-pill {
+    min-height: 68px;
+  }
+}
+
+@media (hover: hover) {
+  .compat-sign-pill:hover,
+  .compat-recent-chip:hover,
+  .compat-swap:hover,
+  .compat-premium-card__cta:hover,
+  .compat-details-link:hover,
+  .oracle-actions__ok:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
 }
 </style>

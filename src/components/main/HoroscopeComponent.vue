@@ -210,26 +210,6 @@
                 @click="setTheme('career')"
               ></button>
             </div>
-            <div class="horoscope-controls-actions">
-              <q-btn
-                v-if="hasPremiumAccess"
-                round
-                dense
-                flat
-                icon="person"
-                class="share-controls-btn"
-                @click="goToPersonalReading"
-              />
-              <q-btn
-                round
-                dense
-                flat
-                :icon="isCurrentThemeLocked ? 'lock' : 'share'"
-                class="share-controls-btn"
-                :disable="!hasThemeText(themeTab)"
-                @click="handleShareControlsClick"
-              />
-            </div>
           </div>
 
         </div>
@@ -548,10 +528,6 @@ export default {
       this.$router
         .push({ name: 'premium', query: { source: 'horoscope_lock', entry: 'secondary' } })
         .catch(() => {})
-    },
-
-    goToPersonalReading() {
-      this.$router.push({ name: 'personalHoroscope' }).catch(() => {})
     },
 
     normalizeZodiacKey(value) {
@@ -1223,14 +1199,6 @@ export default {
       } catch (e) {
         console.warn('Share cancelled/failed', e)
       }
-    },
-
-    async handleShareControlsClick() {
-      if (this.isCurrentThemeLocked) {
-        await this.openPremiumPaywall()
-        return
-      }
-      await this.handleShare()
     },
 
     async setTheme(tab) {

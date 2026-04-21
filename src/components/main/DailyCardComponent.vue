@@ -73,7 +73,10 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import { loadTarotData } from 'src/helpers/tarotData'
-import { loadDailyCardsSnapshot } from 'src/helpers/dailyCardCore.js'
+import {
+  getDeterministicDailyCardSelection,
+  loadDailyCardsSnapshot,
+} from 'src/helpers/dailyCardCore.js'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
 import { useAuthStore } from 'stores/authStore.js'
@@ -132,14 +135,6 @@ const todayKey = () => {
   return `${year}-${month}-${day}`
 }
 
-const hashString = (value) => {
-  let hash = 0
-  for (let i = 0; i < value.length; i += 1) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0
-  }
-  return hash
-}
-
 const getOrCreateAnonSeed = () => {
   if (typeof window === 'undefined') return 'anon'
   const stored = localStorage.getItem(ANON_DAILY_SEED_KEY)
@@ -155,21 +150,22 @@ const getOrCreateAnonSeed = () => {
   return next
 }
 
-const dailySeed = computed(() => {
+const dailySelection = computed(() => {
   const userId = authStore.state.user?.id
   const identity = userId || getOrCreateAnonSeed()
-  return `${todayKey()}::${identity}`
+  return getDeterministicDailyCardSelection({
+    dateKey: todayKey(),
+    identity,
+    cardsLength: cards.value.length,
+  })
 })
 
 const dailyIndex = computed(() => {
-  if (!cards.value.length) return 0
-  const hash = hashString(`${dailySeed.value}::card`)
-  return hash % cards.value.length
+  return dailySelection.value.index
 })
 
 const orientation = computed(() => {
-  const hash = hashString(`${dailySeed.value}::orientation`)
-  return hash % 2 === 0 ? 'upright' : 'reversed'
+  return dailySelection.value.orientation
 })
 
 const dailyCard = computed(() => cards.value[dailyIndex.value] || null)

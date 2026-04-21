@@ -183,7 +183,10 @@ import { Share } from '@capacitor/share'
 import * as Astronomy from 'astronomy-engine'
 import { currentLocale, t } from 'src/i18n'
 import { localISODate } from 'src/helpers/date.ts'
-import { loadDailyCardsSnapshot } from 'src/helpers/dailyCardCore.js'
+import {
+  getDeterministicDailyCardSelection,
+  loadDailyCardsSnapshot,
+} from 'src/helpers/dailyCardCore.js'
 import { loadTarotData } from 'src/helpers/tarotData'
 import { loadHoroscopeRegistry } from 'src/helpers/horoscopeContentCore.js'
 import { loadLocal, saveLocal } from 'src/helpers/localStorageSaver.js'
@@ -430,13 +433,6 @@ const zodiacFromRawDate = (rawDate) => {
 }
 
 // ── Daily seed & card ───────────────────────────────────────────
-const hashString = (value) => {
-  let hash = 0
-  const raw = String(value || '')
-  for (let i = 0; i < raw.length; i += 1) hash = (hash * 31 + raw.charCodeAt(i)) >>> 0
-  return hash
-}
-
 const getOrCreateAnonSeed = () => {
   if (typeof window === 'undefined') return 'anon'
   const stored = localStorage.getItem(ANON_DAILY_SEED_KEY)
@@ -446,9 +442,15 @@ const getOrCreateAnonSeed = () => {
   return next
 }
 
-const dailySeed = computed(() => `${localISODate()}::${authStore.state.user?.id || getOrCreateAnonSeed()}`)
-const dailyIndex = computed(() => cards.value.length ? hashString(`${dailySeed.value}::card`) % cards.value.length : 0)
-const dailyOrientation = computed(() => hashString(`${dailySeed.value}::orientation`) % 2 === 0 ? 'upright' : 'reversed')
+const dailySelection = computed(() =>
+  getDeterministicDailyCardSelection({
+    dateKey: localISODate(),
+    identity: authStore.state.user?.id || getOrCreateAnonSeed(),
+    cardsLength: cards.value.length,
+  }),
+)
+const dailyIndex = computed(() => dailySelection.value.index)
+const dailyOrientation = computed(() => dailySelection.value.orientation)
 const dailyCard = computed(() => cards.value[dailyIndex.value] || null)
 
 const cardTitle = computed(() => dailyCard.value?.name?.[locale.value] || dailyCard.value?.name?.en || copy.value.cardFallbackTitle)

@@ -236,7 +236,10 @@ import {
   readOnboardingInterests,
 } from 'src/helpers/onboardingPrefs'
 import { useAuthStore } from 'stores/authStore'
-import { loadDailyCardsSnapshot } from 'src/helpers/dailyCardCore'
+import {
+  getDeterministicDailyCardSelection,
+  loadDailyCardsSnapshot,
+} from 'src/helpers/dailyCardCore'
 import { loadTarotData } from 'src/helpers/tarotData'
 import { DAILY_ACTIVITY_KEYS, hasDailyActivityToday, getLocalDateKey } from 'src/helpers/dailyRitual'
 import { analytics } from 'src/services/analytics'
@@ -375,15 +378,6 @@ export default defineComponent({
       await router.push({ name: item.routeName })
     }
 
-    const hashString = (value) => {
-      let hash = 0
-      const raw = String(value || '')
-      for (let i = 0; i < raw.length; i += 1) {
-        hash = (hash * 31 + raw.charCodeAt(i)) >>> 0
-      }
-      return hash
-    }
-
     const getOrCreateAnonSeed = () => {
       if (typeof window === 'undefined') return 'anon'
       const stored = localStorage.getItem(ANON_DAILY_SEED_KEY)
@@ -399,22 +393,19 @@ export default defineComponent({
       return next
     }
 
-    const dailySeed = computed(() => {
+    const dailySelection = computed(() => {
       const userId = authStore.state.user?.id
       const identity = userId || getOrCreateAnonSeed()
-      return `${getLocalDateKey()}::${identity}`
+      return getDeterministicDailyCardSelection({
+        dateKey: getLocalDateKey(),
+        identity,
+        cardsLength: dailyCards.value.length,
+      })
     })
 
-    const dailyIndex = computed(() => {
-      if (!dailyCards.value.length) return 0
-      const hash = hashString(`${dailySeed.value}::card`)
-      return hash % dailyCards.value.length
-    })
+    const dailyIndex = computed(() => dailySelection.value.index)
 
-    const dailyCardOrientation = computed(() => {
-      const hash = hashString(`${dailySeed.value}::orientation`)
-      return hash % 2 === 0 ? 'upright' : 'reversed'
-    })
+    const dailyCardOrientation = computed(() => dailySelection.value.orientation)
 
     const dailyCard = computed(() => dailyCards.value[dailyIndex.value] || null)
     const dailyCardImage = computed(() => {
