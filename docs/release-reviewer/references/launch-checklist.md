@@ -84,7 +84,7 @@ Owner mode: Codex reviewer with minimal blocking questions
   - Static landing page added in [app-store/index.html](/Users/oleksandr/Desktop/App/Arcana-Insight/app-store/index.html:1)
   - Expected public URLs documented in [app-store/README.md](/Users/oleksandr/Desktop/App/Arcana-Insight/app-store/README.md:1)
   Remaining:
-  - Enable GitHub Pages with `GitHub Actions`
+  - Enable GitHub Pages manually in repo settings with `GitHub Actions`
   - Confirm both URLs load publicly after deploy
 - `open` Verify final App Store metadata against shipped behavior.
   Reference draft: [app-store/metadata.md](/Users/oleksandr/Desktop/App/Arcana-Insight/app-store/metadata.md:1)

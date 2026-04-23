@@ -33,8 +33,6 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
-        with:
-          enablement: true
 
       - name: Upload static app-store site
         uses: actions/upload-pages-artifact@v4
