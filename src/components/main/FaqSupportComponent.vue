@@ -48,7 +48,7 @@ const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
 const router = useRouter()
 
-const supportEmail = 'support@arcana.app'
+const supportEmail = 'ghrubyi@ukr.net'
 const mailtoLink = `mailto:${supportEmail}`
 
 const faqItems = [

@@ -82,7 +82,7 @@ Browse all 78 tarot cards with meanings, keywords, and orientations. Read in-dep
 Explore elemental and sign-based compatibility between any two zodiac signs.
 
 ── PREMIUM ──
-The free version includes the daily card and general horoscope. Premium unlocks the personal horoscope, full tarot sessions, saved readings, and the complete card library.
+The free version includes the daily card and general horoscope. Premium unlocks the personal horoscope, deeper tarot sessions, extra horoscope themes, compatibility, and saved readings.
 Subscriptions are managed through your Apple ID. You can cancel anytime in your device settings.
 
 Arcana Insight is a tool for reflection and self-awareness. It is for entertainment purposes and does not predict future events.
@@ -150,7 +150,7 @@ Arcana Insight — додаток для щоденної рефлексії н�
 Досліджуй сумісність між будь-якими двома знаками зодіаку.
 
 ── ПРЕМІУМ ──
-Безкоштовна версія включає карту дня та загальний гороскоп. Преміум відкриває особистий гороскоп, повні сесії таро, збережені читання та повну бібліотеку карт.
+Безкоштовна версія включає карту дня та загальний гороскоп. Преміум відкриває особистий гороскоп, глибші сесії таро, додаткові теми гороскопу, сумісність і збережені читання.
 Підписки управляються через Apple ID. Скасувати можна будь-коли в налаштуваннях пристрою.
 
 Arcana Insight — інструмент для рефлексії та самопізнання. Призначений для розваг і не передбачає майбутніх подій.
@@ -181,8 +181,8 @@ Apple requires **at least iPhone 6.9"** (1320 × 2868 px). Recommended: also 6.5
 | Category | Lifestyle |
 | Secondary category | Entertainment |
 | Age Rating | 4+ |
-| Privacy Policy URL | *(see privacy-policy.html)* |
-| Support URL | *(see support.html)* |
+| Privacy Policy URL | `https://oleksandrhrubyi.github.io/Arcana-Insight/privacy-policy.html` |
+| Support URL | `https://oleksandrhrubyi.github.io/Arcana-Insight/support.html` |
 | Copyright | © 2025 Arcana Insight |
 
 ---
@@ -191,5 +191,5 @@ Apple requires **at least iPhone 6.9"** (1320 × 2868 px). Recommended: also 6.5
 
 1. **IAP must be configured** in App Store Connect before submitting — Apple reviewers will test the paywall flow.
 2. **Account deletion** must be accessible in-app (you have it in Settings ✓).
-3. **Review notes** to add: *"This app contains a subscription paywall. To test without purchasing: use the [test account if provided] or simply view the free tier. The app does not require login to access the daily card and general horoscope."*
+3. **Review notes** are prepared in [reviewer-notes.md](/Users/oleksandr/Desktop/App/Arcana-Insight/app-store/reviewer-notes.md:1). Confirm the public privacy/support URLs are live before submission.
 4. **Encryption**: if using HTTPS only (Supabase), answer "Yes, uses standard HTTPS encryption — exempt from export compliance."

@@ -409,6 +409,59 @@ export default {
       return this.buildAstroSheetContent(this.astroSheetCardId)
     },
 
+    todayDateLabel() {
+      try {
+        const d = new Date()
+        const fmt = new Intl.DateTimeFormat(this.locale === 'uk' ? 'uk-UA' : 'en-US', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+        })
+        return fmt.format(d)
+      } catch {
+        return ''
+      }
+    },
+
+    moonRowTitle() {
+      if (!this.astroToday) return ''
+      const phase = this.tt(`astro.phases.${this.astroToday.moonPhaseKey}`)
+      const sign = this.tt(`zodiac.${this.astroToday.moonSignKey}`)
+      const connector = this.locale === 'uk' ? 'Місяць у' : 'Moon in'
+      return `${phase} · ${connector} ${sign}`
+    },
+
+    moonRowText() {
+      const uk = this.locale === 'uk'
+      const key = this.astroToday?.moonPhaseKey
+      const insightsUk = {
+        new: 'Тихий старт. Задай внутрішній напрямок.',
+        waxingCrescent: 'Перші кроки. Назви, що саме починаєш.',
+        firstQuarter: 'Фаза дії. Поверни увагу до початкового наміру.',
+        waxingGibbous: 'Доналаштовуй деталі. Процес ще триває.',
+        full: 'Кульмінація. Дивись на результат і відпускай.',
+        waningGibbous: 'Інтеграція. Бери уроки з того, що сталось.',
+        lastQuarter: 'Відпускай те, що вже не працює.',
+        waningCrescent: 'Тиша перед новим циклом. Відпочивай.',
+      }
+      const insightsEn = {
+        new: 'Quiet start. Set an inner direction.',
+        waxingCrescent: 'First steps. Name what you are beginning.',
+        firstQuarter: 'Action phase. Return to your original intent.',
+        waxingGibbous: 'Fine-tune the details. The process continues.',
+        full: 'Culmination. See the result and let go.',
+        waningGibbous: 'Integration. Take the lessons with you.',
+        lastQuarter: 'Release what no longer serves.',
+        waningCrescent: 'Stillness before a new cycle. Rest.',
+      }
+      return (uk ? insightsUk : insightsEn)[key] || ''
+    },
+
+    horoscopePreviewShort() {
+      if (!this.horoscopeData?.preview) return ''
+      return this.compactPreview(this.horoscopeData.preview, 68)
+    },
+
     astroCards() {
       if (!this.astroToday) return []
       const d = this.astroToday

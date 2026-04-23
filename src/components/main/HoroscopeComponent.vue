@@ -1710,7 +1710,7 @@ export default {
 
 .center-round {
   width: calc(530px * var(--s));
-  height: calc(530px * var(--s));
+  height: calc(540px * var(--s));
   border-radius: 50%;
   border: 1px solid rgba(159, 216, 246, 0.25);
   position: absolute;
@@ -1759,42 +1759,62 @@ export default {
   align-items: center;
   pointer-events: none;
   color: white;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .active-zodiac-name {
-  font-size: calc(18px * var(--s));
-  letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.92);
+  font-size: calc(20px * var(--s));
+  line-height: 1.08;
+  letter-spacing: 0.045em;
+  color: rgba(252, 252, 248, 0.96);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.16);
 }
 
 .active-zodiac-dates {
-  font-size: calc(14px * var(--s));
-  color: rgba(159, 216, 246, 0.75);
+  margin-top: 4px;
+  font-size: calc(13px * var(--s));
+  letter-spacing: 0.03em;
+  color: rgba(151, 203, 240, 0.82);
 }
 
 .horoscope-info-title {
-  font-weight: 500;
-  font-size: calc(18px * var(--s));
-  line-height: 22px;
-  margin-bottom: 10px;
-  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  margin: 0 auto 12px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(160, 210, 245, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 10px 20px rgba(2, 8, 15, 0.12);
+  font-weight: 560;
+  font-size: calc(13px * var(--s));
+  line-height: 1;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(242, 247, 252, 0.92);
 }
 
 .horoscope-divider {
-  width: 46px;
-  height: 1px;
-  margin: 0 auto 6px;
+  width: 92px;
+  height: 2px;
+  margin: 0 auto 18px;
+  border-radius: 999px;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(159, 216, 246, 0.75) 40%,
-    rgba(255, 255, 255, 0.35) 60%,
+    rgba(159, 216, 246, 0.08) 20%,
+    rgba(214, 235, 250, 0.78) 50%,
+    rgba(159, 216, 246, 0.08) 80%,
     transparent 100%
   );
-  opacity: 0.8;
+  opacity: 0.9;
+  box-shadow:
+    0 0 10px rgba(159, 216, 246, 0.16),
+    0 0 18px rgba(159, 216, 246, 0.08);
 }
 
 :deep(.horoscope-panels) {
@@ -1846,10 +1866,31 @@ export default {
 }
 
 .panel-inner {
+  position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  padding: 2px 0 0;
+}
+
+.panel-inner::before {
+  content: '';
+  position: absolute;
+  left: clamp(10px, 3vw, 16px);
+  right: clamp(10px, 3vw, 16px);
+  top: 64px;
+  bottom: 2px;
+  border-radius: 30px;
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(138, 196, 236, 0.08) 0%, rgba(138, 196, 236, 0.02) 34%, rgba(138, 196, 236, 0) 72%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.022) 0%, rgba(255, 255, 255, 0.008) 100%);
+  border: 1px solid rgba(159, 216, 246, 0.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 24px 44px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .horoscope-text-wrap {
@@ -1857,6 +1898,9 @@ export default {
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  margin: 0 clamp(10px, 3vw, 16px);
+  padding: 22px clamp(14px, 4vw, 20px) 18px;
+  z-index: 1;
 }
 
 .horoscope-info-style {
@@ -1867,14 +1911,16 @@ export default {
   overscroll-behavior: contain;
 
   text-align: center;
-  font-weight: 450;
-  font-size: max(16px, calc(16px * var(--s)));
-  line-height: 1.62;
-  letter-spacing: 0;
+  font-weight: 420;
+  font-size: max(15px, calc(15px * var(--s)));
+  line-height: 1.72;
+  letter-spacing: -0.005em;
   text-transform: none;
-  color: rgba(235, 244, 255, 0.92);
+  color: rgba(231, 239, 248, 0.86);
 
-  padding: 6px clamp(16px, 5vw, 24px);
+  width: min(100%, 34ch);
+  margin: 0 auto;
+  padding: 0 2px 12px;
 
   scrollbar-width: none;
   text-wrap: pretty;
@@ -2139,7 +2185,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
+  padding-top: 4px;
 }
 
 .horoscope-controls-actions {
@@ -2157,15 +2203,20 @@ export default {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  border-radius: 12px;
+  gap: 5px;
+  padding: 5px 8px;
+  border-radius: 999px;
   overflow: hidden;
-
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.032), rgba(255, 255, 255, 0.01));
+  border: 1px solid rgba(159, 216, 246, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 18px rgba(0, 0, 0, 0.12);
   pointer-events: auto;
 }
 
 .dot {
-  width: 12px;
+  width: 18px;
   height: 12px;
   border-radius: 999px;
   border: none;
@@ -2177,14 +2228,15 @@ export default {
 
 .dot::after {
   content: '';
-  width: 7px;
+  width: 6px;
   height: 7px;
   border-radius: 999px;
 
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.24);
   box-shadow: 0 0 0 rgba(159, 216, 246, 0);
 
   transition:
+    width 180ms ease,
     transform 160ms ease,
     background 160ms ease,
     box-shadow 160ms ease;
@@ -2195,9 +2247,10 @@ export default {
 }
 
 .dot.active::after {
-  background: rgba(255, 255, 255, 0.72);
-  transform: scale(1.15);
-  box-shadow: 0 0 14px rgba(159, 216, 246, 0.35);
+  width: 18px;
+  background: rgba(242, 247, 252, 0.92);
+  transform: none;
+  box-shadow: 0 0 16px rgba(159, 216, 246, 0.28);
 }
 
 .share-controls-btn {
@@ -2264,12 +2317,22 @@ export default {
   }
 
   .horoscope-info-title {
-    font-size: 14px;
+    font-size: 12px;
     margin-bottom: 6px;
   }
 
   .horoscope-info-style {
-    font-size: 15px;
+    font-size: 14px;
+    line-height: 1.62;
+  }
+
+  .horoscope-text-wrap {
+    padding-top: 18px;
+  }
+
+  .panel-inner::before {
+    top: 58px;
+    border-radius: 24px;
   }
 
   .bottom-wrapper {

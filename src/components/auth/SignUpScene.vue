@@ -67,7 +67,6 @@ export default {
       return (
         this.isNameValid &&
         !!this.trimmedEmail &&
-        !!this.trimmedDateOfBirth &&
         this.isEmailValid &&
         this.isDateValid
       )
@@ -78,6 +77,7 @@ export default {
     },
 
     isDateValid() {
+      if (!this.trimmedDateOfBirth) return true
       return this.isValidDateInput(this.trimmedDateOfBirth)
     },
 
@@ -191,7 +191,7 @@ export default {
         return
       }
 
-      if (!this.isDateValid) {
+      if (this.trimmedDateOfBirth && !this.isDateValid) {
         this.errorMessage = this.tt('errors.invalidDate')
         this.logAuth('invalid_date', { dateOfBirth: this.trimmedDateOfBirth })
         return
@@ -209,7 +209,7 @@ export default {
             emailRedirectTo: null,
             data: {
               name: this.trimmedName,
-              dateOfBirth: this.trimmedDateOfBirth,
+              dateOfBirth: this.trimmedDateOfBirth || undefined,
             },
           },
         })

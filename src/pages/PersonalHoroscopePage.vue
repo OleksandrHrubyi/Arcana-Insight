@@ -86,7 +86,7 @@
       </div>
 
       <div v-else-if="profileReady" class="personal-sticky__actions">
-        <button type="button" class="personal-sticky__action personal-sticky__action--primary" @click="goToSettings">
+        <button type="button" class="personal-sticky__action personal-sticky__action--primary" @click="goToBirthDateSetup">
           <q-icon name="manage_accounts" size="16px" />
           <span>{{ tt('personalHoroscope.noBirthDateBtn') }}</span>
         </button>
@@ -358,7 +358,14 @@ async function shareReading() {
 
 // --- navigation ---
 function onBack() { router.back() }
-function goToSettings() { router.push({ name: 'settings' }) }
+
+function goToBirthDateSetup() {
+  if (authStore.state.user?.id) {
+    router.push({ name: 'account' })
+    return
+  }
+  router.push({ name: 'signUp' })
+}
 
 // --- init ---
 onMounted(async () => {

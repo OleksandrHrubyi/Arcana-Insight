@@ -122,26 +122,38 @@
               </div>
             </div>
 
-            <div v-if="hasPremiumAccess" class="compat-deep-card">
-              <div class="compat-deep-card__title">{{ copy.deepTitle }}</div>
-              <div class="compat-deep-card__row">
-                <div class="compat-deep-card__label">{{ copy.deepLabels.chemistry }}</div>
-                <div class="compat-deep-card__text">{{ resultText }}</div>
+            <section v-if="hasPremiumAccess" class="compat-stack">
+              <div class="compat-deep-card">
+                <div class="compat-deep-card__title">{{ copy.deepTitle }}</div>
+                <div class="compat-deep-card__row">
+                  <div class="compat-deep-card__label">{{ copy.deepLabels.chemistry }}</div>
+                  <div class="compat-deep-card__text">{{ resultText }}</div>
+                </div>
+                <div class="compat-deep-card__row">
+                  <div class="compat-deep-card__label">{{ copy.deepLabels.rhythm }}</div>
+                  <div class="compat-deep-card__text">{{ paceText }}</div>
+                </div>
+                <div class="compat-deep-card__row">
+                  <div class="compat-deep-card__label">{{ copy.deepLabels.support }}</div>
+                  <div class="compat-deep-card__text">{{ insightText }}</div>
+                </div>
               </div>
-              <div class="compat-deep-card__row">
-                <div class="compat-deep-card__label">{{ copy.deepLabels.rhythm }}</div>
-                <div class="compat-deep-card__text">{{ paceText }}</div>
-              </div>
-              <div class="compat-deep-card__row">
-                <div class="compat-deep-card__label">{{ copy.deepLabels.support }}</div>
-                <div class="compat-deep-card__text">{{ insightText }}</div>
-              </div>
-            </div>
+            </section>
 
             <div v-else class="compat-premium-card">
               <div class="compat-premium-card__badge">{{ tt('premiumAccess.badge') }}</div>
               <div class="compat-premium-card__title">{{ copy.premiumTitle }}</div>
               <div class="compat-premium-card__text">{{ copy.premiumText }}</div>
+              <div class="compat-premium-card__model">
+                <div
+                  v-for="row in premiumAccessModelRows"
+                  :key="row.key"
+                  class="compat-premium-card__model-row"
+                >
+                  <div class="compat-premium-card__model-label">{{ row.label }}</div>
+                  <div class="compat-premium-card__model-text">{{ row.text }}</div>
+                </div>
+              </div>
               <ul class="compat-premium-card__list">
                 <li v-for="item in premiumBullets" :key="item">{{ item }}</li>
               </ul>
@@ -563,6 +575,23 @@ const premiumBullets = computed(() => [
   tt('premiumAccess.compatibility.bullets.scores'),
   tt('premiumAccess.compatibility.bullets.insight'),
 ])
+const premiumAccessModelRows = computed(() => [
+  {
+    key: 'free',
+    label: tt('premiumAccess.model.labels.free'),
+    text: tt('premiumAccess.model.compatibility.free'),
+  },
+  {
+    key: 'premium',
+    label: tt('premiumAccess.model.labels.premium'),
+    text: tt('premiumAccess.model.compatibility.premium'),
+  },
+  {
+    key: 'purchase',
+    label: tt('premiumAccess.model.labels.purchase'),
+    text: tt('premiumAccess.model.compatibility.purchase'),
+  },
+])
 
 const selectedSignA = computed(() => (selectedIndexA.value == null ? null : signs[selectedIndexA.value] || null))
 const selectedSignB = computed(() => (selectedIndexB.value == null ? null : signs[selectedIndexB.value] || null))
@@ -802,7 +831,7 @@ async function goPremium() {
   await hapticSelect()
   await router.push({
     name: 'premium',
-    query: { source: hasPair.value ? 'compatibility_preview' : 'compatibility_entry', entry: 'compatibility' },
+    query: { source: 'compatibility_lock', entry: 'secondary' },
   })
 }
 
@@ -917,8 +946,8 @@ watch(
 
 watch(
   () => hasPremiumAccess.value,
-  (enabled) => {
-    if (enabled) return
+  (next) => {
+    if (next) return
     detailsOpen.value = false
   },
 )

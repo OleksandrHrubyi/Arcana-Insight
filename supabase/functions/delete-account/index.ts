@@ -5,6 +5,14 @@ const CORS = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
 }
 
+const readEnv = (...keys: string[]) => {
+  for (const key of keys) {
+    const value = String(Deno.env.get(key) || '').trim()
+    if (value) return value
+  }
+  return ''
+}
+
 Deno.serve(async (req: Request) => {
   console.log('[DeleteAccount] request', {
     method: req.method,
@@ -28,9 +36,9 @@ Deno.serve(async (req: Request) => {
   authHeader = authHeader.replace(/\n/g, '').replace(/\r/g, '').trim()
   console.log('[DeleteAccount] Original header had newlines, cleaned')
 
-  const url = Deno.env.get('URL')
-  const anon = Deno.env.get('ANON_KEY')
-  const serviceRole = Deno.env.get('SERVICE_ROLE_KEY')
+  const url = readEnv('SUPABASE_URL', 'URL')
+  const anon = readEnv('SUPABASE_ANON_KEY', 'ANON_KEY')
+  const serviceRole = readEnv('SUPABASE_SERVICE_ROLE_KEY', 'SERVICE_ROLE_KEY')
   if (!url || !anon || !serviceRole) {
     return json({ error: 'Function env is not configured' }, 500)
   }
@@ -48,7 +56,10 @@ Deno.serve(async (req: Request) => {
       headers: {
         Authorization: `Bearer ${token}`
       }
-    }
+    },
+    auth: {
+      persistSession: false,
+    },
   })
 
   const {
@@ -64,7 +75,11 @@ Deno.serve(async (req: Request) => {
     return json({ error: 'Unauthorized', detail: userErr?.message || null }, 401)
   }
 
-  const admin = createClient(url, serviceRole)
+  const admin = createClient(url, serviceRole, {
+    auth: {
+      persistSession: false,
+    },
+  })
 
   console.log(`[DeleteAccount] Deleting user data for: ${user.id}`)
 
@@ -79,15 +94,33 @@ Deno.serve(async (req: Request) => {
     // Continue anyway - auth deletion is more important
   }
 
-  // Delete saved readings
-  const { error: readingsError } = await admin
+  // Delete tarot reading history stored by the current app.
+  const { error: tarotReadingsError } = await admin
+    .from('tarot_readings')
+    .delete()
+    .eq('user_id', user.id)
+
+  if (tarotReadingsError) {
+    console.error('[DeleteAccount] Failed to delete tarot readings:', tarotReadingsError)
+    // Continue anyway - auth deletion remains the priority.
+  }
+
+  // Best-effort cleanup for legacy schema/table name if it still exists in some environments.
+  const { error: legacyReadingsError } = await admin
     .from('saved_readings')
     .delete()
     .eq('user_id', user.id)
 
-  if (readingsError) {
-    console.error('[DeleteAccount] Failed to delete readings:', readingsError)
-    // Continue anyway
+  if (legacyReadingsError) {
+    const details = String(legacyReadingsError?.message || '').toLowerCase()
+    const missingTable =
+      details.includes('relation') ||
+      details.includes('does not exist') ||
+      details.includes('not found')
+
+    if (!missingTable) {
+      console.error('[DeleteAccount] Failed to delete legacy saved readings:', legacyReadingsError)
+    }
   }
 
   // Delete auth user (this will cascade to other tables if configured)
