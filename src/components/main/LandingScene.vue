@@ -26,9 +26,16 @@
         <div class="shooting-star"></div>
       </div>
 
-      <!-- Logo -->
+      <div v-if="dailyStreak > 0" class="streak-badge">
+        {{ streakBadgeLabel }}
+      </div>
+
+      <!-- Home hero text -->
       <div class="logo-wrap no-pointer-events">
-        <img :src="logo" :alt="tt('appName')" class="logo-img" />
+        <div class="myday-hero__text">
+          <div class="myday-title">{{ homeHeroTitle }}</div>
+          <div v-if="homeHeroKicker" class="myday-kicker">{{ homeHeroKicker }}</div>
+        </div>
       </div>
 
       <!-- Astro strip -->
@@ -96,6 +103,9 @@
           <div v-if="hasDailyCardToday" class="circle-card__info">
             <div class="circle-card__name">
               {{ dailyCardData ? dailyCardData.title : '' }}
+            </div>
+            <div v-if="dailyCardData?.teaser" class="circle-card__theme-pill">
+              {{ dailyCardData.teaser }}
             </div>
           </div>
         </transition>
@@ -423,6 +433,53 @@ export default {
       }
     },
 
+    greetingLabel() {
+      const hour = new Date().getHours()
+      if (this.locale === 'uk') {
+        if (hour < 5) return 'Доброї ночі'
+        if (hour < 12) return 'Доброго ранку'
+        if (hour < 18) return 'Добрий день'
+        return 'Добрий вечір'
+      }
+      if (hour < 5) return 'Good night'
+      if (hour < 12) return 'Good morning'
+      if (hour < 18) return 'Good afternoon'
+      return 'Good evening'
+    },
+
+    firstName() {
+      const raw = String(
+        this.authStore?.state?.user?.user_metadata?.name
+        || this.authStore?.state?.user?.user_metadata?.full_name
+        || ''
+      ).trim()
+      if (!raw) return ''
+      return raw.split(/\s+/)[0] || ''
+    },
+
+    homeHeroTitle() {
+      return this.firstName
+        ? `${this.greetingLabel}, ${this.firstName}`
+        : this.greetingLabel
+    },
+
+    homeHeroKicker() {
+      const parts = []
+      if (this.todayDateLabel) parts.push(this.todayDateLabel)
+      if (this.horoscopeData?.signKey && this.horoscopeData?.signLabel) {
+        parts.push(`${this.zodiacGlyph(this.horoscopeData.signKey)} ${this.horoscopeData.signLabel}`)
+      }
+      return parts.join('  ·  ')
+    },
+
+    streakBadgeLabel() {
+      if (this.dailyStreak <= 0) return ''
+      if (this.locale === 'uk') {
+        return `🔥 ${this.dailyStreak} днів поспіль`
+      }
+      return `🔥 ${this.dailyStreak} day streak`
+    },
+
     moonRowTitle() {
       if (!this.astroToday) return ''
       const phase = this.tt(`astro.phases.${this.astroToday.moonPhaseKey}`)
@@ -559,21 +616,7 @@ export default {
         border: 'rgba(255,255,255,0.14)',
       })
 
-      // 7. Streak
-      if (this.dailyStreak > 0) {
-        cards.push({
-          id: 'streak',
-          label: this.tt('astro.cards.yourStreak'),
-          icon: '⚡',
-          value: String(this.dailyStreak),
-          sub: this.tt('astro.cards.streakSub'),
-          bg: 'rgba(255, 205, 90, 0.14)',
-          glow: 'rgba(255, 205, 90, 0.18)',
-          border: 'rgba(255, 205, 90, 0.26)',
-        })
-      }
-
-      // 8. Mercury retrograde (conditional)
+      // 7. Mercury retrograde (conditional)
       if (d.mercuryRetrograde) {
         cards.push({
           id: 'retro',
@@ -1012,6 +1055,24 @@ export default {
       return `${raw.slice(0, maxChars).replace(/[.,;:!?-]+$/u, '').trim()}…`
     },
 
+    firstSentence(text) {
+      const raw = String(text || '').replace(/\s+/g, ' ').trim()
+      if (!raw) return ''
+      const match = raw.match(/.*?[.!?](\s|$)/u)
+      return match ? match[0].trim() : raw
+    },
+
+    buildCardTeaser(text) {
+      const first = this.firstSentence(text).replace(/[.!?]+$/u, '').trim()
+      if (!first) return ''
+
+      let teaser = first.split(/[,:;]\s+/u)[0]?.trim() || first
+      if (teaser.length > 28) {
+        teaser = this.compactPreview(teaser, 28)
+      }
+      return teaser ? `${teaser.charAt(0).toUpperCase()}${teaser.slice(1)}` : ''
+    },
+
     _getAnonSeed() {
       if (typeof window === 'undefined') return 'anon'
       const stored = localStorage.getItem('arcana_daily_seed_v1')
@@ -1065,11 +1126,18 @@ export default {
             cardsLength: cards.length,
           })
           const card = cards[index]
+          const rawMeaning =
+            card?.meaning?.[orientation]?.[locale]
+            || card?.meaning?.[orientation]?.en
+            || card?.description?.[orientation]?.[locale]
+            || card?.description?.[orientation]?.en
+            || ''
           this.dailyCardData = {
             title: card?.name?.[locale] || card?.name?.en || '',
             image: card?.file ? `/images/cards/${card.file}` : '',
             orientation,
             keywords: (card?.keywords?.[locale] || card?.keywords?.en || []).slice(0, 2),
+            teaser: this.buildCardTeaser(rawMeaning),
           }
         }
       } catch (e) {
@@ -1347,15 +1415,63 @@ export default {
 
 .mono-text { font-style: normal; font-weight: 400; }
 
+.streak-badge {
+  position: absolute;
+  top: max(52px, calc(env(safe-area-inset-top, 0px) + 12px));
+  right: max(16px, calc(env(safe-area-inset-right, 0px) + 16px));
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(8, 13, 22, 0.62);
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.16),
+    inset 0 1px 0 rgba(255,255,255,0.03);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: rgba(226, 232, 241, 0.72);
+}
+
 /* ─── Logo ─────────────────────────────────────────────── */
 .logo-wrap {
   position: relative;
   z-index: 2;
   display: flex;
   justify-content: center;
-  padding-top: calc(env(safe-area-inset-top, 0px) + 90px);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 98px);
 }
-.logo-img { max-width: 140px; width: 140px; height: auto; display: block; }
+
+.myday-hero__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0 44px;
+  text-align: center;
+}
+
+.myday-title {
+  font-family: var(--font-accent), serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: rgba(235, 242, 255, 0.96);
+  line-height: 1.2;
+}
+
+.myday-kicker {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
+  color: rgba(214, 225, 242, 0.68);
+  text-wrap: balance;
+}
 
 /* ─── Circle card hero ─────────────────────────────────── */
 /* Positioned so the card image sits in the center of the large ring. */
@@ -1530,7 +1646,8 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  padding: 0 18px;
 }
 
 .circle-card-name-enter-active,
@@ -1559,7 +1676,7 @@ export default {
 
 .circle-card__name {
   width: 100%;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: rgba(255,255,255,0.95);
   letter-spacing: -0.01em;
@@ -1568,17 +1685,41 @@ export default {
   text-wrap: balance;
 }
 
+.circle-card__theme-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 214px;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(7, 12, 20, 0.48);
+  box-shadow:
+    0 6px 14px rgba(0,0,0,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.03);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: rgba(240, 245, 255, 0.84);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .circle-card__cta {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
+  margin-top: 6px;
   font-size: 11px;
   font-weight: 600;
-  color: rgba(255,255,255,0.38);
+  color: rgba(236, 242, 252, 0.7);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.46);
 }
 
 /* ─── Action blocks ────────────────────────────────────── */
@@ -1769,7 +1910,7 @@ export default {
 .astro-cards {
   --cards-pad: 20px;
   position: absolute;
-  top: calc(env(safe-area-inset-top, 0px) + 130px);
+  top: calc(env(safe-area-inset-top, 0px) + 156px);
   left: 0;
   right: 0;
   z-index: 4;
@@ -2092,6 +2233,6 @@ export default {
   .home-actions {
     bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   }
-  .astro-cards { top: calc(env(safe-area-inset-top, 0px) + 104px); }
+  .astro-cards { top: calc(env(safe-area-inset-top, 0px) + 128px); }
 }
 </style>
