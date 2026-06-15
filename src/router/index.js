@@ -9,7 +9,7 @@ import routes from './routes'
 import { analytics } from 'src/services/analytics'
 import { useAuthStore } from 'stores/authStore.js'
 import { isOnboardingComplete } from 'src/helpers/onboardingPrefs'
-import { resolveRouteGuardDecision } from './guard'
+import { isDevHomeQaBypassActive, resolveRouteGuardDecision } from './guard'
 
 /*
  * If not building with SSR mode, you can
@@ -53,7 +53,12 @@ export default defineRouter(function (/* { store, ssrContext } */) {
       ])
     }
 
-    const onboardingComplete = isOnboardingComplete()
+    const onboardingComplete = isDevHomeQaBypassActive({
+      isDev: import.meta.env.DEV,
+      search: typeof window !== 'undefined' ? window.location.search : '',
+    })
+      ? true
+      : isOnboardingComplete()
     const hasUser = Boolean(authStore.state.user)
     return resolveRouteGuardDecision({
       to,

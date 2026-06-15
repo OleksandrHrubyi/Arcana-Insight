@@ -5,7 +5,12 @@ import path from 'node:path'
 import { importModule } from './utils/testEnv.js'
 
 test('paywall funnel analytics constants expose required event set', async () => {
-  const { PAYWALL_FUNNEL_EVENTS, REQUIRED_PAYWALL_FUNNEL_EVENTS } = await importModule(
+  const {
+    PAYWALL_FUNNEL_EVENTS,
+    REQUIRED_PAYWALL_FUNNEL_EVENTS,
+    PAYWALL_ENTRY_EVENTS,
+    PAYWALL_ENTRY_POINTS,
+  } = await importModule(
     'src/constants/analyticsEvents.js',
   )
 
@@ -30,6 +35,49 @@ test('paywall funnel analytics constants expose required event set', async () =>
   ])
 
   assert.equal(new Set(REQUIRED_PAYWALL_FUNNEL_EVENTS).size, REQUIRED_PAYWALL_FUNNEL_EVENTS.length)
+
+  assert.deepEqual(PAYWALL_ENTRY_EVENTS, {
+    primary: 'paywall_entry_primary',
+    secondary: 'paywall_entry_secondary',
+  })
+
+  assert.deepEqual(PAYWALL_ENTRY_POINTS, {
+    tarotPostSession: {
+      event: 'paywall_entry_primary',
+      source: 'tarot_post_session',
+      entry: 'interpretation_aha',
+    },
+    tarotDailyLimit: {
+      event: 'paywall_entry_secondary',
+      source: 'tarot_daily_limit',
+      entry: 'notify_action',
+    },
+    tarotSpreadLock: {
+      event: 'paywall_entry_secondary',
+      source: 'tarot_spread_lock',
+      entry: 'notify_action',
+    },
+    readingsLock: {
+      event: 'paywall_entry_secondary',
+      source: 'readings_lock',
+      entry: 'secondary',
+    },
+    compatibilityLock: {
+      event: 'paywall_entry_secondary',
+      source: 'compatibility_lock',
+      entry: 'secondary',
+    },
+    horoscopeLock: {
+      event: 'paywall_entry_secondary',
+      source: 'horoscope_lock',
+      entry: 'secondary',
+    },
+    menuPremium: {
+      event: 'paywall_entry_secondary',
+      source: 'menu_premium',
+      entry: 'secondary',
+    },
+  })
 })
 
 test('onboarding analytics constants expose required event set', async () => {

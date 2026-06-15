@@ -34,3 +34,11 @@ yarn-error.log*
 .env
 *.p8
 dist-ssr
+playwright-report
+test-results
+
+# ai-ops generated run outputs (keep the dir structure, ignore the artifacts)
+ai-ops/output/latest/*
+!ai-ops/output/latest/.gitkeep
+ai-ops/output/history/*
+!ai-ops/output/history/.gitkeep

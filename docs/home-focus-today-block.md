@@ -1,0 +1,189 @@
+# Home Focus Today Block
+
+This document defines the product and UI contract for the `Focus today` block on the Arcana Insight home screen.
+
+## Goal
+
+Add one compact, source-backed daily insight to the home screen without:
+
+- duplicating bottom navigation destinations
+- weakening the card-of-day hero
+- inventing a parallel horoscope content model
+- requiring login just to show daily value
+
+## Placement
+
+- Screen: home (`/`)
+- Canonical component: `src/components/main/LandingScene.vue`
+- Visual position: compact card below the hero CTA layer
+
+This block is not a new top section and must not sit between the header and the hero.
+
+## Role On Home
+
+The block answers:
+
+- `What should I focus on today?`
+
+It complements:
+
+- hero = today's tarot signal
+
+It must not replace:
+
+- the primary hero action
+- the horoscope screen
+- bottom navigation
+
+## Source Of Truth
+
+The block must derive its content from the existing horoscope source stack:
+
+- sign resolution from profile cache / user profile / cached sign
+- horoscope loading from `src/helpers/horoscopeContentCore.js`
+
+Do not create:
+
+- a separate `focus` registry
+- a `do/avoid` content model
+- handcrafted sign/day copy outside the existing horoscope source
+
+## Sign Resolution
+
+Resolve the sign in this order:
+
+1. profile cache / date of birth
+2. user profile fetch
+3. cached local sign (`horoscope_sign_key_v1`)
+4. fallback state when sign is unknown
+
+The block must work for both authenticated and anonymous users.
+
+## Theme Selection
+
+For `v1`, choose one stable theme for home with this priority:
+
+1. `energy`
+2. `career`
+3. `love`
+
+Reason:
+
+- `energy` is the broadest home-compatible theme
+- `career` and `love` still work as fallback
+- home should not feel random from day to day
+
+## Content Extraction
+
+For the chosen theme:
+
+1. use `summary`
+2. if `summary` is empty, use `detailed`
+3. take the first sentence
+4. compress it to a mobile-safe single line
+
+The home block shows a teaser, not a full reading.
+
+## Copy Shape
+
+The block should show:
+
+- title: `Focus today`
+- optional theme label: `Energy`, `Career`, or `Love`
+- one short focus line
+
+The block should not show:
+
+- the zodiac sign again if it is already visible in the header
+- multi-paragraph text
+- deterministic instructions
+- `What to do / What to avoid` in `v1`
+
+Preferred tone:
+
+- calm
+- practical
+- reflective
+- concise
+
+## States
+
+### Ready
+
+Conditions:
+
+- sign is known
+- horoscope text is available
+
+Show:
+
+- `Focus today`
+- theme label
+- one focus line
+
+Tap:
+
+- open `Horoscope`
+
+### Sign Known, Text Unavailable
+
+Conditions:
+
+- sign is known
+- horoscope text is not available yet or failed
+
+Show:
+
+- `Focus today`
+- fallback line inviting the user to open today's horoscope
+
+Tap:
+
+- open `Horoscope`
+
+### Sign Unknown
+
+Conditions:
+
+- sign is not known after all supported resolution paths
+
+Show:
+
+- no `Focus today` block on home
+
+Tap:
+
+- no home action in this state
+
+UI note:
+
+- do not show a pseudo-content card with no real value
+- choosing a sign belongs to the `Horoscope` flow, not to a fallback home card
+
+## UI Rules
+
+- one compact card only
+- readable on small iPhone widths
+- no overlap with hero, bottom navigation, or safe areas
+- body text must remain `14px+`
+- the whole card can be tappable
+- keep the block visually secondary to the hero
+
+## Explicit Non-Goals For V1
+
+Do not add in `v1`:
+
+- `What to do / What to avoid`
+- separate left/right columns
+- multiple horoscope tiles
+- duplicate `Horoscope` or `Tarot` menu shortcuts
+
+## Validation
+
+Before completion, verify:
+
+- hero remains the main action above the fold
+- the block does not duplicate bottom navigation
+- the block resolves correctly for authenticated and anonymous users
+- copy appears in both `en` and `uk`
+- mobile screenshots remain readable on iPhone-sized viewports

@@ -46,48 +46,66 @@ Owner mode: Codex reviewer with minimal blocking questions
 - `in progress` Run real iOS sandbox flow for purchase, restore, cancel, and entitlement refresh.
   Evidence:
   - Manual runbook prepared in [docs/release-reviewer/references/ios-sandbox-billing-runbook.md](/Users/oleksandr/Desktop/App/Arcana-Insight/docs/release-reviewer/references/ios-sandbox-billing-runbook.md:1)
+  - Manual report template prepared in [docs/release-reviewer/references/ios-sandbox-billing-report.md](/Users/oleksandr/Desktop/App/Arcana-Insight/docs/release-reviewer/references/ios-sandbox-billing-report.md:1)
   - Repo billing constants match expected App Store products in [src/constants/premiumBilling.js](/Users/oleksandr/Desktop/App/Arcana-Insight/src/constants/premiumBilling.js:1)
   Remaining:
   - Real-device execution on iPhone with sandbox Apple ID
-  - Pass/fail report captured from the runbook
+  - Pass/fail report captured in `ios-sandbox-billing-report.md`
 
 ## P1 Revenue-Critical
 
 ### Onboarding and activation
 
-- `open` Reduce signup friction before value delivery.
-  Current concern:
-  - signup asks for DOB before the user has experienced enough free value
-- `open` Make premium sell one primary outcome, not a bundle of unrelated perks.
-  Current premium scope:
-  - personal horoscope
-  - unlimited tarot
-  - saved readings
-  - compatibility
-  - card library
-- `open` Confirm that free tier clearly demonstrates recurring daily value before first paywall exposure.
+- `done` Reduce signup friction before value delivery.
+  Evidence:
+  - Signup now asks only for name and email in [src/components/auth/SignUpScene.vue](/Users/oleksandr/Desktop/App/Arcana-Insight/src/components/auth/SignUpScene.vue:1)
+  - Birth date is now framed as an on-demand follow-up for personal horoscope in [src/pages/PersonalHoroscopePage.vue](/Users/oleksandr/Desktop/App/Arcana-Insight/src/pages/PersonalHoroscopePage.vue:1)
+- `done` Make premium sell one primary outcome, not a bundle of unrelated perks.
+  Evidence:
+  - Premium hero now frames one clear outcome in [src/components/main/PremiumInfoComponent.vue](/Users/oleksandr/Desktop/App/Arcana-Insight/src/components/main/PremiumInfoComponent.vue:1)
+  - Supporting copy now ties Premium to a deeper daily reflection practice in [src/i18n/messages.bundle.js](/Users/oleksandr/Desktop/App/Arcana-Insight/src/i18n/messages.bundle.js:1256)
+  - Contract coverage exists in [tests/premiumCopyConsistency.test.js](/Users/oleksandr/Desktop/App/Arcana-Insight/tests/premiumCopyConsistency.test.js:1)
+- `in progress` Confirm that free tier clearly demonstrates recurring daily value before first paywall exposure.
+  Evidence:
+  - Home hero no longer marks `daily_card` complete on first reveal in [src/components/main/LandingScene.vue](/Users/oleksandr/Desktop/App/Arcana-Insight/src/components/main/LandingScene.vue:715)
+  - Home progress now stays tied to real `daily_card` completion in [src/components/main/LandingScene.vue](/Users/oleksandr/Desktop/App/Arcana-Insight/src/components/main/LandingScene.vue:396)
+  - Contract coverage exists in [tests/landingHomeDailyHeroContracts.test.js](/Users/oleksandr/Desktop/App/Arcana-Insight/tests/landingHomeDailyHeroContracts.test.js:1)
+  Remaining:
+  - Mobile visual QA for the updated home free-tier loop
 
 ### Paywall and messaging
 
-- `open` Audit free vs premium copy consistency in:
+- `done` Audit free vs premium copy consistency in:
   - [src/components/main/PremiumInfoComponent.vue](/Users/oleksandr/Desktop/App/Arcana-Insight/src/components/main/PremiumInfoComponent.vue:1)
   - [src/pages/SavedReadingsPage.vue](/Users/oleksandr/Desktop/App/Arcana-Insight/src/pages/SavedReadingsPage.vue:1)
   - [src/pages/CompatibilityPage.vue](/Users/oleksandr/Desktop/App/Arcana-Insight/src/pages/CompatibilityPage.vue:1)
   - [src/components/main/HoroscopeComponent.vue](/Users/oleksandr/Desktop/App/Arcana-Insight/src/components/main/HoroscopeComponent.vue:1)
-- `open` Validate paywall entry taxonomy and analytics consistency after contract fixes.
+  Evidence:
+  - Compatibility free state now consistently says preview-only in the paywall model and screen copy
+  - Saved readings now clearly explain that free keeps today’s value but does not save history
+  - Horoscope locks now describe free as the daily energy theme and Premium as added Love/Career depth
+  - Contract coverage exists in [tests/premiumCopyConsistency.test.js](/Users/oleksandr/Desktop/App/Arcana-Insight/tests/premiumCopyConsistency.test.js:1)
+- `done` Validate paywall entry taxonomy and analytics consistency after contract fixes.
+  Evidence:
+  - Shared paywall entry taxonomy now lives in [src/constants/analyticsEvents.js](/Users/oleksandr/Desktop/App/Arcana-Insight/src/constants/analyticsEvents.js:1)
+  - All premium entry points now log a primary or secondary paywall-entry event before route navigation
+  - Contract coverage exists in [tests/analyticsEvents.test.js](/Users/oleksandr/Desktop/App/Arcana-Insight/tests/analyticsEvents.test.js:1) and [tests/premiumUiSyncContracts.test.js](/Users/oleksandr/Desktop/App/Arcana-Insight/tests/premiumUiSyncContracts.test.js:1)
 
 ## P1 Store Submission
 
-- `in progress` Finalize App Store privacy URL and support URL that actually resolve publicly.
+- `done` Finalize App Store privacy URL and support URL that actually resolve publicly.
   Evidence:
   - GitHub Pages deployment workflow prepared in [.github/workflows/deploy-app-store-pages.yml](/Users/oleksandr/Desktop/App/Arcana-Insight/.github/workflows/deploy-app-store-pages.yml:1)
   - Static landing page added in [app-store/index.html](/Users/oleksandr/Desktop/App/Arcana-Insight/app-store/index.html:1)
   - Expected public URLs documented in [app-store/README.md](/Users/oleksandr/Desktop/App/Arcana-Insight/app-store/README.md:1)
-  Remaining:
-  - Enable GitHub Pages manually in repo settings with `GitHub Actions`
-  - Confirm both URLs load publicly after deploy
-- `open` Verify final App Store metadata against shipped behavior.
+  - Public privacy URL is live at `https://oleksandrhrubyi.github.io/Arcana-Insight/privacy-policy.html`
+  - Public support URL is live at `https://oleksandrhrubyi.github.io/Arcana-Insight/support.html`
+- `done` Verify final App Store metadata against shipped behavior.
   Reference draft: [app-store/metadata.md](/Users/oleksandr/Desktop/App/Arcana-Insight/app-store/metadata.md:1)
+  Evidence:
+  - Horoscope copy now matches free vs premium theme gating in [app-store/metadata.md](/Users/oleksandr/Desktop/App/Arcana-Insight/app-store/metadata.md:1) and [src/constants/premiumModel.js](/Users/oleksandr/Desktop/App/Arcana-Insight/src/constants/premiumModel.js:89)
+  - Promotional text now makes the Premium personal horoscope explicit in [app-store/metadata.md](/Users/oleksandr/Desktop/App/Arcana-Insight/app-store/metadata.md:1)
+  - Store metadata now points to live public support/privacy URLs in [app-store/metadata.md](/Users/oleksandr/Desktop/App/Arcana-Insight/app-store/metadata.md:181)
 - `open` Produce real screenshots with filled content, not placeholders.
 - `done` Prepare reviewer notes with test account / paywall instructions.
   Evidence:

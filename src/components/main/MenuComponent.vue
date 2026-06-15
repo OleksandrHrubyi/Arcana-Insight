@@ -243,7 +243,7 @@ import {
 import { loadTarotData } from 'src/helpers/tarotData'
 import { DAILY_ACTIVITY_KEYS, hasDailyActivityToday, getLocalDateKey } from 'src/helpers/dailyRitual'
 import { analytics } from 'src/services/analytics'
-import { ONBOARDING_EVENTS } from 'src/constants/analyticsEvents'
+import { ONBOARDING_EVENTS, PAYWALL_ENTRY_POINTS } from 'src/constants/analyticsEvents'
 
 export default defineComponent({
   name: 'MenuComponent',
@@ -261,10 +261,10 @@ export default defineComponent({
 
     const mainItems = [
       {
-        key: 'myDay',
-        labelKey: 'nav.myDay',
-        icon: 'today',
-        routeName: 'myDay',
+        key: 'home',
+        labelKey: 'nav.home',
+        icon: 'home',
+        routeName: 'arcana',
       },
       {
         key: 'compatibility',
@@ -372,7 +372,12 @@ export default defineComponent({
         return
       }
       if (item.routeName === 'premium') {
-        await router.push({ name: item.routeName, query: { source: 'menu_premium', entry: 'secondary' } })
+        const point = PAYWALL_ENTRY_POINTS.menuPremium
+        void analytics.logEvent(point.event, {
+          source: point.source,
+          entry: point.entry,
+        })
+        await router.push({ name: item.routeName, query: { source: point.source, entry: point.entry } })
         return
       }
       await router.push({ name: item.routeName })
@@ -471,7 +476,7 @@ export default defineComponent({
         had_daily_card_today: hasDailyCardToday.value,
       })
       await router.push({
-        name: 'myDay',
+        name: 'arcana',
         query: { source: 'menu_daily_launcher', entry: 'menu_launcher' },
       })
     }

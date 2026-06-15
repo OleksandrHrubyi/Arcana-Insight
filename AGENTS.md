@@ -2,6 +2,76 @@
 
 - Product: Arcana Insight is a mobile tarot + horoscope app for Apple App Store and Google Play.
 - Stack: Quasar Framework + Capacitor.
+- Source of truth rule: tarot card content and daily-card meanings must come from `src/data/cardsV2/tarot_full.json`, `src/helpers/tarotData.js`, and `src/helpers/dailyCardCore.js`.
+- Source of truth rule: horoscope theme structure and loading logic must follow `src/helpers/horoscopeContentCore.js`; do not invent parallel theme models.
+- Source of truth rule: premium feature availability and comparison claims must follow `src/constants/premiumModel.js`.
+- Source of truth rule: streaks, daily completion, and ritual progress must follow `src/helpers/dailyRitual.js`.
+- Product contract rule: use `docs/screen-contracts.md` when changing screen role, CTA hierarchy, or above-the-fold structure.
+- Screen status rule: use `docs/screen-status.md` to see each screen's current state and remaining gaps, and update its row after finishing a screen.
+- Copy contract rule: use `docs/copy-bible.md` when writing or changing user-facing product copy.
+- Premium contract rule: use `docs/premium-matrix.md` when changing free vs premium UX, claims, or lock states.
+- Done rule: use `docs/definition-of-done-mobile.md` before calling a mobile product task complete.
+- Canonical-file rule: use `docs/canonical-files.md` before editing ambiguous screens, services, or duplicate-looking files.
+- Flow rule: use `docs/flow-map.md` when changing navigation, redirects, onboarding handoff, auth entry, or screen-entry logic.
+- Content ownership rule: use `docs/content-source-map.md` before changing product content, loading logic, or source-backed UI copy.
+- File hygiene rule: never create duplicate files with suffixes like `2`, `copy`, `final`, or `new`; edit the canonical file or explicitly resolve which file is active first.
+- File hygiene rule: when duplicate or suspect files already exist, confirm the active route/component/import target before editing.
 - UX priority for the main screen: show clear "what to do now" actions, not only atmospheric visuals.
+- Main screen rule: the home screen is the user's primary dashboard, not a decorative collage.
+- Main screen rule: if the product direction says home is the main daily dashboard, do not introduce a separate pseudo-home flow such as `My Day` as a required intermediate destination.
+- Main screen rule: every home-screen change must preserve one clear primary action above the fold.
+- Main screen rule: prefer enriching existing home elements before adding new sections; do not add a new block when the same user value can be delivered inside an existing hero, card, or header.
+- Main screen rule: never add blocks that overlap the card-of-day hero, action cards, or bottom navigation.
+- Main screen rule: never duplicate bottom navigation destinations as large CTA cards unless the card contains distinct content and a different user need.
+- Main screen rule: do not add content cards that merely restate `Menu`, `Home`, or any other bottom-navigation destination without new content value.
+- Main screen rule: if the current viewport is already dense, simplify or replace content; do not keep stacking new sections into the same vertical space.
+- Main screen rule: if a status is important for retention or daily ritual, do not hide it inside a horizontal scroller where it may never be seen on first view.
+- Main screen rule: status items such as streaks, completion, and daily progress should read as product status, not as astrology content.
+- Main screen rule: home-screen content priority is `primary action -> today summary -> daily progress -> continue path -> secondary exploration`.
+- Main screen rule: if a new home element does not improve one of those five priorities, do not add it above the fold.
+- Mobile readability rule: core content on the main screen must use readable mobile sizes; never use tiny text for primary or explanatory content.
+- Mobile readability rule: do not use text smaller than `14px` for body copy on the home screen; `12px` is the minimum only for short secondary meta labels.
+- Mobile UI rule: tap targets for primary actions should meet mobile norms and should not rely on precision tapping.
+- Mobile UI rule: top-corner badges or pills must respect safe-area insets and must remain visually secondary to the main hero content.
+- Mobile UI rule: on iPhone, do not trust `env(safe-area-inset-top/right)` alone for top-corner badges near the status bar; add a real minimum offset and verify against notch, battery, and status icons on a physical device or equivalent screenshot.
+- Layout rule: no added block may cover, visually collide with, or compete with the primary hero action.
+- Layout rule: avoid new absolute-positioned overlay cards on the home screen unless the whole vertical layout is recalculated first.
+- Content rule: when showing a short teaser for the daily card on home, derive it from the real card meaning/description already used in the app; never invent interpretation copy ad hoc.
+- Content rule: home may show only a teaser or theme line for the daily card, not the full interpretation if that would collapse the purpose of the dedicated daily-card screen.
+- Content rule: horoscope and tarot blocks on home should be previews or use-case entries, not generic buttons with no informational value.
+- Content rule: tarot and horoscope copy should sound reflective and grounded, not sensational, manipulative, or fear-based.
+- Content rule: do not write deterministic spiritual guidance or imply medical, legal, financial, fertility, or emergency predictions.
+- i18n rule: never hardcode user-facing strings if the screen or flow already uses i18n.
+- i18n rule: when adding or changing UI copy, update both `src/i18n/en.json` and `src/i18n/uk.json` unless explicitly told otherwise.
+- i18n rule: do not create translation keys that duplicate an existing phrase with only minor wording differences.
+- i18n rule: in Vue templates, render user-facing copy through translation keys, not inline locale ternaries such as `locale === 'uk' ? ... : ...`.
+- Navigation rule: bottom navigation destinations are product-level anchors; do not create alternative parallel entry flows to the same outcome without strong product value.
+- Navigation rule: before adding a new screen or route, define whether it is a destination, drill-down, redirect, or modal-like flow.
+- Navigation rule: onboarding, auth, and premium gating must respect existing route-guard behavior in `src/router/guard.js` and route metadata in `src/router/routes.js`.
+- Analytics rule: evaluate every new primary CTA, premium entry point, and daily-ritual milestone for analytics impact.
+- Analytics rule: use existing naming and funnel structure from `src/constants/analyticsEvents.js` and `src/services/analytics.js` before creating new events.
+- Analytics rule: do not create near-duplicate event names for the same user action.
+- State rule: before introducing a new local-storage key, check whether an existing helper already owns that concept.
+- State rule: do not create parallel persistence for the same concept across component state, local storage, and store without a clear sync strategy.
+- Refactor rule: for product tasks, prefer targeted edits over structural refactors unless refactoring is required to complete the task safely.
+- Refactor rule: do not rename or move sensitive screen files unless the change requires it.
+- Validation rule: before finishing any main-screen UI change, verify readability, hierarchy, spacing, and lack of overlap from an actual mobile screenshot or equivalent visual check.
+- Validation rule: for home-screen work, explicitly check that no content card duplicates the role of bottom navigation or another existing home block.
+- Validation rule: for UI changes, verify from an actual mobile screenshot, rendered view, or equivalent visual check before completion.
+- Validation rule: for routing or navigation changes, verify destination, back navigation, redirect behavior, and bottom-nav state.
+- Validation rule: for premium changes, verify free path, locked path, and premium path.
+- Validation rule: for content or UI copy changes, verify affected i18n keys resolve in all touched locales.
+- Skill rule: for any general Arcana Insight product, navigation, feature, or app-copy task, follow `.claude/skills/arcana-core-product/SKILL.md`.
+- Skill rule: for tarot, horoscope, zodiac, compatibility, teaser, reading, or notification copy, follow `.claude/skills/arcana-content-guardrails/SKILL.md`.
+- Skill rule: for daily card, streak, daily progress, ritual rewards, or retention-loop UX work, follow `.claude/skills/arcana-daily-ritual-ux/SKILL.md`.
+- Skill rule: for premium page, paywall, locked-state, upsell, or subscription comparison work, follow `.claude/skills/arcana-premium-trust/SKILL.md`.
+- Skill rule: for i18n, locale parity, translation-key changes, or multilingual copy review, follow `.claude/skills/arcana-i18n-consistency/SKILL.md`.
+- Skill rule: for routes, redirects, onboarding handoff, auth gating, bottom navigation behavior, or screen-entry flow changes, follow `.claude/skills/arcana-routing-and-flow-guardrails/SKILL.md`.
+- Skill rule: for CTA analytics, paywall funnel events, onboarding events, ritual milestones, or conversion tracking changes, follow `.claude/skills/arcana-analytics-and-conversion/SKILL.md`.
+- Skill rule: for Supabase Edge Functions (`supabase/functions/*`) — AI horoscope/tarot generation, push, ritual, auth, billing, or account deletion — follow `.claude/skills/arcana-edge-functions/SKILL.md`.
+- Skill rule: for home screen, mobile dashboard, or Apple App Store UI work, follow `docs/skills/mobile-app-store-ui-guardrails/SKILL.md`.
+- Skill rule: for iPhone layout or safe-area-sensitive UI work, follow `docs/skills/ios-mobile-layout-qa/SKILL.md`.
+- Skill rule: for home screen changes or reviews, follow `docs/skills/home-screen-ux-audit/SKILL.md`.
+- Skill rule: for screens that should look App Store-ready, follow `docs/skills/app-store-screenshot-readiness/SKILL.md`.
 - Safety rule: never delete files without explicit user permission in the current thread.
 - UI rule: never use AI-looking icons (e.g. `auto_awesome`, `sparkles`, `✨`) unless user explicitly asks for them.

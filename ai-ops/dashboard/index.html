@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arcana Insight AI Ops</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Arcana Insight</p>
+          <h1>AI Ops Dashboard</h1>
+          <p class="subtle">Latest artifact snapshot across code, launch, tests, and build.</p>
+        </div>
+        <div class="topbar__actions">
+          <div class="topbar__timestamp">
+            <span>Generated</span>
+            <strong id="generated-at">Loading...</strong>
+          </div>
+          <button id="refresh-button" type="button">Refresh view</button>
+        </div>
+      </header>
+
+      <div id="error-banner" class="error-banner" hidden></div>
+
+      <main class="layout">
+        <section class="hero">
+          <div class="hero__summary">
+            <article>
+              <span>Total issues</span>
+              <strong id="summary-total">0</strong>
+            </article>
+            <article>
+              <span>Blockers</span>
+              <strong id="summary-blockers">0</strong>
+            </article>
+            <article>
+              <span>Warnings</span>
+              <strong id="summary-warnings">0</strong>
+            </article>
+            <article>
+              <span>Checks</span>
+              <strong id="summary-checks">0</strong>
+            </article>
+            <article>
+              <span>Failed checks</span>
+              <strong id="summary-failed">0</strong>
+            </article>
+          </div>
+          <div id="checks-grid" class="checks-grid"></div>
+        </section>
+
+        <section class="stack">
+          <section class="panel">
+            <div class="panel__header">
+              <div>
+                <h2>Top Issues</h2>
+                <p>Highest-priority artifact findings resolved from the current manifest.</p>
+              </div>
+            </div>
+            <div id="top-issues"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel__header">
+              <div>
+                <h2>Briefing</h2>
+                <p>Raw operator summary generated from the latest outputs.</p>
+              </div>
+            </div>
+            <pre id="briefing" class="briefing"></pre>
+          </section>
+
+          <div id="sections" class="sections"></div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
+

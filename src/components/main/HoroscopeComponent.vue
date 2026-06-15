@@ -1,5 +1,15 @@
 <template>
-  <div ref="container" class="container" :class="{ dragging: isDragging }">
+  <div
+    ref="container"
+    class="container"
+    :class="{
+      dragging: isDragging,
+      'visual-effects-ready': visualEffectsReady,
+      'visual-effects-lite': visualEffectsTier === 'lite',
+      'visual-effects-paused': shouldPauseDecorativeEffects,
+      'visual-effects-reduced': visualEffectsTier === 'reduced',
+    }"
+  >
     <!-- DATE -->
     <div class="date-info">
       <div class="date-info-label date-top">{{ tt('dailyHoroscope') }}</div>
@@ -11,14 +21,17 @@
       <div class="hero-disc__tilt">
         <!-- крутиться повільно -->
         <div class="hero-disc__spin">
-          <img
-            class="hero-disc__img"
-            src="/images/horoscope-disc.jpg"
-            alt=""
-            loading="eager"
-            decoding="async"
-            fetchpriority="high"
-          />
+          <picture>
+            <source srcset="/images/horoscope-disc.webp" type="image/webp" />
+            <img
+              class="hero-disc__img"
+              src="/images/horoscope-disc.jpg"
+              alt=""
+              loading="eager"
+              decoding="async"
+              fetchpriority="high"
+            />
+          </picture>
 
           <!-- “зерно/зорі” всередині диска -->
           <div class="hero-disc__stars"></div>
@@ -110,40 +123,38 @@
                 <div class="horoscope-info-title">{{ tt('love') }}</div>
                 <div class="horoscope-divider"></div>
 
-                <div class="horoscope-text-wrap">
-                  <div
-                    class="horoscope-info-style"
-                    :class="{
-                      'horoscope-info-style--blurred': isThemeLocked('love'),
-                      'horoscope-info-style--loading': !hasThemeText('love'),
-                    }"
-                  >
-                    <template v-if="hasThemeText('love')">
-                      {{ getThemeText('love') }}
-                    </template>
-                    <div v-else class="horoscope-text-skeleton" aria-hidden="true">
-                      <span
-                        v-for="index in 6"
-                        :key="`love-skeleton-${index}`"
-                        class="horoscope-text-skeleton__line"
-                      ></span>
-                    </div>
+                <div
+                  class="horoscope-info-style"
+                  :class="{
+                    'horoscope-info-style--blurred': isThemeLocked('love'),
+                    'horoscope-info-style--loading': !hasThemeText('love'),
+                  }"
+                >
+                  <template v-if="hasThemeText('love')">
+                    {{ getThemeText('love') }}
+                  </template>
+                  <div v-else class="horoscope-text-skeleton" aria-hidden="true">
+                    <span
+                      v-for="index in 6"
+                      :key="`love-skeleton-${index}`"
+                      class="horoscope-text-skeleton__line"
+                    ></span>
                   </div>
-                  <button
-                    v-if="isThemeLocked('love')"
-                    type="button"
-                    class="horoscope-lock-overlay"
-                    @click="openPremiumPaywall"
-                  >
-                    <span class="horoscope-lock-overlay__title">{{
-                      getThemeLockTitle('love')
-                    }}</span>
-                    <span class="horoscope-lock-overlay__text">{{ getThemeLockText('love') }}</span>
-                    <span class="horoscope-lock-overlay__cta">
-                      <span>{{ tt('premiumAccess.cta') }}</span>
-                    </span>
-                  </button>
                 </div>
+                <button
+                  v-if="isThemeLocked('love')"
+                  type="button"
+                  class="horoscope-lock-overlay horoscope-lock-overlay--panel"
+                  @click="openPremiumPaywall"
+                >
+                  <span class="horoscope-lock-overlay__title">{{
+                    getThemeLockTitle('love')
+                  }}</span>
+                  <span class="horoscope-lock-overlay__text">{{ getThemeLockText('love') }}</span>
+                  <span class="horoscope-lock-overlay__cta">
+                    <span>{{ tt('premiumAccess.cta') }}</span>
+                  </span>
+                </button>
               </div>
             </q-tab-panel>
 
@@ -152,42 +163,40 @@
                 <div class="horoscope-info-title">{{ tt('career') }}</div>
                 <div class="horoscope-divider"></div>
 
-                <div class="horoscope-text-wrap">
-                  <div
-                    class="horoscope-info-style"
-                    :class="{
-                      'horoscope-info-style--blurred': isThemeLocked('career'),
-                      'horoscope-info-style--loading': !hasThemeText('career'),
-                    }"
-                  >
-                    <template v-if="hasThemeText('career')">
-                      {{ getThemeText('career') }}
-                    </template>
-                    <div v-else class="horoscope-text-skeleton" aria-hidden="true">
-                      <span
-                        v-for="index in 6"
-                        :key="`career-skeleton-${index}`"
-                        class="horoscope-text-skeleton__line"
-                      ></span>
-                    </div>
+                <div
+                  class="horoscope-info-style"
+                  :class="{
+                    'horoscope-info-style--blurred': isThemeLocked('career'),
+                    'horoscope-info-style--loading': !hasThemeText('career'),
+                  }"
+                >
+                  <template v-if="hasThemeText('career')">
+                    {{ getThemeText('career') }}
+                  </template>
+                  <div v-else class="horoscope-text-skeleton" aria-hidden="true">
+                    <span
+                      v-for="index in 6"
+                      :key="`career-skeleton-${index}`"
+                      class="horoscope-text-skeleton__line"
+                    ></span>
                   </div>
-                  <button
-                    v-if="isThemeLocked('career')"
-                    type="button"
-                    class="horoscope-lock-overlay"
-                    @click="openPremiumPaywall"
-                  >
-                    <span class="horoscope-lock-overlay__title">{{
-                      getThemeLockTitle('career')
-                    }}</span>
-                    <span class="horoscope-lock-overlay__text">{{
-                      getThemeLockText('career')
-                    }}</span>
-                    <span class="horoscope-lock-overlay__cta">
-                      <span>{{ tt('premiumAccess.cta') }}</span>
-                    </span>
-                  </button>
                 </div>
+                <button
+                  v-if="isThemeLocked('career')"
+                  type="button"
+                  class="horoscope-lock-overlay horoscope-lock-overlay--panel"
+                  @click="openPremiumPaywall"
+                >
+                  <span class="horoscope-lock-overlay__title">{{
+                    getThemeLockTitle('career')
+                  }}</span>
+                  <span class="horoscope-lock-overlay__text">{{
+                    getThemeLockText('career')
+                  }}</span>
+                  <span class="horoscope-lock-overlay__cta">
+                    <span>{{ tt('premiumAccess.cta') }}</span>
+                  </span>
+                </button>
               </div>
             </q-tab-panel>
           </q-tab-panels>
@@ -231,11 +240,12 @@ import { saveLocal, loadLocal } from 'src/helpers/localStorageSaver.js'
 import { t, currentLocale } from 'src/i18n'
 import { Share } from '@capacitor/share'
 import { selectAppUser, selectHoroscopes } from 'src/services/supabaseNative'
+import { analytics } from 'src/services/analytics'
+import { PAYWALL_ENTRY_POINTS } from 'src/constants/analyticsEvents'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
 import { useAuthStore } from 'stores/authStore.js'
 import { DAILY_ACTIVITY_KEYS, markDailyActivity } from 'src/helpers/dailyRitual'
 import { resolveUserSignSnapshot } from 'src/helpers/zodiacUserSignCore.js'
-import * as Astronomy from 'astronomy-engine'
 import {
   ensureRitualRewardInventory,
   trackRitualActivityWithGuestFallback,
@@ -279,6 +289,67 @@ const ZODIAC_SIGN_CACHE_KEY = 'horoscope_sign_key_v1'
 const PROFILE_CACHE_KEY = 'profile_cache_v1'
 const premiumAccessStore = usePremiumAccess()
 const authStore = useAuthStore()
+let astronomyEnginePromise = null
+
+const loadAstronomyEngine = async () => {
+  if (!astronomyEnginePromise) {
+    astronomyEnginePromise = import('astronomy-engine')
+  }
+  return astronomyEnginePromise
+}
+
+const scheduleNonCriticalTask = (task, { timeout = 1500, fallbackDelay = 700 } = {}) => {
+  if (typeof window === 'undefined') {
+    task()
+    return null
+  }
+
+  if (typeof window.requestIdleCallback === 'function') {
+    return {
+      type: 'idle',
+      id: window.requestIdleCallback(task, { timeout }),
+    }
+  }
+
+  return {
+    type: 'timeout',
+    id: window.setTimeout(task, fallbackDelay),
+  }
+}
+
+const cancelScheduledTask = (handle) => {
+  if (!handle || typeof window === 'undefined') return
+
+  if (handle.type === 'idle' && typeof window.cancelIdleCallback === 'function') {
+    window.cancelIdleCallback(handle.id)
+    return
+  }
+
+  if (handle.type === 'timeout') {
+    window.clearTimeout(handle.id)
+  }
+}
+
+const resolveVisualEffectsTier = () => {
+  if (typeof window === 'undefined') return 'full'
+
+  const reducedMotion =
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (reducedMotion) return 'reduced'
+
+  const nav = window.navigator || {}
+  const cpuCores = Number(nav.hardwareConcurrency || 0)
+  const deviceMemory = Number(nav.deviceMemory || 0)
+  const saveData = Boolean(nav.connection?.saveData)
+
+  if (saveData) return 'lite'
+  if ((cpuCores && cpuCores <= 4) || (deviceMemory && deviceMemory <= 4)) {
+    return 'lite'
+  }
+
+  return 'full'
+}
 
 export default {
   name: 'HoroscopeComponent',
@@ -346,6 +417,11 @@ export default {
       themeTab: FREE_HOROSCOPE_THEME,
       themeSwipeSensitivity: '0.03:1:30',
       rewardAccessTick: 0,
+      persistZodiacSelectionOnStop: false,
+      visualEffectsReady: false,
+      visualEffectsTier: 'full',
+      particleTaskHandle: null,
+      rewardTaskHandle: null,
     }
   },
 
@@ -383,6 +459,10 @@ export default {
       return this.isThemeLocked(this.themeTab)
     },
 
+    shouldPauseDecorativeEffects() {
+      return this.isDragging || this.mode === 'inertia' || this.mode === 'snap'
+    },
+
     tt() {
       return (key) => t(this.locale, key)
     },
@@ -396,12 +476,10 @@ export default {
     })
     this.themeTab = FREE_HOROSCOPE_THEME
     this.applyThemeFromRoute(this.$route?.query?.theme)
+    this.visualEffectsTier = resolveVisualEffectsTier()
     this.setVh()
     this.applyScale()
     void this.refreshHoroscopesForDay()
-
-    // ✅ частинки
-    this.buildParticles()
     this.hydrateZodiacFromCache()
 
     this.rotation = Math.round(this.rotation / this.stepDeg) * this.stepDeg
@@ -420,7 +498,21 @@ export default {
     })
 
     this.scheduleMidnightRefresh()
-    void this.refreshRitualRewardAccess()
+    requestAnimationFrame(() => {
+      this.particleTaskHandle = scheduleNonCriticalTask(
+        () => {
+          this.visualEffectsReady = true
+          this.buildParticles()
+          this.particleTaskHandle = null
+        },
+        { timeout: 1800, fallbackDelay: 450 }
+      )
+
+      this.rewardTaskHandle = scheduleNonCriticalTask(() => {
+        void this.refreshRitualRewardAccess()
+        this.rewardTaskHandle = null
+      })
+    })
   },
 
   beforeUnmount() {
@@ -428,6 +520,8 @@ export default {
     window.removeEventListener('orientationchange', this.onResize)
     this.stopLoop()
     clearTimeout(this.midnightTimer)
+    cancelScheduledTask(this.particleTaskHandle)
+    cancelScheduledTask(this.rewardTaskHandle)
 
     const drag = this.$refs.dragLayer
     if (this.activePointerId != null && drag?.releasePointerCapture) {
@@ -525,8 +619,13 @@ export default {
       } catch (e) {
         console.error(e)
       }
+      const point = PAYWALL_ENTRY_POINTS.horoscopeLock
+      void analytics.logEvent(point.event, {
+        source: point.source,
+        entry: point.entry,
+      })
       this.$router
-        .push({ name: 'premium', query: { source: 'horoscope_lock', entry: 'secondary' } })
+        .push({ name: 'premium', query: { source: point.source, entry: point.entry } })
         .catch(() => {})
     },
 
@@ -565,10 +664,16 @@ export default {
       this.focusZodiacByKey(cachedKey)
     },
 
-    // ✅ генерація “реальних” летючих частинок
+    // Non-critical polish for the hero disc. Keep lighter on low-capability devices.
     buildParticles() {
-      const count = 36 // 20–40
+      const count = this.visualEffectsTier === 'lite' ? 20 : 36
+      if (this.visualEffectsTier === 'reduced' || count <= 0) {
+        this.particles = []
+        return
+      }
+
       const colors = ['rgba(255,255,255,0.95)', 'rgba(159,216,246,0.85)', 'rgba(255,220,180,0.70)']
+      const blurRange = this.visualEffectsTier === 'lite' ? 0.55 : 1.2
 
       const out = []
       for (let i = 0; i < count; i++) {
@@ -576,7 +681,7 @@ export default {
         const y = Math.random() * 100
 
         const s = 1.2 + Math.random() * 2.8 // size px
-        const blur = Math.random() * 1.2 // blur px
+        const blur = Math.random() * blurRange // blur px
         const dur = 7 + Math.random() * 14 // seconds
         const delay = -Math.random() * dur // negative start
         const dx = -22 + Math.random() * 44 // drift X px
@@ -648,10 +753,11 @@ export default {
       return ''
     },
 
-    moonSignFromBirthDate(raw) {
+    async moonSignFromBirthDate(raw) {
       try {
         const iso = this.birthDateToISO(raw)
         if (!iso) return ''
+        const Astronomy = await loadAstronomyEngine()
         const date = new Date(iso + 'T12:00:00Z')
         const time = Astronomy.MakeTime(date)
         const vec = Astronomy.GeoVector(Astronomy.Body.Moon, time, false)
@@ -756,7 +862,7 @@ export default {
 
         if (snapshot.dob) {
           this.userDob = snapshot.dob
-          const ms = this.moonSignFromBirthDate(snapshot.dob)
+          const ms = await this.moonSignFromBirthDate(snapshot.dob)
           this.moonSign = ms
         }
 
@@ -974,6 +1080,10 @@ export default {
       if (this.rafId != null) cancelAnimationFrame(this.rafId)
       this.rafId = null
       this.isAnimating = false
+      if (this.persistZodiacSelectionOnStop && this.activeZodiac?.key) {
+        this.writeCachedZodiacKey(this.activeZodiac.key)
+        this.persistZodiacSelectionOnStop = false
+      }
       this.mode = 'idle'
       window.setTimeout(() => {
         this.gpuOn = false
@@ -1049,6 +1159,7 @@ export default {
 
       this.desiredRotation = this.rotation
       this.omega = 0
+      this.persistZodiacSelectionOnStop = true
 
       this.lastMoveTs = performance.now()
       this.lastMoveAngle = this.startAngle
@@ -1291,6 +1402,31 @@ export default {
   will-change: transform;
 }
 
+.container:not(.visual-effects-ready) .hero-disc__stars,
+.container:not(.visual-effects-ready) .hero-disc__stars--2,
+.container:not(.visual-effects-ready) .hero-disc__sweep,
+.container:not(.visual-effects-ready) .hero-disc__particles::before,
+.container:not(.visual-effects-ready) .particle {
+  animation: none !important;
+}
+
+.container:not(.visual-effects-ready) .hero-disc__particles {
+  opacity: 0;
+}
+
+.container.visual-effects-paused .hero-disc__stars,
+.container.visual-effects-paused .hero-disc__stars--2,
+.container.visual-effects-paused .hero-disc__sweep,
+.container.visual-effects-paused .hero-disc__particles::before,
+.container.visual-effects-paused .particle {
+  animation-play-state: paused !important;
+}
+
+.container.visual-effects-paused .hero-disc__particles,
+.container.visual-effects-paused .hero-disc__sweep {
+  opacity: 0;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .hero-disc__tilt {
     animation: discTilt 10.5s ease-in-out infinite;
@@ -1467,6 +1603,36 @@ export default {
   transform: translateZ(60px);
   contain: paint;
   filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.25));
+}
+
+.container.visual-effects-lite .hero-disc__stars {
+  filter: none;
+}
+
+.container.visual-effects-lite .hero-disc__stars--2 {
+  filter: blur(0.35px);
+}
+
+.container.visual-effects-lite .hero-disc__sweep {
+  filter: blur(4px);
+}
+
+.container.visual-effects-lite .hero-disc__particles {
+  filter: none;
+}
+
+.container.visual-effects-lite .particle {
+  filter: none;
+}
+
+.container.visual-effects-reduced .hero-disc__stars {
+  filter: none;
+}
+
+.container.visual-effects-reduced .hero-disc__stars--2,
+.container.visual-effects-reduced .hero-disc__sweep,
+.container.visual-effects-reduced .hero-disc__particles {
+  display: none;
 }
 
 .hero-disc__particles::before {
@@ -1658,13 +1824,13 @@ export default {
   width: calc(1800px * var(--s));
   height: calc(1800px * var(--s));
   border-radius: 50%;
-  background: url('/images/horoscope-disc-symbol.svg') center/contain no-repeat;
+  background: url('/images/horoscope-disc-symbol-runtime.png') center/contain no-repeat;
   transform-origin: 50% 50%;
   z-index: 80;
   transform: translate3d(-50%, -50%, 0) rotate(0deg);
 
   @media screen and (max-height: 670px) {
-    top: calc(640px * var(--s));
+    top: calc(622px * var(--s));
   }
 }
 
@@ -1781,27 +1947,27 @@ export default {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 34px;
-  margin: 0 auto 12px;
-  padding: 0 14px;
+  min-height: 32px;
+  margin: 0 auto 10px;
+  padding: 0 13px;
   border-radius: 999px;
   border: 1px solid rgba(160, 210, 245, 0.16);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
     0 10px 20px rgba(2, 8, 15, 0.12);
-  font-weight: 560;
-  font-size: calc(13px * var(--s));
+  font-weight: 540;
+  font-size: calc(12.5px * var(--s));
   line-height: 1;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(242, 247, 252, 0.92);
+  color: rgba(242, 247, 252, 0.88);
 }
 
 .horoscope-divider {
-  width: 92px;
-  height: 2px;
-  margin: 0 auto 18px;
+  width: 84px;
+  height: 1.5px;
+  margin: 0 auto 16px;
   border-radius: 999px;
   background: linear-gradient(
     90deg,
@@ -1871,56 +2037,101 @@ export default {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding: 2px 0 0;
+  padding: 0;
 }
 
 .panel-inner::before {
-  content: '';
-  position: absolute;
-  left: clamp(10px, 3vw, 16px);
-  right: clamp(10px, 3vw, 16px);
-  top: 64px;
-  bottom: 2px;
-  border-radius: 30px;
-  background:
-    radial-gradient(120% 100% at 50% 0%, rgba(138, 196, 236, 0.08) 0%, rgba(138, 196, 236, 0.02) 34%, rgba(138, 196, 236, 0) 72%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.022) 0%, rgba(255, 255, 255, 0.008) 100%);
-  border: 1px solid rgba(159, 216, 246, 0.06);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 24px 44px rgba(0, 0, 0, 0.12);
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 }
 
 .horoscope-text-wrap {
   position: relative;
   flex: 1;
+  display: flex;
+  align-items: stretch;
   min-height: 0;
   overflow: hidden;
-  margin: 0 clamp(10px, 3vw, 16px);
-  padding: 22px clamp(14px, 4vw, 20px) 18px;
+  margin: 0 clamp(8px, 2.6vw, 14px);
+  padding: 18px clamp(16px, 4vw, 22px) 14px;
+  border-radius: 30px;
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(138, 196, 236, 0.14) 0%, rgba(138, 196, 236, 0.06) 32%, rgba(138, 196, 236, 0) 74%),
+    linear-gradient(180deg, rgba(11, 19, 31, 0.8) 0%, rgba(8, 14, 23, 0.9) 100%);
+  border: 1px solid rgba(159, 216, 246, 0.13);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -18px 28px rgba(0, 0, 0, 0.12),
+    0 18px 36px rgba(0, 0, 0, 0.09);
   z-index: 1;
 }
 
+.horoscope-text-wrap::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 68px;
+  border-radius: 0 0 inherit inherit;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(5, 11, 18, 0) 0%,
+      rgba(5, 11, 18, 0.76) 54%,
+      rgba(5, 11, 18, 0.94) 100%
+    ),
+    linear-gradient(
+      45deg,
+      transparent calc(50% - 1px),
+      rgba(216, 235, 250, 0.78) calc(50% - 1px),
+      rgba(216, 235, 250, 0.78) calc(50% + 1px),
+      transparent calc(50% + 1px)
+    )
+      calc(50% - 6px) calc(100% - 18px) / 10px 10px no-repeat,
+    linear-gradient(
+      -45deg,
+      transparent calc(50% - 1px),
+      rgba(216, 235, 250, 0.78) calc(50% - 1px),
+      rgba(216, 235, 250, 0.78) calc(50% + 1px),
+      transparent calc(50% + 1px)
+    )
+      calc(50% + 6px) calc(100% - 18px) / 10px 10px no-repeat,
+    radial-gradient(
+      46px 10px at 50% calc(100% - 17px),
+      rgba(193, 225, 247, 0.2) 0%,
+      rgba(193, 225, 247, 0.07) 46%,
+      rgba(193, 225, 247, 0) 100%
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.horoscope-text-wrap::after {
+  display: none;
+}
+
 .horoscope-info-style {
+  position: relative;
+  z-index: 1;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 
-  text-align: center;
-  font-weight: 420;
-  font-size: max(15px, calc(15px * var(--s)));
-  line-height: 1.72;
-  letter-spacing: -0.005em;
+  text-align: left;
+  font-weight: 410;
+  font-size: clamp(15px, calc(15px * var(--s)), 16px);
+  line-height: 1.62;
+  letter-spacing: 0;
   text-transform: none;
-  color: rgba(231, 239, 248, 0.86);
+  color: rgba(241, 246, 252, 0.95);
+  text-shadow: 0 1px 1px rgba(2, 8, 15, 0.18);
 
-  width: min(100%, 34ch);
+  width: min(100%, 36ch);
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0 2px 12px;
+  padding: 4px 0 36px;
 
   scrollbar-width: none;
   text-wrap: pretty;
@@ -1930,16 +2141,14 @@ export default {
 
   -webkit-mask-image: linear-gradient(
     to bottom,
-    transparent 0px,
-    #000 8px,
-    #000 calc(100% - 10px),
+    #000 0px,
+    #000 calc(100% - 34px),
     transparent 100%
   );
   mask-image: linear-gradient(
     to bottom,
-    transparent 0px,
-    #000 8px,
-    #000 calc(100% - 10px),
+    #000 0px,
+    #000 calc(100% - 34px),
     transparent 100%
   );
 }
@@ -2035,6 +2244,13 @@ export default {
   box-shadow:
     0 14px 30px rgba(0, 0, 0, 0.42),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.horoscope-lock-overlay--panel {
+  top: 58px;
+  left: clamp(8px, 2.6vw, 14px);
+  right: clamp(8px, 2.6vw, 14px);
+  bottom: 0;
 }
 
 .horoscope-lock-overlay__title {
@@ -2310,33 +2526,149 @@ export default {
 
 @media screen and (max-height: 670px) {
   .date-info {
-    top: 50px;
+    top: 48px;
   }
+
   .date-info-label {
     font-size: 12px;
+    line-height: 18px;
+    margin-bottom: 5px;
+  }
+
+  .center-round {
+    width: calc(518px * var(--s));
+    height: calc(524px * var(--s));
+    top: calc(356px * var(--s));
+  }
+
+  .bottom-wrapper {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .horoscope-info {
+    padding-top: 4px !important;
+  }
+
+  .active-zodiac {
+    margin-bottom: 9px;
+  }
+
+  .active-zodiac-name {
+    font-size: calc(19px * var(--s));
+    line-height: 1.04;
+  }
+
+  .active-zodiac-dates {
+    margin-top: 2px;
+    font-size: calc(12px * var(--s));
+  }
+
+  :deep(.horoscope-panels) {
+    max-height: calc(100% - 198px);
   }
 
   .horoscope-info-title {
     font-size: 12px;
-    margin-bottom: 6px;
+    min-height: 30px;
+    margin-bottom: 5px;
+  }
+
+  .horoscope-divider {
+    margin-bottom: 11px;
   }
 
   .horoscope-info-style {
     font-size: 14px;
-    line-height: 1.62;
+    line-height: 1.5;
+    width: min(100%, 35ch);
+    padding-bottom: 28px;
   }
 
   .horoscope-text-wrap {
-    padding-top: 18px;
-  }
-
-  .panel-inner::before {
-    top: 58px;
+    margin: 0 11px;
+    padding: 13px 13px 11px;
     border-radius: 24px;
   }
 
-  .bottom-wrapper {
-    padding-top: 40px;
+  .panel-inner::before {
+    display: none;
+  }
+
+  .horoscope-controls {
+    padding-top: 2px;
+  }
+
+  .dots {
+    padding: 4px 8px;
+  }
+
+  .horoscope-lock-overlay--panel {
+    top: 52px;
+  }
+
+  .bottom-bg-wrap {
+    height: 84px;
+  }
+}
+
+@media screen and (max-width: 380px) and (max-height: 670px) {
+  .center-round {
+    width: calc(510px * var(--s));
+    height: calc(516px * var(--s));
+    top: calc(350px * var(--s));
+  }
+
+  .active-zodiac {
+    margin-bottom: 7px;
+  }
+
+  .active-zodiac-name {
+    font-size: calc(18px * var(--s));
+  }
+
+  .active-zodiac-dates {
+    font-size: calc(11.5px * var(--s));
+  }
+
+  :deep(.horoscope-panels) {
+    max-height: calc(100% - 210px);
+  }
+
+  .horoscope-info-title {
+    min-height: 28px;
+    margin-bottom: 4px;
+  }
+
+  .horoscope-divider {
+    margin-bottom: 9px;
+  }
+
+  .horoscope-text-wrap {
+    margin: 0 10px;
+    padding: 11px 12px 9px;
+  }
+
+  .horoscope-info-style {
+    font-size: 13.5px;
+    line-height: 1.42;
+    width: min(100%, 34ch);
+    padding-bottom: 18px;
+  }
+
+  .horoscope-controls {
+    padding-top: 0;
+  }
+
+  .dots {
+    padding: 3px 8px;
+  }
+
+  .horoscope-lock-overlay--panel {
+    top: 48px;
+  }
+
+  .bottom-bg-wrap {
+    height: 80px;
   }
 }
 

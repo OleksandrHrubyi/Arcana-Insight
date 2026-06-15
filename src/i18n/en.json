@@ -1,18 +1,201 @@
 {
   "ui": {},
+  "landing": {
+    "astroStripLabel": "Astro overview",
+    "phrases": [
+      "A quiet sign is near",
+      "The stars are aligning",
+      "Today holds a hint",
+      "Draw a card, feel the truth",
+      "Listen to what resonates",
+      "Your intuition knows",
+      "Clarity is closer",
+      "Trust the timing",
+      "A sign in the smallest things",
+      "The message is already here",
+      "Let it unfold",
+      "Follow what feels true",
+      "A gentle nudge forward",
+      "Your next step is simple",
+      "Everything aligns quietly",
+      "Your question has a direction",
+      "A gentle truth emerges",
+      "The answer is within reach",
+      "Hold the question lightly",
+      "Look closer",
+      "A small shift changes everything",
+      "Your energy speaks",
+      "Read the moment",
+      "Let the night guide you",
+      "Trust what feels right"
+    ],
+    "greetings": {
+      "night": "Good night",
+      "morning": "Good morning",
+      "day": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "hero": {
+      "ariaOpen": "Open daily card interpretation",
+      "ariaReveal": "Reveal daily card",
+      "eyebrow": "CARD OF THE DAY",
+      "readInterpretation": "Read interpretation",
+      "revealCard": "Reveal card"
+    },
+    "zodiacInsight": {
+      "eyebrow": "TODAY FOR YOUR SIGN",
+      "fallbackEyebrow": "TODAY'S ZODIAC PREVIEW",
+      "fallbackTitle": "Today's zodiac preview",
+      "fallbackTheme": "Horoscope",
+      "fallbackPreview": "Open your horoscope to see today's energy, love, or career focus in one quick view.",
+      "themes": {
+        "energy": "Energy",
+        "love": "Love",
+        "career": "Career"
+      }
+    },
+    "focusToday": {
+      "title": "Focus today",
+      "compactCta": "Open horoscope",
+      "fallbackKnownSign": "Open your horoscope to see today's focus.",
+      "fallbackMissingSign": "Open Horoscope and choose your sign to see today's focus."
+    },
+    "progress": {
+      "card": "Card",
+      "horoscope": "Horoscope",
+      "tarot": "Tarot",
+      "summaryStart": "Start today's ritual",
+      "summaryOneDone": "1 step done today",
+      "summaryOneLeft": "1 step left today",
+      "summaryInProgress": "Daily ritual in progress",
+      "summaryComplete": "Today's ritual complete",
+      "done": "Done",
+      "next": "Next"
+    },
+    "streak": {
+      "suffix": "streak"
+    },
+    "dayForms": {
+      "one": "day",
+      "few": "days",
+      "many": "days",
+      "other": "days"
+    },
+    "sheet": {
+      "factsTitle": "Facts",
+      "todayTitle": "Today",
+      "labels": {
+        "lunar": "Lunar rhythm"
+      },
+      "titles": {
+        "moon": "Moon backdrop for today",
+        "lunar": "Full moon calendar",
+        "planet": "Rhythm of the day",
+        "sun": "Solar season",
+        "element": "Element of the mood",
+        "number": "Date code",
+        "streak": "Practice rhythm",
+        "retro": "Mercury status"
+      },
+      "subtitles": {
+        "moon": "What shapes the emotional tone",
+        "sun": "The wider tone of this period",
+        "element": "Where this tone comes from",
+        "streak": "What is already done today",
+        "retro": "What retrograde actually means"
+      },
+      "summaries": {
+        "moon": "The phase shows where the cycle is, while the Moon sign shows how that tone is expressed.",
+        "lunar": "This card is purely calendar-based: it shows your distance to the full moon, not the mood of the day.",
+        "planet": "The day ruler gives a broad rhythm, but it does not replace your horoscope or daily card.",
+        "sun": "The Sun here shows a seasonal background, not just a one-day mood.",
+        "element": "The element shows the reaction style of the day: emotional, mental, practical, or impulsive.",
+        "streak": "This is not an astrology card. It shows how you are actually engaging with the app today.",
+        "retro": "This card is not about fear. It shows which themes of the day need more attention."
+      },
+      "planetDomains": {
+        "sun": "visibility, will, expression",
+        "moon": "mood, home, emotional rhythm",
+        "mars": "action, impulse, tension",
+        "mercury": "words, logistics, messages",
+        "jupiter": "meaning, scale, perspective",
+        "venus": "relationships, taste, harmony",
+        "saturn": "structure, boundaries, responsibility"
+      },
+      "elementDomains": {
+        "fire": "action and fast reaction",
+        "water": "emotion and intuition",
+        "air": "thought and communication",
+        "earth": "stability and practicality"
+      },
+      "modalities": {
+        "aries": "cardinal",
+        "cancer": "cardinal",
+        "libra": "cardinal",
+        "capricorn": "cardinal",
+        "taurus": "fixed",
+        "leo": "fixed",
+        "scorpio": "fixed",
+        "aquarius": "fixed",
+        "gemini": "mutable",
+        "virgo": "mutable",
+        "sagittarius": "mutable",
+        "pisces": "mutable"
+      },
+      "numerologySummary": {
+        "1": "Number 1 highlights beginnings, direction, and self-drive.",
+        "2": "Number 2 highlights balance, partnership, and subtle adjustment.",
+        "3": "Number 3 highlights expression, movement, and communication.",
+        "4": "Number 4 highlights structure, order, and form.",
+        "5": "Number 5 highlights change, movement, and flexibility.",
+        "6": "Number 6 highlights care, closeness, and harmony.",
+        "7": "Number 7 highlights observation, analysis, and quiet.",
+        "8": "Number 8 highlights strength, results, and concentration.",
+        "9": "Number 9 highlights completion, release, and reflection."
+      },
+      "facts": {
+        "moonIllumination": "Moon illumination",
+        "moonMoved": "The Moon has moved",
+        "moonMovedConnector": "through",
+        "signModality": "Sign modality",
+        "nextFullMoon": "Next full moon",
+        "atTime": "at",
+        "timeLeft": "Time left",
+        "hoursFromNow": "Hours from now",
+        "dayRuler": "Day ruler",
+        "classicalLink": "In classical astrology it is linked with",
+        "weekday": "Weekday",
+        "sunElementConnector": "is a",
+        "sunElementSuffix": "sign",
+        "daysUntilNextSign": "Days until the Sun changes sign",
+        "elementSigns": "Signs in this element",
+        "elementTopics": "Typical topics for this element",
+        "elementLayer": "This is separate from the moon phase: the element shows the reaction style.",
+        "formula": "Formula",
+        "numberKey": "Number key",
+        "currentStreak": "Current streak",
+        "dailyCardToday": "Daily card today",
+        "horoscopeToday": "Horoscope today",
+        "tarotToday": "Tarot today",
+        "retrogradeMeaning": "Retrograde means the planet appears to move backward from Earth.",
+        "mercuryTradition": "Mercury is traditionally linked with messages, travel, and details.",
+        "currentRetroStatus": "Current status: retrograde motion is active."
+      },
+      "actions": {
+        "openHoroscope": "Open horoscope"
+      },
+      "yesNo": {
+        "yes": "yes",
+        "no": "no"
+      }
+    }
+  },
   "tarot": {
     "the-fool": {
       "title": "The Fool",
       "keywords": {
-        "upright": [
-          "new beginnings",
-          "spontaneity",
-          "faith"
-        ],
-        "reversed": [
-          "recklessness",
-          "hesitation"
-        ]
+        "upright": ["new beginnings", "spontaneity", "faith"],
+        "reversed": ["recklessness", "hesitation"]
       },
       "meanings": {
         "upright": "The Fool upright: new beginnings, spontaneity, and faith. Lean into this energy today; stay present and intentional.",
@@ -34,15 +217,8 @@
     "the-magician": {
       "title": "The Magician",
       "keywords": {
-        "upright": [
-          "willpower",
-          "skill",
-          "focus"
-        ],
-        "reversed": [
-          "manipulation",
-          "scattered energy"
-        ]
+        "upright": ["willpower", "skill", "focus"],
+        "reversed": ["manipulation", "scattered energy"]
       },
       "meanings": {
         "upright": "The Magician upright: willpower, skill, and focus. Lean into this energy today; stay present and intentional.",
@@ -64,15 +240,8 @@
     "the-high-priestess": {
       "title": "The High Priestess",
       "keywords": {
-        "upright": [
-          "intuition",
-          "mystery",
-          "inner voice"
-        ],
-        "reversed": [
-          "secrets",
-          "disconnection"
-        ]
+        "upright": ["intuition", "mystery", "inner voice"],
+        "reversed": ["secrets", "disconnection"]
       },
       "meanings": {
         "upright": "The High Priestess upright: intuition, mystery, and inner voice. Lean into this energy today; stay present and intentional.",
@@ -94,15 +263,8 @@
     "the-empress": {
       "title": "The Empress",
       "keywords": {
-        "upright": [
-          "nurture",
-          "abundance",
-          "beauty"
-        ],
-        "reversed": [
-          "smothering",
-          "inertia"
-        ]
+        "upright": ["nurture", "abundance", "beauty"],
+        "reversed": ["smothering", "inertia"]
       },
       "meanings": {
         "upright": "The Empress upright: nurture, abundance, and beauty. Lean into this energy today; stay present and intentional.",
@@ -124,15 +286,8 @@
     "the-emperor": {
       "title": "The Emperor",
       "keywords": {
-        "upright": [
-          "structure",
-          "authority",
-          "responsibility"
-        ],
-        "reversed": [
-          "rigidity",
-          "control"
-        ]
+        "upright": ["structure", "authority", "responsibility"],
+        "reversed": ["rigidity", "control"]
       },
       "meanings": {
         "upright": "The Emperor upright: structure, authority, and responsibility. Lean into this energy today; stay present and intentional.",
@@ -154,15 +309,8 @@
     "the-hierophant": {
       "title": "The Hierophant",
       "keywords": {
-        "upright": [
-          "tradition",
-          "teaching",
-          "mentor"
-        ],
-        "reversed": [
-          "dogma",
-          "rebellion"
-        ]
+        "upright": ["tradition", "teaching", "mentor"],
+        "reversed": ["dogma", "rebellion"]
       },
       "meanings": {
         "upright": "The Hierophant upright: tradition, teaching, and mentor. Lean into this energy today; stay present and intentional.",
@@ -184,15 +332,8 @@
     "the-lovers": {
       "title": "The Lovers",
       "keywords": {
-        "upright": [
-          "choice",
-          "union",
-          "values"
-        ],
-        "reversed": [
-          "indecision",
-          "imbalance"
-        ]
+        "upright": ["choice", "union", "values"],
+        "reversed": ["indecision", "imbalance"]
       },
       "meanings": {
         "upright": "The Lovers upright: choice, union, and values. Lean into this energy today; stay present and intentional.",
@@ -214,15 +355,8 @@
     "the-chariot": {
       "title": "The Chariot",
       "keywords": {
-        "upright": [
-          "will",
-          "progress",
-          "determination"
-        ],
-        "reversed": [
-          "lack of control",
-          "stalling"
-        ]
+        "upright": ["will", "progress", "determination"],
+        "reversed": ["lack of control", "stalling"]
       },
       "meanings": {
         "upright": "The Chariot upright: will, progress, and determination. Lean into this energy today; stay present and intentional.",
@@ -244,15 +378,8 @@
     "strength": {
       "title": "Strength",
       "keywords": {
-        "upright": [
-          "inner strength",
-          "patience",
-          "compassion"
-        ],
-        "reversed": [
-          "doubt",
-          "self-criticism"
-        ]
+        "upright": ["inner strength", "patience", "compassion"],
+        "reversed": ["doubt", "self-criticism"]
       },
       "meanings": {
         "upright": "Strength upright: inner strength, patience, and compassion. Lean into this energy today; stay present and intentional.",
@@ -274,15 +401,8 @@
     "the-hermit": {
       "title": "The Hermit",
       "keywords": {
-        "upright": [
-          "introspection",
-          "guidance",
-          "search"
-        ],
-        "reversed": [
-          "isolation",
-          "withdrawal"
-        ]
+        "upright": ["introspection", "guidance", "search"],
+        "reversed": ["isolation", "withdrawal"]
       },
       "meanings": {
         "upright": "The Hermit upright: introspection, guidance, and search. Lean into this energy today; stay present and intentional.",
@@ -304,15 +424,8 @@
     "wheel-of-fortune": {
       "title": "Wheel of Fortune",
       "keywords": {
-        "upright": [
-          "cycles",
-          "luck",
-          "turning point"
-        ],
-        "reversed": [
-          "resistance to change",
-          "downturn"
-        ]
+        "upright": ["cycles", "luck", "turning point"],
+        "reversed": ["resistance to change", "downturn"]
       },
       "meanings": {
         "upright": "Wheel of Fortune upright: cycles, luck, and turning point. Lean into this energy today; stay present and intentional.",
@@ -334,15 +447,8 @@
     "justice": {
       "title": "Justice",
       "keywords": {
-        "upright": [
-          "truth",
-          "fairness",
-          "cause and effect"
-        ],
-        "reversed": [
-          "bias",
-          "dishonesty"
-        ]
+        "upright": ["truth", "fairness", "cause and effect"],
+        "reversed": ["bias", "dishonesty"]
       },
       "meanings": {
         "upright": "Justice upright: truth, fairness, and cause and effect. Lean into this energy today; stay present and intentional.",
@@ -364,15 +470,8 @@
     "the-hanged-man": {
       "title": "The Hanged Man",
       "keywords": {
-        "upright": [
-          "surrender",
-          "new perspective",
-          "pause"
-        ],
-        "reversed": [
-          "stalling",
-          "martyrdom"
-        ]
+        "upright": ["surrender", "new perspective", "pause"],
+        "reversed": ["stalling", "martyrdom"]
       },
       "meanings": {
         "upright": "The Hanged Man upright: surrender, new perspective, and pause. Lean into this energy today; stay present and intentional.",
@@ -394,15 +493,8 @@
     "death": {
       "title": "Death",
       "keywords": {
-        "upright": [
-          "transformation",
-          "ending",
-          "release"
-        ],
-        "reversed": [
-          "resistance",
-          "stagnation"
-        ]
+        "upright": ["transformation", "ending", "release"],
+        "reversed": ["resistance", "stagnation"]
       },
       "meanings": {
         "upright": "Death upright: transformation, ending, and release. Lean into this energy today; stay present and intentional.",
@@ -424,15 +516,8 @@
     "temperance": {
       "title": "Temperance",
       "keywords": {
-        "upright": [
-          "balance",
-          "moderation",
-          "alchemy"
-        ],
-        "reversed": [
-          "excess",
-          "imbalance"
-        ]
+        "upright": ["balance", "moderation", "alchemy"],
+        "reversed": ["excess", "imbalance"]
       },
       "meanings": {
         "upright": "Temperance upright: balance, moderation, and alchemy. Lean into this energy today; stay present and intentional.",
@@ -454,15 +539,8 @@
     "the-devil": {
       "title": "The Devil",
       "keywords": {
-        "upright": [
-          "attachment",
-          "shadow",
-          "temptation"
-        ],
-        "reversed": [
-          "freedom",
-          "awareness"
-        ]
+        "upright": ["attachment", "shadow", "temptation"],
+        "reversed": ["freedom", "awareness"]
       },
       "meanings": {
         "upright": "The Devil upright: attachment, shadow, and temptation. Lean into this energy today; stay present and intentional.",
@@ -484,15 +562,8 @@
     "the-tower": {
       "title": "The Tower",
       "keywords": {
-        "upright": [
-          "upheaval",
-          "revelation",
-          "breakthrough"
-        ],
-        "reversed": [
-          "fear of change",
-          "denial"
-        ]
+        "upright": ["upheaval", "revelation", "breakthrough"],
+        "reversed": ["fear of change", "denial"]
       },
       "meanings": {
         "upright": "The Tower upright: upheaval, revelation, and breakthrough. Lean into this energy today; stay present and intentional.",
@@ -514,15 +585,8 @@
     "the-star": {
       "title": "The Star",
       "keywords": {
-        "upright": [
-          "hope",
-          "healing",
-          "guidance"
-        ],
-        "reversed": [
-          "pessimism",
-          "disconnection"
-        ]
+        "upright": ["hope", "healing", "guidance"],
+        "reversed": ["pessimism", "disconnection"]
       },
       "meanings": {
         "upright": "The Star upright: hope, healing, and guidance. Lean into this energy today; stay present and intentional.",
@@ -544,15 +608,8 @@
     "the-moon": {
       "title": "The Moon",
       "keywords": {
-        "upright": [
-          "uncertainty",
-          "dreams",
-          "intuition"
-        ],
-        "reversed": [
-          "clarity",
-          "deception revealed"
-        ]
+        "upright": ["uncertainty", "dreams", "intuition"],
+        "reversed": ["clarity", "deception revealed"]
       },
       "meanings": {
         "upright": "The Moon upright: uncertainty, dreams, and intuition. Lean into this energy today; stay present and intentional.",
@@ -574,15 +631,8 @@
     "the-sun": {
       "title": "The Sun",
       "keywords": {
-        "upright": [
-          "vitality",
-          "success",
-          "joy"
-        ],
-        "reversed": [
-          "overexposure",
-          "ego"
-        ]
+        "upright": ["vitality", "success", "joy"],
+        "reversed": ["overexposure", "ego"]
       },
       "meanings": {
         "upright": "The Sun upright: vitality, success, and joy. Lean into this energy today; stay present and intentional.",
@@ -604,15 +654,8 @@
     "judgement": {
       "title": "Judgement",
       "keywords": {
-        "upright": [
-          "awakening",
-          "reckoning",
-          "calling"
-        ],
-        "reversed": [
-          "self-doubt",
-          "avoidance"
-        ]
+        "upright": ["awakening", "reckoning", "calling"],
+        "reversed": ["self-doubt", "avoidance"]
       },
       "meanings": {
         "upright": "Judgement upright: awakening, reckoning, and calling. Lean into this energy today; stay present and intentional.",
@@ -634,15 +677,8 @@
     "the-world": {
       "title": "The World",
       "keywords": {
-        "upright": [
-          "completion",
-          "wholeness",
-          "integration"
-        ],
-        "reversed": [
-          "closure delayed",
-          "shortcuts"
-        ]
+        "upright": ["completion", "wholeness", "integration"],
+        "reversed": ["closure delayed", "shortcuts"]
       },
       "meanings": {
         "upright": "The World upright: completion, wholeness, and integration. Lean into this energy today; stay present and intentional.",
@@ -664,15 +700,8 @@
     "ace-of-wands": {
       "title": "Ace of Wands",
       "keywords": {
-        "upright": [
-          "inspiration",
-          "spark",
-          "potential"
-        ],
-        "reversed": [
-          "false starts",
-          "lack of direction"
-        ]
+        "upright": ["inspiration", "spark", "potential"],
+        "reversed": ["false starts", "lack of direction"]
       },
       "meanings": {
         "upright": "Ace of Wands upright: inspiration, spark, and potential. Lean into this energy today; stay present and intentional.",
@@ -694,15 +723,8 @@
     "two-of-wands": {
       "title": "Two of Wands",
       "keywords": {
-        "upright": [
-          "planning",
-          "choices",
-          "vision"
-        ],
-        "reversed": [
-          "fear of unknown",
-          "playing safe"
-        ]
+        "upright": ["planning", "choices", "vision"],
+        "reversed": ["fear of unknown", "playing safe"]
       },
       "meanings": {
         "upright": "Two of Wands upright: planning, choices, and vision. Lean into this energy today; stay present and intentional.",
@@ -724,15 +746,8 @@
     "three-of-wands": {
       "title": "Three of Wands",
       "keywords": {
-        "upright": [
-          "expansion",
-          "foresight",
-          "progress"
-        ],
-        "reversed": [
-          "delays",
-          "setbacks"
-        ]
+        "upright": ["expansion", "foresight", "progress"],
+        "reversed": ["delays", "setbacks"]
       },
       "meanings": {
         "upright": "Three of Wands upright: expansion, foresight, and progress. Lean into this energy today; stay present and intentional.",
@@ -754,15 +769,8 @@
     "four-of-wands": {
       "title": "Four of Wands",
       "keywords": {
-        "upright": [
-          "homecoming",
-          "celebration",
-          "stability"
-        ],
-        "reversed": [
-          "fragility",
-          "tension at home"
-        ]
+        "upright": ["homecoming", "celebration", "stability"],
+        "reversed": ["fragility", "tension at home"]
       },
       "meanings": {
         "upright": "Four of Wands upright: homecoming, celebration, and stability. Lean into this energy today; stay present and intentional.",
@@ -784,15 +792,8 @@
     "five-of-wands": {
       "title": "Five of Wands",
       "keywords": {
-        "upright": [
-          "competition",
-          "conflict",
-          "testing"
-        ],
-        "reversed": [
-          "avoidance",
-          "inner conflict"
-        ]
+        "upright": ["competition", "conflict", "testing"],
+        "reversed": ["avoidance", "inner conflict"]
       },
       "meanings": {
         "upright": "Five of Wands upright: competition, conflict, and testing. Lean into this energy today; stay present and intentional.",
@@ -814,15 +815,8 @@
     "six-of-wands": {
       "title": "Six of Wands",
       "keywords": {
-        "upright": [
-          "recognition",
-          "victory",
-          "confidence"
-        ],
-        "reversed": [
-          "ego",
-          "fall from grace"
-        ]
+        "upright": ["recognition", "victory", "confidence"],
+        "reversed": ["ego", "fall from grace"]
       },
       "meanings": {
         "upright": "Six of Wands upright: recognition, victory, and confidence. Lean into this energy today; stay present and intentional.",
@@ -844,15 +838,8 @@
     "seven-of-wands": {
       "title": "Seven of Wands",
       "keywords": {
-        "upright": [
-          "defense",
-          "standing ground",
-          "courage"
-        ],
-        "reversed": [
-          "giving up",
-          "overwhelm"
-        ]
+        "upright": ["defense", "standing ground", "courage"],
+        "reversed": ["giving up", "overwhelm"]
       },
       "meanings": {
         "upright": "Seven of Wands upright: defense, standing ground, and courage. Lean into this energy today; stay present and intentional.",
@@ -874,15 +861,8 @@
     "eight-of-wands": {
       "title": "Eight of Wands",
       "keywords": {
-        "upright": [
-          "speed",
-          "momentum",
-          "messages"
-        ],
-        "reversed": [
-          "delays",
-          "frustration"
-        ]
+        "upright": ["speed", "momentum", "messages"],
+        "reversed": ["delays", "frustration"]
       },
       "meanings": {
         "upright": "Eight of Wands upright: speed, momentum, and messages. Lean into this energy today; stay present and intentional.",
@@ -904,15 +884,8 @@
     "nine-of-wands": {
       "title": "Nine of Wands",
       "keywords": {
-        "upright": [
-          "resilience",
-          "last stretch",
-          "boundaries"
-        ],
-        "reversed": [
-          "fatigue",
-          "paranoia"
-        ]
+        "upright": ["resilience", "last stretch", "boundaries"],
+        "reversed": ["fatigue", "paranoia"]
       },
       "meanings": {
         "upright": "Nine of Wands upright: resilience, last stretch, and boundaries. Lean into this energy today; stay present and intentional.",
@@ -934,15 +907,8 @@
     "ten-of-wands": {
       "title": "Ten of Wands",
       "keywords": {
-        "upright": [
-          "burden",
-          "responsibility",
-          "overload"
-        ],
-        "reversed": [
-          "delegation",
-          "release"
-        ]
+        "upright": ["burden", "responsibility", "overload"],
+        "reversed": ["delegation", "release"]
       },
       "meanings": {
         "upright": "Ten of Wands upright: burden, responsibility, and overload. Lean into this energy today; stay present and intentional.",
@@ -964,15 +930,8 @@
     "page-of-wands": {
       "title": "Page of Wands",
       "keywords": {
-        "upright": [
-          "enthusiasm",
-          "ideas",
-          "news"
-        ],
-        "reversed": [
-          "impulsiveness",
-          "setbacks"
-        ]
+        "upright": ["enthusiasm", "ideas", "news"],
+        "reversed": ["impulsiveness", "setbacks"]
       },
       "meanings": {
         "upright": "Page of Wands upright: enthusiasm, ideas, and news. Lean into this energy today; stay present and intentional.",
@@ -994,15 +953,8 @@
     "knight-of-wands": {
       "title": "Knight of Wands",
       "keywords": {
-        "upright": [
-          "action",
-          "adventure",
-          "passion"
-        ],
-        "reversed": [
-          "reckless",
-          "scattered"
-        ]
+        "upright": ["action", "adventure", "passion"],
+        "reversed": ["reckless", "scattered"]
       },
       "meanings": {
         "upright": "Knight of Wands upright: action, adventure, and passion. Lean into this energy today; stay present and intentional.",
@@ -1024,15 +976,8 @@
     "queen-of-wands": {
       "title": "Queen of Wands",
       "keywords": {
-        "upright": [
-          "vibrancy",
-          "confidence",
-          "warmth"
-        ],
-        "reversed": [
-          "jealousy",
-          "demanding"
-        ]
+        "upright": ["vibrancy", "confidence", "warmth"],
+        "reversed": ["jealousy", "demanding"]
       },
       "meanings": {
         "upright": "Queen of Wands upright: vibrancy, confidence, and warmth. Lean into this energy today; stay present and intentional.",
@@ -1054,15 +999,8 @@
     "king-of-wands": {
       "title": "King of Wands",
       "keywords": {
-        "upright": [
-          "leadership",
-          "vision",
-          "influence"
-        ],
-        "reversed": [
-          "ruthless",
-          "impulsive"
-        ]
+        "upright": ["leadership", "vision", "influence"],
+        "reversed": ["ruthless", "impulsive"]
       },
       "meanings": {
         "upright": "King of Wands upright: leadership, vision, and influence. Lean into this energy today; stay present and intentional.",
@@ -1084,15 +1022,8 @@
     "ace-of-cups": {
       "title": "Ace of Cups",
       "keywords": {
-        "upright": [
-          "new feelings",
-          "love",
-          "creativity"
-        ],
-        "reversed": [
-          "blocked emotions",
-          "emptiness"
-        ]
+        "upright": ["new feelings", "love", "creativity"],
+        "reversed": ["blocked emotions", "emptiness"]
       },
       "meanings": {
         "upright": "Ace of Cups upright: new feelings, love, and creativity. Lean into this energy today; stay present and intentional.",
@@ -1114,15 +1045,8 @@
     "two-of-cups": {
       "title": "Two of Cups",
       "keywords": {
-        "upright": [
-          "partnership",
-          "attraction",
-          "harmony"
-        ],
-        "reversed": [
-          "imbalance",
-          "break in trust"
-        ]
+        "upright": ["partnership", "attraction", "harmony"],
+        "reversed": ["imbalance", "break in trust"]
       },
       "meanings": {
         "upright": "Two of Cups upright: partnership, attraction, and harmony. Lean into this energy today; stay present and intentional.",
@@ -1144,15 +1068,8 @@
     "three-of-cups": {
       "title": "Three of Cups",
       "keywords": {
-        "upright": [
-          "friendship",
-          "community",
-          "joy"
-        ],
-        "reversed": [
-          "overindulgence",
-          "gossip"
-        ]
+        "upright": ["friendship", "community", "joy"],
+        "reversed": ["overindulgence", "gossip"]
       },
       "meanings": {
         "upright": "Three of Cups upright: friendship, community, and joy. Lean into this energy today; stay present and intentional.",
@@ -1174,15 +1091,8 @@
     "four-of-cups": {
       "title": "Four of Cups",
       "keywords": {
-        "upright": [
-          "apathy",
-          "contemplation",
-          "reevaluation"
-        ],
-        "reversed": [
-          "new outlook",
-          "seizing chance"
-        ]
+        "upright": ["apathy", "contemplation", "reevaluation"],
+        "reversed": ["new outlook", "seizing chance"]
       },
       "meanings": {
         "upright": "Four of Cups upright: apathy, contemplation, and reevaluation. Lean into this energy today; stay present and intentional.",
@@ -1204,15 +1114,8 @@
     "five-of-cups": {
       "title": "Five of Cups",
       "keywords": {
-        "upright": [
-          "loss",
-          "regret",
-          "disappointment"
-        ],
-        "reversed": [
-          "forgiveness",
-          "moving on"
-        ]
+        "upright": ["loss", "regret", "disappointment"],
+        "reversed": ["forgiveness", "moving on"]
       },
       "meanings": {
         "upright": "Five of Cups upright: loss, regret, and disappointment. Lean into this energy today; stay present and intentional.",
@@ -1234,15 +1137,8 @@
     "six-of-cups": {
       "title": "Six of Cups",
       "keywords": {
-        "upright": [
-          "nostalgia",
-          "kindness",
-          "memories"
-        ],
-        "reversed": [
-          "living in past",
-          "stuck"
-        ]
+        "upright": ["nostalgia", "kindness", "memories"],
+        "reversed": ["living in past", "stuck"]
       },
       "meanings": {
         "upright": "Six of Cups upright: nostalgia, kindness, and memories. Lean into this energy today; stay present and intentional.",
@@ -1264,15 +1160,8 @@
     "seven-of-cups": {
       "title": "Seven of Cups",
       "keywords": {
-        "upright": [
-          "choices",
-          "fantasy",
-          "wishful"
-        ],
-        "reversed": [
-          "clarity",
-          "priorities"
-        ]
+        "upright": ["choices", "fantasy", "wishful"],
+        "reversed": ["clarity", "priorities"]
       },
       "meanings": {
         "upright": "Seven of Cups upright: choices, fantasy, and wishful. Lean into this energy today; stay present and intentional.",
@@ -1294,15 +1183,8 @@
     "eight-of-cups": {
       "title": "Eight of Cups",
       "keywords": {
-        "upright": [
-          "walking away",
-          "seeking",
-          "transition"
-        ],
-        "reversed": [
-          "fear of change",
-          "stagnation"
-        ]
+        "upright": ["walking away", "seeking", "transition"],
+        "reversed": ["fear of change", "stagnation"]
       },
       "meanings": {
         "upright": "Eight of Cups upright: walking away, seeking, and transition. Lean into this energy today; stay present and intentional.",
@@ -1324,15 +1206,8 @@
     "nine-of-cups": {
       "title": "Nine of Cups",
       "keywords": {
-        "upright": [
-          "contentment",
-          "gratitude",
-          "wish"
-        ],
-        "reversed": [
-          "complacency",
-          "overindulgence"
-        ]
+        "upright": ["contentment", "gratitude", "wish"],
+        "reversed": ["complacency", "overindulgence"]
       },
       "meanings": {
         "upright": "Nine of Cups upright: contentment, gratitude, and wish. Lean into this energy today; stay present and intentional.",
@@ -1354,15 +1229,8 @@
     "ten-of-cups": {
       "title": "Ten of Cups",
       "keywords": {
-        "upright": [
-          "harmony",
-          "family",
-          "bliss"
-        ],
-        "reversed": [
-          "disharmony",
-          "misaligned values"
-        ]
+        "upright": ["harmony", "family", "bliss"],
+        "reversed": ["disharmony", "misaligned values"]
       },
       "meanings": {
         "upright": "Ten of Cups upright: harmony, family, and bliss. Lean into this energy today; stay present and intentional.",
@@ -1384,15 +1252,8 @@
     "page-of-cups": {
       "title": "Page of Cups",
       "keywords": {
-        "upright": [
-          "curiosity",
-          "messages",
-          "sensitivity"
-        ],
-        "reversed": [
-          "emotional immaturity",
-          "insecurity"
-        ]
+        "upright": ["curiosity", "messages", "sensitivity"],
+        "reversed": ["emotional immaturity", "insecurity"]
       },
       "meanings": {
         "upright": "Page of Cups upright: curiosity, messages, and sensitivity. Lean into this energy today; stay present and intentional.",
@@ -1414,15 +1275,8 @@
     "knight-of-cups": {
       "title": "Knight of Cups",
       "keywords": {
-        "upright": [
-          "romance",
-          "idealism",
-          "invitation"
-        ],
-        "reversed": [
-          "moodiness",
-          "disappointment"
-        ]
+        "upright": ["romance", "idealism", "invitation"],
+        "reversed": ["moodiness", "disappointment"]
       },
       "meanings": {
         "upright": "Knight of Cups upright: romance, idealism, and invitation. Lean into this energy today; stay present and intentional.",
@@ -1444,15 +1298,8 @@
     "queen-of-cups": {
       "title": "Queen of Cups",
       "keywords": {
-        "upright": [
-          "compassion",
-          "calm",
-          "intuition"
-        ],
-        "reversed": [
-          "martyrdom",
-          "over-sensitivity"
-        ]
+        "upright": ["compassion", "calm", "intuition"],
+        "reversed": ["martyrdom", "over-sensitivity"]
       },
       "meanings": {
         "upright": "Queen of Cups upright: compassion, calm, and intuition. Lean into this energy today; stay present and intentional.",
@@ -1474,15 +1321,8 @@
     "king-of-cups": {
       "title": "King of Cups",
       "keywords": {
-        "upright": [
-          "emotional balance",
-          "support",
-          "wisdom"
-        ],
-        "reversed": [
-          "coldness",
-          "manipulation"
-        ]
+        "upright": ["emotional balance", "support", "wisdom"],
+        "reversed": ["coldness", "manipulation"]
       },
       "meanings": {
         "upright": "King of Cups upright: emotional balance, support, and wisdom. Lean into this energy today; stay present and intentional.",
@@ -1504,15 +1344,8 @@
     "ace-of-swords": {
       "title": "Ace of Swords",
       "keywords": {
-        "upright": [
-          "clarity",
-          "truth",
-          "breakthrough"
-        ],
-        "reversed": [
-          "confusion",
-          "misuse of power"
-        ]
+        "upright": ["clarity", "truth", "breakthrough"],
+        "reversed": ["confusion", "misuse of power"]
       },
       "meanings": {
         "upright": "Ace of Swords upright: clarity, truth, and breakthrough. Lean into this energy today; stay present and intentional.",
@@ -1534,15 +1367,8 @@
     "two-of-swords": {
       "title": "Two of Swords",
       "keywords": {
-        "upright": [
-          "stalemate",
-          "decision",
-          "balance"
-        ],
-        "reversed": [
-          "indecision",
-          "overthinking"
-        ]
+        "upright": ["stalemate", "decision", "balance"],
+        "reversed": ["indecision", "overthinking"]
       },
       "meanings": {
         "upright": "Two of Swords upright: stalemate, decision, and balance. Lean into this energy today; stay present and intentional.",
@@ -1564,15 +1390,8 @@
     "three-of-swords": {
       "title": "Three of Swords",
       "keywords": {
-        "upright": [
-          "heartbreak",
-          "sorrow",
-          "release"
-        ],
-        "reversed": [
-          "recovery",
-          "forgiveness"
-        ]
+        "upright": ["heartbreak", "sorrow", "release"],
+        "reversed": ["recovery", "forgiveness"]
       },
       "meanings": {
         "upright": "Three of Swords upright: heartbreak, sorrow, and release. Lean into this energy today; stay present and intentional.",
@@ -1594,15 +1413,8 @@
     "four-of-swords": {
       "title": "Four of Swords",
       "keywords": {
-        "upright": [
-          "rest",
-          "recovery",
-          "contemplation"
-        ],
-        "reversed": [
-          "restlessness",
-          "burnout"
-        ]
+        "upright": ["rest", "recovery", "contemplation"],
+        "reversed": ["restlessness", "burnout"]
       },
       "meanings": {
         "upright": "Four of Swords upright: rest, recovery, and contemplation. Lean into this energy today; stay present and intentional.",
@@ -1624,15 +1436,8 @@
     "five-of-swords": {
       "title": "Five of Swords",
       "keywords": {
-        "upright": [
-          "conflict",
-          "win at all costs",
-          "ego"
-        ],
-        "reversed": [
-          "reconciliation",
-          "learning"
-        ]
+        "upright": ["conflict", "win at all costs", "ego"],
+        "reversed": ["reconciliation", "learning"]
       },
       "meanings": {
         "upright": "Five of Swords upright: conflict, win at all costs, and ego. Lean into this energy today; stay present and intentional.",
@@ -1654,15 +1459,8 @@
     "six-of-swords": {
       "title": "Six of Swords",
       "keywords": {
-        "upright": [
-          "transition",
-          "moving on",
-          "healing"
-        ],
-        "reversed": [
-          "unfinished business",
-          "delays"
-        ]
+        "upright": ["transition", "moving on", "healing"],
+        "reversed": ["unfinished business", "delays"]
       },
       "meanings": {
         "upright": "Six of Swords upright: transition, moving on, and healing. Lean into this energy today; stay present and intentional.",
@@ -1684,15 +1482,8 @@
     "seven-of-swords": {
       "title": "Seven of Swords",
       "keywords": {
-        "upright": [
-          "strategy",
-          "privacy",
-          "cunning"
-        ],
-        "reversed": [
-          "getting caught",
-          "conscience"
-        ]
+        "upright": ["strategy", "privacy", "cunning"],
+        "reversed": ["getting caught", "conscience"]
       },
       "meanings": {
         "upright": "Seven of Swords upright: strategy, privacy, and cunning. Lean into this energy today; stay present and intentional.",
@@ -1714,15 +1505,8 @@
     "eight-of-swords": {
       "title": "Eight of Swords",
       "keywords": {
-        "upright": [
-          "restriction",
-          "fear",
-          "self-imposed"
-        ],
-        "reversed": [
-          "liberation",
-          "new perspective"
-        ]
+        "upright": ["restriction", "fear", "self-imposed"],
+        "reversed": ["liberation", "new perspective"]
       },
       "meanings": {
         "upright": "Eight of Swords upright: restriction, fear, and self-imposed. Lean into this energy today; stay present and intentional.",
@@ -1744,15 +1528,8 @@
     "nine-of-swords": {
       "title": "Nine of Swords",
       "keywords": {
-        "upright": [
-          "anxiety",
-          "nightmares",
-          "worry"
-        ],
-        "reversed": [
-          "perspective",
-          "release"
-        ]
+        "upright": ["anxiety", "nightmares", "worry"],
+        "reversed": ["perspective", "release"]
       },
       "meanings": {
         "upright": "Nine of Swords upright: anxiety, nightmares, and worry. Lean into this energy today; stay present and intentional.",
@@ -1774,15 +1551,8 @@
     "ten-of-swords": {
       "title": "Ten of Swords",
       "keywords": {
-        "upright": [
-          "endings",
-          "rock bottom",
-          "surrender"
-        ],
-        "reversed": [
-          "recovery",
-          "resilience"
-        ]
+        "upright": ["endings", "rock bottom", "surrender"],
+        "reversed": ["recovery", "resilience"]
       },
       "meanings": {
         "upright": "Ten of Swords upright: endings, rock bottom, and surrender. Lean into this energy today; stay present and intentional.",
@@ -1804,15 +1574,8 @@
     "page-of-swords": {
       "title": "Page of Swords",
       "keywords": {
-        "upright": [
-          "curiosity",
-          "ideas",
-          "vigilance"
-        ],
-        "reversed": [
-          "gossip",
-          "haste"
-        ]
+        "upright": ["curiosity", "ideas", "vigilance"],
+        "reversed": ["gossip", "haste"]
       },
       "meanings": {
         "upright": "Page of Swords upright: curiosity, ideas, and vigilance. Lean into this energy today; stay present and intentional.",
@@ -1834,15 +1597,8 @@
     "knight-of-swords": {
       "title": "Knight of Swords",
       "keywords": {
-        "upright": [
-          "action",
-          "ambition",
-          "drive"
-        ],
-        "reversed": [
-          "impulsive",
-          "aggressive"
-        ]
+        "upright": ["action", "ambition", "drive"],
+        "reversed": ["impulsive", "aggressive"]
       },
       "meanings": {
         "upright": "Knight of Swords upright: action, ambition, and drive. Lean into this energy today; stay present and intentional.",
@@ -1864,15 +1620,8 @@
     "queen-of-swords": {
       "title": "Queen of Swords",
       "keywords": {
-        "upright": [
-          "perceptive",
-          "honest",
-          "independent"
-        ],
-        "reversed": [
-          "cold",
-          "critical"
-        ]
+        "upright": ["perceptive", "honest", "independent"],
+        "reversed": ["cold", "critical"]
       },
       "meanings": {
         "upright": "Queen of Swords upright: perceptive, honest, and independent. Lean into this energy today; stay present and intentional.",
@@ -1894,15 +1643,8 @@
     "king-of-swords": {
       "title": "King of Swords",
       "keywords": {
-        "upright": [
-          "logic",
-          "truth",
-          "authority"
-        ],
-        "reversed": [
-          "tyranny",
-          "rigidity"
-        ]
+        "upright": ["logic", "truth", "authority"],
+        "reversed": ["tyranny", "rigidity"]
       },
       "meanings": {
         "upright": "King of Swords upright: logic, truth, and authority. Lean into this energy today; stay present and intentional.",
@@ -1924,15 +1666,8 @@
     "ace-of-pentacles": {
       "title": "Ace of Pentacles",
       "keywords": {
-        "upright": [
-          "manifestation",
-          "opportunity",
-          "resources"
-        ],
-        "reversed": [
-          "missed chance",
-          "scarcity"
-        ]
+        "upright": ["manifestation", "opportunity", "resources"],
+        "reversed": ["missed chance", "scarcity"]
       },
       "meanings": {
         "upright": "Ace of Pentacles upright: manifestation, opportunity, and resources. Lean into this energy today; stay present and intentional.",
@@ -1954,15 +1689,8 @@
     "two-of-pentacles": {
       "title": "Two of Pentacles",
       "keywords": {
-        "upright": [
-          "balance",
-          "priorities",
-          "adaptability"
-        ],
-        "reversed": [
-          "overcommitted",
-          "disorganized"
-        ]
+        "upright": ["balance", "priorities", "adaptability"],
+        "reversed": ["overcommitted", "disorganized"]
       },
       "meanings": {
         "upright": "Two of Pentacles upright: balance, priorities, and adaptability. Lean into this energy today; stay present and intentional.",
@@ -1984,15 +1712,8 @@
     "three-of-pentacles": {
       "title": "Three of Pentacles",
       "keywords": {
-        "upright": [
-          "teamwork",
-          "skill",
-          "planning"
-        ],
-        "reversed": [
-          "misalignment",
-          "poor quality"
-        ]
+        "upright": ["teamwork", "skill", "planning"],
+        "reversed": ["misalignment", "poor quality"]
       },
       "meanings": {
         "upright": "Three of Pentacles upright: teamwork, skill, and planning. Lean into this energy today; stay present and intentional.",
@@ -2014,15 +1735,8 @@
     "four-of-pentacles": {
       "title": "Four of Pentacles",
       "keywords": {
-        "upright": [
-          "security",
-          "saving",
-          "control"
-        ],
-        "reversed": [
-          "greed",
-          "fear of loss"
-        ]
+        "upright": ["security", "saving", "control"],
+        "reversed": ["greed", "fear of loss"]
       },
       "meanings": {
         "upright": "Four of Pentacles upright: security, saving, and control. Lean into this energy today; stay present and intentional.",
@@ -2044,15 +1758,8 @@
     "five-of-pentacles": {
       "title": "Five of Pentacles",
       "keywords": {
-        "upright": [
-          "hardship",
-          "isolation",
-          "lack"
-        ],
-        "reversed": [
-          "help available",
-          "recovery"
-        ]
+        "upright": ["hardship", "isolation", "lack"],
+        "reversed": ["help available", "recovery"]
       },
       "meanings": {
         "upright": "Five of Pentacles upright: hardship, isolation, and lack. Lean into this energy today; stay present and intentional.",
@@ -2074,15 +1781,8 @@
     "six-of-pentacles": {
       "title": "Six of Pentacles",
       "keywords": {
-        "upright": [
-          "giving",
-          "support",
-          "fairness"
-        ],
-        "reversed": [
-          "strings attached",
-          "inequality"
-        ]
+        "upright": ["giving", "support", "fairness"],
+        "reversed": ["strings attached", "inequality"]
       },
       "meanings": {
         "upright": "Six of Pentacles upright: giving, support, and fairness. Lean into this energy today; stay present and intentional.",
@@ -2104,15 +1804,8 @@
     "seven-of-pentacles": {
       "title": "Seven of Pentacles",
       "keywords": {
-        "upright": [
-          "patience",
-          "assessment",
-          "growth"
-        ],
-        "reversed": [
-          "impatience",
-          "limited reward"
-        ]
+        "upright": ["patience", "assessment", "growth"],
+        "reversed": ["impatience", "limited reward"]
       },
       "meanings": {
         "upright": "Seven of Pentacles upright: patience, assessment, and growth. Lean into this energy today; stay present and intentional.",
@@ -2134,15 +1827,8 @@
     "eight-of-pentacles": {
       "title": "Eight of Pentacles",
       "keywords": {
-        "upright": [
-          "mastery",
-          "craft",
-          "focus"
-        ],
-        "reversed": [
-          "perfectionism",
-          "monotony"
-        ]
+        "upright": ["mastery", "craft", "focus"],
+        "reversed": ["perfectionism", "monotony"]
       },
       "meanings": {
         "upright": "Eight of Pentacles upright: mastery, craft, and focus. Lean into this energy today; stay present and intentional.",
@@ -2164,15 +1850,8 @@
     "nine-of-pentacles": {
       "title": "Nine of Pentacles",
       "keywords": {
-        "upright": [
-          "independence",
-          "comfort",
-          "self-reliance"
-        ],
-        "reversed": [
-          "overdependence",
-          "setback"
-        ]
+        "upright": ["independence", "comfort", "self-reliance"],
+        "reversed": ["overdependence", "setback"]
       },
       "meanings": {
         "upright": "Nine of Pentacles upright: independence, comfort, and self-reliance. Lean into this energy today; stay present and intentional.",
@@ -2194,15 +1873,8 @@
     "ten-of-pentacles": {
       "title": "Ten of Pentacles",
       "keywords": {
-        "upright": [
-          "legacy",
-          "family",
-          "wealth"
-        ],
-        "reversed": [
-          "instability",
-          "short-term"
-        ]
+        "upright": ["legacy", "family", "wealth"],
+        "reversed": ["instability", "short-term"]
       },
       "meanings": {
         "upright": "Ten of Pentacles upright: legacy, family, and wealth. Lean into this energy today; stay present and intentional.",
@@ -2224,15 +1896,8 @@
     "page-of-pentacles": {
       "title": "Page of Pentacles",
       "keywords": {
-        "upright": [
-          "study",
-          "offer",
-          "practicality"
-        ],
-        "reversed": [
-          "procrastination",
-          "boredom"
-        ]
+        "upright": ["study", "offer", "practicality"],
+        "reversed": ["procrastination", "boredom"]
       },
       "meanings": {
         "upright": "Page of Pentacles upright: study, offer, and practicality. Lean into this energy today; stay present and intentional.",
@@ -2254,15 +1919,8 @@
     "knight-of-pentacles": {
       "title": "Knight of Pentacles",
       "keywords": {
-        "upright": [
-          "routine",
-          "reliability",
-          "hard work"
-        ],
-        "reversed": [
-          "stagnation",
-          "stubborn"
-        ]
+        "upright": ["routine", "reliability", "hard work"],
+        "reversed": ["stagnation", "stubborn"]
       },
       "meanings": {
         "upright": "Knight of Pentacles upright: routine, reliability, and hard work. Lean into this energy today; stay present and intentional.",
@@ -2284,15 +1942,8 @@
     "queen-of-pentacles": {
       "title": "Queen of Pentacles",
       "keywords": {
-        "upright": [
-          "nurture",
-          "practical",
-          "comfort"
-        ],
-        "reversed": [
-          "smothering",
-          "materialism"
-        ]
+        "upright": ["nurture", "practical", "comfort"],
+        "reversed": ["smothering", "materialism"]
       },
       "meanings": {
         "upright": "Queen of Pentacles upright: nurture, practical, and comfort. Lean into this energy today; stay present and intentional.",
@@ -2314,15 +1965,8 @@
     "king-of-pentacles": {
       "title": "King of Pentacles",
       "keywords": {
-        "upright": [
-          "stability",
-          "prosperity",
-          "discipline"
-        ],
-        "reversed": [
-          "possessive",
-          "rigid"
-        ]
+        "upright": ["stability", "prosperity", "discipline"],
+        "reversed": ["possessive", "rigid"]
       },
       "meanings": {
         "upright": "King of Pentacles upright: stability, prosperity, and discipline. Lean into this energy today; stay present and intentional.",
@@ -2340,6 +1984,164 @@
           "reversed": "Wellbeing (reversed): possessive and rigid. Rest, breathe, and simplify your schedule."
         }
       }
+    }
+  },
+  "compatibilityPage": {
+    "title": "Compatibility",
+    "subtitle": "A clearer sign-level reading for two people.",
+    "heroEyebrow": "Relationship insight",
+    "heroTitle": "Compare two sun signs",
+    "heroText": "Pick your sign and the other person to see the basic emotional tone, pace, and pressure points in this match.",
+    "you": "You",
+    "partner": "Partner",
+    "pickPlaceholder": "Choose sign",
+    "swap": "Swap signs",
+    "recentTitle": "Recent pairs",
+    "previewEyebrow": "Sun-sign overview",
+    "emptyTitle": "Pick two signs",
+    "emptyText": "Select both signs to see a grounded overview of what flows easily, where friction tends to appear, and what helps this pair work better.",
+    "detailsCta": "How this reading works",
+    "detailsTitle": "Compatibility details",
+    "confirm": "OK",
+    "pickYou": "Pick your sign",
+    "pickPartner": "Pick the other sign",
+    "elementLine": "{a} meets {b}",
+    "scope": {
+      "badge": "Sign-level",
+      "title": "What this reading is",
+      "text": "This is a broad sun-sign overview. It uses element and modality only, so it should guide reflection, not act like a final verdict."
+    },
+    "overview": {
+      "easy": {
+        "title": "Easy flow",
+        "summary": "This pair usually has a natural bridge. The connection tends to move with less resistance when both people stay present."
+      },
+      "mixed": {
+        "title": "Mixed but workable",
+        "summary": "There is real potential here, but the pair works better when expectations and pace are made explicit."
+      },
+      "intentional": {
+        "title": "Needs intention",
+        "summary": "This match can still work, but it asks for clearer communication, more patience, and less assumption."
+      }
+    },
+    "facts": {
+      "elements": "Elements",
+      "pace": "Pace",
+      "reading": "Reading uses",
+      "readingValue": "Sun sign, element, modality"
+    },
+    "advice": {
+      "chemistry": "What works",
+      "tension": "Main tension",
+      "approach": "Best approach"
+    },
+    "dynamicTitle": "Relationship dynamic",
+    "dynamicLabels": {
+      "element": "Element dynamic",
+      "pace": "Relationship pace",
+      "support": "What helps this pair"
+    },
+    "strengths": {
+      "air_air": "Fast mental chemistry and easy conversation create momentum quickly.",
+      "air_earth": "Ideas meet structure, so this pair can turn thoughts into something tangible.",
+      "air_fire": "There is spark, movement, and strong inspiration between these two signs.",
+      "air_water": "This pair brings thought and feeling together when both sides stay patient.",
+      "earth_earth": "Consistency and trust grow naturally here and become a strong base.",
+      "earth_fire": "One brings drive, the other turns it into real-world progress.",
+      "earth_water": "Care and stability support each other well in this match.",
+      "fire_fire": "High energy and mutual courage make this pair feel alive fast.",
+      "fire_water": "Intensity and sensitivity create depth when the tone stays gentle.",
+      "water_water": "This is naturally intuitive, emotionally rich, and deeply receptive."
+    },
+    "warnings": {
+      "cardinal_cardinal": "Both people want to lead. Decisions work better when control is shared early.",
+      "cardinal_fixed": "One pushes forward while the other stabilizes. Pace matters more than intensity here.",
+      "cardinal_mutable": "This pair moves easily, but direction has to stay clear or energy scatters.",
+      "fixed_fixed": "Strong loyalty is here, but stubborn moments can freeze the connection.",
+      "fixed_mutable": "Different pace is the main tension: one protects, the other shifts.",
+      "mutable_mutable": "There is flexibility and ease, but the pair needs structure to stay grounded."
+    },
+    "approaches": {
+      "easy": "Lean into what already works, but keep the connection intentional so ease does not become autopilot.",
+      "mixed": "This pair works best when expectations are named clearly and both sides adjust pace instead of assuming.",
+      "intentional": "Slow the dynamic down, name the difference early, and treat clarity as part of care instead of conflict."
+    },
+    "elements": {
+      "fire": "Fire",
+      "earth": "Earth",
+      "air": "Air",
+      "water": "Water"
+    },
+    "modalities": {
+      "cardinal": "Cardinal",
+      "fixed": "Fixed",
+      "mutable": "Mutable"
+    },
+    "elementTexts": {
+      "air_air": "Air with air is mental spark and constant exchange. Stay grounded to keep depth.",
+      "air_earth": "Ideas meet structure. Build a shared plan to avoid drifting apart.",
+      "air_fire": "Fire needs air, air loves fire. The pair moves quickly and inspires action.",
+      "air_water": "Thought meets feeling. Translate emotions into words for harmony.",
+      "earth_earth": "Earth with earth builds trust and stability. Give it time and it grows strong.",
+      "earth_fire": "Heat meets patience. When aligned, this duo turns desire into results.",
+      "earth_water": "Earth anchors water, water softens earth. This is steady and nurturing.",
+      "fire_fire": "Two fires amplify momentum: bold, bright, and fast. Keep rhythm to avoid burnout.",
+      "fire_water": "Steam and contrast: passion meets sensitivity. Balance pace and tone.",
+      "water_water": "Water with water is deep empathy and intuition. Boundaries keep it healthy."
+    },
+    "insights": {
+      "air_air": "Name one shared idea and act on it within 48 hours.",
+      "air_earth": "Write the plan down so inspiration meets structure.",
+      "air_fire": "Keep the pace exciting, but pause to listen.",
+      "air_water": "Translate feelings into words early.",
+      "earth_earth": "Invest in routine; it becomes your strength.",
+      "earth_fire": "Give each other room to lead at times.",
+      "earth_water": "Stability plus care is the winning formula.",
+      "fire_fire": "Channel energy into a shared goal.",
+      "fire_water": "Respect sensitivity and keep the tone gentle.",
+      "water_water": "Boundaries protect the depth you share."
+    },
+    "modalityTexts": {
+      "cardinal_cardinal": "Two initiators: high drive and fast starts. Align goals early so momentum does not turn into competition.",
+      "fixed_fixed": "Steady and loyal, but stubborn. Patience and respect keep it balanced.",
+      "mutable_mutable": "Flexible and curious. Needs structure to avoid drifting.",
+      "cardinal_fixed": "Starter meets keeper. Pace the relationship and share control.",
+      "cardinal_mutable": "Movement and adaptability. Works well with clear direction.",
+      "fixed_mutable": "Stability meets change. Build trust while allowing growth."
+    },
+    "details": {
+      "tabs": {
+        "model": "Model",
+        "chemistry": "Chemistry",
+        "pace": "Pace"
+      },
+      "sections": {
+        "model": "Reading model",
+        "whatUses": "What it uses",
+        "whatMisses": "What it does not use",
+        "selectedPair": "Selected pair",
+        "elementDynamic": "Element dynamic",
+        "support": "Support note",
+        "rhythm": "Relationship pace",
+        "watch": "Watch for",
+        "approach": "Best approach",
+        "transparency": "Transparency"
+      },
+      "modelTitle": "This page gives a sign-level overview, not a personal synastry chart.",
+      "modelText": "The reading compares two sun signs through element chemistry and modality pace. That makes it useful for broad patterns, but not specific enough for highly personal claims.",
+      "useList": {
+        "sun": "Both people’s sun signs",
+        "element": "How the two elements tend to interact",
+        "modality": "How the two signs usually move, start, or adapt"
+      },
+      "missList": {
+        "moon": "Moon sign and emotional chart details",
+        "rising": "Rising sign and house placement",
+        "venusMars": "Venus, Mars, and attraction-specific synastry",
+        "birthTime": "Birth time and exact chart timing"
+      },
+      "transparencyText": "This reading is intentionally broad. It should help the user reflect on a relationship dynamic, not believe the app can define the whole relationship from two birthdays alone."
     }
   }
 }

@@ -119,6 +119,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { currentLocale, t } from 'src/i18n'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
 import { analytics } from 'src/services/analytics'
+import { PAYWALL_ENTRY_POINTS } from 'src/constants/analyticsEvents'
 
 const STORAGE_KEY = 'tarot-interpretation-v1'
 
@@ -320,16 +321,17 @@ const shareReading = async () => {
 }
 
 const openPremiumFromAha = async () => {
-  void analytics.logEvent('paywall_entry_primary', {
-    source: 'tarot_post_session',
-    entry: 'interpretation_aha',
+  const point = PAYWALL_ENTRY_POINTS.tarotPostSession
+  void analytics.logEvent(point.event, {
+    source: point.source,
+    entry: point.entry,
   })
   await hapticTap()
   router.push({
     name: 'premium',
     query: {
-      source: 'tarot_post_session',
-      entry: 'interpretation_aha',
+      source: point.source,
+      entry: point.entry,
     },
   }).catch(() => {})
 }

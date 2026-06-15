@@ -14,20 +14,11 @@ export default {
     return {
       name: '',
       email: '',
-      dateOfBirth: '',
       loading: false,
       appleLoading: false,
       googleLoading: false,
       errorMessage: '',
       reduceMotion: false,
-      dateSheet: false,
-      dayOptions: [],
-      monthOptions: [],
-      yearOptions: [],
-      selectedDayIndex: 0,
-      selectedMonthIndex: 0,
-      selectedYearIndex: 0,
-      lastDateHapticAt: 0,
       platform: 'web',
     }
   },
@@ -49,10 +40,6 @@ export default {
       return this.email.trim()
     },
 
-    trimmedDateOfBirth() {
-      return this.dateOfBirth.trim()
-    },
-
     isEmailValid() {
       if (!this.trimmedEmail) return false
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -61,24 +48,6 @@ export default {
 
     isNameValid() {
       return this.trimmedName.length >= 2
-    },
-
-    isFormValid() {
-      return (
-        this.isNameValid &&
-        !!this.trimmedEmail &&
-        this.isEmailValid &&
-        this.isDateValid
-      )
-    },
-
-    dateOfBirthLabel() {
-      return this.dateOfBirth || 'DD.MM.YYYY'
-    },
-
-    isDateValid() {
-      if (!this.trimmedDateOfBirth) return true
-      return this.isValidDateInput(this.trimmedDateOfBirth)
     },
 
     isNativePlatform() {
@@ -98,12 +67,6 @@ export default {
     },
   },
 
-  watch: {
-    dateSheet(val) {
-      document.body.classList.toggle('hide-bottom-nav', !!val)
-    },
-  },
-
   mounted() {
     void this.initializeSignUpSafe()
   },
@@ -114,8 +77,12 @@ export default {
       this.reduceMotion = !!win?.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
       this.platform = Capacitor.getPlatform()
       this.logAuth('mounted', { platform: this.platform, isNative: this.isNativePlatform })
-      this.fillForm()
-      this.buildDateOptions()
+      if (this.$route?.query?.name) {
+        this.name = (this.$route.query.name || '').toString()
+      }
+      if (this.$route?.query?.email) {
+        this.email = (this.$route.query.email || '').toString()
+      }
     },
 
     async initializeSignUpSafe() {
@@ -150,17 +117,6 @@ export default {
       }
     },
 
-    async hapticSelect() {
-      if (!Capacitor.isNativePlatform()) return
-      if (this.reduceMotion) return
-
-      try {
-        await Haptics.selectionChanged()
-      } catch (e) {
-        console.error(e)
-      }
-    },
-
     async hapticTap() {
       if (!Capacitor.isNativePlatform()) return
       if (this.reduceMotion) return
@@ -191,12 +147,6 @@ export default {
         return
       }
 
-      if (this.trimmedDateOfBirth && !this.isDateValid) {
-        this.errorMessage = this.tt('errors.invalidDate')
-        this.logAuth('invalid_date', { dateOfBirth: this.trimmedDateOfBirth })
-        return
-      }
-
       this.loading = true
       this.errorMessage = ''
       this.logAuth('email_signup_start')
@@ -209,7 +159,6 @@ export default {
             emailRedirectTo: null,
             data: {
               name: this.trimmedName,
-              dateOfBirth: this.trimmedDateOfBirth || undefined,
             },
           },
         })
@@ -228,7 +177,6 @@ export default {
           query: {
             email: this.trimmedEmail,
             name: this.trimmedName,
-            dateOfBirth: this.trimmedDateOfBirth,
             mode: 'signup',
           },
         })
@@ -381,254 +329,6 @@ export default {
       await this.hapticTap()
       this.$router.push('/menu')
     },
-
-    fillForm() {
-      if (this.$route?.query?.name) {
-        this.name = (this.$route.query.name || '').toString()
-      }
-
-      if (this.$route?.query?.email) {
-        this.email = (this.$route.query.email || '').toString()
-      }
-
-      if (this.$route?.query?.dateOfBirth) {
-        this.dateOfBirth = (this.$route.query.dateOfBirth || '').toString()
-      }
-    },
-
-    async onOpenDateSheet() {
-      await this.hapticTap()
-      this.syncDateSelectionFromValue()
-      this.dateSheet = true
-      this.hapticSelectionStart()
-
-      this.$nextTick(() => {
-        this.scrollDateWheels(false)
-      })
-    },
-
-    confirmDateWheel() {
-      const day = this.dayOptions[this.selectedDayIndex] || 1
-      const month = this.monthOptions[this.selectedMonthIndex]?.value || 1
-      const year = this.yearOptions[this.selectedYearIndex] || new Date().getFullYear()
-      const dd = String(day).padStart(2, '0')
-      const mm = String(month).padStart(2, '0')
-
-      this.dateOfBirth = `${dd}.${mm}.${year}`
-      this.errorMessage = ''
-      this.dateSheet = false
-      this.hapticSelectionEnd()
-    },
-
-    buildDateOptions() {
-      const currentYear = new Date().getFullYear()
-      const minYear = currentYear - 120
-      const maxYear = currentYear
-
-      this.yearOptions = []
-      for (let y = maxYear; y >= minYear; y -= 1) {
-        this.yearOptions.push(y)
-      }
-
-      this.monthOptions = Array.from({ length: 12 }, (_, idx) => {
-        const value = idx + 1
-        const date = new Date(2000, idx, 1)
-        const label = new Intl.DateTimeFormat(this.locale === 'uk' ? 'uk-UA' : 'en-US', {
-          month: 'short',
-        }).format(date)
-
-        return { value, label }
-      })
-
-      this.dayOptions = Array.from({ length: 31 }, (_, idx) => idx + 1)
-      this.syncDateSelectionFromValue()
-    },
-
-    syncDateSelectionFromValue() {
-      const fallbackYear = this.yearOptions[0] || new Date().getFullYear()
-      const raw = this.dateOfBirth || ''
-
-      let day = 1
-      let month = 1
-      let year = fallbackYear
-
-      const parts = raw.includes('.') ? raw.split('.') : raw.split('-')
-
-      if (parts.length === 3) {
-        const [a, b, c] = parts.map((p) => parseInt(p, 10))
-
-        if (raw.includes('.')) {
-          day = a || day
-          month = b || month
-          year = c || year
-        } else {
-          year = a || year
-          month = b || month
-          day = c || day
-        }
-      }
-
-      this.selectedYearIndex = Math.max(
-        0,
-        this.yearOptions.findIndex((y) => y === year),
-      )
-      this.selectedMonthIndex = Math.max(
-        0,
-        this.monthOptions.findIndex((m) => m.value === month),
-      )
-
-      const maxDay = this.getDaysInMonth(year, month)
-      day = Math.min(day, maxDay)
-
-      this.selectedDayIndex = Math.max(
-        0,
-        this.dayOptions.findIndex((d) => d === day),
-      )
-    },
-
-    getDaysInMonth(year, month) {
-      return new Date(year, month, 0).getDate()
-    },
-
-    isValidDateInput(value) {
-      if (!value) return false
-
-      const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value)
-      if (!match) return false
-
-      const day = parseInt(match[1], 10)
-      const month = parseInt(match[2], 10)
-      const year = parseInt(match[3], 10)
-
-      if (month < 1 || month > 12) return false
-
-      const currentYear = new Date().getFullYear()
-      const minYear = currentYear - 120
-      if (year < minYear || year > currentYear) return false
-
-      const maxDay = this.getDaysInMonth(year, month)
-      return day >= 1 && day <= maxDay
-    },
-
-    onDayWheelScroll() {
-      const wheel = this.$refs.dayWheelRef
-      if (!wheel) return
-
-      const nextIndex = Math.min(
-        this.dayOptions.length - 1,
-        Math.max(0, Math.round(wheel.scrollTop / 44)),
-      )
-
-      if (nextIndex === this.selectedDayIndex) return
-
-      this.selectedDayIndex = nextIndex
-      this.hapticSelectThrottled()
-    },
-
-    onMonthWheelScroll() {
-      const wheel = this.$refs.monthWheelRef
-      if (!wheel) return
-
-      const nextIndex = Math.min(
-        this.monthOptions.length - 1,
-        Math.max(0, Math.round(wheel.scrollTop / 44)),
-      )
-
-      if (nextIndex === this.selectedMonthIndex) return
-
-      this.selectedMonthIndex = nextIndex
-      this.syncDayForMonth()
-      this.hapticSelectThrottled()
-    },
-
-    onYearWheelScroll() {
-      const wheel = this.$refs.yearWheelRef
-      if (!wheel) return
-
-      const nextIndex = Math.min(
-        this.yearOptions.length - 1,
-        Math.max(0, Math.round(wheel.scrollTop / 44)),
-      )
-
-      if (nextIndex === this.selectedYearIndex) return
-
-      this.selectedYearIndex = nextIndex
-      this.syncDayForMonth()
-      this.hapticSelectThrottled()
-    },
-
-    onDayWheelItemTap(index) {
-      this.selectedDayIndex = index
-      this.scrollWheel(this.$refs.dayWheelRef, index, true)
-      this.hapticSelect()
-    },
-
-    onMonthWheelItemTap(index) {
-      this.selectedMonthIndex = index
-      this.syncDayForMonth()
-      this.scrollWheel(this.$refs.monthWheelRef, index, true)
-      this.hapticSelect()
-    },
-
-    onYearWheelItemTap(index) {
-      this.selectedYearIndex = index
-      this.syncDayForMonth()
-      this.scrollWheel(this.$refs.yearWheelRef, index, true)
-      this.hapticSelect()
-    },
-
-    syncDayForMonth() {
-      const year = this.yearOptions[this.selectedYearIndex] || new Date().getFullYear()
-      const month = this.monthOptions[this.selectedMonthIndex]?.value || 1
-      const maxDay = this.getDaysInMonth(year, month)
-
-      if (this.dayOptions[this.selectedDayIndex] > maxDay) {
-        this.selectedDayIndex = maxDay - 1
-        this.scrollWheel(this.$refs.dayWheelRef, this.selectedDayIndex, true)
-      }
-    },
-
-    scrollDateWheels(smooth) {
-      this.scrollWheel(this.$refs.dayWheelRef, this.selectedDayIndex, smooth)
-      this.scrollWheel(this.$refs.monthWheelRef, this.selectedMonthIndex, smooth)
-      this.scrollWheel(this.$refs.yearWheelRef, this.selectedYearIndex, smooth)
-    },
-
-    scrollWheel(wheel, index, smooth) {
-      if (!wheel) return
-      const top = index * 44
-      wheel.scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' })
-    },
-
-    hapticSelectThrottled() {
-      const now = Date.now()
-      if (now - this.lastDateHapticAt < 80) return
-
-      this.lastDateHapticAt = now
-      this.hapticSelect()
-    },
-
-    async hapticSelectionStart() {
-      if (!Capacitor.isNativePlatform()) return
-      if (this.reduceMotion) return
-
-      try {
-        await Haptics.selectionStart()
-      } catch (e) {
-        console.error(e)
-      }
-    },
-
-    async hapticSelectionEnd() {
-      if (!Capacitor.isNativePlatform()) return
-      if (this.reduceMotion) return
-
-      try {
-        await Haptics.selectionEnd()
-      } catch (e) {
-        console.error(e)
-      }
-    },
   },
 }
 </script>
@@ -664,31 +364,18 @@ export default {
           <div class="field-group">
             <div class="field">
               <label class="field-label" for="signup-email">{{ tt('fields.email') }}</label>
-              <input
-                id="signup-email"
-                class="field-input"
+            <input
+              id="signup-email"
+              class="field-input"
                 v-model="email"
                 type="email"
                 autocomplete="email"
                 inputmode="email"
-                autocapitalize="none"
-                @input="errorMessage = ''"
-              />
-            </div>
-            <p class="auth-helper">{{ tt('auth.loginHelper') }}</p>
-          </div>
-
-          <div class="field field--clickable" @click="onOpenDateSheet">
-            <label class="field-label" for="signup-dob">{{ tt('fields.dateOfBirth') }}</label>
-            <input
-              id="signup-dob"
-              class="field-input field-input--button"
-              :value="dateOfBirthLabel"
-              autocomplete="bday"
-              inputmode="none"
-              readonly
-              @click.stop="onOpenDateSheet"
+              autocapitalize="none"
+              @input="errorMessage = ''"
             />
+            </div>
+            <p class="auth-helper">{{ tt('auth.signUpHelper') }}</p>
           </div>
 
           <p class="terms-text">
@@ -792,88 +479,6 @@ export default {
         </div>
       </div>
     </div>
-
-    <q-dialog
-      v-model="dateSheet"
-      position="bottom"
-      transition-show="slide-up"
-      transition-hide="slide-down"
-      :transition-duration="440"
-      class="oracle-actions-dialog"
-    >
-      <section class="oracle-actions">
-        <div class="sheet-handle" aria-hidden="true"></div>
-        <div class="sheet-title">{{ tt('fields.dateOfBirth') }}</div>
-
-        <div class="oracle-wheel-grid">
-          <div class="oracle-wheel">
-            <div class="oracle-wheel__window" aria-hidden="true"></div>
-            <div ref="dayWheelRef" class="oracle-wheel__scroll" @scroll.passive="onDayWheelScroll">
-              <div class="oracle-wheel__spacer"></div>
-              <button
-                v-for="(day, index) in dayOptions"
-                :key="`day-${day}`"
-                type="button"
-                class="oracle-wheel__item"
-                :class="{ 'oracle-wheel__item--active': index === selectedDayIndex }"
-                @click="onDayWheelItemTap(index)"
-              >
-                {{ String(day).padStart(2, '0') }}
-              </button>
-              <div class="oracle-wheel__spacer"></div>
-            </div>
-          </div>
-
-          <div class="oracle-wheel">
-            <div class="oracle-wheel__window" aria-hidden="true"></div>
-            <div
-              ref="monthWheelRef"
-              class="oracle-wheel__scroll"
-              @scroll.passive="onMonthWheelScroll"
-            >
-              <div class="oracle-wheel__spacer"></div>
-              <button
-                v-for="(month, index) in monthOptions"
-                :key="`month-${month.value}`"
-                type="button"
-                class="oracle-wheel__item"
-                :class="{ 'oracle-wheel__item--active': index === selectedMonthIndex }"
-                @click="onMonthWheelItemTap(index)"
-              >
-                {{ month.label }}
-              </button>
-              <div class="oracle-wheel__spacer"></div>
-            </div>
-          </div>
-
-          <div class="oracle-wheel">
-            <div class="oracle-wheel__window" aria-hidden="true"></div>
-            <div
-              ref="yearWheelRef"
-              class="oracle-wheel__scroll"
-              @scroll.passive="onYearWheelScroll"
-            >
-              <div class="oracle-wheel__spacer"></div>
-              <button
-                v-for="(year, index) in yearOptions"
-                :key="`year-${year}`"
-                type="button"
-                class="oracle-wheel__item"
-                :class="{ 'oracle-wheel__item--active': index === selectedYearIndex }"
-                @click="onYearWheelItemTap(index)"
-              >
-                {{ year }}
-              </button>
-              <div class="oracle-wheel__spacer"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="oracle-actions__footer">
-          <button type="button" class="oracle-actions__ok" @click="confirmDateWheel">Apply</button>
-        </div>
-      </section>
-    </q-dialog>
   </div>
 </template>
 

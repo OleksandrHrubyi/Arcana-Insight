@@ -529,6 +529,20 @@ export const messages = {
       aquarius: 'Aquarius',
       pisces: 'Pisces',
     },
+    zodiacLocative: {
+      aries: 'Aries',
+      taurus: 'Taurus',
+      gemini: 'Gemini',
+      cancer: 'Cancer',
+      leo: 'Leo',
+      virgo: 'Virgo',
+      libra: 'Libra',
+      scorpio: 'Scorpio',
+      sagittarius: 'Sagittarius',
+      capricorn: 'Capricorn',
+      aquarius: 'Aquarius',
+      pisces: 'Pisces',
+    },
 
     astro: {
       moonIn: 'Moon in',
@@ -544,8 +558,13 @@ export const messages = {
         waningCrescent: 'Waning Crescent',
       },
       planets: {
-        sun: 'Sun', moon: 'Moon', mars: 'Mars',
-        mercury: 'Mercury', jupiter: 'Jupiter', venus: 'Venus', saturn: 'Saturn',
+        sun: 'Sun',
+        moon: 'Moon',
+        mars: 'Mars',
+        mercury: 'Mercury',
+        jupiter: 'Jupiter',
+        venus: 'Venus',
+        saturn: 'Saturn',
       },
       days: 'days',
       tomorrow: 'tomorrow',
@@ -554,20 +573,39 @@ export const messages = {
       streak: 'Day',
       elements: { fire: 'Fire', water: 'Water', air: 'Air', earth: 'Earth' },
       numerology: {
-        '1': 'Action', '2': 'Balance', '3': 'Expression', '4': 'Structure',
-        '5': 'Freedom', '6': 'Harmony', '7': 'Reflection', '8': 'Power', '9': 'Completion',
+        1: 'Action',
+        2: 'Balance',
+        3: 'Expression',
+        4: 'Structure',
+        5: 'Freedom',
+        6: 'Harmony',
+        7: 'Reflection',
+        8: 'Power',
+        9: 'Completion',
       },
       planetMeanings: {
-        sun: 'Vitality', moon: 'Emotions', mars: 'Action',
-        mercury: 'Mind', jupiter: 'Growth', venus: 'Love', saturn: 'Discipline',
+        sun: 'Vitality',
+        moon: 'Emotions',
+        mars: 'Action',
+        mercury: 'Mind',
+        jupiter: 'Growth',
+        venus: 'Love',
+        saturn: 'Discipline',
       },
       elementMeanings: {
-        fire: 'Passion', water: 'Feelings', air: 'Thought', earth: 'Stability',
+        fire: 'Passion',
+        water: 'Feelings',
+        air: 'Thought',
+        earth: 'Stability',
       },
       cards: {
-        moonPhase: 'Moon Phase', nextMoon: 'To Full Moon', dayRuler: 'Day Ruler', remaining: 'remaining',
-        sunPath: "Sun's Path", moonEnergy: 'Moon Energy', dayNumber: 'Day Number',
-        yourStreak: 'Streak', streakSub: 'days in a row', headsUp: 'Heads Up',
+        moonPhase: 'Moon Phase',
+        nextMoon: 'To Full Moon',
+        dayRuler: 'Day Ruler',
+        remaining: 'remaining',
+        sunPath: "Sun's Path",
+        dayNumber: 'Day Number',
+        headsUp: 'Heads Up',
       },
       hint: 'Try your daily card',
     },
@@ -659,6 +697,204 @@ export const messages = {
       slide3Alt: 'Daily insights slide 3',
     },
 
+    landing: {
+      astroStripLabel: 'Astro overview',
+      phrases: [
+        'A quiet sign is near',
+        'The stars are aligning',
+        'Today holds a hint',
+        'Draw a card, feel the truth',
+        'Listen to what resonates',
+        'Your intuition knows',
+        'Clarity is closer',
+        'Trust the timing',
+        'A sign in the smallest things',
+        'The message is already here',
+        'Let it unfold',
+        'Follow what feels true',
+        'A gentle nudge forward',
+        'Your next step is simple',
+        'Everything aligns quietly',
+        'Your question has a direction',
+        'A gentle truth emerges',
+        'The answer is within reach',
+        'Hold the question lightly',
+        'Look closer',
+        'A small shift changes everything',
+        'Your energy speaks',
+        'Read the moment',
+        'Let the night guide you',
+        'Trust what feels right',
+      ],
+      greetings: {
+        night: 'Good night',
+        morning: 'Good morning',
+        day: 'Good afternoon',
+        evening: 'Good evening',
+      },
+      hero: {
+        ariaOpen: 'Open daily card interpretation',
+        ariaReveal: 'Reveal daily card',
+        eyebrow: 'CARD OF THE DAY',
+        readInterpretation: 'Read interpretation',
+        revealCard: 'Reveal card',
+      },
+      zodiacInsight: {
+        eyebrow: 'TODAY FOR YOUR SIGN',
+        fallbackEyebrow: "TODAY'S ZODIAC PREVIEW",
+        fallbackTitle: "Today's zodiac preview",
+        fallbackTheme: 'Horoscope',
+        fallbackPreview:
+          "Open your horoscope to see today's energy, love, or career focus in one quick view.",
+        themes: {
+          energy: 'Energy',
+          love: 'Love',
+          career: 'Career',
+        },
+      },
+      focusToday: {
+        title: 'Focus today',
+        compactCta: 'Open horoscope',
+        fallbackKnownSign: "Open your horoscope to see today's focus.",
+        fallbackMissingSign: "Open Horoscope and choose your sign to see today's focus.",
+      },
+      progress: {
+        card: 'Card',
+        horoscope: 'Horoscope',
+        tarot: 'Tarot',
+        summaryStart: "Start today's ritual",
+        summaryOneDone: '1 step done today',
+        summaryOneLeft: '1 step left today',
+        summaryInProgress: 'Daily ritual in progress',
+        summaryComplete: "Today's ritual complete",
+        done: 'Done',
+        next: 'Next',
+      },
+      streak: {
+        suffix: 'streak',
+      },
+      dayForms: {
+        one: 'day',
+        few: 'days',
+        many: 'days',
+        other: 'days',
+      },
+      sheet: {
+        factsTitle: 'Facts',
+        todayTitle: 'Today',
+        labels: {
+          lunar: 'Lunar rhythm',
+        },
+        titles: {
+          moon: 'Moon backdrop for today',
+          lunar: 'Full moon calendar',
+          planet: 'Rhythm of the day',
+          sun: 'Solar season',
+          element: 'Element of the mood',
+          number: 'Date code',
+          streak: 'Practice rhythm',
+          retro: 'Mercury status',
+        },
+        subtitles: {
+          moon: 'What shapes the emotional tone',
+          sun: 'The wider tone of this period',
+          element: 'Where this tone comes from',
+          streak: 'What is already done today',
+          retro: 'What retrograde actually means',
+        },
+        summaries: {
+          moon: 'The phase shows where the cycle is, while the Moon sign shows how that tone is expressed.',
+          lunar:
+            'This card is purely calendar-based: it shows your distance to the full moon, not the mood of the day.',
+          planet:
+            'The day ruler gives a broad rhythm, but it does not replace your horoscope or daily card.',
+          sun: 'The Sun here shows a seasonal background, not just a one-day mood.',
+          element:
+            'The element shows the reaction style of the day: emotional, mental, practical, or impulsive.',
+          streak:
+            'This is not an astrology card. It shows how you are actually engaging with the app today.',
+          retro:
+            'This card is not about fear. It shows which themes of the day need more attention.',
+        },
+        planetDomains: {
+          sun: 'visibility, will, expression',
+          moon: 'mood, home, emotional rhythm',
+          mars: 'action, impulse, tension',
+          mercury: 'words, logistics, messages',
+          jupiter: 'meaning, scale, perspective',
+          venus: 'relationships, taste, harmony',
+          saturn: 'structure, boundaries, responsibility',
+        },
+        elementDomains: {
+          fire: 'action and fast reaction',
+          water: 'emotion and intuition',
+          air: 'thought and communication',
+          earth: 'stability and practicality',
+        },
+        modalities: {
+          aries: 'cardinal',
+          cancer: 'cardinal',
+          libra: 'cardinal',
+          capricorn: 'cardinal',
+          taurus: 'fixed',
+          leo: 'fixed',
+          scorpio: 'fixed',
+          aquarius: 'fixed',
+          gemini: 'mutable',
+          virgo: 'mutable',
+          sagittarius: 'mutable',
+          pisces: 'mutable',
+        },
+        numerologySummary: {
+          1: 'Number 1 highlights beginnings, direction, and self-drive.',
+          2: 'Number 2 highlights balance, partnership, and subtle adjustment.',
+          3: 'Number 3 highlights expression, movement, and communication.',
+          4: 'Number 4 highlights structure, order, and form.',
+          5: 'Number 5 highlights change, movement, and flexibility.',
+          6: 'Number 6 highlights care, closeness, and harmony.',
+          7: 'Number 7 highlights observation, analysis, and quiet.',
+          8: 'Number 8 highlights strength, results, and concentration.',
+          9: 'Number 9 highlights completion, release, and reflection',
+        },
+        facts: {
+          moonIllumination: 'Moon illumination',
+          moonMoved: 'The Moon has moved',
+          moonMovedConnector: 'through',
+          signModality: 'Sign modality',
+          nextFullMoon: 'Next full moon',
+          atTime: 'at',
+          timeLeft: 'Time left',
+          hoursFromNow: 'Hours from now',
+          dayRuler: 'Day ruler',
+          classicalLink: 'In classical astrology it is linked with',
+          weekday: 'Weekday',
+          sunElementConnector: 'is a',
+          sunElementSuffix: 'sign',
+          daysUntilNextSign: 'Days until the Sun changes sign',
+          elementSigns: 'Signs in this element',
+          elementTopics: 'Typical topics for this element',
+          elementLayer:
+            'This is separate from the moon phase: the element shows the reaction style.',
+          formula: 'Formula',
+          numberKey: 'Number key',
+          currentStreak: 'Current streak',
+          dailyCardToday: 'Daily card today',
+          horoscopeToday: 'Horoscope today',
+          tarotToday: 'Tarot today',
+          retrogradeMeaning: 'Retrograde means the planet appears to move backward from Earth.',
+          mercuryTradition: 'Mercury is traditionally linked with messages, travel, and details.',
+          currentRetroStatus: 'Current status: retrograde motion is active.',
+        },
+        actions: {
+          openHoroscope: 'Open horoscope',
+        },
+        yesNo: {
+          yes: 'yes',
+          no: 'no',
+        },
+      },
+    },
+
     auth: {
       loginAction: 'Login',
       signUpAction: 'Sign up',
@@ -677,6 +913,8 @@ export const messages = {
       codeSent: 'We’ve sent a 6-digit verification code to your email',
       codeResent: 'We’ve just resent your verification code. Check your inbox again.',
       loginHelper: 'We’ll send a 6-digit code to your email.',
+      signUpHelper:
+        'Start with your email. You can add your birth date later for personal horoscope.',
       wrongOrExpiredCode: 'Wrong or expired code. Try again.',
       fillAllFields: 'Please fill all fields correctly.',
     },
@@ -770,6 +1008,7 @@ export const messages = {
     nav: {
       bottom: 'Bottom navigation',
       more: 'More',
+      home: 'Home',
       menu: 'Menu',
       daily: 'Daily card',
       myDay: 'My Day',
@@ -818,8 +1057,7 @@ export const messages = {
         heroInProgressSubtitle:
           'Complete the next ritual step to unlock your reward state for today.',
         heroReadyTitle: 'Reward unlocked for today',
-        heroReadySubtitle:
-          'Great run. Claim your reward now and keep your rhythm tomorrow.',
+        heroReadySubtitle: 'Great run. Claim your reward now and keep your rhythm tomorrow.',
         heroClaimedTitle: 'Reward claimed. Flow is active',
         heroClaimedSubtitle:
           'Excellent consistency. Keep the chain alive and upgrade your next unlock.',
@@ -866,37 +1104,95 @@ export const messages = {
 
     compatibilityPage: {
       title: 'Compatibility',
-      subtitle: 'Find the resonance between two signs',
-      sections: {
-        match: 'Choose signs',
-        preview: 'Preview',
-      },
+      subtitle: 'A clearer sign-level reading for two people.',
+      heroEyebrow: 'Relationship insight',
+      heroTitle: 'Compare two sun signs',
+      heroText:
+        'Pick your sign and the other person to see the basic emotional tone, pace, and pressure points in this match.',
       you: 'You',
       partner: 'Partner',
-      pickSign: 'Pick a sign',
-      previewTitle: 'Cosmic resonance',
-      previewText: 'Select both signs to explore how your energies meet.',
-      cta: 'Show compatibility',
-      ctaUpdate: 'Update compatibility',
-      resultTitle: 'Compatibility: {a} + {b}',
-      resultSub: 'Based on elements and modalities.',
+      pickPlaceholder: 'Choose sign',
+      swap: 'Swap signs',
+      recentTitle: 'Recent pairs',
+      previewEyebrow: 'Sun-sign overview',
+      emptyTitle: 'Pick two signs',
+      emptyText:
+        'Select both signs to see a grounded overview of what flows easily, where friction tends to appear, and what helps this pair work better.',
+      detailsCta: 'How this reading works',
+      detailsTitle: 'Compatibility details',
+      confirm: 'OK',
+      pickYou: 'Pick your sign',
+      pickPartner: 'Pick the other sign',
       elementLine: '{a} meets {b}',
-      insightLabel: 'Key insight',
-      balanceLabel: 'Element balance',
-      summary: {
-        high: 'Strong resonance and natural flow.',
-        mid: 'Good potential with a few tension points.',
-        low: 'High contrast that needs care and clarity.',
+      scope: {
+        badge: 'Sign-level',
+        title: 'What this reading is',
+        text: 'This is a broad sun-sign overview. It uses element and modality only, so it should guide reflection, not act like a final verdict.',
       },
-      confidence: {
-        high: 'High confidence',
-        mid: 'Balanced',
-        low: 'Sensitive',
+      overview: {
+        easy: {
+          title: 'Easy flow',
+          summary:
+            'This pair usually has a natural bridge. The connection tends to move with less resistance when both people stay present.',
+        },
+        mixed: {
+          title: 'Mixed but workable',
+          summary:
+            'There is real potential here, but the pair works better when expectations and pace are made explicit.',
+        },
+        intentional: {
+          title: 'Needs intention',
+          summary:
+            'This match can still work, but it asks for clearer communication, more patience, and less assumption.',
+        },
       },
-      spheres: {
-        emotion: 'Emotion',
-        communication: 'Communication',
-        stability: 'Stability',
+      facts: {
+        elements: 'Elements',
+        pace: 'Pace',
+        reading: 'Reading uses',
+        readingValue: 'Sun sign, element, modality',
+      },
+      advice: {
+        chemistry: 'What works',
+        tension: 'Main tension',
+        approach: 'Best approach',
+      },
+      dynamicTitle: 'Relationship dynamic',
+      dynamicLabels: {
+        element: 'Element dynamic',
+        pace: 'Relationship pace',
+        support: 'What helps this pair',
+      },
+      strengths: {
+        air_air: 'Fast mental chemistry and easy conversation create momentum quickly.',
+        air_earth: 'Ideas meet structure, so this pair can turn thoughts into something tangible.',
+        air_fire: 'There is spark, movement, and strong inspiration between these two signs.',
+        air_water: 'This pair brings thought and feeling together when both sides stay patient.',
+        earth_earth: 'Consistency and trust grow naturally here and become a strong base.',
+        earth_fire: 'One brings drive, the other turns it into real-world progress.',
+        earth_water: 'Care and stability support each other well in this match.',
+        fire_fire: 'High energy and mutual courage make this pair feel alive fast.',
+        fire_water: 'Intensity and sensitivity create depth when the tone stays gentle.',
+        water_water: 'This is naturally intuitive, emotionally rich, and deeply receptive.',
+      },
+      warnings: {
+        cardinal_cardinal:
+          'Both people want to lead. Decisions work better when control is shared early.',
+        cardinal_fixed:
+          'One pushes forward while the other stabilizes. Pace matters more than intensity here.',
+        cardinal_mutable:
+          'This pair moves easily, but direction has to stay clear or energy scatters.',
+        fixed_fixed: 'Strong loyalty is here, but stubborn moments can freeze the connection.',
+        fixed_mutable: 'Different pace is the main tension: one protects, the other shifts.',
+        mutable_mutable:
+          'There is flexibility and ease, but the pair needs structure to stay grounded.',
+      },
+      approaches: {
+        easy: 'Lean into what already works, but keep the connection intentional so ease does not become autopilot.',
+        mixed:
+          'This pair works best when expectations are named clearly and both sides adjust pace instead of assuming.',
+        intentional:
+          'Slow the dynamic down, name the difference early, and treat clarity as part of care instead of conflict.',
       },
       elements: {
         fire: 'Fire',
@@ -935,42 +1231,49 @@ export const messages = {
         fire_water: 'Respect sensitivity and keep the tone gentle.',
         water_water: 'Boundaries protect the depth you share.',
       },
-      detailsCta: 'Details',
-      detailsTitle: 'How it is calculated',
-      details: {
-        signs: 'Signs',
-        elements: 'Elements',
-        modalities: 'Modalities',
-        elementScore: 'Element score',
-        modalityScore: 'Modality score',
-        final: 'Final score',
-        formula: 'Formula',
-        formulaText: 'Element score (65%) + Modality score (35%).',
-        modalityNote:
-          'Modality shows the pace of a sign: cardinal (starts), fixed (sustains), mutable (adapts).',
-        elementPair: 'Element pair',
-        modalityPair: 'Modality pair',
-        resultSummary: 'Summary',
-        resultExplain:
-          'This score combines element chemistry with how each sign moves through life.',
-        elementMatrix: 'Element matrix',
-        modalityMatrix: 'Modality matrix',
-        matrixHint: 'Your pair is highlighted. Values show the score for each combination.',
-        tabs: {
-          basic: 'Basic',
-          extended: 'Extended',
-          matrix: 'Matrix',
-        },
-        pairLabel: 'Selected pair',
-      },
       modalityTexts: {
         cardinal_cardinal:
-          'Two initiators: high drive and fast starts. Align goals to avoid friction.',
+          'Two initiators: high drive and fast starts. Align goals early so momentum does not turn into competition.',
         fixed_fixed: 'Steady and loyal, but stubborn. Patience and respect keep it balanced.',
         mutable_mutable: 'Flexible and curious. Needs structure to avoid drifting.',
         cardinal_fixed: 'Starter meets keeper. Pace the relationship and share control.',
         cardinal_mutable: 'Movement and adaptability. Works well with clear direction.',
         fixed_mutable: 'Stability meets change. Build trust while allowing growth.',
+      },
+      details: {
+        tabs: {
+          model: 'Model',
+          chemistry: 'Chemistry',
+          pace: 'Pace',
+        },
+        sections: {
+          model: 'Reading model',
+          whatUses: 'What it uses',
+          whatMisses: 'What it does not use',
+          selectedPair: 'Selected pair',
+          elementDynamic: 'Element dynamic',
+          support: 'Support note',
+          rhythm: 'Relationship pace',
+          watch: 'Watch for',
+          approach: 'Best approach',
+          transparency: 'Transparency',
+        },
+        modelTitle: 'This page gives a sign-level overview, not a personal synastry chart.',
+        modelText:
+          'The reading compares two sun signs through element chemistry and modality pace. That makes it useful for broad patterns, but not specific enough for highly personal claims.',
+        useList: {
+          sun: "Both people's sun signs",
+          element: 'How the two elements tend to interact',
+          modality: 'How the two signs usually move, start, or adapt',
+        },
+        missList: {
+          moon: 'Moon sign and emotional chart details',
+          rising: 'Rising sign and house placement',
+          venusMars: 'Venus, Mars, and attraction-specific synastry',
+          birthTime: 'Birth time and exact chart timing',
+        },
+        transparencyText:
+          'This reading is intentionally broad. It should help the user reflect on a relationship dynamic, not believe the app can define the whole relationship from two birthdays alone.',
       },
     },
 
@@ -984,12 +1287,12 @@ export const messages = {
           purchase: 'Purchase',
         },
         readings: {
-          free: 'No saved reading history.',
+          free: 'Today’s reading is not saved to history.',
           premium: 'Full timeline with all readings, spreads, and cards.',
           purchase: 'Premium subscription with history and unlimited access features.',
         },
         compatibility: {
-          free: 'No full compatibility report.',
+          free: 'Preview only. Full compatibility report is in Premium.',
           premium: 'Full pair analysis with score breakdown and practical guidance.',
           purchase: 'Premium subscription with compatibility insights and advanced breakdown.',
         },
@@ -1007,16 +1310,16 @@ export const messages = {
       horoscope: {
         love: {
           title: 'Love theme is in Premium',
-          text: 'Unlock Premium to get daily Love insights and deeper relationship context.',
+          text: 'Free includes the daily energy theme. Premium adds a daily Love view with deeper relationship context.',
         },
         career: {
           title: 'Career theme is in Premium',
-          text: 'Unlock Premium to get daily Career guidance and practical next steps.',
+          text: 'Free includes the daily energy theme. Premium adds daily Career guidance and practical next steps.',
         },
       },
       compatibility: {
         title: 'Full compatibility report is in Premium',
-        text: 'Free does not include compatibility report. Premium unlocks full pair analysis with score breakdown and clear guidance.',
+        text: 'Free includes only a compatibility preview. Premium unlocks the full pair analysis with score breakdown and clear guidance.',
         bullets: {
           report: 'Detailed report for any sign pair, with clear strengths and tension points.',
           scores: 'All spheres and score breakdown: emotion, communication, and stability.',
@@ -1025,7 +1328,7 @@ export const messages = {
       },
       readings: {
         title: 'Full reading history is in Premium',
-        text: 'Free mode does not save reading history. Premium keeps all tarot sessions in one timeline.',
+        text: 'Free still gives you today’s tarot value, but it does not save reading history. Premium keeps every tarot session in one timeline.',
         bullets: {
           timeline: 'All previous readings in one place with date, spread, and cards.',
           search: 'Quickly return to important sessions and key questions.',
@@ -1033,7 +1336,8 @@ export const messages = {
         },
       },
       spreads: {
-        notify: 'Free mode includes 1-card reading. Premium unlocks 3-card and 5-card spreads with deeper interpretation.',
+        notify:
+          'Free mode includes 1-card reading. Premium unlocks 3-card and 5-card spreads with deeper interpretation.',
       },
       tarot: {
         dailyLimit:
@@ -1085,7 +1389,8 @@ export const messages = {
 
     premiumPage: {
       title: 'Premium',
-      subtitle: 'Same Premium features in every plan. Choose monthly or yearly billing.',
+      subtitle:
+        'Go beyond the basic daily ritual with deeper guidance, no tarot limits, and one place for your patterns.',
       header: {
         kicker: 'Unlock full access',
       },
@@ -1102,6 +1407,25 @@ export const messages = {
         'Free gives you a daily ritual. Premium adds deeper context and more personalized reflection.',
       whyLead:
         'If you open the app regularly, Premium helps you build a more consistent and meaningful self-reflection practice.',
+      outcome: {
+        title: 'One deeper daily reflection practice',
+        text: 'Premium turns Arcana from a quick daily check-in into a fuller reflection flow: more depth when you read, more continuity when you return, and more context when one card is not enough.',
+        note: 'Everything below supports that one outcome. The plan changes only the billing period, not the feature set.',
+        points: {
+          depth: {
+            title: 'More depth in each reading',
+            text: 'Unlimited tarot, larger spreads, and deeper interpretation when you want more than a short takeaway.',
+          },
+          continuity: {
+            title: 'More continuity over time',
+            text: 'Saved readings keep your sessions in one timeline, so repeating themes are easier to notice.',
+          },
+          range: {
+            title: 'More context across the app',
+            text: 'Love, career, and compatibility add extra angles when energy-only is too narrow.',
+          },
+        },
+      },
       sections: {
         free: 'Included in free',
         premium: 'Included in Premium',
@@ -1474,7 +1798,7 @@ export const messages = {
     },
     personalHoroscope: {
       title: 'Your personal reading',
-      subtitle: 'Written for you based on your birth chart and today\'s sky.',
+      subtitle: "Written for you based on your birth chart and today's sky.",
       sectionIntro: 'Overview',
       sectionLove: 'Love',
       sectionCareer: 'Career',
@@ -2003,6 +2327,20 @@ export const messages = {
       aquarius: 'Водолій',
       pisces: 'Риби',
     },
+    zodiacLocative: {
+      aries: 'Овні',
+      taurus: 'Тельці',
+      gemini: 'Близнюках',
+      cancer: 'Раку',
+      leo: 'Леві',
+      virgo: 'Діві',
+      libra: 'Терезах',
+      scorpio: 'Скорпіоні',
+      sagittarius: 'Стрільці',
+      capricorn: 'Козорозі',
+      aquarius: 'Водолії',
+      pisces: 'Рибах',
+    },
     betweenStars: 'Між зорями та тишею',
     answerAppear: 'твоя відповідь з’являється',
     startReading: 'Почати читання',
@@ -2022,8 +2360,13 @@ export const messages = {
         waningCrescent: 'Спадний серп',
       },
       planets: {
-        sun: 'Сонце', moon: 'Місяць', mars: 'Марс',
-        mercury: 'Меркурій', jupiter: 'Юпітер', venus: 'Венера', saturn: 'Сатурн',
+        sun: 'Сонце',
+        moon: 'Місяць',
+        mars: 'Марс',
+        mercury: 'Меркурій',
+        jupiter: 'Юпітер',
+        venus: 'Венера',
+        saturn: 'Сатурн',
       },
       days: 'днів',
       tomorrow: 'завтра',
@@ -2032,20 +2375,39 @@ export const messages = {
       streak: 'День',
       elements: { fire: 'Вогонь', water: 'Вода', air: 'Повітря', earth: 'Земля' },
       numerology: {
-        '1': 'Дія', '2': 'Баланс', '3': 'Вираження', '4': 'Структура',
-        '5': 'Свобода', '6': 'Гармонія', '7': 'Рефлексія', '8': 'Сила', '9': 'Завершення',
+        1: 'Дія',
+        2: 'Баланс',
+        3: 'Вираження',
+        4: 'Структура',
+        5: 'Свобода',
+        6: 'Гармонія',
+        7: 'Рефлексія',
+        8: 'Сила',
+        9: 'Завершення',
       },
       planetMeanings: {
-        sun: 'Енергія', moon: 'Емоції', mars: 'Дія',
-        mercury: 'Розум', jupiter: 'Зріст', venus: 'Любов', saturn: 'Дисципліна',
+        sun: 'Енергія',
+        moon: 'Емоції',
+        mars: 'Дія',
+        mercury: 'Розум',
+        jupiter: 'Зріст',
+        venus: 'Любов',
+        saturn: 'Дисципліна',
       },
       elementMeanings: {
-        fire: 'Пристрасть', water: 'Почуття', air: 'Думка', earth: 'Стабільність',
+        fire: 'Пристрасть',
+        water: 'Почуття',
+        air: 'Думка',
+        earth: 'Стабільність',
       },
       cards: {
-        moonPhase: 'Фаза місяця', nextMoon: 'До повні', dayRuler: 'Планета дня', remaining: 'залишилось',
-        sunPath: 'Шлях Сонця', moonEnergy: 'Енергія', dayNumber: 'Число дня',
-        yourStreak: 'Серія', streakSub: 'днів поспіль', headsUp: 'Увага',
+        moonPhase: 'Фаза місяця',
+        nextMoon: 'До повні',
+        dayRuler: 'Планета дня',
+        remaining: 'залишилось',
+        sunPath: 'Шлях Сонця',
+        dayNumber: 'Число дня',
+        headsUp: 'Увага',
       },
       hint: 'Спробуй картку дня',
     },
@@ -2136,6 +2498,202 @@ export const messages = {
       slide3Alt: 'Слайд щоденних інсайтів 3',
     },
 
+    landing: {
+      astroStripLabel: 'Астроогляд',
+      phrases: [
+        'Тихий знак вже близько',
+        'Зорі складаються',
+        'Сьогодні є підказка',
+        'Витягни карту — відчуй правду',
+        'Слухай, що відгукується',
+        'Інтуїція вже знає',
+        'Ясність ближче, ніж здається',
+        'Довірся моменту',
+        'Знак — у дрібницях',
+        'Послання вже поруч',
+        'Нехай це розгорнеться',
+        'Йди за тим, що відчувається правдою',
+        'Легкий поштовх уперед',
+        'Твій наступний крок простий',
+        'Все тихо стає на місце',
+        'Твоє питання має напрямок',
+        'М’яка істина відкривається',
+        'Відповідь поруч',
+        'Тримай питання легко',
+        'Подивись уважніше',
+        'Малий зсув змінює все',
+        'Твоя енергія говорить',
+        'Читай момент',
+        'Нехай ніч веде тебе',
+        'Довірся тому, що відчувається правильним',
+      ],
+      greetings: {
+        night: 'Доброї ночі',
+        morning: 'Доброго ранку',
+        day: 'Добрий день',
+        evening: 'Добрий вечір',
+      },
+      hero: {
+        ariaOpen: 'Відкрити значення карти дня',
+        ariaReveal: 'Розкрити карту дня',
+        eyebrow: 'КАРТА ДНЯ',
+        readInterpretation: 'Читати значення',
+        revealCard: 'Розкрити карту',
+      },
+      zodiacInsight: {
+        eyebrow: 'СЬОГОДНІ ДЛЯ ТВОГО ЗНАКУ',
+        fallbackEyebrow: 'ЗОДІАКАЛЬНИЙ PREVIEW НА СЬОГОДНІ',
+        fallbackTitle: 'Зодіакальний preview на сьогодні',
+        fallbackTheme: 'Гороскоп',
+        fallbackPreview:
+          'Відкрий гороскоп, щоб швидко побачити фокус дня в темах енергії, кохання або карʼєри.',
+        themes: {
+          energy: 'Енергія',
+          love: 'Кохання',
+          career: 'Карʼєра',
+        },
+      },
+      focusToday: {
+        title: 'Фокус дня',
+        compactCta: 'Відкрити гороскоп',
+        fallbackKnownSign: 'Відкрий гороскоп, щоб побачити фокус цього дня.',
+        fallbackMissingSign: 'Відкрий Гороскоп і обери свій знак, щоб бачити фокус дня.',
+      },
+      progress: {
+        card: 'Карта',
+        horoscope: 'Гороскоп',
+        tarot: 'Таро',
+        summaryStart: 'Почни ритуал на сьогодні',
+        summaryOneDone: '1 крок уже зроблено',
+        summaryOneLeft: 'Залишився 1 крок',
+        summaryInProgress: 'Ритуал на сьогодні триває',
+        summaryComplete: 'Ритуал на сьогодні завершено',
+        done: 'Готово',
+        next: 'Далі',
+      },
+      streak: {
+        suffix: 'поспіль',
+      },
+      dayForms: {
+        one: 'день',
+        few: 'дні',
+        many: 'днів',
+        other: 'днів',
+      },
+      sheet: {
+        factsTitle: 'Факти',
+        todayTitle: 'На сьогодні',
+        labels: {
+          lunar: 'Місячний ритм',
+        },
+        titles: {
+          moon: 'Місячний фон дня',
+          lunar: 'Календар повні',
+          planet: 'Ритм цього дня',
+          sun: 'Сезон Сонця',
+          element: 'Елемент настрою',
+          number: 'Код дати',
+          streak: 'Ритм практики',
+          retro: 'Статус Меркурія',
+        },
+        subtitles: {
+          moon: 'Що формує емоційний тон',
+          sun: 'Ширший фон цього періоду',
+          element: 'Звідки береться цей тон',
+          streak: 'Що вже зроблено сьогодні',
+          retro: 'Що саме означає ретроградність',
+        },
+        summaries: {
+          moon: 'Фаза показує місце в циклі, а знак Місяця показує, яким способом цей фон проживається.',
+          lunar:
+            'Ця картка чисто календарна: вона потрібна, щоб бачити дистанцію до повні, а не емоційний тон дня.',
+          planet: 'Керівник дня дає загальний ритм, але не замінює ні гороскоп, ні карту дня.',
+          sun: 'Сонце тут показує не “настрій на сьогодні”, а сезонний фон, який тримається довше.',
+          element:
+            'Елемент показує тип реакції дня: емоційний, ментальний, практичний або імпульсивний.',
+          streak:
+            'Ця картка не астрологічна: вона показує, як ти реально взаємодієш з апкою сьогодні.',
+          retro: 'Ця картка не про страх, а про те, на яких темах дня варто бути уважнішим.',
+        },
+        planetDomains: {
+          sun: 'видимість, воля, самовираження',
+          moon: 'настрій, побут, емоційний ритм',
+          mars: 'дія, імпульс, напруга',
+          mercury: 'слова, логістика, повідомлення',
+          jupiter: 'сенс, масштаб, перспектива',
+          venus: 'стосунки, смак, гармонія',
+          saturn: 'структура, межі, відповідальність',
+        },
+        elementDomains: {
+          fire: 'дія і швидка реакція',
+          water: 'емоції та інтуїція',
+          air: 'думки та комунікація',
+          earth: 'стабільність і практичність',
+        },
+        modalities: {
+          aries: 'кардинальний',
+          cancer: 'кардинальний',
+          libra: 'кардинальний',
+          capricorn: 'кардинальний',
+          taurus: 'фіксований',
+          leo: 'фіксований',
+          scorpio: 'фіксований',
+          aquarius: 'фіксований',
+          gemini: 'мутабельний',
+          virgo: 'мутабельний',
+          sagittarius: 'мутабельний',
+          pisces: 'мутабельний',
+        },
+        numerologySummary: {
+          1: 'Число 1 підсвічує старт, вибір напряму і самостійність.',
+          2: 'Число 2 підсвічує баланс, партнерство і тонке налаштування.',
+          3: 'Число 3 підсвічує вираження, рух і комунікацію.',
+          4: 'Число 4 підсвічує структуру, порядок і форму.',
+          5: 'Число 5 підсвічує зміни, рух і гнучкість.',
+          6: 'Число 6 підсвічує турботу, близькість і гармонію.',
+          7: 'Число 7 підсвічує спостереження, аналіз і тишу.',
+          8: 'Число 8 підсвічує силу, результат і концентрацію.',
+          9: 'Число 9 підсвічує завершення, відпускання і підсумок.',
+        },
+        facts: {
+          moonIllumination: 'Освітленість диска Місяця',
+          moonMoved: 'Місяць пройшов',
+          moonMovedConnector: 'у знаку',
+          signModality: 'Модальність знаку',
+          nextFullMoon: 'Наступна повня',
+          atTime: 'о',
+          timeLeft: 'До неї залишилось',
+          hoursFromNow: 'Годин від зараз приблизно',
+          dayRuler: 'Керівна планета дня',
+          classicalLink: 'У класичній астрології вона відповідає за',
+          weekday: 'День тижня',
+          sunElementConnector: '— це',
+          sunElementSuffix: 'знак',
+          daysUntilNextSign: 'До переходу Сонця в наступний знак приблизно',
+          elementSigns: 'До цієї стихії входять знаки',
+          elementTopics: 'Для цієї стихії типові теми',
+          elementLayer: 'Це окремий шар від фази Місяця: стихія показує стиль реакції.',
+          formula: 'Формула',
+          numberKey: 'Ключ числа',
+          currentStreak: 'Поточна серія',
+          dailyCardToday: 'Карта дня сьогодні',
+          horoscopeToday: 'Гороскоп сьогодні',
+          tarotToday: 'Таро сьогодні',
+          retrogradeMeaning: 'Ретроградність означає видимий з Землі зворотний рух планети.',
+          mercuryTradition:
+            'Меркурій у традиції пов’язаний із повідомленнями, дорогами і деталями.',
+          currentRetroStatus: 'Поточний статус: ретроградний рух активний.',
+        },
+        actions: {
+          openHoroscope: 'Відкрити гороскоп',
+        },
+        yesNo: {
+          yes: 'так',
+          no: 'ні',
+        },
+      },
+    },
+
     auth: {
       loginAction: 'Увійти',
       signUpAction: 'Зареєструватися',
@@ -2154,6 +2712,7 @@ export const messages = {
       codeSent: 'Ми надіслали 6-значний код підтвердження на вашу пошту',
       codeResent: 'Ми щойно надіслали код повторно. Перевірте пошту ще раз.',
       loginHelper: 'Надішлемо 6-значний код на вашу пошту.',
+      signUpHelper: 'Почни з email. Дату народження додаси пізніше для персонального гороскопу.',
       wrongOrExpiredCode: 'Код неправильний або прострочений. Спробуйте ще раз.',
       fillAllFields: 'Будь ласка, заповніть усі поля правильно.',
     },
@@ -2247,6 +2806,7 @@ export const messages = {
     nav: {
       bottom: 'Нижня навігація',
       more: 'Ще',
+      home: 'Головна',
       menu: 'Меню',
       daily: 'Карта дня',
       myDay: 'Мій день',
@@ -2295,11 +2855,9 @@ export const messages = {
         heroInProgressSubtitle:
           'Заверши наступний крок ритуалу, щоб відкрити сьогоднішню нагороду.',
         heroReadyTitle: 'Нагорода на сьогодні відкрита',
-        heroReadySubtitle:
-          'Класний темп. Забери нагороду зараз і тримай ритм завтра.',
+        heroReadySubtitle: 'Класний темп. Забери нагороду зараз і тримай ритм завтра.',
         heroClaimedTitle: 'Нагорода отримана. Потік активний',
-        heroClaimedSubtitle:
-          'Сильна стабільність. Продовж ланцюжок і відкривай кращі нагороди.',
+        heroClaimedSubtitle: 'Сильна стабільність. Продовж ланцюжок і відкривай кращі нагороди.',
         pointsLabel: 'бал',
         rewardProgressLabel: 'Прогрес до нагороди',
         ctaContinueRitual: 'Продовжити ритуал',
@@ -2343,37 +2901,96 @@ export const messages = {
 
     compatibilityPage: {
       title: 'Сумісність',
-      subtitle: 'Відчуй резонанс двох знаків',
-      sections: {
-        match: 'Обери знаки',
-        preview: 'Попередній перегляд',
-      },
+      subtitle: 'Більш ческе sign-level читання для двох людей.',
+      heroEyebrow: 'Інсайт стосунків',
+      heroTitle: 'Порівняй два сонячні знаки',
+      heroText:
+        'Обери свій знак і знак іншої людини, щоб побачити базовий емоційний тон, ритм і точки напруги в цій парі.',
       you: 'Ти',
       partner: 'Партнер',
-      pickSign: 'Обери знак',
-      previewTitle: 'Космічний резонанс',
-      previewText: 'Обери два знаки, щоб відкрити їх взаємодію.',
-      cta: 'Показати сумісність',
-      ctaUpdate: 'Оновити сумісність',
-      resultTitle: 'Сумісність: {a} + {b}',
-      resultSub: 'На основі стихій та модальностей.',
+      pickPlaceholder: 'Обрати знак',
+      swap: 'Поміняти знаки місцями',
+      recentTitle: 'Останні пари',
+      previewEyebrow: 'Огляд по сонячних знаках',
+      emptyTitle: 'Обери два знаки',
+      emptyText:
+        'Вибери обидва знаки, щоб побачити grounded overview: що тут іде легше, де частіше з’являється напруга і що допомагає цій парі працювати краще.',
+      detailsCta: 'Як працює це читання',
+      detailsTitle: 'Деталі сумісності',
+      confirm: 'OK',
+      pickYou: 'Обери свій знак',
+      pickPartner: 'Обери інший знак',
       elementLine: '{a} зустрічає {b}',
-      insightLabel: 'Ключова порада',
-      balanceLabel: 'Баланс стихій',
-      summary: {
-        high: 'Сильний резонанс і природний потік.',
-        mid: 'Хороший потенціал із зонами напруги.',
-        low: 'Високий контраст потребує ясності.',
+      scope: {
+        badge: 'Sign-level',
+        title: 'Що це за читання',
+        text: 'Це широкий огляд по сонячних знаках. Він використовує лише стихію і модальність, тому має бути підказкою для роздумів, а не фінальним вердиктом.',
       },
-      confidence: {
-        high: 'Висока довіра',
-        mid: 'Баланс',
-        low: 'Чутливий',
+      overview: {
+        easy: {
+          title: 'Легкий потік',
+          summary:
+            'У цієї пари зазвичай є природний міст. Зв’язок частіше рухається з меншим тертям, коли обидва лишаються уважними одне до одного.',
+        },
+        mixed: {
+          title: 'Змішано, але робоче',
+          summary:
+            'Тут є реальний потенціал, але парі краще, коли очікування і темп названі прямо.',
+        },
+        intentional: {
+          title: 'Потребує наміру',
+          summary:
+            'Ця пара теж може працювати, але їй потрібні ясніша комунікація, більше терпіння і менше припущень.',
+        },
       },
-      spheres: {
-        emotion: 'Емоції',
-        communication: 'Комунікація',
-        stability: 'Стабільність',
+      facts: {
+        elements: 'Стихії',
+        pace: 'Ритм',
+        reading: 'Що використано',
+        readingValue: 'Сонячний знак, стихія, модальність',
+      },
+      advice: {
+        chemistry: 'Що працює',
+        tension: 'Головна напруга',
+        approach: 'Найкращий підхід',
+      },
+      dynamicTitle: 'Динаміка пари',
+      dynamicLabels: {
+        element: 'Динаміка стихій',
+        pace: 'Ритм стосунків',
+        support: 'Що допомагає цій парі',
+      },
+      strengths: {
+        air_air: 'Сильна ментальна хімія й легка розмова швидко запускають зв’язок.',
+        air_earth:
+          'Ідеї зустрічаються зі структурою, тому ця пара може втілювати думки в реальність.',
+        air_fire: 'Між цими знаками є іскра, рух і сильне взаємне натхнення.',
+        air_water: 'Ця пара зводить думку й почуття разом, коли обидві сторони не поспішають.',
+        earth_earth: 'Стабільність і довіра тут ростуть природно й стають сильною базою.',
+        earth_fire: 'Один приносить драйв, інший перетворює його на реальний результат.',
+        earth_water: 'Турбота й стабільність добре підтримують одна одну в цій парі.',
+        fire_fire: 'Висока енергія й взаємна сміливість швидко роблять цю пару живою.',
+        fire_water: 'Інтенсивність і чутливість створюють глибину, якщо тон лишається м’яким.',
+        water_water: 'Тут природно багато інтуїції, емоційної глибини й чутливості.',
+      },
+      warnings: {
+        cardinal_cardinal:
+          'Обидва хочуть вести. Рішення працюють краще, коли контроль ділиться з самого початку.',
+        cardinal_fixed:
+          'Один штовхає вперед, інший стабілізує. Тут темп важливіший за інтенсивність.',
+        cardinal_mutable:
+          'Пара рухається легко, але напрямок має лишатися ясним, інакше енергія розсіюється.',
+        fixed_fixed: 'Тут є сильна вірність, але вперті моменти можуть заморожувати зв’язок.',
+        fixed_mutable: 'Головна напруга тут у різному темпі: один тримає, інший змінює.',
+        mutable_mutable:
+          'Тут є гнучкість і легкість, але парі потрібна структура, щоб не втрачати ґрунт.',
+      },
+      approaches: {
+        easy: 'Спирайтесь на те, що вже працює, але тримайте зв’язок усвідомленим, щоб легкість не стала автопілотом.',
+        mixed:
+          'Ця пара працює найкраще, коли очікування озвучені прямо, а обидві сторони підлаштовують темп замість здогадок.',
+        intentional:
+          'Сповільніть динаміку, рано називайте відмінності й сприймайте ясність як частину турботи, а не конфлікту.',
       },
       elements: {
         fire: 'Вогонь',
@@ -2412,41 +3029,49 @@ export const messages = {
         fire_water: 'Повага до чутливості знімає напругу.',
         water_water: 'Межі захищають вашу глибину.',
       },
-      detailsCta: 'Деталі',
-      detailsTitle: 'Як це рахується',
-      details: {
-        signs: 'Знаки',
-        elements: 'Стихії',
-        modalities: 'Модальності',
-        elementScore: 'Стихійний бал',
-        modalityScore: 'Модальний бал',
-        final: 'Підсумок',
-        formula: 'Формула',
-        formulaText: 'Стихійний бал (65%) + модальний бал (35%).',
-        modalityNote:
-          'Модальність показує темп знаку: кардинальний (починає), фіксований (утримує), мутабельний (адаптується).',
-        elementPair: 'Пара стихій',
-        modalityPair: 'Пара модальностей',
-        resultSummary: 'Підсумок',
-        resultExplain: 'Цей бал поєднує хімію стихій із темпом, у якому рухаються знаки.',
-        elementMatrix: 'Матриця стихій',
-        modalityMatrix: 'Матриця модальностей',
-        matrixHint: 'Твоя пара підсвічена. Значення — це бал кожної комбінації.',
-        tabs: {
-          basic: 'База',
-          extended: 'Розширено',
-          matrix: 'Матриця',
-        },
-        pairLabel: 'Обрана пара',
-      },
       modalityTexts: {
         cardinal_cardinal:
-          'Два ініціатори: швидкий старт і сильний імпульс. Важливо узгодити цілі.',
+          'Два ініціатори: швидкий старт і сильний імпульс. Узгодьте цілі рано, щоб рух не перетворився на суперництво.',
         fixed_fixed: 'Стабільні й віддані, але вперті. Допомагає терпіння та повага.',
         mutable_mutable: 'Гнучкі та допитливі. Потрібна структура, щоб не розпорошуватись.',
         cardinal_fixed: 'Той, хто стартує, і той, хто утримує. Узгодьте темп і контроль.',
         cardinal_mutable: 'Рух і адаптація. Працює добре з чітким напрямом.',
-        fixed_mutable: 'Стабільність зустрічає зміни. Довіра плюс простір для росту.',
+        fixed_mutable: 'Стабільність зустрічає зміни. Будуйте довіру, залишаючи простір для росту.',
+      },
+      details: {
+        tabs: {
+          model: 'Модель',
+          chemistry: 'Хімія',
+          pace: 'Ритм',
+        },
+        sections: {
+          model: 'Модель читання',
+          whatUses: 'Що воно використовує',
+          whatMisses: 'Чого воно не використовує',
+          selectedPair: 'Обрана пара',
+          elementDynamic: 'Динаміка стихій',
+          support: 'Що підтримує',
+          rhythm: 'Ритм стосунків',
+          watch: 'На що дивитись',
+          approach: 'Найкращий підхід',
+          transparency: 'Прозорість',
+        },
+        modelTitle: 'Ця сторінка дає sign-level огляд, а не персональну синастрію.',
+        modelText:
+          'Читання порівнює два сонячні знаки через хімію стихій і ритм модальностей. Це корисно для широких патернів, але недостатньо конкретно для дуже персональних висновків.',
+        useList: {
+          sun: 'Сонячні знаки обох людей',
+          element: 'Те, як зазвичай взаємодіють дві стихії',
+          modality: 'Те, як два знаки зазвичай рухаються, починають або адаптуються',
+        },
+        missList: {
+          moon: 'Місяць і емоційні деталі натальної карти',
+          rising: 'Асцендент і положення домів',
+          venusMars: 'Венера, Марс і синастрія потягу',
+          birthTime: 'Час народження і точний таймінг карти',
+        },
+        transparencyText:
+          'Це читання навмисно широке. Воно має допомагати людині подумати про динаміку стосунків, а не вірити, що апка може визначити весь зв’язок лише за двома днями народження.',
       },
     },
 
@@ -2460,22 +3085,22 @@ export const messages = {
           purchase: 'Покупка',
         },
         readings: {
-          free: 'Історія розкладів не зберігається.',
+          free: 'Сьогоднішній розклад не зберігається в історії.',
           premium: 'Повна стрічка всіх розкладів: сесії, формати і карти.',
           purchase: 'Підписка Premium з історією розкладів і розширеним доступом.',
         },
         compatibility: {
-          free: 'Повний звіт сумісності недоступний.',
+          free: 'Лише preview. Повний звіт сумісності доступний у Premium.',
           premium: 'Повний аналіз пари з розбивкою балів і практичними підказками.',
           purchase: 'Підписка Premium з інсайтами сумісності і розширеним розбором.',
         },
         horoscopeLove: {
-          free: 'Доступна лише щоденна тема духу.',
+          free: 'Доступна лише щоденна тема енергії.',
           premium: 'Щоденні інсайти про стосунки і глибша емоційна динаміка.',
           purchase: 'Підписка Premium з усіма щоденними темами гороскопу.',
         },
         horoscopeCareer: {
-          free: 'Доступна лише щоденна тема духу.',
+          free: 'Доступна лише щоденна тема енергії.',
           premium: 'Щоденний карʼєрний фокус і чіткі наступні кроки.',
           purchase: 'Підписка Premium з усіма щоденними темами гороскопу.',
         },
@@ -2483,16 +3108,16 @@ export const messages = {
       horoscope: {
         love: {
           title: 'Тема кохання доступна в Premium',
-          text: 'Відкрий Premium, щоб щодня отримувати тему Кохання і нові інсайти про стосунки.',
+          text: 'У free доступна щоденна тема енергії. Premium додає щоденний погляд на кохання і глибший контекст стосунків.',
         },
         career: {
           title: 'Тема карʼєри доступна в Premium',
-          text: 'Відкрий Premium, щоб щодня бачити тему Карʼєри і практичні наступні кроки.',
+          text: 'У free доступна щоденна тема енергії. Premium додає щоденний карʼєрний фокус і практичні наступні кроки.',
         },
       },
       compatibility: {
         title: 'Повний звіт сумісності доступний у Premium',
-        text: 'У free немає повного звіту сумісності. Premium відкриває повний аналіз пари з розбивкою балів і практичним напрямом.',
+        text: 'У free доступний лише compatibility preview. Premium відкриває повний аналіз пари з розбивкою балів і практичним напрямом.',
         bullets: {
           report: 'Детальний звіт для будь-якої пари знаків з сильними і слабкими зонами.',
           scores: 'Повний розклад по сферах: емоції, комунікація та стабільність.',
@@ -2501,7 +3126,7 @@ export const messages = {
       },
       readings: {
         title: 'Повна історія розкладів доступна в Premium',
-        text: 'У free історія розкладів не зберігається. Premium зберігає всі сесії таро в єдину стрічку.',
+        text: 'Free все ще дає цінність сьогоднішнього таро, але не зберігає історію розкладів. Premium зберігає кожну сесію таро в єдину стрічку.',
         bullets: {
           timeline: 'Усі минулі розклади в одному місці: дата, формат і карти.',
           search: 'Швидко повертайся до важливих сесій і запитів.',
@@ -2509,7 +3134,8 @@ export const messages = {
         },
       },
       spreads: {
-        notify: 'У free доступний розклад на 1 карту. Premium відкриває розклади на 3 і 5 карт із глибшою інтерпретацією.',
+        notify:
+          'У free доступний розклад на 1 карту. Premium відкриває розклади на 3 і 5 карт із глибшою інтерпретацією.',
       },
       tarot: {
         dailyLimit:
@@ -2561,7 +3187,8 @@ export const messages = {
 
     premiumPage: {
       title: 'Преміум',
-      subtitle: 'Усі Premium-можливості входять у кожен план. Обери щомісячну або річну оплату.',
+      subtitle:
+        'Вийди за межі базового щоденного ритуалу: більше глибини, без лімітів у таро і одна стрічка для патернів.',
       header: {
         kicker: 'Відкрий повний доступ',
       },
@@ -2578,6 +3205,25 @@ export const messages = {
         'Безкоштовно ти отримуєш щоденний ритуал. Premium додає глибший контекст і більш персональну рефлексію.',
       whyLead:
         'Якщо ти регулярно користуєшся застосунком, Premium допомагає перетворити розклади на стабільну практику самоспостереження.',
+      outcome: {
+        title: 'Одна глибша щоденна практика рефлексії',
+        text: 'Premium переводить Arcana з короткого daily check-in у повніший ритуал рефлексії: більше глибини під час читання, більше тяглості при поверненні і більше контексту, коли однієї карти замало.',
+        note: 'Усе нижче працює на цей один результат. План змінює лише період оплати, а не набір можливостей.',
+        points: {
+          depth: {
+            title: 'Більше глибини в кожному читанні',
+            text: 'Необмежене таро, більші розклади і глибша інтерпретація, коли короткого висновку вже замало.',
+          },
+          continuity: {
+            title: 'Більше тяглості з часом',
+            text: 'Збережені читання тримають сесії в одній стрічці, тому повторювані теми легше помітити.',
+          },
+          range: {
+            title: 'Більше контексту в усьому застосунку',
+            text: 'Кохання, карʼєра і сумісність додають нові кути, коли однієї теми енергії вже недостатньо.',
+          },
+        },
+      },
       sections: {
         free: 'У вільному доступі',
         premium: 'У підписці Premium',
@@ -2598,7 +3244,7 @@ export const messages = {
       },
       free: {
         dailyCard: 'Карта дня',
-        horoscope: 'Щоденний гороскоп: тема духу',
+        horoscope: 'Щоденний гороскоп: тема енергії',
         tarotOne: 'Таро: 1 розклад на день (1 карта)',
         cardsLibrary: 'Бібліотека карт',
         zodiacGuide: 'Гід по знаках зодіаку',
@@ -2618,7 +3264,7 @@ export const messages = {
         },
         horoscopeThemes: {
           title: 'Усі теми гороскопу щодня',
-          text: 'Відкрий кохання і карʼєру щодня, а не лише безкоштовну тему духу.',
+          text: 'Відкрий кохання і карʼєру щодня, а не лише безкоштовну тему енергії.',
         },
         spreads: {
           title: 'Розклади на 3 і 5 карт',

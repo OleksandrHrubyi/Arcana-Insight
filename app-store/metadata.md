@@ -37,9 +37,9 @@ Daily Tarot & Horoscope
 
 ### Promotional Text *(updateable without review — change seasonally)*
 ```
-New: Personal horoscope based on your birth date. Draw your daily card and start the day with intention.
+New: Add your birth date to unlock a Premium personal horoscope. Draw your daily card and start the day with intention.
 ```
-(103 / 170 chars)
+(120 / 170 chars)
 
 ### Keywords *(100 chars max, no spaces around commas)*
 ```
@@ -58,10 +58,10 @@ Arcana Insight is a daily self-reflection app built around tarot cards, astrolog
 Each morning, a tarot card is drawn for you — unique to your day. Open it to read its meaning, orientation (upright or reversed), and a practical reflection for the hours ahead. Your card stays the same all day, so you can return to it anytime.
 
 ── HOROSCOPE ──
-Read your daily horoscope across three themes: love, career, and inner life. Each reading is freshly generated every day and shaped by the actual planetary positions — moon phase, sun sign, planetary aspects.
+Read your daily horoscope with a free energy reading every day. Premium adds love and career themes. Each reading is refreshed daily and shaped by the current astronomical context — moon phase, sun sign, and planetary aspects.
 
 ── PERSONAL HOROSCOPE ──
-Add your birth date and unlock a personalised reading written specifically for your zodiac sign. It goes deeper than the general forecast and speaks to your sign's traits and current energy.
+Create an account, add your birth date, and unlock a Premium personalised reading written for your zodiac sign. It goes deeper than the free daily horoscope and focuses on your sign's traits and current energy.
 
 ── MOON & ASTRO CONTEXT ──
 See today's moon phase, the sign the moon is transiting, the planetary day ruler, and real-time astronomical context — all calculated for the current date. No guesswork, no generic copy.
@@ -107,9 +107,9 @@ Arcana Insight
 
 ### Promotional Text
 ```
-Нове: особистий гороскоп за датою народження. Карта дня, місячний цикл і ранковий намір — щодня.
+Нове: додай дату народження, щоб відкрити Преміум-гороскоп. Карта дня, місячний цикл і ранковий намір — щодня.
 ```
-(96 / 170 chars)
+(117 / 170 chars)
 
 ### Keywords
 ```
@@ -126,10 +126,10 @@ Arcana Insight — додаток для щоденної рефлексії н�
 Щоранку для тебе витягується карта таро — унікальна для цього дня. Відкрий її, щоб прочитати значення, орієнтацію (пряма або перевернута) і практичну підказку на день. Карта залишається незмінною весь день.
 
 ── ГОРОСКОП ──
-Читай щоденний гороскоп у трьох темах: кохання, кар'єра та внутрішній стан. Кожен текст генерується заново кожного дня на основі реальних астрологічних позицій — фаза місяця, знак сонця, аспекти планет.
+Читай щоденний гороскоп із безкоштовною темою енергії. Преміум відкриває теми кохання та кар'єри. Кожен текст оновлюється щодня на основі поточного астрономічного контексту — фаза місяця, знак сонця, аспекти планет.
 
 ── ОСОБИСТИЙ ГОРОСКОП ──
-Додай дату народження і отримай персоналізоване читання, написане спеціально для твого знаку зодіаку. Глибше і точніше, ніж загальний прогноз.
+Створи акаунт, додай дату народження і відкрий Преміум-читання, написане спеціально для твого знаку зодіаку. Воно глибше за безкоштовний щоденний гороскоп і сфокусоване на рисах твого знаку та поточній енергії.
 
 ── МІСЯЦЬ І АСТРО-КОНТЕКСТ ──
 Бачиш фазу місяця, транзит знаку, правителя планетарного дня та реальний астрологічний контекст — розраховується для поточної дати.
@@ -183,7 +183,7 @@ Apple requires **at least iPhone 6.9"** (1320 × 2868 px). Recommended: also 6.5
 | Age Rating | 4+ |
 | Privacy Policy URL | `https://oleksandrhrubyi.github.io/Arcana-Insight/privacy-policy.html` |
 | Support URL | `https://oleksandrhrubyi.github.io/Arcana-Insight/support.html` |
-| Copyright | © 2025 Arcana Insight |
+| Copyright | © 2026 Arcana Insight |
 
 ---
 

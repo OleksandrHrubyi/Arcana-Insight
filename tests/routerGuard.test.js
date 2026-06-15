@@ -102,3 +102,11 @@ test('router guard prioritizes onboarding redirect over auth redirect', async ()
     query: { from: '/account' },
   })
 })
+
+test('dev home qa bypass activates only for qa=home searches', async () => {
+  const { isDevHomeQaBypassActive } = await importModule('src/router/guard.js')
+
+  assert.equal(isDevHomeQaBypassActive({ isDev: true, search: '?qa=home&view=revealed' }), true)
+  assert.equal(isDevHomeQaBypassActive({ isDev: true, search: '?qa=other' }), false)
+  assert.equal(isDevHomeQaBypassActive({ isDev: false, search: '?qa=home' }), false)
+})

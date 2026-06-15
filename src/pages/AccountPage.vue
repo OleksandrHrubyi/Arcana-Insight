@@ -264,7 +264,6 @@ export default defineComponent({
     editTitle() {
       const map = {
         name: 'fields.name',
-        email: 'fields.email',
         date_of_birth: 'fields.dateOfBirth',
       }
       return this.tt(map[this.editField] || 'account')
@@ -276,17 +275,14 @@ export default defineComponent({
     },
 
     editType() {
-      if (this.editField === 'email') return 'email'
       return 'text'
     },
 
     editInputMode() {
-      if (this.editField === 'email') return 'email'
       return 'text'
     },
 
     editAutocomplete() {
-      if (this.editField === 'email') return 'email'
       if (this.editField === 'name') return 'name'
       return 'off'
     },
@@ -599,7 +595,7 @@ export default defineComponent({
     openEdit(field) {
       this.hapticTap()
       this.editField = field
-      this.draftValue = this.profile[field] || (field === 'email' ? this.userEmail : '')
+      this.draftValue = this.profile[field] || ''
       this.editError = ''
       this.editOpen = true
     },
@@ -614,23 +610,9 @@ export default defineComponent({
       if (this.editSaving) return
       this.editSaving = true
       const value = (this.draftValue || '').trim()
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-      // Email editing is disabled — changes require auth-level verification (not implemented)
-      if (this.editField === 'email') {
-        this.editSaving = false
-        this.editOpen = false
-        return
-      }
 
       if (this.editField === 'name' && value.length < 2) {
         this.editError = this.tt('errors.invalidName')
-        this.editSaving = false
-        return
-      }
-
-      if (this.editField === 'email' && !emailPattern.test(value)) {
-        this.editError = this.tt('errors.invalidEmail')
         this.editSaving = false
         return
       }
@@ -655,10 +637,6 @@ export default defineComponent({
           this.authStore.flushProfileQueue(),
           new Promise((resolve) => setTimeout(resolve, 8000)),
         ])
-
-        if (this.editField === 'email') {
-          this.userEmail = value
-        }
 
         this.profileLoaded = true
       } catch (err) {

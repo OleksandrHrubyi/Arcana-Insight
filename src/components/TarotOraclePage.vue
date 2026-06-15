@@ -298,6 +298,7 @@ import {
 import { getTarotReading } from 'src/services/tarotOracle'
 import { getUserNative, insertTarotReading } from 'src/services/supabaseNative'
 import { analytics } from 'src/services/analytics'
+import { PAYWALL_ENTRY_POINTS } from 'src/constants/analyticsEvents'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
 import { useAuthStore } from 'stores/authStore.js'
 
@@ -478,7 +479,7 @@ const notifyFreeTarotDailyLimit = () => {
         label: i18nT(currentLang.value, 'premiumAccess.cta'),
         color: 'primary',
         handler: () => {
-          void openPremiumFromUpsell('tarot_daily_limit')
+          void openPremiumFromUpsell(PAYWALL_ENTRY_POINTS.tarotDailyLimit)
         },
       },
     ],
@@ -500,23 +501,23 @@ const notifyPremiumSpreadLock = () => {
         label: i18nT(currentLang.value, 'premiumAccess.cta'),
         color: 'primary',
         handler: () => {
-          void openPremiumFromUpsell('tarot_spread_lock')
+          void openPremiumFromUpsell(PAYWALL_ENTRY_POINTS.tarotSpreadLock)
         },
       },
     ],
   })
 }
 
-const openPremiumFromUpsell = async (source) => {
-  void analytics.logEvent('paywall_entry_secondary', {
-    source,
-    entry: 'notify_action',
+const openPremiumFromUpsell = async (point) => {
+  void analytics.logEvent(point.event, {
+    source: point.source,
+    entry: point.entry,
   })
   await router.push({
     name: 'premium',
     query: {
-      source,
-      entry: 'notify_action',
+      source: point.source,
+      entry: point.entry,
     },
   }).catch(() => {})
 }

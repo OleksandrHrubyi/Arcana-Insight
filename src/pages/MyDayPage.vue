@@ -100,18 +100,6 @@
       </div>
 
       <!-- 5. Guidance cards -->
-      <div class="myday-guidance myday-anim" style="--d:4">
-        <div class="myday-guidance__item">
-          <span class="myday-guidance__tag">{{ copy.labels.watch }}</span>
-          <span class="myday-guidance__body">{{ watchAdvice }}</span>
-        </div>
-        <div class="myday-guidance__item">
-          <span class="myday-guidance__tag">{{ copy.labels.action }}</span>
-          <span class="myday-guidance__body">{{ actionAdvice }}</span>
-        </div>
-      </div>
-
-      <!-- 6. Horoscope (auth-aware) -->
       <button
         v-if="isLoggedIn && horoscopeSummary"
         type="button"
@@ -154,13 +142,24 @@
         <q-icon class="myday-horo__chevron" name="chevron_right" size="14px" />
       </button>
 
-      <!-- 7. Daily reflection prompt -->
+      <div class="myday-guidance myday-anim" style="--d:4">
+        <div class="myday-guidance__item">
+          <span class="myday-guidance__tag">{{ copy.labels.watch }}</span>
+          <span class="myday-guidance__body">{{ watchAdvice }}</span>
+        </div>
+        <div class="myday-guidance__item">
+          <span class="myday-guidance__tag">{{ copy.labels.action }}</span>
+          <span class="myday-guidance__body">{{ actionAdvice }}</span>
+        </div>
+      </div>
+
+      <!-- 6. Daily reflection prompt -->
       <div class="myday-reflect myday-anim" style="--d:6">
         <span class="myday-reflect__tag">{{ moonPhaseEmoji }} {{ moonPhaseLabel }}</span>
         <span class="myday-reflect__prompt">{{ dailyPrompt }}</span>
       </div>
 
-      <!-- 8. Tarot CTA -->
+      <!-- 7. Tarot CTA -->
       <button type="button" class="myday-tarot myday-anim" :class="{ 'myday-tarot--done': hasTarotToday }" style="--d:7" @click="openTarot">
         <span class="myday-tarot__text">{{ tarotCtaText }}</span>
         <q-icon name="chevron_right" size="14px" />
@@ -920,7 +919,7 @@ onBeforeUnmount(() => {
   color: rgba(214, 225, 242, 0.54);
 }
 
-/* ── 8. Tarot CTA ────────────────────────────────────────────── */
+/* ── 7. Tarot CTA ────────────────────────────────────────────── */
 .myday-tarot {
   width: 100%; padding: 13px 16px; border-radius: 14px; cursor: pointer;
   border: 1px solid rgba(134,177,221,0.08);

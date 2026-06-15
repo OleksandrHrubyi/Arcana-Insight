@@ -74,3 +74,13 @@ body.oracle-sheet-open .bottom-nav-wrap {
 body.energy-sheet-open .bottom-nav-wrap {
   display: none !important;
 }
+
+body.astro-sheet-open .bottom-nav-wrap {
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+body.astro-sheet-open .q-dialog__backdrop,
+body.astro-sheet-open .q-dialog__inner {
+  z-index: 10020 !important;
+}

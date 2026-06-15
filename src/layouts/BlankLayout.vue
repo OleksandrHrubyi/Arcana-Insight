@@ -17,6 +17,7 @@ export default {
     '$route'() {
       if (typeof document !== 'undefined') {
         document.body.classList.remove('hide-bottom-nav')
+        document.body.classList.remove('astro-sheet-open')
         document.body.classList.remove('settings-sheet-open')
         document.body.classList.remove('oracle-sheet-open')
         document.body.classList.remove('energy-sheet-open')

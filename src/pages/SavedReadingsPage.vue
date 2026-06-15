@@ -210,6 +210,8 @@ import { loadSavedReadingsSnapshot, EMPTY_SAVED_READINGS_STATE } from 'src/helpe
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
+import { analytics } from 'src/services/analytics'
+import { PAYWALL_ENTRY_POINTS } from 'src/constants/analyticsEvents'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
@@ -365,7 +367,12 @@ const goToLogin = async () => {
 
 const goPremium = async () => {
   await hapticTap()
-  router.push({ name: 'premium', query: { source: 'readings_lock', entry: 'secondary' } })
+  const point = PAYWALL_ENTRY_POINTS.readingsLock
+  void analytics.logEvent(point.event, {
+    source: point.source,
+    entry: point.entry,
+  })
+  router.push({ name: 'premium', query: { source: point.source, entry: point.entry } })
 }
 
 const onBack = async () => {

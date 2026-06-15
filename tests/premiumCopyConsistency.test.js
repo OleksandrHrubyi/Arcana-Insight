@@ -38,6 +38,15 @@ test('premium copy model keys exist for both locales', async () => {
     assert.equal(typeof premiumPage?.accessModel?.free, 'string')
     assert.equal(typeof premiumPage?.accessModel?.premium, 'string')
     assert.equal(typeof premiumPage?.accessModel?.purchasePrefix, 'string')
+    assert.equal(typeof premiumPage?.outcome?.title, 'string')
+    assert.equal(typeof premiumPage?.outcome?.text, 'string')
+    assert.equal(typeof premiumPage?.outcome?.note, 'string')
+    assert.equal(typeof premiumPage?.outcome?.points?.depth?.title, 'string')
+    assert.equal(typeof premiumPage?.outcome?.points?.depth?.text, 'string')
+    assert.equal(typeof premiumPage?.outcome?.points?.continuity?.title, 'string')
+    assert.equal(typeof premiumPage?.outcome?.points?.continuity?.text, 'string')
+    assert.equal(typeof premiumPage?.outcome?.points?.range?.title, 'string')
+    assert.equal(typeof premiumPage?.outcome?.points?.range?.text, 'string')
     assert.equal(typeof premiumPage?.billing?.results?.activated, 'string')
     assert.equal(typeof premiumPage?.billing?.results?.updated, 'string')
     assert.equal(typeof premiumPage?.billing?.results?.cancelled, 'string')
@@ -74,6 +83,12 @@ test('premium lock/paywall screens use shared copy model keys', () => {
   assert.match(premiumPaywall, /premiumPage\.accessModel\.free/)
   assert.match(premiumPaywall, /premiumPage\.accessModel\.premium/)
   assert.match(premiumPaywall, /premiumPage\.accessModel\.purchasePrefix/)
+  assert.match(premiumPaywall, /premiumPage\.outcome\.title/)
+  assert.match(premiumPaywall, /premiumPage\.outcome\.text/)
+  assert.match(premiumPaywall, /premiumPage\.outcome\.note/)
+  assert.match(premiumPaywall, /premiumPage\.outcome\.points\.depth\.title/)
+  assert.match(premiumPaywall, /premiumPage\.outcome\.points\.continuity\.title/)
+  assert.match(premiumPaywall, /premiumPage\.outcome\.points\.range\.title/)
   assert.match(premiumPaywall, /premiumAccess\.model\.labels\.free/)
   assert.match(premiumPaywall, /premiumAccess\.model\.labels\.premium/)
   assert.match(premiumPaywall, /premiumAccess\.model\.labels\.purchase/)
@@ -88,4 +103,73 @@ test('premium lock/paywall screens use shared copy model keys', () => {
   assert.doesNotMatch(premiumPaywall, /Purchase cancelled\./)
   assert.doesNotMatch(premiumPaywall, /Purchase restored\./)
   assert.doesNotMatch(premiumPaywall, /No active purchases found\./)
+  assert.doesNotMatch(premiumPaywall, /feat-scroll__track/)
+})
+
+test('premium copy stays aligned on compatibility preview and energy-theme wording', async () => {
+  const { messages } = await importModule('src/i18n/messages.bundle.js')
+
+  assert.equal(
+    messages.en.premiumAccess.model.compatibility.free,
+    'Preview only. Full compatibility report is in Premium.',
+  )
+  assert.equal(
+    messages.en.premiumAccess.compatibility.text,
+    'Free includes only a compatibility preview. Premium unlocks the full pair analysis with score breakdown and clear guidance.',
+  )
+  assert.equal(messages.uk.premiumAccess.model.horoscopeLove.free, 'Доступна лише щоденна тема енергії.')
+  assert.equal(messages.uk.premiumAccess.model.horoscopeCareer.free, 'Доступна лише щоденна тема енергії.')
+  assert.equal(messages.uk.premiumPage.free.horoscope, 'Щоденний гороскоп: тема енергії')
+  assert.equal(messages.en.premiumAccess.model.readings.free, 'Today’s reading is not saved to history.')
+  assert.equal(
+    messages.en.premiumAccess.readings.text,
+    'Free still gives you today’s tarot value, but it does not save reading history. Premium keeps every tarot session in one timeline.',
+  )
+  assert.equal(
+    messages.en.premiumAccess.horoscope.love.text,
+    'Free includes the daily energy theme. Premium adds a daily Love view with deeper relationship context.',
+  )
+  assert.equal(
+    messages.en.premiumAccess.horoscope.career.text,
+    'Free includes the daily energy theme. Premium adds daily Career guidance and practical next steps.',
+  )
+  assert.equal(messages.uk.premiumAccess.model.readings.free, 'Сьогоднішній розклад не зберігається в історії.')
+  assert.equal(
+    messages.uk.premiumAccess.readings.text,
+    'Free все ще дає цінність сьогоднішнього таро, але не зберігає історію розкладів. Premium зберігає кожну сесію таро в єдину стрічку.',
+  )
+
+  const premiumPaywall = readSource('src/components/main/PremiumInfoComponent.vue')
+  assert.match(premiumPaywall, /free:\s*'Preview only'/)
+  assert.match(premiumPaywall, /free:\s*'Лише preview'/)
+  assert.equal(
+    messages.en.premiumPage.outcome.title,
+    'One deeper daily reflection practice',
+  )
+  assert.equal(
+    messages.uk.premiumPage.outcome.title,
+    'Одна глибша щоденна практика рефлексії',
+  )
+
+  const compatibility = readSource('src/pages/CompatibilityPage.vue')
+  assert.match(compatibility, /Premium adds the full relationship reading/)
+  assert.match(compatibility, /Преміум відкриває повне читання сумісності/)
+})
+
+test('signup keeps birth date out of the first account step', async () => {
+  const { messages } = await importModule('src/i18n/messages.bundle.js')
+  const signUpScene = readSource('src/components/auth/SignUpScene.vue')
+
+  assert.equal(
+    messages.en.auth.signUpHelper,
+    'Start with your email. You can add your birth date later for personal horoscope.',
+  )
+  assert.equal(
+    messages.uk.auth.signUpHelper,
+    'Почни з email. Дату народження додаси пізніше для персонального гороскопу.',
+  )
+  assert.match(signUpScene, /tt\('auth\.signUpHelper'\)/)
+  assert.doesNotMatch(signUpScene, /id="signup-dob"/)
+  assert.doesNotMatch(signUpScene, /dateOfBirth:\s*this\.trimmedDateOfBirth/)
+  assert.doesNotMatch(signUpScene, /query:[\s\S]*dateOfBirth:/)
 })

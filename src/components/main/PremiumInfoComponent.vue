@@ -14,35 +14,25 @@
         <p class="premium-hero__sub">{{ tt('premiumPage.subtitle') }}</p>
       </header>
 
-      <div class="feat-scroll" role="list" :aria-label="tt('premiumPage.sections.premium')">
-        <div class="feat-scroll__track">
-          <div class="feat-scroll__group">
+      <section class="premium-card premium-card--focus">
+        <div class="premium-card__label">{{ tt('premiumPage.heroBadge') }}</div>
+        <div class="premium-focus">
+          <h2 class="premium-focus__title">{{ tt('premiumPage.outcome.title') }}</h2>
+          <p class="premium-focus__text">{{ tt('premiumPage.outcome.text') }}</p>
+          <div class="premium-focus__points" role="list" :aria-label="tt('premiumPage.sections.why')">
             <div
-              v-for="card in featureCards"
-              :key="card.titleKey"
-              class="feat-card"
+              v-for="point in outcomePoints"
+              :key="point.key"
+              class="premium-focus__point"
               role="listitem"
-              :style="{ '--fc-bg': card.bg, '--fc-border': card.border }"
             >
-              <div class="feat-card__icon">{{ card.icon }}</div>
-              <div class="feat-card__title">{{ tt(card.titleKey) }}</div>
-              <div class="feat-card__sub">{{ tt(card.subKey) }}</div>
+              <div class="premium-focus__point-title">{{ point.title }}</div>
+              <div class="premium-focus__point-text">{{ point.text }}</div>
             </div>
           </div>
-          <div class="feat-scroll__group" aria-hidden="true">
-            <div
-              v-for="card in featureCards"
-              :key="`duplicate-${card.titleKey}`"
-              class="feat-card"
-              :style="{ '--fc-bg': card.bg, '--fc-border': card.border }"
-            >
-              <div class="feat-card__icon">{{ card.icon }}</div>
-              <div class="feat-card__title">{{ tt(card.titleKey) }}</div>
-              <div class="feat-card__sub">{{ tt(card.subKey) }}</div>
-            </div>
-          </div>
+          <p class="premium-focus__note">{{ tt('premiumPage.outcome.note') }}</p>
         </div>
-      </div>
+      </section>
 
       <section class="premium-card premium-card--plans">
         <div class="premium-card__label">{{ tt('premiumPage.sections.billing') }}</div>
@@ -225,50 +215,23 @@ const handleCompareCardScroll = () => {
   })
 }
 
-const featureCards = [
+const outcomePoints = computed(() => [
   {
-    icon: '\uD83C\uDFB4',
-    titleKey: 'premiumPage.feat.tarot',
-    subKey: 'premiumPage.feat.tarotSub',
-    bg: 'rgba(147,130,255,0.1)',
-    border: 'rgba(147,130,255,0.22)',
+    key: 'depth',
+    title: tt('premiumPage.outcome.points.depth.title'),
+    text: tt('premiumPage.outcome.points.depth.text'),
   },
   {
-    icon: '\uD83C\uDF39',
-    titleKey: 'premiumPage.feat.love',
-    subKey: 'premiumPage.feat.loveSub',
-    bg: 'rgba(255,130,160,0.1)',
-    border: 'rgba(255,130,160,0.22)',
+    key: 'continuity',
+    title: tt('premiumPage.outcome.points.continuity.title'),
+    text: tt('premiumPage.outcome.points.continuity.text'),
   },
   {
-    icon: '\uD83D\uDD2E',
-    titleKey: 'premiumPage.feat.ai',
-    subKey: 'premiumPage.feat.aiSub',
-    bg: 'rgba(130,180,255,0.1)',
-    border: 'rgba(130,180,255,0.22)',
+    key: 'range',
+    title: tt('premiumPage.outcome.points.range.title'),
+    text: tt('premiumPage.outcome.points.range.text'),
   },
-  {
-    icon: '\uD83D\uDCD6',
-    titleKey: 'premiumPage.feat.history',
-    subKey: 'premiumPage.feat.historySub',
-    bg: 'rgba(255,200,100,0.1)',
-    border: 'rgba(255,200,100,0.22)',
-  },
-  {
-    icon: '\uD83D\uDC9E',
-    titleKey: 'premiumPage.feat.compat',
-    subKey: 'premiumPage.feat.compatSub',
-    bg: 'rgba(255,150,200,0.1)',
-    border: 'rgba(255,150,200,0.22)',
-  },
-  {
-    icon: '\u2728',
-    titleKey: 'premiumPage.feat.spreads',
-    subKey: 'premiumPage.feat.spreadsSub',
-    bg: 'rgba(200,255,150,0.07)',
-    border: 'rgba(200,255,150,0.18)',
-  },
-]
+])
 
 const quickCompareRows = computed(() => {
   if (locale.value === 'uk') {
@@ -294,7 +257,7 @@ const quickCompareRows = computed(() => {
       {
         id: 'compatibility',
         feature: 'Сумісність',
-        free: 'Немає',
+        free: 'Лише preview',
         premium: 'Повний розбір пари',
       },
       {
@@ -328,7 +291,7 @@ const quickCompareRows = computed(() => {
     {
       id: 'compatibility',
       feature: 'Compatibility',
-      free: 'No',
+      free: 'Preview only',
       premium: 'Full relationship reading',
     },
     {
@@ -853,109 +816,65 @@ const purchaseSubline = computed(() => {
   max-width: 34ch;
 }
 
-/* ─── Feature cards (horizontal scroll) ───────────────────── */
-
-.feat-scroll {
-  overflow: hidden;
-  margin-left: -18px;
-  margin-right: -18px;
-  width: calc(100% + 36px);
-  padding: 4px 0 8px;
-  margin-bottom: 16px;
-  mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+.premium-card--focus {
+  background:
+    radial-gradient(120% 160% at 0% 0, rgba(147, 203, 255, 0.18), rgba(147, 203, 255, 0)),
+    linear-gradient(165deg, rgba(8, 12, 20, 0.92), rgba(4, 6, 12, 0.98)) padding-box,
+    linear-gradient(
+        132deg,
+        rgba(147, 203, 255, 0.42),
+        rgba(127, 162, 226, 0.24),
+        rgba(147, 203, 255, 0.12)
+      )
+      border-box;
 }
 
-.feat-scroll__track {
-  display: flex;
-  align-items: stretch;
-  width: max-content;
-  gap: 10px;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  animation: feat-marquee 44s linear infinite;
-  animation-delay: 2.6s;
-}
-
-.feat-scroll__group {
-  display: flex;
-  align-items: stretch;
-  gap: 10px;
-  padding-left: 18px;
-}
-
-.feat-card {
-  flex-shrink: 0;
-  width: 132px;
-  border-radius: 18px;
-  border: 1px solid var(--fc-border, rgba(147, 203, 255, 0.2));
-  background: var(--fc-bg, rgba(147, 203, 255, 0.07));
-  backdrop-filter: blur(14px);
-  padding: 14px 13px 13px;
+.premium-focus {
   display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: 8px;
-  position: relative;
-  overflow: hidden;
-  transform: translateZ(0);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
-    0 8px 20px rgba(0, 0, 0, 0.28);
+  gap: 12px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .feat-scroll {
-    mask-image: none;
-    -webkit-mask-image: none;
-  }
-
-  .feat-scroll__track {
-    animation: none;
-  }
+.premium-focus__title {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.18;
+  color: rgba(244, 248, 255, 0.98);
 }
 
-@keyframes feat-marquee {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-
-  to {
-    transform: translate3d(calc(-50% - 5px), 0, 0);
-  }
+.premium-focus__text,
+.premium-focus__note {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(214, 225, 242, 0.82);
 }
 
-.feat-card::before {
-  content: '';
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  top: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0),
-    rgba(255, 255, 255, 0.18),
-    rgba(255, 255, 255, 0)
-  );
-  pointer-events: none;
+.premium-focus__points {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.feat-card__icon {
-  font-size: 26px;
-  line-height: 1;
+.premium-focus__point {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 12px;
+  display: grid;
+  gap: 5px;
 }
 
-.feat-card__title {
+.premium-focus__point-title {
   font-size: 13px;
-  font-weight: 660;
-  line-height: 1.3;
-  color: rgba(235, 242, 255, 0.96);
+  line-height: 1.35;
+  font-weight: 650;
+  color: rgba(240, 246, 255, 0.95);
 }
 
-.feat-card__sub {
-  font-size: 11px;
-  line-height: 1.35;
-  color: rgba(195, 213, 242, 0.68);
+.premium-focus__point-text {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(198, 212, 235, 0.76);
 }
 
 /* ─── Card base ───────────────────────────────────────────── */
@@ -1518,6 +1437,14 @@ const purchaseSubline = computed(() => {
 
   .premium-card {
     padding: 12px;
+  }
+
+  .premium-focus__title {
+    font-size: 20px;
+  }
+
+  .premium-focus__points {
+    grid-template-columns: 1fr;
   }
 
   .plan-grid {

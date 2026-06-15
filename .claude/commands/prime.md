@@ -1,11 +1,14 @@
 # Prime
-> Execute the following sections to understand the codebase then summarize your understanding.
+> Завантаж контекст Arcana Insight на початку сесії, потім стисло підсумуй розуміння.
 
-## Run
-git ls-files
+## Read (мозок проєкту)
+@CLAUDE.md
+@AGENTS.md
+@docs/canonical-files.md
 
-## Read
-@README.md
+## Run (поточний стан)
+git status --short
+git log --oneline -5
 
-## Read and Execute
-@ai_docs/README.md
+## Summarize
+Стисло (5-8 рядків): що це за апка, де source-of-truth, які скіли/контракти доступні, що зараз у роботі за git-станом.

@@ -120,7 +120,11 @@ Pass condition:
 
 ## Report template
 
-Copy this back after the run:
+Update this file after the run:
+
+- [docs/release-reviewer/references/ios-sandbox-billing-report.md](/Users/oleksandr/Desktop/App/Arcana-Insight/docs/release-reviewer/references/ios-sandbox-billing-report.md:1)
+
+Use these exact status labels:
 
 ```text
 Catalog loads: pass/fail

@@ -18,7 +18,7 @@
       @click="onClick(item.name, idx, $event)"
     >
       <span class="nav-tab__icon">
-        <!-- Arcana (Мій день) -->
+        <!-- Home -->
         <template v-if="item.name === 'arcana'">
           <svg class="nav-tab__svg nav-tab__svg--outline" viewBox="0 0 28 28" fill="none">
             <path d="M14 4.5v2M14 21.5v2M4.5 14h2M21.5 14h2M7.2 7.2l1.4 1.4M19.4 19.4l1.4 1.4M7.2 20.8l1.4-1.4M19.4 8.6l1.4-1.4"
@@ -121,7 +121,7 @@ const current = ref('arcana')
 const selectedLocale = computed(() => currentLocale.value || 'en')
 
 const items = [
-  { name: 'arcana',    labelKey: 'nav.myDay' },
+  { name: 'arcana',    labelKey: 'nav.home' },
   { name: 'horoscope', labelKey: 'horoscope' },
   { name: 'tarot',     labelKey: 'tarot' },
   { name: 'menu',      labelKey: 'nav.menu' },
@@ -141,6 +141,13 @@ const tt = (key) => t(selectedLocale.value, key)
 async function hapticLight() {
   if (isNavigationHapticsSuppressed()) return
   try { await Haptics.impact({ style: ImpactStyle.Light }) } catch { /* */ }
+}
+
+function isNavTapLocked() {
+  if (typeof document === 'undefined') return false
+  if (document.body.classList.contains('hide-bottom-nav')) return true
+  const lockUntil = Number(document.body.dataset.navTapLockUntil || 0)
+  return Number.isFinite(lockUntil) && Date.now() < lockUntil
 }
 
 function emitSparkles(tabEl) {
@@ -166,6 +173,7 @@ function emitSparkles(tabEl) {
 }
 
 async function onClick(name, idx, event) {
+  if (isNavTapLocked()) return
   void hapticLight()
   if (name === current.value) return
   current.value = name

@@ -28,7 +28,8 @@ test('key premium screens keep explicit access gating and sync hooks', () => {
 
   const compatibility = readSource('src/pages/CompatibilityPage.vue')
   assert.match(compatibility, /<section v-if="hasPremiumAccess" class="compat-stack">/)
-  assert.match(compatibility, /name:\s*'premium'[\s\S]*source:\s*'compatibility_lock'/)
+  assert.match(compatibility, /PAYWALL_ENTRY_POINTS\.compatibilityLock/)
+  assert.match(compatibility, /name:\s*'premium'[\s\S]*source:\s*point\.source/)
   assert.match(compatibility, /watch\(\s*\(\) => hasPremiumAccess\.value,\s*\(next\) => \{/s)
 
   const horoscope = readSource('src/components/main/HoroscopeComponent.vue')
@@ -54,24 +55,32 @@ test('key premium screens keep explicit access gating and sync hooks', () => {
 
 test('paywall keeps a single primary entry and tags all other entries as secondary', () => {
   const tarotInterpretation = readSource('src/pages/TarotInterpretationPage.vue')
-  assert.match(tarotInterpretation, /analytics\.logEvent\('paywall_entry_primary'/)
-  assert.match(tarotInterpretation, /source:\s*'tarot_post_session'/)
-  assert.match(tarotInterpretation, /entry:\s*'interpretation_aha'/)
-  assert.match(tarotInterpretation, /name:\s*'premium'[\s\S]*source:\s*'tarot_post_session'/)
+  assert.match(tarotInterpretation, /PAYWALL_ENTRY_POINTS\.tarotPostSession/)
+  assert.match(tarotInterpretation, /analytics\.logEvent\(point\.event/)
+  assert.match(tarotInterpretation, /name:\s*'premium'[\s\S]*source:\s*point\.source/)
 
   const tarotOracle = readSource('src/components/TarotOraclePage.vue')
-  assert.match(tarotOracle, /analytics\.logEvent\('paywall_entry_secondary'/)
-  assert.match(tarotOracle, /entry:\s*'notify_action'/)
+  assert.match(tarotOracle, /PAYWALL_ENTRY_POINTS\.tarotDailyLimit/)
+  assert.match(tarotOracle, /PAYWALL_ENTRY_POINTS\.tarotSpreadLock/)
+  assert.match(tarotOracle, /analytics\.logEvent\(point\.event/)
 
   const savedReadings = readSource('src/pages/SavedReadingsPage.vue')
-  assert.match(savedReadings, /name:\s*'premium'[\s\S]*source:\s*'readings_lock'[\s\S]*entry:\s*'secondary'/)
+  assert.match(savedReadings, /PAYWALL_ENTRY_POINTS\.readingsLock/)
+  assert.match(savedReadings, /analytics\.logEvent\(point\.event/)
+  assert.match(savedReadings, /name:\s*'premium'[\s\S]*source:\s*point\.source[\s\S]*entry:\s*point\.entry/)
 
   const compatibility = readSource('src/pages/CompatibilityPage.vue')
-  assert.match(compatibility, /name:\s*'premium'[\s\S]*source:\s*'compatibility_lock'[\s\S]*entry:\s*'secondary'/)
+  assert.match(compatibility, /PAYWALL_ENTRY_POINTS\.compatibilityLock/)
+  assert.match(compatibility, /analytics\.logEvent\(point\.event/)
+  assert.match(compatibility, /name:\s*'premium'[\s\S]*source:\s*point\.source[\s\S]*entry:\s*point\.entry/)
 
   const horoscope = readSource('src/components/main/HoroscopeComponent.vue')
-  assert.match(horoscope, /name:\s*'premium'[\s\S]*source:\s*'horoscope_lock'[\s\S]*entry:\s*'secondary'/)
+  assert.match(horoscope, /PAYWALL_ENTRY_POINTS\.horoscopeLock/)
+  assert.match(horoscope, /analytics\.logEvent\(point\.event/)
+  assert.match(horoscope, /name:\s*'premium'[\s\S]*source:\s*point\.source[\s\S]*entry:\s*point\.entry/)
 
   const menu = readSource('src/components/main/MenuComponent.vue')
-  assert.match(menu, /name:\s*item\.routeName[\s\S]*source:\s*'menu_premium'[\s\S]*entry:\s*'secondary'/)
+  assert.match(menu, /PAYWALL_ENTRY_POINTS\.menuPremium/)
+  assert.match(menu, /analytics\.logEvent\(point\.event/)
+  assert.match(menu, /name:\s*item\.routeName[\s\S]*source:\s*point\.source[\s\S]*entry:\s*point\.entry/)
 })

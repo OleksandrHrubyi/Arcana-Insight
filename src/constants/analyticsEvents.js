@@ -18,6 +18,49 @@ export const REQUIRED_PAYWALL_FUNNEL_EVENTS = Object.freeze([
   PAYWALL_FUNNEL_EVENTS.trialStart,
 ])
 
+export const PAYWALL_ENTRY_EVENTS = Object.freeze({
+  primary: 'paywall_entry_primary',
+  secondary: 'paywall_entry_secondary',
+})
+
+export const PAYWALL_ENTRY_POINTS = Object.freeze({
+  tarotPostSession: Object.freeze({
+    event: PAYWALL_ENTRY_EVENTS.primary,
+    source: 'tarot_post_session',
+    entry: 'interpretation_aha',
+  }),
+  tarotDailyLimit: Object.freeze({
+    event: PAYWALL_ENTRY_EVENTS.secondary,
+    source: 'tarot_daily_limit',
+    entry: 'notify_action',
+  }),
+  tarotSpreadLock: Object.freeze({
+    event: PAYWALL_ENTRY_EVENTS.secondary,
+    source: 'tarot_spread_lock',
+    entry: 'notify_action',
+  }),
+  readingsLock: Object.freeze({
+    event: PAYWALL_ENTRY_EVENTS.secondary,
+    source: 'readings_lock',
+    entry: 'secondary',
+  }),
+  compatibilityLock: Object.freeze({
+    event: PAYWALL_ENTRY_EVENTS.secondary,
+    source: 'compatibility_lock',
+    entry: 'secondary',
+  }),
+  horoscopeLock: Object.freeze({
+    event: PAYWALL_ENTRY_EVENTS.secondary,
+    source: 'horoscope_lock',
+    entry: 'secondary',
+  }),
+  menuPremium: Object.freeze({
+    event: PAYWALL_ENTRY_EVENTS.secondary,
+    source: 'menu_premium',
+    entry: 'secondary',
+  }),
+})
+
 export const ONBOARDING_EVENTS = Object.freeze({
   onboardingView: 'onboarding_view',
   interestSelect: 'interest_select',
