@@ -1072,6 +1072,9 @@ onMounted(() => {
 }
 
 .delete-dialog {
+  /* q-dialog__inner is pointer-events:none; custom sheet content must opt back
+     in or taps fall through to the backdrop (see astro-sheet). */
+  pointer-events: auto;
   width: min(420px, calc(100vw - 24px));
   border-radius: 16px;
   padding: 16px;
