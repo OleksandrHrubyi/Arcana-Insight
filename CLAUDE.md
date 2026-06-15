@@ -19,6 +19,7 @@
 | Який файл редагувати (канонічні vs дублі) | `docs/canonical-files.md` |
 | Роль екрана, ієрархію CTA, above-the-fold | `docs/screen-contracts.md` |
 | Статус кожного екрана + що ще доробити | `docs/screen-status.md` ← трекер посторінкової роботи |
+| **План релізу до App Store** (блокери, P0/P1/P2, дати) | **`docs/launch-readiness-plan.md`** ← живий трекер, рухаємось по ньому щодня |
 | Писати/міняти user-facing копі | `docs/copy-bible.md` |
 | Free vs Premium UX, claims, lock-стани | `docs/premium-matrix.md` |
 | Навігацію, редіректи, онбординг, auth-гейтинг | `docs/flow-map.md` |
