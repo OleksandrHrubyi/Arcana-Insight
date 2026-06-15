@@ -235,8 +235,8 @@
             </div>
           </section>
 
-          <footer class="astro-sheet__close-wrap">
-            <button type="button" class="astro-sheet__close" @click.stop.prevent="closeAstroSheet">
+          <footer class="oracle-actions__footer">
+            <button type="button" class="oracle-actions__ok" @click.stop.prevent="closeAstroSheet">
               {{ tt('common.close') }}
             </button>
           </footer>
@@ -1006,12 +1006,14 @@ export default {
       void this.$router.push({ name: 'horoscope' })
     },
 
-    openFocusToday() {
+    async openFocusToday() {
+      await this.triggerImpact(ImpactStyle.Light)
       this.openHoroscope()
     },
 
-    openNextRitual() {
+    async openNextRitual() {
       if (this.isAstroSheetActionLocked()) return
+      await this.triggerImpact(ImpactStyle.Light)
       const next = this.dailyProgressItems.find((item) => !item.done)
       const routeByKey = {
         [DAILY_ACTIVITY_KEYS.dailyCard]: 'daily',
@@ -1044,10 +1046,10 @@ export default {
 
     async closeAstroSheet() {
       if (!this.astroSheetOpen) return
+      await this.triggerImpact(ImpactStyle.Light)
       this.armAstroSheetActionLock()
       clearTimeout(this.astroSheetNavRestoreTimer)
       this.astroSheetOpen = false
-      await this.triggerImpact(ImpactStyle.Light)
     },
 
     async onAstroSheetActionClick() {
@@ -2666,46 +2668,36 @@ export default {
   margin: 0 auto 10px;
 }
 
-.astro-sheet__close-wrap {
-  display: block;
-  width: 100%;
-  position: relative;
-  z-index: 1;
+/* Canonical sheet-close action (matches the Daily Card page close button). */
+.oracle-actions__footer {
   margin-top: 12px;
-  margin-bottom: 2px;
-  padding: 5px;
-  text-align: left;
+  padding: 8px;
   border-radius: 16px;
-  border: 1px solid rgba(106, 126, 164, 0.16);
+  border: 1px solid rgba(106, 126, 164, 0.22);
   background:
-    linear-gradient(180deg, rgba(10, 14, 22, 0.72), rgba(4, 7, 12, 0.82)),
-    linear-gradient(90deg, rgba(83, 112, 170, 0.06), rgba(83, 112, 170, 0));
+    linear-gradient(180deg, rgba(9, 13, 21, 0.88), rgba(3, 6, 11, 0.95)),
+    linear-gradient(90deg, rgba(83, 112, 170, 0.1), rgba(83, 112, 170, 0));
   box-shadow:
-    inset 0 1px 0 rgba(186, 207, 247, 0.04),
-    0 8px 20px rgba(0, 0, 0, 0.2);
+    inset 0 1px 0 rgba(186, 207, 247, 0.08),
+    0 10px 24px rgba(0, 0, 0, 0.3);
 }
 
-.astro-sheet__close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 2;
+.oracle-actions__ok {
   width: 100%;
-  min-height: 44px;
+  min-height: 48px;
   border-radius: 12px;
-  border: 1px solid rgba(156, 184, 235, 0.18);
-  padding: 10px 14px;
-  background: linear-gradient(180deg, rgba(22, 31, 49, 0.72), rgba(8, 13, 23, 0.84));
-  color: rgba(233, 237, 244, 0.82);
-  font-size: 13px;
-  font-weight: 500;
+  border: 1px solid rgba(156, 184, 235, 0.36);
+  padding: 12px 14px;
+  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
+  color: #e9edf4;
+  font-size: 14px;
+  font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: none;
   box-shadow: none;
 }
 
-.astro-sheet__close:active {
+.oracle-actions__ok:active {
   transform: translateY(1px);
   border-color: rgba(156, 184, 235, 0.28);
   filter: saturate(0.92);

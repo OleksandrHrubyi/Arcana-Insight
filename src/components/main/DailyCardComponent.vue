@@ -224,7 +224,13 @@ const hapticTap = async () => {
 
 const onBack = async () => {
   await hapticTap()
-  router.back()
+  // Go to the real previous route if there is one, otherwise fall back to
+  // home — never strand the user on an unrelated screen (e.g. tarot).
+  if (typeof window !== 'undefined' && window.history.length > 1) {
+    router.back()
+    return
+  }
+  await router.replace({ name: 'arcana' })
 }
 
 const onClose = async () => {
