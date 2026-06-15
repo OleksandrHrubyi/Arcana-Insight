@@ -2633,6 +2633,11 @@ export default {
 .astro-sheet {
   position: relative;
   overflow: hidden;
+  /* Quasar's .q-dialog__inner is pointer-events:none and only re-enables it on
+     its content card; this custom section must opt back in, otherwise every
+     click falls through to the backdrop and dismisses the sheet (the close
+     button never receives the tap). */
+  pointer-events: auto;
   width: min(100vw - 20px, 440px);
   margin: 0 auto;
   padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px));

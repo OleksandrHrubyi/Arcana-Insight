@@ -1336,6 +1336,9 @@ onBeforeUnmount(() => {
 }
 
 .oracle-actions {
+  /* q-dialog__inner is pointer-events:none by default; custom sheet content
+     must opt back in or taps fall through to the backdrop (see astro-sheet). */
+  pointer-events: auto;
   width: 100vw;
   max-width: 100vw;
   border-radius: 22px 22px 0 0;
