@@ -42,6 +42,7 @@
           <span class="account-row__content">
             <span class="account-label">{{ tt('fields.email') }}</span>
             <span class="account-value">{{ profile.email || userEmail || '—' }}</span>
+            <span class="account-row__hint">{{ tt('accountPage.emailNote') }}</span>
           </span>
         </div>
 
@@ -1188,6 +1189,13 @@ export default defineComponent({
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.account-row__hint {
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(214, 225, 242, 0.5);
+  white-space: normal;
 }
 
 .account-row__icon {

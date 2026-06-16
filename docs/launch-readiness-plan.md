@@ -200,7 +200,8 @@
 - **Fix:** Move completion to `@capacitor/preferences`; ensure a clear DOB capture path early.
 
 #### LR-20 · Account: email affordance — 🟡 · S
-- **Status:** [ ] TODO
+- **Status:** [x] DONE — 2026-06-16 (commit pending push)
+- **Done:** The read-only email row now shows a small hint under the value — `accountPage.emailNote` ("Your email is tied to your sign-in and can't be changed here." / uk) — so it reads as intentional instead of a silent dead-end next to the editable Name/DOB rows. New `.account-row__hint` style; i18n en+uk parity 0; eslint 0; tests 194/194. (Chose the note over building email-change, which is a larger feature.)
 - **File:** `src/pages/AccountPage.vue:41-46` (email is a read-only `<div>`, no cue)
 - **Fix:** Either allow email change or add a short note "email is tied to your sign-in" so it isn't a silent dead-end.
 
@@ -272,3 +273,4 @@
 - 2026-06-16 — **LR-15 done (P1)**: paywall funnel was already fully instrumented; added the genuine gaps — `ritual_complete` (per-activity, first-of-day, in `markDailyActivity`) + `daily_active` (once/day, App.vue). Dynamic analytics import keeps the tested helper's static graph clean. tests 194/194, eslint 0. Next P1: LR-17 (SavedReadings error state) / LR-18 / LR-20.
 - 2026-06-16 — **LR-17 done (P1)**: SavedReadings now shows error+retry on fetch failure (was masked as empty) and a toast on delete failure. eslint 0, tests 194/194. Next P1: LR-18 (RitualRewards) / LR-20 (Account email affordance).
 - 2026-06-16 — **LR-18 robustness done (P1)**: RitualRewards dashboard sync failure now surfaces a retry toast (was silent) + ticker starts in finally. The 32-ternary i18n migration deferred to P2 (LR-24). eslint 0, tests 194/194. Next P1: LR-20 (Account email affordance) / LR-19 (Onboarding).
+- 2026-06-16 — **LR-20 done (P1)**: Account email row now has an explanatory hint (no longer a silent dead-end). parity 0, eslint 0, tests 194/194. Remaining P1: LR-19 (Onboarding Preferences + DOB capture).
