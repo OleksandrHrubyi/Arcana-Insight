@@ -39,7 +39,9 @@
 - **Verify:** Force-fail OpenAI (bad key) and confirm OpenRouter path; feed a banned phrase and confirm rejection. Follow `.claude/skills/arcana-edge-functions/SKILL.md`.
 
 #### LR-02 · `personal-horoscope`: fallback + guard + CORS/OPTIONS + timeout + stop error leak — 🔴 · M
-- **Status:** [ ] TODO
+- **Status:** [x] DONE — 2026-06-16 (commit pending push)
+- **Done:** Added CORS const + `json()` helper (CORS on every response), OPTIONS handler, POST method guard (405). Split the OpenAI call into `requestReadingOpenAI`/`requestReadingOpenRouter` behind a fallback orchestrator (OpenAI → OpenRouter → `AI_UNAVAILABLE`), each via `fetchWithTimeout` (`OPENAI_TIMEOUT_MS`, default 60s). Added `containsDisallowed()` guard on the final reading. **Stopped the raw-error leak:** catch now logs the reason server-side and returns a structured `{ code: AI_UNAVAILABLE|server_error, error: <generic> }` (503/500) — no provider internals. 401/400/200 all go through `json()`. Verified: symbols, braces 133=133, `npm test` 194/194.
+- **⚠️ Operational:** same as LR-01 — needs `OPENROUTER_API_KEY` in Supabase secrets for the fallback.
 - **File:** `supabase/functions/personal-horoscope/index.ts`
 - **Problem:** Single-provider OpenAI, no fallback, no content guard, **no CORS/OPTIONS handler, no method guard, no fetch timeout**. The 500 catch returns `String(e?.message)` which includes the **raw OpenAI error body** to the client (line ~204→312).
 - **Fix:** Add the standard CORS const + OPTIONS + method(405) + body(400) guards (per skill). Add OpenRouter fallback + `containsDisallowed`. Add fetch timeout (see LR-03). Return a structured `{ error, code, reason }` (e.g. `AI_UNAVAILABLE`) — never the raw provider body.
@@ -223,3 +225,4 @@
 
 - 2026-06-16 — Plan created from deep audit. Baseline: 194/194 tests, readiness 74%. Earlier today: fixed bottom-sheet pointer-events bug across all dialogs (commits `6808838`, `43e47a1`); home screen finished + haptics/close-button/back-nav (`e5f0bc6`).
 - 2026-06-16 — **LR-01 done**: OpenRouter fallback + horoscope-calibrated content guard in `generate-horoscopes`. Tests 194/194. Next: LR-02 (`personal-horoscope`). Reminder: set `OPENROUTER_API_KEY` secret.
+- 2026-06-16 — **LR-02 done**: `personal-horoscope` — CORS/OPTIONS/405, OpenAI→OpenRouter fallback, `fetchWithTimeout`, content guard, and structured non-leaking errors. Tests 194/194. (Side effect: this function now has a fetch timeout, partially covering LR-03; `push-worker`/`ritual-*`/`tarot-reading` timeouts still pending in LR-03.) Next: LR-03 or LR-04.

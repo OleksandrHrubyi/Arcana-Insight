@@ -100,6 +100,67 @@ function compactAstroContext(full: any) {
   };
 }
 
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+function json(data: any, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { ...CORS, "Content-Type": "application/json" },
+  });
+}
+
+const OPENROUTER_MODEL = Deno.env.get("OPENROUTER_MODEL") ?? "openai/gpt-4o-mini";
+const OPENROUTER_URL = Deno.env.get("OPENROUTER_URL") ?? "https://openrouter.ai/api/v1/chat/completions";
+const REQUEST_TIMEOUT_MS = Math.max(15000, Number(Deno.env.get("OPENAI_TIMEOUT_MS") ?? 60000));
+
+async function fetchWithTimeout(url: string, opts: RequestInit, ms: number): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(`timeout after ${ms}ms`), ms);
+  try {
+    return await fetch(url, { ...opts, signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function parseJsonLoose(text: string): any {
+  try {
+    return JSON.parse(text);
+  } catch (_e) {
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    if (start === -1 || end <= start) throw new Error("json_parse_failed");
+    return JSON.parse(text.slice(start, end + 1));
+  }
+}
+
+/**
+ * Server-side safety backstop, calibrated for daily horoscopes (mirrors
+ * generate-horoscopes). Catches hard fatalism / medical / financial-instruction
+ * patterns only — NOT every "will"/"should" — in EN + UK. The prompt remains the
+ * primary defense; this is the last line before content reaches the user.
+ */
+function containsDisallowed(text: string): boolean {
+  const t = String(text || "").toLowerCase();
+  const patterns = [
+    /\bwill (definitely|certainly|surely|undoubtedly)\b/,
+    /\b(is|are) (destined|guaranteed|fated|predetermined)\b/,
+    /\b(inevitably|unavoidably)\b/,
+    /\b(неминуче|обов'?язково станеться|точно станеться|гарантовано|судилося|приречен)\w*/,
+    /\b(diagnos|disease|symptom|medication|prescrib|illness)\w*/,
+    /\b(see|consult|visit)\s+(a\s+)?doctor\b/,
+    /\b(лікар|діагноз|хвороб|ліки|симптом|лікуванн|медичн)\w*/,
+    /\b(buy|sell|invest\s+in|invest\s+your)\s+(stock|shares|crypto|bitcoin)\b/,
+    /\binvest(ment)?\s+(advice|in\b)/,
+    /\b(інвестуй|купуй\s+акці|продавай\s+акці|вклади\s+гроші|кредит)\w*/,
+  ];
+  return patterns.some((re) => re.test(t));
+}
+
 const PERSONAL_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -112,6 +173,89 @@ const PERSONAL_SCHEMA = {
   },
 } as const;
 
+type Reading = { intro: string; love: string; career: string; energy: string };
+
+function validateReading(parsed: any): Reading {
+  if (!parsed?.intro || !parsed?.love || !parsed?.career || !parsed?.energy) {
+    throw new Error("incomplete_ai_payload");
+  }
+  return {
+    intro:  String(parsed.intro).trim(),
+    love:   String(parsed.love).trim(),
+    career: String(parsed.career).trim(),
+    energy: String(parsed.energy).trim(),
+  };
+}
+
+async function requestReadingOpenAI(system: string, user: string): Promise<Reading> {
+  const apiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!apiKey) throw new Error("missing_openai_api_key");
+  const model = Deno.env.get("OPENAI_MODEL") ?? "gpt-4o-mini";
+  const resp = await fetchWithTimeout("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model,
+      store: false,
+      input: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
+      text: { format: { type: "json_schema", name: "personal_horoscope", strict: true, schema: PERSONAL_SCHEMA } },
+      temperature: 0.88,
+      max_output_tokens: 1200,
+    }),
+  }, REQUEST_TIMEOUT_MS);
+
+  if (!resp.ok) {
+    const err = await resp.text().catch(() => "");
+    console.error(`[personal-horoscope] openai http ${resp.status}: ${err.slice(0, 200)}`);
+    throw new Error(`openai_http_${resp.status}`);
+  }
+  const data = await resp.json();
+  const raw = getOutputText(data);
+  if (!raw) throw new Error("openai_empty_output");
+  return validateReading(parseJsonLoose(sanitizeJsonText(raw)));
+}
+
+async function requestReadingOpenRouter(system: string, user: string): Promise<Reading> {
+  const apiKey = Deno.env.get("OPENROUTER_API_KEY");
+  if (!apiKey) throw new Error("missing_openrouter_api_key");
+  const shapeHint = 'Return ONLY a JSON object: {"intro":string,"love":string,"career":string,"energy":string}. No markdown, no commentary.';
+  const resp = await fetchWithTimeout(OPENROUTER_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+      "HTTP-Referer": Deno.env.get("OPENROUTER_HTTP_REFERER") ?? "https://arcana-insight.app",
+      "X-Title": Deno.env.get("OPENROUTER_X_TITLE") ?? "Arcana Insight",
+    },
+    body: JSON.stringify({
+      model: OPENROUTER_MODEL,
+      temperature: 0.88,
+      max_tokens: 1200,
+      response_format: { type: "json_object" },
+      messages: [
+        { role: "system", content: `${system}\n\n${shapeHint}` },
+        { role: "user", content: user },
+      ],
+    }),
+  }, REQUEST_TIMEOUT_MS);
+
+  if (!resp.ok) {
+    const err = await resp.text().catch(() => "");
+    console.error(`[personal-horoscope] openrouter http ${resp.status}: ${err.slice(0, 200)}`);
+    throw new Error(`openrouter_http_${resp.status}`);
+  }
+  const data = await resp.json();
+  const content = data?.choices?.[0]?.message?.content;
+  const rawText = typeof content === "string"
+    ? content
+    : Array.isArray(content) ? content.map((c: any) => String(c?.text ?? c?.content ?? "")).join("") : "";
+  if (!rawText) throw new Error("openrouter_empty");
+  return validateReading(parseJsonLoose(sanitizeJsonText(rawText)));
+}
+
 async function generatePersonalReading(params: {
   sign: Sign;
   moonSign: string | null;
@@ -119,11 +263,7 @@ async function generatePersonalReading(params: {
   astroCompact: any | null;
   interests: string[];
   locale: string;
-}): Promise<{ intro: string; love: string; career: string; energy: string }> {
-  const apiKey = Deno.env.get("OPENAI_API_KEY");
-  if (!apiKey) throw new Error("Missing OPENAI_API_KEY");
-  const model = Deno.env.get("OPENAI_MODEL") ?? "gpt-4o-mini";
-
+}): Promise<Reading> {
   const archetype = SIGN_ARCHETYPES[params.sign] ?? "";
   const moonLayer = params.moonSign ? (MOON_SIGN_LAYER[params.moonSign] ?? "") : "";
 
@@ -176,61 +316,56 @@ ${interestLine}
 Generate a personal reading with 4 sections: intro, love, career, energy.
 `.trim();
 
-  const resp = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      model,
-      store: false,
-      input: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
-      text: {
-        format: {
-          type: "json_schema",
-          name: "personal_horoscope",
-          strict: true,
-          schema: PERSONAL_SCHEMA,
-        },
-      },
-      temperature: 0.88,
-      max_output_tokens: 1200,
-    }),
-  });
+  // Provider fallback: OpenAI -> OpenRouter -> AI_UNAVAILABLE.
+  const providerErrors: string[] = [];
+  let reading: Reading | null = null;
 
-  if (!resp.ok) {
-    const err = await resp.text().catch(() => "");
-    throw new Error(`OpenAI error: ${resp.status} ${err}`);
+  if (Deno.env.get("OPENAI_API_KEY")) {
+    try {
+      reading = await requestReadingOpenAI(system, user);
+    } catch (err) {
+      const m = err instanceof Error ? err.message : String(err);
+      providerErrors.push(`openai: ${m}`);
+      console.error("[personal-horoscope] openai failed:", m);
+    }
+  } else {
+    providerErrors.push("openai: missing_openai_api_key");
   }
 
-  const data = await resp.json();
-  const raw = getOutputText(data);
-  if (!raw) throw new Error("OpenAI: empty output");
-
-  let parsed: any;
-  try { parsed = JSON.parse(sanitizeJsonText(raw)); } catch (e) {
-    throw new Error(`JSON parse failed: ${String(e)}`);
+  if (!reading) {
+    if (Deno.env.get("OPENROUTER_API_KEY")) {
+      try {
+        reading = await requestReadingOpenRouter(system, user);
+      } catch (err) {
+        const m = err instanceof Error ? err.message : String(err);
+        providerErrors.push(`openrouter: ${m}`);
+        console.error("[personal-horoscope] openrouter failed:", m);
+      }
+    } else {
+      providerErrors.push("openrouter: missing_openrouter_api_key");
+    }
   }
 
-  if (!parsed?.intro || !parsed?.love || !parsed?.career || !parsed?.energy) {
-    throw new Error("Incomplete response from OpenAI");
+  if (!reading) throw new Error(`AI_UNAVAILABLE: ${providerErrors.join(" | ")}`);
+
+  // Safety backstop — never return unsafe AI copy to the user.
+  if (containsDisallowed(`${reading.intro} ${reading.love} ${reading.career} ${reading.energy}`)) {
+    console.error("[personal-horoscope] reading tripped content guard; rejecting");
+    throw new Error("AI_UNAVAILABLE: content_guard");
   }
 
-  return {
-    intro:  String(parsed.intro).trim(),
-    love:   String(parsed.love).trim(),
-    career: String(parsed.career).trim(),
-    energy: String(parsed.energy).trim(),
-  };
+  return reading;
 }
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
+  if (req.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
+
   try {
     // --- auth: require valid JWT ---
     const authHeader = req.headers.get("authorization") ?? "";
     const jwt = authHeader.replace(/^Bearer\s+/i, "").trim();
-    if (!jwt) return new Response("Unauthorized", { status: 401 });
+    if (!jwt) return json({ ok: false, error: "unauthorized" }, 401);
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -242,7 +377,7 @@ Deno.serve(async (req) => {
     });
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) return new Response("Unauthorized", { status: 401 });
+    if (authError || !user) return json({ ok: false, error: "unauthorized" }, 401);
 
     // --- load user profile ---
     const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -266,10 +401,7 @@ Deno.serve(async (req) => {
     const rawSign = String(body?.sign ?? profile?.zodiac_sign ?? "").toLowerCase();
     const sign = SIGNS.includes(rawSign as Sign) ? (rawSign as Sign) : null;
     if (!sign) {
-      return new Response(
-        JSON.stringify({ ok: false, error: "sign_required", hint: "Pass sign in body or set zodiac_sign in profile" }),
-        { status: 400, headers: { "Content-Type": "application/json" } },
-      );
+      return json({ ok: false, error: "sign_required", hint: "Pass sign in body or set zodiac_sign in profile" }, 400);
     }
 
     // moon sign: from body (computed client-side)
@@ -296,23 +428,18 @@ Deno.serve(async (req) => {
     // --- generate ---
     const reading = await generatePersonalReading({ sign, moonSign, date, astroCompact, interests, locale });
 
-    return new Response(
-      JSON.stringify({
-        ok: true,
-        date,
-        sign,
-        moonSign,
-        locale,
-        hasAstro: !!astroFull,
-        reading,
-      }),
-      { status: 200, headers: { "Content-Type": "application/json" } },
-    );
+    return json({ ok: true, date, sign, moonSign, locale, hasAstro: !!astroFull, reading });
   } catch (e: any) {
-    console.error("personal-horoscope failed:", e?.stack ?? e);
-    return new Response(
-      JSON.stringify({ ok: false, error: String(e?.message ?? e) }),
-      { status: 500, headers: { "Content-Type": "application/json" } },
+    const reason = String(e?.message ?? e ?? "error");
+    console.error("[personal-horoscope] failed:", e?.stack ?? e);
+    const aiDown = reason.startsWith("AI_UNAVAILABLE");
+    return json(
+      {
+        ok: false,
+        code: aiDown ? "AI_UNAVAILABLE" : "server_error",
+        error: aiDown ? "AI reading is temporarily unavailable" : "Something went wrong",
+      },
+      aiDown ? 503 : 500,
     );
   }
 });
