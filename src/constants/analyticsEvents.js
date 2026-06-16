@@ -61,6 +61,11 @@ export const PAYWALL_ENTRY_POINTS = Object.freeze({
   }),
 })
 
+export const CONTENT_SHARE_EVENTS = Object.freeze({
+  horoscopeShare: 'horoscope_share',
+  personalHoroscopeShare: 'personal_horoscope_share',
+})
+
 export const RETENTION_EVENTS = Object.freeze({
   // Daily engagement signals for retention/cohort analysis (paywall lifecycle is
   // covered by PAYWALL_FUNNEL_EVENTS; trial-converted/churn come from RevenueCat).

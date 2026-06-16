@@ -42,7 +42,7 @@
         </div>
 
         <div v-else-if="error" class="personal-panel personal-panel--center personal-empty">
-          <div class="personal-empty__icon">✦</div>
+          <div class="personal-empty__icon"><q-icon name="error_outline" size="30px" /></div>
           <div class="personal-empty__text">{{ error }}</div>
         </div>
 
@@ -79,7 +79,7 @@
 
       <div v-else-if="hasBirthDate" class="personal-sticky__actions">
         <button type="button" class="personal-sticky__action personal-sticky__action--primary" :disabled="loading || !profileReady" @click="generate">
-          <q-icon v-if="!loading" name="auto_graph" size="16px" />
+          <q-icon v-if="!loading" name="nightlight" size="16px" />
           <q-spinner v-else size="16px" color="white" />
           <span>{{ tt('personalHoroscope.btnGenerate') }}</span>
         </button>
@@ -102,7 +102,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Preferences } from '@capacitor/preferences'
 import { Share } from '@capacitor/share'
@@ -110,6 +110,8 @@ import { t, currentLocale } from 'src/i18n'
 import { invokeFunction, selectAppUser } from 'src/services/supabaseNative'
 import { useAuthStore } from 'stores/authStore.js'
 import { localISODate } from 'src/helpers/date.ts'
+import { analytics } from 'src/services/analytics'
+import { CONTENT_SHARE_EVENTS } from 'src/constants/analyticsEvents'
 
 import * as Astronomy from 'astronomy-engine'
 
@@ -330,6 +332,11 @@ async function generate() {
 async function shareReading() {
   if (!reading.value) return
 
+  void analytics.logEvent(CONTENT_SHARE_EVENTS.personalHoroscopeShare, {
+    sign: sign.value || '',
+    moonSign: moonSign.value || '',
+  })
+
   const lines = [
     tt('personalHoroscope.title'),
     dateLabel.value,
@@ -369,6 +376,15 @@ function goToBirthDateSetup() {
   }
   router.push({ name: 'signUp' })
 }
+
+// The AI reading body is locale-specific. If the user switches app language
+// while on this screen, regenerate so the text matches the new language
+// (mirrors the daily horoscope screen's locale watcher).
+watch(locale, () => {
+  if (hasBirthDate.value && !loading.value) {
+    void generate()
+  }
+})
 
 // --- init ---
 onMounted(async () => {

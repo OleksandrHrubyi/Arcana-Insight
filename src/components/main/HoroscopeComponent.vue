@@ -70,11 +70,19 @@
         ref="dragLayer"
         class="drag-layer"
         :class="{ dragging: isDragging }"
+        role="slider"
+        tabindex="0"
+        :aria-label="tt('dailyHoroscope')"
+        :aria-valuetext="tt(`zodiac.${activeZodiac.key}`)"
         @pointerdown="onPointerDown"
         @pointermove="onPointerMove"
         @pointerup="onPointerUp"
         @pointercancel="onPointerUp"
         @lostpointercapture="onPointerUp"
+        @keydown.left.prevent="stepActiveSign(-1)"
+        @keydown.down.prevent="stepActiveSign(-1)"
+        @keydown.right.prevent="stepActiveSign(1)"
+        @keydown.up.prevent="stepActiveSign(1)"
       />
     </div>
 
@@ -82,7 +90,7 @@
     <div ref="centerRound" class="center-round">
       <div class="bottom-wrapper">
         <div class="q-px-sm q-pt-md horoscope-info">
-          <div class="active-zodiac" aria-hidden="false">
+          <div class="active-zodiac" aria-hidden="false" aria-live="polite">
             <div class="active-zodiac-name">{{ tt(`zodiac.${activeZodiac.key}`) }}</div>
             <div class="active-zodiac-dates">{{ activeZodiac.dates }}</div>
           </div>
@@ -224,18 +232,40 @@
               <button
                 class="dot"
                 :class="{ active: themeTab === 'energy', 'dot--locked': isThemeLocked('energy') }"
+                :aria-label="tt('energy')"
+                :aria-pressed="themeTab === 'energy'"
                 @click="setTheme('energy')"
               ></button>
               <button
                 class="dot"
                 :class="{ active: themeTab === 'love', 'dot--locked': isThemeLocked('love') }"
+                :aria-label="tt('love')"
+                :aria-pressed="themeTab === 'love'"
                 @click="setTheme('love')"
               ></button>
               <button
                 class="dot"
                 :class="{ active: themeTab === 'career', 'dot--locked': isThemeLocked('career') }"
+                :aria-label="tt('career')"
+                :aria-pressed="themeTab === 'career'"
                 @click="setTheme('career')"
               ></button>
+            </div>
+
+            <!-- Share: absolutely pinned to the right of the centered dots row,
+                 so the dots stay perfectly centered and the disc composition
+                 does not shift. -->
+            <div class="horoscope-controls-actions">
+              <q-btn
+                round
+                flat
+                dense
+                class="share-controls-btn"
+                icon="share"
+                :disable="!canShare"
+                :aria-label="tt('share')"
+                @click="handleShare"
+              />
             </div>
           </div>
 
@@ -259,7 +289,7 @@ import { t, currentLocale } from 'src/i18n'
 import { Share } from '@capacitor/share'
 import { selectAppUser, selectHoroscopes } from 'src/services/supabaseNative'
 import { analytics } from 'src/services/analytics'
-import { PAYWALL_ENTRY_POINTS } from 'src/constants/analyticsEvents'
+import { PAYWALL_ENTRY_POINTS, CONTENT_SHARE_EVENTS } from 'src/constants/analyticsEvents'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
 import { useAuthStore } from 'stores/authStore.js'
 import { DAILY_ACTIVITY_KEYS, markDailyActivity } from 'src/helpers/dailyRitual'
@@ -476,6 +506,12 @@ export default {
 
     isCurrentThemeLocked() {
       return this.isThemeLocked(this.themeTab)
+    },
+
+    canShare() {
+      // Only share real, unlocked text for the active theme — never a skeleton,
+      // an error state, or blurred premium-locked copy.
+      return this.hasThemeText(this.themeTab) && !this.isThemeLocked(this.themeTab)
     },
 
     shouldPauseDecorativeEffects() {
@@ -868,6 +904,15 @@ export default {
       this.currentSector = this.mod(idx, this.sectorCount)
       this.applyRotationToView(this.rotation, false)
       return true
+    },
+
+    // Keyboard / VoiceOver path to change the active sign (the wheel is a
+    // pointer-only drag gesture otherwise). delta +1 = next sign, -1 = previous.
+    stepActiveSign(delta) {
+      const idx = this.zodiacMeta.findIndex((item) => item.key === this.activeZodiac.key)
+      if (idx < 0) return
+      const next = this.zodiacMeta[this.mod(idx + delta, this.zodiacMeta.length)]
+      if (next) this.focusZodiacByKey(next.key, { animate: true })
     },
 
     async applyUserZodiacPreference() {
@@ -1294,7 +1339,7 @@ export default {
     }) {
       const clean = this.normalizeText(text)
       return [
-        `✨ ${title}`,
+        title,
         `🗓️ ${date}`,
         `${zodiacEmoji} ${zodiacName} ${datesRange}`.trim(),
         `${themeEmoji} ${this.tt('theme')}: ${themeLabel}`,
@@ -1306,7 +1351,8 @@ export default {
     },
 
     async handleShare() {
-      const rawText = this.horoscope?.[this.activeZodiac.key]?.[this.themeTab]?.detailed || ''
+      // Single source of truth with canShare/getThemeText (normalized theme key).
+      const rawText = this.getThemeText(this.themeTab)
       if (!rawText) {
         this.$q.notify({ type: 'negative', message: this.tt('errors.noShareText') })
         return
@@ -1317,12 +1363,17 @@ export default {
 
       const zodiacKey = this.activeZodiac.key
       const zodiacName = this.tt(`zodiac.${zodiacKey}`)
-      const zodiacEmoji = ZODIAC_EMOJI[zodiacKey] || '✨'
+      const zodiacEmoji = ZODIAC_EMOJI[zodiacKey] || ''
       const datesRange = this.activeZodiac?.dates || ''
 
-      const themeMeta = THEME_META[this.themeTab] || { emoji: '✨', label: this.themeTab }
+      const themeMeta = THEME_META[this.themeTab] || { emoji: '', label: this.themeTab }
       const themeLabel = this.tt(this.themeTab)
       const themeEmoji = themeMeta.emoji
+
+      void analytics.logEvent(CONTENT_SHARE_EVENTS.horoscopeShare, {
+        sign: zodiacKey,
+        theme: this.themeTab,
+      })
 
       const payload = {
         title,
@@ -2538,24 +2589,70 @@ export default {
   box-shadow: 0 0 16px rgba(159, 216, 246, 0.28);
 }
 
+/* The BUTTON is a 44px transparent hit target (iOS HIG min); the visible 34px
+   "glass" disc is drawn by a centered ::before, so the tap area is a genuine
+   44px without enlarging the visual. */
 .share-controls-btn {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  color: rgba(216, 233, 247, 0.85);
+  transition:
+    transform 160ms ease,
+    color 160ms ease;
+}
+
+.share-controls-btn::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
   width: 34px;
   height: 34px;
-  min-height: 34px;
+  transform: translate(-50%, -50%);
   border-radius: 999px;
-  border: 1px solid rgba(159, 216, 246, 0.16);
-  background: rgba(7, 14, 22, 0.38);
-  color: rgba(202, 224, 241, 0.72);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(159, 216, 246, 0.14);
+  /* Match the dots' glass language: faint top-lit gradient over a dark base. */
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012)),
+    rgba(7, 14, 22, 0.42);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 6px 14px rgba(0, 0, 0, 0.18);
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+:deep(.share-controls-btn .q-icon) {
+  font-size: 17px;
 }
 
 .share-controls-btn:active {
-  transform: translateY(1px);
+  color: rgba(242, 247, 252, 0.96);
+}
+
+.share-controls-btn:active::before {
+  transform: translate(-50%, -50%) scale(0.94);
+  border-color: rgba(159, 216, 246, 0.26);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 3px 8px rgba(0, 0, 0, 0.22);
 }
 
 .share-controls-btn.q-btn--disable {
-  opacity: 0.45;
+  opacity: 0.4;
+}
+
+.share-controls-btn.q-btn--disable::before {
+  box-shadow: none;
 }
 
 .date-info {

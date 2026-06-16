@@ -51,13 +51,13 @@ const PREMIUM_DETAIL_BASE = Object.freeze([
 ])
 
 const PREMIUM_DETAIL_INTERPRETATION_AI = Object.freeze({
-  icon: 'auto_stories',
+  icon: 'menu_book',
   titleKey: 'premiumPage.premiumDetails.fullInterpretation.title',
   textKey: 'premiumPage.premiumDetails.fullInterpretation.text',
 })
 
 const PREMIUM_DETAIL_INTERPRETATION_BASIC = Object.freeze({
-  icon: 'auto_stories',
+  icon: 'menu_book',
   titleKey: 'premiumPage.premiumDetails.structuredInterpretation.title',
   textKey: 'premiumPage.premiumDetails.structuredInterpretation.text',
 })
