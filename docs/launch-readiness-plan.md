@@ -92,7 +92,8 @@
 - **Verify:** Offline cold-load → screen settles (not stuck); pull-to-refresh offline → spinner stops.
 
 #### LR-09 · Premium entitlement refresh on app resume — 🟠 · S
-- **Status:** [ ] TODO
+- **Status:** [x] DONE — 2026-06-16 (commit pending push)
+- **Done:** `src/boot/auth.ts` now imports `getBillingPremiumStatus` + `usePremiumAccess` and adds `syncPremiumOnResume()` (same logic as `App.vue`'s launch sync: apply `{ active: hasPremium, plan, source: 'billing' }` when `status.ok && status.available`). Called via `runAuthTask('syncPremium(appState)', …)` in the resume (`isActive`) branch — already native-only. Premium state no longer goes stale after a background expire/renew/cancel. Tests 194/194 (premium UI-sync contracts preserved).
 - **File:** `src/boot/auth.ts:38-51` (the `appStateChange` / `isActive` branch)
 - **Problem:** Resume refreshes the Supabase session but **not** premium. If a sub expires/cancels/renews while backgrounded, premium state is stale until next cold start (fails sandbox runbook Test 5/7 intent).
 - **Fix:** In the `isActive` branch, call `getBillingPremiumStatus()` + `applyPremiumAccessStatus(...)`.
@@ -237,3 +238,4 @@
 - 2026-06-16 — **LR-05 done**: global error safety net boot file (`errorHandler` + `unhandledrejection` + `error` listeners), registered first. eslint 0, tests 194/194. Next: LR-06 (MyDayPage offline guard) or LR-03.
 - 2026-06-16 — **LR-06 done (by deletion)**: `MyDayPage.vue` was dead (route redirects, no imports) → deleted with permission; offline-hang surface gone. tests 194/194. Next: LR-03 or LR-09/LR-10.
 - 2026-06-16 — **LR-03 done**: `fetchWithTimeout` in `_shared/ritual.ts` (covers all ritual-*) + `tarot-reading`; personal-horoscope/generate-horoscopes already had timeouts. push-worker timeout deferred to LR-10. tests 194/194. Next: LR-09 or LR-10.
+- 2026-06-16 — **LR-09 done**: resume-time premium entitlement refresh in `boot/auth.ts` (`syncPremiumOnResume`). tests 194/194. Next: LR-10 (push-worker secret + per-send catch + timeout) — last P0-code item before iOS-native LR-07/08.

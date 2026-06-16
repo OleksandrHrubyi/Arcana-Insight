@@ -3,14 +3,25 @@ import { Capacitor } from '@capacitor/core'
 import { useAuthStore } from 'stores/authStore'
 import { isAuthInFlight } from 'src/services/supabaseClient'
 import { useAppEpoch } from 'stores/appEpoch'
+import { getBillingPremiumStatus } from 'src/services/premiumBilling'
+import { usePremiumAccess } from 'stores/premiumAccess'
 
 export default boot(() => {
   const authStore = useAuthStore()
   const { markBackground, clearAuthTimeout } = useAppEpoch()
+  const { applyPremiumAccessStatus } = usePremiumAccess()
   const runAuthTask = (label: string, task: () => Promise<unknown>) => {
     void task().catch((error) => {
       console.warn(`[AuthBoot] ${label} failed`, error)
     })
+  }
+
+  // Refresh the RevenueCat entitlement on resume so premium state isn't stale
+  // after a subscription expires/renews/cancels while the app was backgrounded.
+  const syncPremiumOnResume = async () => {
+    const status = await getBillingPremiumStatus()
+    if (!status?.ok || !status?.available) return
+    applyPremiumAccessStatus({ active: status.hasPremium, plan: status.plan, source: 'billing' })
   }
   runAuthTask('initAuth', () => authStore.initAuth())
 
@@ -46,6 +57,7 @@ export default boot(() => {
           runAuthTask('refreshSessionNative(appState)', () => authStore.refreshSessionNative())
           runAuthTask('syncSession(appState)', () => authStore.syncSession({ refresh: false }))
           runAuthTask('flushProfileQueue(appState)', () => authStore.flushProfileQueue())
+          runAuthTask('syncPremium(appState)', () => syncPremiumOnResume())
           startFlushTimer()
           clearAuthTimeout()
         }
