@@ -114,7 +114,13 @@
 - **Verify:** Xcode archive validates without icon/architecture warnings.
 
 #### LR-08 · Populate `PrivacyInfo.xcprivacy` — 🟠 · S/M
-- **Status:** [ ] TODO
+- **Status:** [x] DONE — 2026-06-16 (commit pending push)
+- **Done:** Filled `ios/App/App/PrivacyInfo.xcprivacy` (validated with `plutil -lint: OK`):
+  - `NSPrivacyAccessedAPITypes` → **UserDefaults `CA92.1`** (Capacitor Preferences) — the key fix to avoid ITMS-91053.
+  - `NSPrivacyCollectedDataTypes` → Email, Other (DOB), User ID, Product Interaction, Purchase History — all `Linked: true`, `Tracking: false`, with App-Functionality/Analytics purposes. Matches `app-store/privacy-policy.html`.
+  - `NSPrivacyTracking false` + empty `NSPrivacyTrackingDomains` (no IDFA / cross-app tracking).
+- **Note:** keep this consistent with the App Store Connect App Privacy questionnaire (LR-16). Third-party SDKs (Firebase, RevenueCat) ship their own manifests, so this declares the app's own collection + required-reason API.
+- **Related follow-up (P2):** `GoogleService-Info.plist` has `IS_ANALYTICS_ENABLED=false` while code calls `setEnabled(true)` — reconcile the analytics posture deliberately (Agent-1 finding #5). Not a submission blocker.
 - **File:** `ios/App/App/PrivacyInfo.xcprivacy` (currently `NSPrivacyTracking=false`, empty `NSPrivacyCollectedDataTypes`, empty `NSPrivacyAccessedAPITypes`).
 - **Problem:** App runs Firebase Analytics (`src/services/analytics.js:45,92,97` — `setUserId`/`setUserProperty`) and uses Capacitor Preferences (UserDefaults, required-reason API `CA92.1`). Empty manifest contradicts bundled SDKs → privacy reject / ITMS-91053.
 - **Fix:** Declare `NSPrivacyAccessedAPITypes` with UserDefaults reason `CA92.1`; declare collected data types (analytics/identifiers). Decide tracking posture: keep `NSPrivacyTracking=false` only if Firebase is configured with **no IDFA** (avoid `GoogleAppMeasurementIdentitySupport`). Note `GoogleService-Info.plist` has `IS_ANALYTICS_ENABLED=false` conflicting with runtime `setEnabled(true)` — reconcile.
@@ -246,3 +252,4 @@
 - 2026-06-16 — **LR-09 done**: resume-time premium entitlement refresh in `boot/auth.ts` (`syncPremiumOnResume`). tests 194/194. Next: LR-10 (push-worker secret + per-send catch + timeout) — last P0-code item before iOS-native LR-07/08.
 - 2026-06-16 — **LR-10 done**: push-worker now requires `ADMIN_PUSH_SECRET`, per-send try/catch (one bad send no longer aborts the batch), and fetch timeouts on APNs + REST (completes LR-03 too). tests 194/194. **All P0 CODE items are now done** — remaining P0 is iOS-native (LR-07/08, needs Xcode) + Apple operational (LR-11..14). Ops reminders: set `OPENROUTER_API_KEY` + `ADMIN_PUSH_SECRET` secrets.
 - 2026-06-16 — **LR-07 done**: Info.plist `armv7→arm64`; AppIcon verified valid (single-size 1024, no alpha, RGB) — the "malformed" concern was a false alarm (Xcode 14+ single-size format). tests 194/194. Next: LR-08 (privacy manifest).
+- 2026-06-16 — **LR-08 done**: populated `PrivacyInfo.xcprivacy` (UserDefaults CA92.1 + collected data types, validated `plutil OK`). **All P0 code + iOS-native items are now done.** Remaining P0 is purely Apple operational (LR-11..14: legal URL/EULA, sandbox IAP, ASC products, screenshots) — needs you. Plus P1/P2 polish.
