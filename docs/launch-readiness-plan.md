@@ -166,7 +166,10 @@
 ## P1 — SHOULD HAVE (strongly recommended before/at launch)
 
 #### LR-15 · Monetization analytics lifecycle events — 🟠 · M
-- **Status:** [ ] TODO
+- **Status:** [x] DONE — 2026-06-16 (commit pending push)
+- **Reassessment:** the **paywall funnel was already fully instrumented** (`PAYWALL_FUNNEL_EVENTS` emitted in `PremiumInfoComponent`: `paywall_view/close`, `purchase_click/success/error`, `restore_success`, `trial_start`). The audit overstated this gap. Trial-converted/churn come from RevenueCat webhooks, not the app. Install/First-Open are Firebase auto-events.
+- **Done (the genuine gaps):** added `RETENTION_EVENTS` (`daily_active`, `ritual_complete`). `ritual_complete` fires from `markDailyActivity` on the **first completion of each activity per day** (`{ activity }`); `daily_active` fires once/day from `App.vue` startup. Engagement depth + DAU are now measurable for retention cohorts.
+- **Note:** `markDailyActivity` uses a **dynamic** `import('../services/analytics.js')` (fire-and-forget, caught) to keep the Firebase/Capacitor deps out of the helper's static graph — it's unit-tested under `node --test`. Relative imports need the explicit `.js` ext for node ESM (Vite accepts it too). Tests 194/194, eslint 0.
 - **Files:** `src/constants/analyticsEvents.js`, `src/services/analytics.js`, purchase paths.
 - **Have:** `ONBOARDING_EVENTS`, `PAYWALL_ENTRY_POINTS`. **Missing:** `purchase_success/fail/restore`, `subscription_started`, (later `trial_started/converted`), `ritual_complete`, `daily_active`. Without these you can't measure conversion/retention.
 - **Fix:** Add events; emit at purchase success/fail/restore in `premiumBilling`/`PremiumInfoComponent`, and on ritual completion. Retention/churn derive from Firebase + RevenueCat webhooks.
@@ -262,3 +265,4 @@
 - 2026-06-16 — **LR-07 done**: Info.plist `armv7→arm64`; AppIcon verified valid (single-size 1024, no alpha, RGB) — the "malformed" concern was a false alarm (Xcode 14+ single-size format). tests 194/194. Next: LR-08 (privacy manifest).
 - 2026-06-16 — **LR-08 done**: populated `PrivacyInfo.xcprivacy` (UserDefaults CA92.1 + collected data types, validated `plutil OK`). **All P0 code + iOS-native items are now done.** Remaining P0 is purely Apple operational (LR-11..14: legal URL/EULA, sandbox IAP, ASC products, screenshots) — needs you. Plus P1/P2 polish.
 - 2026-06-16 — **LR-11 code done**: in-app Privacy/Terms now has a working contact mailto, third-party processor disclosure + Privacy Policy link, subscription EULA terms + Apple EULA link; `onBack` home-fallback. Hosted policy already lists processors. parity 0, eslint 0, tests 194/194. Remaining LR-11 = verify hosted URLs live (ops). Next pure-ops: LR-12 (sandbox IAP), LR-13 (ASC products), LR-14 (screenshots) — all need you.
+- 2026-06-16 — **LR-15 done (P1)**: paywall funnel was already fully instrumented; added the genuine gaps — `ritual_complete` (per-activity, first-of-day, in `markDailyActivity`) + `daily_active` (once/day, App.vue). Dynamic analytics import keeps the tested helper's static graph clean. tests 194/194, eslint 0. Next P1: LR-17 (SavedReadings error state) / LR-18 / LR-20.

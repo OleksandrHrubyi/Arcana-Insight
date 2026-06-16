@@ -1,3 +1,5 @@
+import { RETENTION_EVENTS } from '../constants/analyticsEvents.js'
+
 const ACTIVITY_STORAGE_PREFIX = 'arcana_daily_activity_'
 const STREAK_STORAGE_PREFIX = 'arcana_daily_streak_'
 const JOURNEY_STORAGE_KEY = 'arcana_daily_journey_v1'
@@ -119,6 +121,7 @@ export const markDailyActivity = (activity) => {
   if (typeof window === 'undefined') return
   const normalized = String(activity || '').trim()
   if (!ALLOWED_ACTIVITIES.has(normalized)) return
+  const wasNewToday = !hasDailyActivityToday(normalized)
   const payload = {
     date: getLocalDateKey(),
     updatedAt: new Date().toISOString(),
@@ -131,6 +134,17 @@ export const markDailyActivity = (activity) => {
 
   touchDailyStreak(normalized)
   recordDailyJourneyActivity(normalized)
+
+  // Fire a retention engagement event once per activity per day. Dynamic import
+  // keeps the analytics/Firebase deps out of this helper's static graph (it is
+  // unit-tested under node --test); fire-and-forget, never throws.
+  if (wasNewToday) {
+    import('../services/analytics.js')
+      .then(({ analytics }) =>
+        analytics.logEvent(RETENTION_EVENTS.ritualComplete, { activity: normalized }),
+      )
+      .catch(() => {})
+  }
 }
 
 export const readDailyActivityDate = (activity) => {

@@ -12,6 +12,8 @@ import { useRouter } from 'vue-router'
 import { initPushListeners } from 'boot/push'
 import { getBillingPremiumStatus } from 'src/services/premiumBilling'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
+import { analytics } from 'src/services/analytics'
+import { RETENTION_EVENTS } from 'src/constants/analyticsEvents'
 
 const { applyPremiumAccessStatus } = usePremiumAccess()
 const router = useRouter()
@@ -47,11 +49,24 @@ const initPushListenersSafe = async () => {
   }
 }
 
+const logDailyActiveOnce = () => {
+  try {
+    const key = 'arcana_daily_active_v1'
+    const today = new Date().toLocaleDateString('en-CA') // local YYYY-MM-DD
+    if (localStorage.getItem(key) === today) return
+    localStorage.setItem(key, today)
+    void analytics.logEvent(RETENTION_EVENTS.dailyActive, {})
+  } catch {
+    // ignore storage/analytics errors
+  }
+}
+
 onMounted(() => {
   // Keep first paint light: postpone non-critical startup tasks.
   delayedInitTimer = setTimeout(() => {
     void initPushListenersSafe()
     void syncPremiumStatusSafe()
+    logDailyActiveOnce()
   }, 700)
 })
 
