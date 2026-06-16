@@ -104,7 +104,10 @@
 ### iOS / native (block upload or validation)
 
 #### LR-07 · AppIcon set + `armv7`→`arm64` — 🔴 · S
-- **Status:** [ ] TODO
+- **Status:** [x] DONE — 2026-06-16 (commit pending push)
+- **Done (armv7→arm64):** `ios/App/App/Info.plist` `UIRequiredDeviceCapabilities` changed `armv7` → `arm64` (real fix — armv7 is 32-bit, invalid on the iOS-14 64-bit-only target).
+- **AppIcon — false alarm, no change needed:** verified the icon is actually valid. It's a single 1024×1024 "single-size" app icon (`idiom: universal, platform: ios`), which **Xcode 14+ supports** and Capacitor produces by default. The PNG checks out: **1024×1024, no alpha channel, 8-bit RGB** — exactly what Apple requires. The audit's "malformed" concern was based on the older multi-size requirement; it does not apply. (No `assets/` source + capacitor-assets not installed, so regeneration was neither possible nor warranted.)
+- **⚠️ Operational:** archive the build with a recent Xcode (14+) so it expands the single-size icon to all required renditions for App Store Connect.
 - **Files:** `ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json` (only one 1024 universal image — malformed); `ios/App/App/Info.plist:40-43` (`UIRequiredDeviceCapabilities → armv7`).
 - **Problem:** Single-image appiconset risks "Missing app icon" upload rejection. `armv7` (32-bit) on an iOS-14 (64-bit-only) target is contradictory → "invalid bundle/unsupported architecture" risk.
 - **Fix:** Run `npm run ios:assets` (capacitor-assets) to regenerate the full icon set. Change `armv7` → `arm64` in Info.plist.
@@ -242,3 +245,4 @@
 - 2026-06-16 — **LR-03 done**: `fetchWithTimeout` in `_shared/ritual.ts` (covers all ritual-*) + `tarot-reading`; personal-horoscope/generate-horoscopes already had timeouts. push-worker timeout deferred to LR-10. tests 194/194. Next: LR-09 or LR-10.
 - 2026-06-16 — **LR-09 done**: resume-time premium entitlement refresh in `boot/auth.ts` (`syncPremiumOnResume`). tests 194/194. Next: LR-10 (push-worker secret + per-send catch + timeout) — last P0-code item before iOS-native LR-07/08.
 - 2026-06-16 — **LR-10 done**: push-worker now requires `ADMIN_PUSH_SECRET`, per-send try/catch (one bad send no longer aborts the batch), and fetch timeouts on APNs + REST (completes LR-03 too). tests 194/194. **All P0 CODE items are now done** — remaining P0 is iOS-native (LR-07/08, needs Xcode) + Apple operational (LR-11..14). Ops reminders: set `OPENROUTER_API_KEY` + `ADMIN_PUSH_SECRET` secrets.
+- 2026-06-16 — **LR-07 done**: Info.plist `armv7→arm64`; AppIcon verified valid (single-size 1024, no alpha, RGB) — the "malformed" concern was a false alarm (Xcode 14+ single-size format). tests 194/194. Next: LR-08 (privacy manifest).
