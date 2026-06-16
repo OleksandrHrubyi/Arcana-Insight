@@ -371,6 +371,161 @@ async function callOpenAIJsonSchema(params: {
   return parsed;
 }
 
+/**
+ * OpenRouter fallback for the same JSON-shaped calls. OpenRouter's
+ * /chat/completions uses response_format: json_object (no strict schema), so the
+ * required shape is described in the system prompt and parsed defensively.
+ */
+async function callOpenRouterJson(params: {
+  model: string;
+  system: string;
+  user: string;
+  schemaName: string;
+  schema: any;
+  temperature: number;
+  maxTokens: number;
+}) {
+  const apiKey = Deno.env.get("OPENROUTER_API_KEY");
+  if (!apiKey) throw new Error("Missing OPENROUTER_API_KEY");
+  const model = Deno.env.get("OPENROUTER_MODEL") ?? "openai/gpt-4o-mini";
+  const url = Deno.env.get("OPENROUTER_URL") ?? "https://openrouter.ai/api/v1/chat/completions";
+  const count = params.schema?.properties?.items?.minItems ?? null;
+  const shapeHint = `Return ONLY a JSON object of the form {"items":[{"sign":string,"theme":string,"summary":string,"detailed":string}]}${count ? ` with EXACTLY ${count} items` : ""}. No markdown, no commentary.`;
+
+  const timeoutMs = Math.max(15000, Number(Deno.env.get("OPENAI_TIMEOUT_MS") ?? 90000));
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(`OpenRouter timeout after ${timeoutMs}ms`), timeoutMs);
+
+  console.log(`[generate-horoscopes] OpenRouter start: ${params.schemaName}, model=${model}`);
+
+  let resp: Response;
+  try {
+    resp = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+        "HTTP-Referer": Deno.env.get("OPENROUTER_HTTP_REFERER") ?? "https://arcana-insight.app",
+        "X-Title": Deno.env.get("OPENROUTER_X_TITLE") ?? "Arcana Insight",
+      },
+      body: JSON.stringify({
+        model,
+        temperature: params.temperature,
+        max_tokens: params.maxTokens,
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: `${params.system}\n\n${shapeHint}` },
+          { role: "user", content: params.user },
+        ],
+      }),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    clearTimeout(timeout);
+    throw new Error(`OpenRouter fetch failed (${params.schemaName}): ${err instanceof Error ? err.message : String(err)}`);
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  console.log(`[generate-horoscopes] OpenRouter done: ${params.schemaName}, status=${resp.status}`);
+
+  if (!resp.ok) {
+    const err = await resp.text().catch(() => "");
+    throw new Error(`OpenRouter error: ${resp.status} ${err}`);
+  }
+
+  const data = await resp.json();
+  const rawContent = data?.choices?.[0]?.message?.content;
+  const outTextRaw = typeof rawContent === "string"
+    ? rawContent
+    : Array.isArray(rawContent)
+      ? rawContent.map((c: any) => String(c?.text ?? c?.content ?? "")).join("")
+      : "";
+  if (!outTextRaw) throw new Error("OpenRouter: empty content");
+
+  const outText = sanitizeJsonText(outTextRaw);
+  try {
+    return JSON.parse(outText);
+  } catch (_e) {
+    const start = outText.indexOf("{");
+    const end = outText.lastIndexOf("}");
+    if (start === -1 || end <= start) {
+      throw new Error(`OpenRouter JSON.parse failed (${params.schemaName}) | tail=${outText.slice(-220)}`);
+    }
+    return JSON.parse(outText.slice(start, end + 1));
+  }
+}
+
+/**
+ * Provider fallback: try OpenAI first, then OpenRouter. Throws AI_UNAVAILABLE
+ * (carrying both provider reasons) only if every provider fails. Used for both
+ * generation and translation so an OpenAI outage no longer drops the daily run.
+ */
+async function callModelJson(params: {
+  model: string;
+  system: string;
+  user: string;
+  schemaName: string;
+  schema: any;
+  temperature: number;
+  maxTokens: number;
+}) {
+  const providerErrors: string[] = [];
+
+  if (Deno.env.get("OPENAI_API_KEY")) {
+    try {
+      return await callOpenAIJsonSchema(params);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      providerErrors.push(`openai: ${msg}`);
+      console.error(`[generate-horoscopes] openai failed (${params.schemaName}):`, msg);
+    }
+  } else {
+    providerErrors.push("openai: missing_openai_api_key");
+  }
+
+  if (Deno.env.get("OPENROUTER_API_KEY")) {
+    try {
+      return await callOpenRouterJson(params);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      providerErrors.push(`openrouter: ${msg}`);
+      console.error(`[generate-horoscopes] openrouter failed (${params.schemaName}):`, msg);
+    }
+  } else {
+    providerErrors.push("openrouter: missing_openrouter_api_key");
+  }
+
+  throw new Error(`AI_UNAVAILABLE (${params.schemaName}): ${providerErrors.join(" | ")}`);
+}
+
+/**
+ * Server-side safety backstop, calibrated for DAILY HOROSCOPES (longer and more
+ * conversational than tarot, which uses a stricter guard). It only catches
+ * genuinely unsafe copy — hard fatalism, medical, and financial instructions —
+ * NOT every "will"/"should", to avoid dropping legitimate horoscope text. The
+ * prompt remains the primary defense; this is the last line. EN + UK.
+ */
+function containsDisallowed(text: string): boolean {
+  const t = String(text || "").toLowerCase();
+  const patterns = [
+    // hard fatalism / determinism
+    /\bwill (definitely|certainly|surely|undoubtedly)\b/,
+    /\b(is|are) (destined|guaranteed|fated|predetermined)\b/,
+    /\b(inevitably|unavoidably)\b/,
+    /\b(неминуче|обов'?язково станеться|точно станеться|гарантовано|судилося|приречен)\w*/,
+    // medical
+    /\b(diagnos|disease|symptom|medication|prescrib|illness)\w*/,
+    /\b(see|consult|visit)\s+(a\s+)?doctor\b/,
+    /\b(лікар|діагноз|хвороб|ліки|симптом|лікуванн|медичн)\w*/,
+    // financial instructions
+    /\b(buy|sell|invest\s+in|invest\s+your)\s+(stock|shares|crypto|bitcoin)\b/,
+    /\binvest(ment)?\s+(advice|in\b)/,
+    /\b(інвестуй|купуй\s+акці|продавай\s+акці|вклади\s+гроші|кредит)\w*/,
+  ];
+  return patterns.some((re) => re.test(t));
+}
+
 async function generateTheme12En(params: {
   date: string;
   theme: Theme;
@@ -398,7 +553,7 @@ Generate EXACTLY 12 items: one for each zodiac sign, all with theme "${params.th
 Return valid JSON strictly matching the schema.
 `.trim();
 
-  const parsed = await callOpenAIJsonSchema({
+  const parsed = await callModelJson({
     model,
     system: rulesEn(),
     user,
@@ -440,7 +595,7 @@ Date (UTC): ${params.date}
 ${JSON.stringify({ items: params.itemsEn })}
 `.trim();
 
-  const parsed = await callOpenAIJsonSchema({
+  const parsed = await callModelJson({
     model,
     system: rulesTranslateUk(),
     user,
@@ -622,7 +777,32 @@ Deno.serve(async (req) => {
       })),
     ];
 
-    const { error: upsertErr } = await supabase.from("horoscopes").upsert(rows, {
+    // Safety backstop: drop any sign/theme whose EN or UK copy trips the content
+    // guard, so unsafe AI text never reaches users. Dropped items self-heal on
+    // the next cron run (the count-check below stays unmet and re-generates).
+    const disallowedKeys = new Set<string>();
+    for (const r of rows) {
+      if (containsDisallowed(`${r.summary} ${r.detailed}`)) {
+        disallowedKeys.add(`${r.sign}:${r.theme}`);
+      }
+    }
+    if (disallowedKeys.size > 0) {
+      console.error(
+        `[generate-horoscopes] dropping ${disallowedKeys.size} disallowed sign/theme pair(s) for ${date}:`,
+        [...disallowedKeys].join(", "),
+      );
+    }
+    const safeRows = rows.filter((r) => !disallowedKeys.has(`${r.sign}:${r.theme}`));
+
+    if (safeRows.length === 0) {
+      console.error(`[generate-horoscopes] all items failed the content guard for ${date}; nothing written`);
+      return new Response(
+        JSON.stringify({ ok: false, step: "content_guard", date, dropped: [...disallowedKeys] }),
+        { status: 502, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    const { error: upsertErr } = await supabase.from("horoscopes").upsert(safeRows, {
       onConflict: "date,sign,theme,locale",
     });
 
@@ -636,7 +816,8 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         ok: true,
-        inserted: rows.length,
+        inserted: safeRows.length,
+        dropped: [...disallowedKeys],
         date,
         theme: requestedTheme,
         locales: ["en", "uk"],

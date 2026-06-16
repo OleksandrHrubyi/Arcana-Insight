@@ -29,7 +29,10 @@
 ### Backend reliability
 
 #### LR-01 · `generate-horoscopes`: add provider fallback + content-safety guard — 🔴 · M
-- **Status:** [ ] TODO
+- **Status:** [x] DONE — 2026-06-16 (commit pending push)
+- **Done:** Added `callOpenRouterJson` + `callModelJson` (try OpenAI → OpenRouter → `AI_UNAVAILABLE`); both generation and translation now route through it. Added `containsDisallowed()` and a pre-upsert filter that drops any unsafe `sign:theme` (logs + reports `dropped`); empty-after-filter returns 502. Verified structurally (no local Deno) + `npm test` 194/194.
+- **Note (calibration):** the guard is intentionally LESS strict than `tarot-reading`'s — horoscopes are longer/conversational, so it only catches hard fatalism / medical / financial-instruction patterns (EN+UK), NOT bare `will`/`should`, to avoid nuking legitimate copy.
+- **⚠️ Operational:** fallback only works if **`OPENROUTER_API_KEY`** (+ optional `OPENROUTER_MODEL/URL`) is set in Supabase secrets for this function. Confirm before relying on it.
 - **File:** `supabase/functions/generate-horoscopes/index.ts`
 - **Problem:** Single-provider (OpenAI `/v1/responses` only). No OpenAI→OpenRouter fallback, no server-side `containsDisallowed()` guard. If OpenAI is down/rate-limited, the **daily horoscope cron for all 12 signs fails** → stale/empty horoscopes for everyone. Unsafe AI text (predictive/medical/advice) can ship unfiltered.
 - **Fix:** Mirror `supabase/functions/tarot-reading/index.ts`: wrap OpenAI in try/catch, add OpenRouter fallback (`OPENROUTER_*` env), collect `providerErrors`, and run a `containsDisallowed()` regex guard (EN+UK future/directive/medical patterns) before persisting to `zodiac_texts`. Skip/flag a sign rather than writing bad text.
@@ -219,3 +222,4 @@
 > Append one line per work session: date — items moved — commit(s).
 
 - 2026-06-16 — Plan created from deep audit. Baseline: 194/194 tests, readiness 74%. Earlier today: fixed bottom-sheet pointer-events bug across all dialogs (commits `6808838`, `43e47a1`); home screen finished + haptics/close-button/back-nav (`e5f0bc6`).
+- 2026-06-16 — **LR-01 done**: OpenRouter fallback + horoscope-calibrated content guard in `generate-horoscopes`. Tests 194/194. Next: LR-02 (`personal-horoscope`). Reminder: set `OPENROUTER_API_KEY` secret.
