@@ -48,7 +48,8 @@
 - **Verify:** OPTIONS returns CORS; OpenAI-fail → OpenRouter; error response contains no provider internals; client (`PersonalHoroscopePage.vue:320`) still shows its localized message.
 
 #### LR-03 · Shared fetch-timeout helper for all edge functions — 🔴 · S/M
-- **Status:** [ ] TODO
+- **Status:** [x] DONE — 2026-06-16 (commit pending push)
+- **Done:** `_shared/ritual.ts` now has `fetchWithTimeout` (10s) used in `restRequest` + `rpcRequest` → covers all `ritual-*` functions. `tarot-reading` got its own `fetchWithTimeout` (`AI_TIMEOUT_MS`, 60s) on both provider fetches. `personal-horoscope` (LR-02) and `generate-horoscopes` (pre-existing) already have timeouts. **`push-worker` timeouts are folded into LR-10** (editing it there anyway for the secret + per-send catch). Verified: no bare `await fetch(` left outside the helpers, braces balanced, `npm test` 194/194.
 - **Files:** `supabase/functions/_shared/ritual.ts` (add helper) + apply in `personal-horoscope`, `tarot-reading`, `push-worker`, `ritual-*`.
 - **Problem:** Deno `fetch` has no default timeout → any stalled provider/Supabase connection can **hang indefinitely** (worst on the crons).
 - **Fix:** Add `fetchWithTimeout(url, opts, ms=10000)` using `AbortSignal.timeout(ms)`; replace bare `fetch` calls to providers/Supabase REST. Only `generate-horoscopes` currently has any timeout.
@@ -235,3 +236,4 @@
 - 2026-06-16 — **LR-04 done**: Horoscope error+retry state (kills the infinite skeleton); `common.loadError`/`common.retry` i18n. eslint 0, parity 0, tests 194/194. Next: LR-05 (global error handler) or LR-03.
 - 2026-06-16 — **LR-05 done**: global error safety net boot file (`errorHandler` + `unhandledrejection` + `error` listeners), registered first. eslint 0, tests 194/194. Next: LR-06 (MyDayPage offline guard) or LR-03.
 - 2026-06-16 — **LR-06 done (by deletion)**: `MyDayPage.vue` was dead (route redirects, no imports) → deleted with permission; offline-hang surface gone. tests 194/194. Next: LR-03 or LR-09/LR-10.
+- 2026-06-16 — **LR-03 done**: `fetchWithTimeout` in `_shared/ritual.ts` (covers all ritual-*) + `tarot-reading`; personal-horoscope/generate-horoscopes already had timeouts. push-worker timeout deferred to LR-10. tests 194/194. Next: LR-09 or LR-10.

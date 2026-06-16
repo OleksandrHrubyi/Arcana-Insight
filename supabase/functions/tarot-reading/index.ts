@@ -10,6 +10,19 @@ const OPENROUTER_MODEL = Deno.env.get('OPENROUTER_MODEL') || 'openai/gpt-4o-mini
 const OPENROUTER_URL = Deno.env.get('OPENROUTER_URL') || 'https://openrouter.ai/api/v1/chat/completions'
 const DEFAULT_LOCALE = 'uk'
 const AI_UNAVAILABLE_CODE = 'AI_UNAVAILABLE'
+const AI_TIMEOUT_MS = Math.max(15000, Number(Deno.env.get('OPENAI_TIMEOUT_MS') ?? 60000))
+
+// Deno fetch has no default timeout — without this a stalled provider hangs the
+// request (and the user's tarot screen) indefinitely.
+async function fetchWithTimeout(url, opts, ms = AI_TIMEOUT_MS) {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(`timeout after ${ms}ms`), ms)
+  try {
+    return await fetch(url, { ...opts, signal: controller.signal })
+  } finally {
+    clearTimeout(timeout)
+  }
+}
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -71,7 +84,7 @@ Deno.serve(async (req: Request) => {
 })
 
 async function requestOpenAiReading({ body, apiKey, language }) {
-  const response = await fetch('https://api.openai.com/v1/responses', {
+  const response = await fetchWithTimeout('https://api.openai.com/v1/responses', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -125,7 +138,7 @@ async function requestOpenAiReading({ body, apiKey, language }) {
 }
 
 async function requestOpenRouterReading({ body, apiKey, language }) {
-  const response = await fetch(OPENROUTER_URL, {
+  const response = await fetchWithTimeout(OPENROUTER_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,

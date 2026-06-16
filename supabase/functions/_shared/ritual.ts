@@ -181,6 +181,20 @@ type RestRequestParams = {
   prefer?: string
 }
 
+const REST_TIMEOUT_MS = 10000
+
+// Supabase REST/RPC calls have no default timeout in Deno fetch; without this a
+// stalled connection hangs the function indefinitely.
+const fetchWithTimeout = async (url: string, opts: RequestInit, ms = REST_TIMEOUT_MS): Promise<Response> => {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(`timeout after ${ms}ms`), ms)
+  try {
+    return await fetch(url, { ...opts, signal: controller.signal })
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
 export const restRequest = async ({
   supabaseUrl,
   serviceRole,
@@ -198,7 +212,7 @@ export const restRequest = async ({
   }
   if (prefer) headers.prefer = prefer
 
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     method,
     headers,
     body: body == null ? undefined : JSON.stringify(body),
@@ -219,7 +233,7 @@ export const rpcRequest = async ({
   body: unknown
 }) => {
   const url = `${supabaseUrl}/rest/v1/rpc/${name}`
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     method: 'POST',
     headers: {
       apikey: serviceRole,
