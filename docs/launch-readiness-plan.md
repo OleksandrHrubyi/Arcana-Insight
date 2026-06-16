@@ -64,7 +64,9 @@
 ### Frontend stability
 
 #### LR-04 · Horoscope: error + retry state (kill the infinite skeleton) — 🔴 · S
-- **Status:** [ ] TODO
+- **Status:** [x] DONE — 2026-06-16 (commit pending push)
+- **Done:** Added `horoscopeLoadError` flag; `refreshHoroscopesForDay` sets it on failure **only when there's no cached content** for the current theme (otherwise fails silently and keeps content). Added `retryHoroscopes()` (`forceNetwork: true`). Template: each of the 3 theme panels now renders a `v-else-if="horoscopeLoadError"` error block (message + Retry button) ahead of the skeleton, so it can no longer loop forever. New i18n `common.loadError` + `common.retry` (en+uk) + `.horoscope-error*` CSS. Verified: eslint 0, i18n parity 0, `npm test` 194/194.
+- **Note:** error-state can't be screenshotted in QA (no dev hook to force a load failure on `/horoscope`); change is additive + lint-parsed.
 - **File:** `src/components/main/HoroscopeComponent.vue:712-718` (`refreshHoroscopesForDay`)
 - **Problem:** On fetch failure (offline/Supabase down) it only `console.warn`s, leaving `horoscope = {}` → **permanent skeleton loader, no message, no retry**. This is a PRIMARY value screen — worst in-app failure mode.
 - **Fix:** Track an error/empty state; render a visible message + "Retry" button that re-calls the loader. Distinguish loading vs error vs empty.
@@ -226,3 +228,4 @@
 - 2026-06-16 — Plan created from deep audit. Baseline: 194/194 tests, readiness 74%. Earlier today: fixed bottom-sheet pointer-events bug across all dialogs (commits `6808838`, `43e47a1`); home screen finished + haptics/close-button/back-nav (`e5f0bc6`).
 - 2026-06-16 — **LR-01 done**: OpenRouter fallback + horoscope-calibrated content guard in `generate-horoscopes`. Tests 194/194. Next: LR-02 (`personal-horoscope`). Reminder: set `OPENROUTER_API_KEY` secret.
 - 2026-06-16 — **LR-02 done**: `personal-horoscope` — CORS/OPTIONS/405, OpenAI→OpenRouter fallback, `fetchWithTimeout`, content guard, and structured non-leaking errors. Tests 194/194. (Side effect: this function now has a fetch timeout, partially covering LR-03; `push-worker`/`ritual-*`/`tarot-reading` timeouts still pending in LR-03.) Next: LR-03 or LR-04.
+- 2026-06-16 — **LR-04 done**: Horoscope error+retry state (kills the infinite skeleton); `common.loadError`/`common.retry` i18n. eslint 0, parity 0, tests 194/194. Next: LR-05 (global error handler) or LR-03.

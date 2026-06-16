@@ -107,6 +107,12 @@
                   <template v-if="hasThemeText('energy')">
                     {{ getThemeText('energy') }}
                   </template>
+                  <div v-else-if="horoscopeLoadError" class="horoscope-error">
+                    <p class="horoscope-error__text">{{ tt('common.loadError') }}</p>
+                    <button type="button" class="horoscope-error__retry" @click="retryHoroscopes">
+                      {{ tt('common.retry') }}
+                    </button>
+                  </div>
                   <div v-else class="horoscope-text-skeleton" aria-hidden="true">
                     <span
                       v-for="index in 6"
@@ -133,6 +139,12 @@
                   <template v-if="hasThemeText('love')">
                     {{ getThemeText('love') }}
                   </template>
+                  <div v-else-if="horoscopeLoadError" class="horoscope-error">
+                    <p class="horoscope-error__text">{{ tt('common.loadError') }}</p>
+                    <button type="button" class="horoscope-error__retry" @click="retryHoroscopes">
+                      {{ tt('common.retry') }}
+                    </button>
+                  </div>
                   <div v-else class="horoscope-text-skeleton" aria-hidden="true">
                     <span
                       v-for="index in 6"
@@ -173,6 +185,12 @@
                   <template v-if="hasThemeText('career')">
                     {{ getThemeText('career') }}
                   </template>
+                  <div v-else-if="horoscopeLoadError" class="horoscope-error">
+                    <p class="horoscope-error__text">{{ tt('common.loadError') }}</p>
+                    <button type="button" class="horoscope-error__retry" @click="retryHoroscopes">
+                      {{ tt('common.retry') }}
+                    </button>
+                  </div>
                   <div v-else class="horoscope-text-skeleton" aria-hidden="true">
                     <span
                       v-for="index in 6"
@@ -408,6 +426,7 @@ export default {
       ],
 
       horoscope: {},
+      horoscopeLoadError: false,
       authStore,
       userSignApplied: false,
       userDob: '',
@@ -712,9 +731,18 @@ export default {
     async refreshHoroscopesForDay(options = {}) {
       try {
         await this.loadHoroscopesForDay(options)
+        this.horoscopeLoadError = false
       } catch (e) {
         console.warn('[Horoscope] loadHoroscopesForDay failed', e)
+        // Only surface an error if we have nothing cached to show; otherwise keep
+        // the existing content and fail silently.
+        if (!this.hasThemeText(this.themeTab)) this.horoscopeLoadError = true
       }
+    },
+
+    async retryHoroscopes() {
+      this.horoscopeLoadError = false
+      await this.refreshHoroscopesForDay({ forceNetwork: true })
     },
 
     parseBirthDate(value) {
@@ -2168,6 +2196,41 @@ export default {
   display: grid;
   gap: 8px;
   padding: 6px clamp(14px, 4vw, 22px);
+}
+
+.horoscope-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 18px clamp(14px, 4vw, 22px);
+  text-align: center;
+}
+
+.horoscope-error__text {
+  margin: 0;
+  max-width: 280px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(226, 232, 241, 0.78);
+}
+
+.horoscope-error__retry {
+  min-height: 40px;
+  padding: 9px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(159, 216, 246, 0.36);
+  background: rgba(159, 216, 246, 0.12);
+  color: #e9edf4;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.horoscope-error__retry:active {
+  transform: translateY(1px);
+  filter: saturate(0.92);
 }
 
 .horoscope-text-skeleton__line {
