@@ -73,7 +73,9 @@
 - **Verify:** Offline → see error + retry (not endless skeleton); retry recovers when back online.
 
 #### LR-05 · Global error safety net (`errorHandler` + `unhandledrejection`) — 🔴 · S
-- **Status:** [ ] TODO
+- **Status:** [x] DONE — 2026-06-16 (commit pending push)
+- **Done:** New boot file `src/boot/error-handler.js` (registered FIRST in `quasar.config.js` boot array so it catches errors during other boots' init). Sets `app.config.errorHandler` (Vue component errors), and `window` listeners for `unhandledrejection` (logged + `preventDefault()` to mark handled) and `error` (uncaught runtime). All tagged (`[vue-error]`/`[unhandledrejection]`/`[window-error]`). eslint 0, `npm test` 194/194.
+- **Future (P2):** could forward these to analytics for crash visibility — left out to avoid boot-time coupling.
 - **Files:** app bootstrap (e.g. `src/App.vue` / a boot file). No `app.config.errorHandler` or `window.onunhandledrejection` exists repo-wide.
 - **Problem:** Any unhandled rejection → silent broken state, no logging, no recovery.
 - **Fix:** Add `app.config.errorHandler` (log + optional analytics) and a `window.addEventListener('unhandledrejection', …)` that logs and fails gracefully.
@@ -229,3 +231,4 @@
 - 2026-06-16 — **LR-01 done**: OpenRouter fallback + horoscope-calibrated content guard in `generate-horoscopes`. Tests 194/194. Next: LR-02 (`personal-horoscope`). Reminder: set `OPENROUTER_API_KEY` secret.
 - 2026-06-16 — **LR-02 done**: `personal-horoscope` — CORS/OPTIONS/405, OpenAI→OpenRouter fallback, `fetchWithTimeout`, content guard, and structured non-leaking errors. Tests 194/194. (Side effect: this function now has a fetch timeout, partially covering LR-03; `push-worker`/`ritual-*`/`tarot-reading` timeouts still pending in LR-03.) Next: LR-03 or LR-04.
 - 2026-06-16 — **LR-04 done**: Horoscope error+retry state (kills the infinite skeleton); `common.loadError`/`common.retry` i18n. eslint 0, parity 0, tests 194/194. Next: LR-05 (global error handler) or LR-03.
+- 2026-06-16 — **LR-05 done**: global error safety net boot file (`errorHandler` + `unhandledrejection` + `error` listeners), registered first. eslint 0, tests 194/194. Next: LR-06 (MyDayPage offline guard) or LR-03.
