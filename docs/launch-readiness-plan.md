@@ -186,7 +186,9 @@
 - **Fix:** Return an error status separate from empty; show a retry; toast/inline on delete failure.
 
 #### LR-18 · Ritual Rewards: error/retry on authed dashboard + i18n keys — 🟡 · M
-- **Status:** [ ] TODO
+- **Status:** [x] ROBUSTNESS DONE — 2026-06-16 (commit pending push). i18n migration split out → P2 (LR-24).
+- **Done:** `refreshRemoteDashboard` now returns a success boolean and catches errors; on a logged-in sync failure `onMounted` surfaces a non-blocking `$q.notify` **warning toast with a Retry action** (`notifyDashboardSyncFailed`) instead of silently falling back to local points. The 30s ticker now starts in a `finally` so a failed/throwing load can't leave timed unlocks frozen. eslint 0, tests 194/194.
+- **Deferred (P2):** the **32 inline `locale === 'uk' ? … : …` ternaries** in this file are pure polish (they render correctly in both languages) and a large mechanical refactor (~64 i18n keys). Tracked under LR-24; better as its own focused task, not a launch blocker.
 - **File:** `src/pages/RitualRewardsPage.vue:251-277`
 - **Problem:** Authed dashboard fetch-failure silently falls back to local points (no error/retry). Pervasive hardcoded `uk?:en` ternaries instead of i18n keys; `pts` unit not localized. Also `tickTimer` setInterval sits after the guarded block → won't start if load throws.
 - **Fix:** Add error/retry UI; move inline strings to i18n; start the timer regardless of load outcome.
@@ -222,6 +224,7 @@
 - `delete-account` partial-deletion → retry/queue orphaned rows.
 - Strip ~13 debug `console.log/info` from `src/` (the 86 `error`/59 `warn` are legit). Edge functions: confirm tagged `[fn-name]` prefix.
 - Remove stray dup files: `ios/App/App/config 2.xml` (tracked), `src/data/cardsV1/tarot_full.json` (392K dup; active is `src/data/cardsV2/tarot_full.json`).
+- RitualRewards: migrate the 32 inline `locale === 'uk' ? … : …` ternaries to i18n keys (from LR-18; ~64 keys, mechanical, pure polish).
 - Normalized per-period price on paywall ("$X/month").
 - Guest purchase before login can orphan entitlement — gate purchase behind auth OR verify RC alias transfer in sandbox Test 4.
 - Refactor giant components (TarotOraclePage 3185, LandingScene 3085) — maintainability only.
@@ -268,3 +271,4 @@
 - 2026-06-16 — **LR-11 code done**: in-app Privacy/Terms now has a working contact mailto, third-party processor disclosure + Privacy Policy link, subscription EULA terms + Apple EULA link; `onBack` home-fallback. Hosted policy already lists processors. parity 0, eslint 0, tests 194/194. Remaining LR-11 = verify hosted URLs live (ops). Next pure-ops: LR-12 (sandbox IAP), LR-13 (ASC products), LR-14 (screenshots) — all need you.
 - 2026-06-16 — **LR-15 done (P1)**: paywall funnel was already fully instrumented; added the genuine gaps — `ritual_complete` (per-activity, first-of-day, in `markDailyActivity`) + `daily_active` (once/day, App.vue). Dynamic analytics import keeps the tested helper's static graph clean. tests 194/194, eslint 0. Next P1: LR-17 (SavedReadings error state) / LR-18 / LR-20.
 - 2026-06-16 — **LR-17 done (P1)**: SavedReadings now shows error+retry on fetch failure (was masked as empty) and a toast on delete failure. eslint 0, tests 194/194. Next P1: LR-18 (RitualRewards) / LR-20 (Account email affordance).
+- 2026-06-16 — **LR-18 robustness done (P1)**: RitualRewards dashboard sync failure now surfaces a retry toast (was silent) + ticker starts in finally. The 32-ternary i18n migration deferred to P2 (LR-24). eslint 0, tests 194/194. Next P1: LR-20 (Account email affordance) / LR-19 (Onboarding).

@@ -205,6 +205,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { currentLocale } from 'src/i18n'
+import { useQuasar } from 'quasar'
 import { useAuthStore } from 'stores/authStore.js'
 import { computeLocalRitualPoints } from 'src/helpers/dailyRitual'
 import { claimRitualReward, loadRitualDashboard } from 'src/helpers/ritualRewardsBackend.js'
@@ -243,37 +244,67 @@ const TIMED_UNLOCK_KEYS = new Set([
   RITUAL_REWARD_KEYS.horoscopeCareerUnlock24h,
 ])
 
+const $q = useQuasar()
+
 const refreshLocalState = () => {
   localPoints.value = computeLocalRitualPoints(new Date())
   localRewardInventory.value = readGuestRewardInventory()
 }
 
+const notifyDashboardSyncFailed = () => {
+  $q.notify({
+    type: 'warning',
+    position: 'top',
+    message: locale.value === 'uk' ? 'Не вдалося синхронізувати нагороди.' : 'Couldn’t sync rewards.',
+    actions: [
+      {
+        label: locale.value === 'uk' ? 'Ще раз' : 'Retry',
+        color: 'white',
+        handler: async () => {
+          const ok = await refreshRemoteDashboard(true)
+          if (!ok) notifyDashboardSyncFailed()
+        },
+      },
+    ],
+  })
+}
+
+// Returns true when synced (or no signed-in user), false when a logged-in sync
+// failed — so callers can surface it instead of silently using local points.
 const refreshRemoteDashboard = async (force = false) => {
   const userId = String(authStore.state.user?.id || '').trim()
   if (!userId) {
     remoteDashboard.value = null
-    return
+    return true
   }
 
-  const result = await loadRitualDashboard({
-    force,
-    userId,
-  })
-  if (result.ok && result.data) {
-    remoteDashboard.value = result.data.dashboard || result.data
+  try {
+    const result = await loadRitualDashboard({ force, userId })
+    if (result.ok && result.data) {
+      remoteDashboard.value = result.data.dashboard || result.data
+      return true
+    }
+    return false
+  } catch (error) {
+    console.warn('[RitualRewards] dashboard sync failed', error)
+    return false
   }
 }
 
 onMounted(async () => {
   refreshLocalState()
+  let synced = true
   try {
-    await refreshRemoteDashboard(true)
+    synced = await refreshRemoteDashboard(true)
   } finally {
     isInitialLoading.value = false
+    // Start the ticker regardless of sync outcome so a failed load can't leave
+    // timed unlocks frozen.
+    tickTimer = window.setInterval(() => {
+      nowTick.value = Date.now()
+    }, 30_000)
   }
-  tickTimer = window.setInterval(() => {
-    nowTick.value = Date.now()
-  }, 30_000)
+  if (!synced) notifyDashboardSyncFailed()
 })
 
 onBeforeUnmount(() => {
