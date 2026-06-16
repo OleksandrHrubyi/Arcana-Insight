@@ -56,7 +56,9 @@
 - **Verify:** Point a call at a non-responsive endpoint → fails fast with a clear reason, not a hang.
 
 #### LR-10 · `push-worker`: require `ADMIN_PUSH_SECRET` + per-send try/catch — 🔴 · M
-- **Status:** [ ] TODO
+- **Status:** [x] DONE — 2026-06-16 (commit pending push)
+- **Done:** (1) **Auth now required** — if `ADMIN_PUSH_SECRET` is unset the worker returns 500 ("Server misconfigured") instead of running open; the `x-push-secret` header must match. (2) **Per-send try/catch** in `sendApns` map — a network error/timeout on one device now returns a `network_error` failure result instead of rejecting `Promise.all` and aborting the whole 50-device batch. (3) **Timeout** — added `fetchWithTimeout` (10s) on the APNs send + all 4 Supabase REST calls (this also completes the push-worker part of LR-03). Verified: only bare fetch is inside the helper, braces 150=150, `npm test` 194/194.
+- **⚠️ Operational:** set `ADMIN_PUSH_SECRET` in Supabase secrets, and ensure the cron/caller sends the `x-push-secret` header — otherwise the worker now refuses to run.
 - **File:** `supabase/functions/push-worker/index.ts`
 - **Problem:** APNs sends use `Promise.all` with no per-fetch catch → one network rejection aborts a 50-device batch. Auth is gated **only** by `ADMIN_PUSH_SECRET`; **if that env var is unset, the worker is fully unauthenticated** (anyone can trigger a push blast).
 - **Fix:** Hard-fail (401/500) if `ADMIN_PUSH_SECRET` is missing. Wrap each APNs send in try/catch (use `Promise.allSettled`) so one failure doesn't kill the batch; log per-device failures.
@@ -239,3 +241,4 @@
 - 2026-06-16 — **LR-06 done (by deletion)**: `MyDayPage.vue` was dead (route redirects, no imports) → deleted with permission; offline-hang surface gone. tests 194/194. Next: LR-03 or LR-09/LR-10.
 - 2026-06-16 — **LR-03 done**: `fetchWithTimeout` in `_shared/ritual.ts` (covers all ritual-*) + `tarot-reading`; personal-horoscope/generate-horoscopes already had timeouts. push-worker timeout deferred to LR-10. tests 194/194. Next: LR-09 or LR-10.
 - 2026-06-16 — **LR-09 done**: resume-time premium entitlement refresh in `boot/auth.ts` (`syncPremiumOnResume`). tests 194/194. Next: LR-10 (push-worker secret + per-send catch + timeout) — last P0-code item before iOS-native LR-07/08.
+- 2026-06-16 — **LR-10 done**: push-worker now requires `ADMIN_PUSH_SECRET`, per-send try/catch (one bad send no longer aborts the batch), and fetch timeouts on APNs + REST (completes LR-03 too). tests 194/194. **All P0 CODE items are now done** — remaining P0 is iOS-native (LR-07/08, needs Xcode) + Apple operational (LR-11..14). Ops reminders: set `OPENROUTER_API_KEY` + `ADMIN_PUSH_SECRET` secrets.

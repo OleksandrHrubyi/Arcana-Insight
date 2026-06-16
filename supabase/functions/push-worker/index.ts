@@ -24,6 +24,20 @@ function requireEnv(name: string): string {
   return v
 }
 
+const FETCH_TIMEOUT_MS = 10000
+
+// Deno fetch has no default timeout; a stalled APNs/Supabase connection would
+// otherwise hang the worker indefinitely.
+async function fetchWithTimeout(url: string, opts: RequestInit, ms = FETCH_TIMEOUT_MS): Promise<Response> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(`timeout after ${ms}ms`), ms)
+  try {
+    return await fetch(url, { ...opts, signal: controller.signal })
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
 function b64url(bytes: Uint8Array) {
   let s = ''
   for (const b of bytes) s += String.fromCharCode(b)
@@ -123,7 +137,7 @@ async function disableTokensInDb(params: {
     const inFilter = `in.(${batch.join(',')})`
     const url = `${supabaseUrl}/rest/v1/push_devices?token=${inFilter}`
 
-    const res = await fetch(url, {
+    const res = await fetchWithTimeout(url, {
       method: 'PATCH',
       headers: {
         apikey: serviceRole,
@@ -160,7 +174,7 @@ async function updateTokensEnvInDb(params: {
     const inFilter = `in.(${batch.join(',')})`
     const url = `${supabaseUrl}/rest/v1/push_devices?token=${inFilter}`
 
-    const res = await fetch(url, {
+    const res = await fetchWithTimeout(url, {
       method: 'PATCH',
       headers: {
         apikey: serviceRole,
@@ -188,7 +202,7 @@ async function rpcPushMarkSent(params: {
   if (!params.tokens.length) return 0
 
   const url = `${params.supabaseUrl}/rest/v1/rpc/push_mark_sent`
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     method: 'POST',
     headers: {
       apikey: params.serviceRole,
@@ -215,7 +229,7 @@ async function fetchDue(params: { supabaseUrl: string; serviceRole: string; limi
   qs.set('limit', String(params.limit))
 
   const url = `${params.supabaseUrl}/rest/v1/push_devices?${qs.toString()}`
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     headers: {
       apikey: params.serviceRole,
       authorization: `Bearer ${params.serviceRole}`,
@@ -248,30 +262,42 @@ async function sendApns(params: {
     const results = await Promise.all(
       batch.map(async (token) => {
         const url = `${params.host}/3/device/${token}`
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: {
-            authorization: `bearer ${params.jwt}`,
-            'apns-topic': params.bundleId,
-            'apns-push-type': 'alert',
-            'apns-priority': '10',
-            'content-type': 'application/json',
-          },
-          body: JSON.stringify(params.payload),
-        })
+        try {
+          const res = await fetchWithTimeout(url, {
+            method: 'POST',
+            headers: {
+              authorization: `bearer ${params.jwt}`,
+              'apns-topic': params.bundleId,
+              'apns-push-type': 'alert',
+              'apns-priority': '10',
+              'content-type': 'application/json',
+            },
+            body: JSON.stringify(params.payload),
+          })
 
-        if (res.ok)
+          if (res.ok)
+            return {
+              token,
+              ok: true as const,
+              status: res.status,
+              body: '',
+              reason: null as string | null,
+            }
+
+          const text = await res.text().catch(() => '')
+          const reason = parseApnsReason(text)
+          return { token, ok: false as const, status: res.status, body: text, reason }
+        } catch (err) {
+          // Network error / timeout — record as a failure so one bad send can't
+          // reject Promise.all and abort the whole batch.
           return {
             token,
-            ok: true as const,
-            status: res.status,
-            body: '',
-            reason: null as string | null,
+            ok: false as const,
+            status: 0,
+            body: String((err as Error)?.message ?? err),
+            reason: 'network_error' as string | null,
           }
-
-        const text = await res.text().catch(() => '')
-        const reason = parseApnsReason(text)
-        return { token, ok: false as const, status: res.status, body: text, reason }
+        }
       }),
     )
 
@@ -502,11 +528,15 @@ function pickDailyContent(locale: string | null, dateIso: string) {
 
 Deno.serve(async (req) => {
   try {
-    // захистимо воркер секретом
+    // Require the admin secret — never run unauthenticated (an unset secret used
+    // to leave the worker fully open to anyone triggering a push blast).
     const adminSecret = Deno.env.get('ADMIN_PUSH_SECRET')
-    if (adminSecret) {
-      const got = req.headers.get('x-push-secret')
-      if (got !== adminSecret) return json({ error: 'Unauthorized' }, 401)
+    if (!adminSecret) {
+      console.error('[push-worker] ADMIN_PUSH_SECRET is not set; refusing to run')
+      return json({ error: 'Server misconfigured' }, 500)
+    }
+    if (req.headers.get('x-push-secret') !== adminSecret) {
+      return json({ error: 'Unauthorized' }, 401)
     }
 
     const SUPABASE_URL = requireEnv('SUPABASE_URL')
