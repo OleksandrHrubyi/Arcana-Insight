@@ -69,6 +69,12 @@ export default {
   opacity: 0;
   transform: translateY(16px);
   pointer-events: none;
+  /* The wrapper's pointer-events:none does NOT stop the inner .nav-tab buttons
+     (they re-enable pointer-events:auto), so the invisible nav (z-index 9999)
+     still stole taps from page content beneath it (e.g. the Daily close button).
+     visibility:hidden cascades and cannot be overridden by a child's
+     pointer-events, fully disabling the hidden nav's hit area. */
+  visibility: hidden;
 }
 
 .bottom-nav-wrap::before {
