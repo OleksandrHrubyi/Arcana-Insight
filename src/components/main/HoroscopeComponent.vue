@@ -558,6 +558,12 @@ export default {
         this.themeTab = FREE_HOROSCOPE_THEME
       }
     },
+    // The registry is cached per locale, so switching app language while on the
+    // Horoscope screen must re-select the text for the new language — otherwise
+    // the UI relabels but the horoscope body stays in the previous language.
+    locale() {
+      void this.refreshHoroscopesForDay()
+    },
     '$route.query.theme': {
       immediate: true,
       handler(nextTheme) {

@@ -94,7 +94,7 @@ function compactAstroContext(full: any) {
     sun: { sign: full?.sun?.sign ?? null },
     moon: { sign: full?.moon?.sign ?? null, phase: full?.moon?.phase ?? null },
     mercuryRetrograde: full?.mercury?.retrograde ?? full?.mercuryRetrograde ?? null,
-    eclipse: full?.eclipse ? { type: full.eclipse.type, proximityDays: full.eclipse.proximityDays } : null,
+    eclipse: full?.eclipse ? { type: full.eclipse.type, kind: full.eclipse.kind ?? null, proximityDays: full.eclipse.proximityDays } : null,
     aspects,
     keywords: Array.isArray(full?.keywords) ? full.keywords.slice(0, 5) : [],
   };
@@ -425,10 +425,58 @@ Deno.serve(async (req) => {
     const astroFull = normalizeJson(astroRow?.context);
     const astroCompact = compactAstroContext(astroFull);
 
+    // --- server-side cache lookup ---
+    // The personal reading is deterministic for a given (user, date, sign, moon,
+    // locale) tuple, so cache it to avoid a full model call on every open (the
+    // most-opened AI surface). `force` (regenerate button) bypasses the read but
+    // still refreshes the stored row. Any cache error degrades gracefully to a
+    // fresh generation — a missing `personal_horoscopes` table never 500s.
+    const force = body?.force === true;
+    const moonKey = moonSign ?? "";
+    if (!force) {
+      try {
+        const { data: cached } = await adminClient
+          .from("personal_horoscopes")
+          .select("reading")
+          .eq("user_id", user.id)
+          .eq("date", date)
+          .eq("sign", sign)
+          .eq("moon_sign", moonKey)
+          .eq("locale", locale)
+          .maybeSingle();
+        const cachedReading = normalizeJson(cached?.reading);
+        if (cachedReading?.intro && cachedReading?.love && cachedReading?.career && cachedReading?.energy) {
+          return json({ ok: true, date, sign, moonSign, locale, hasAstro: !!astroFull, cached: true, reading: cachedReading });
+        }
+      } catch (err) {
+        console.error("[personal-horoscope] cache read failed (continuing):", err instanceof Error ? err.message : String(err));
+      }
+    }
+
     // --- generate ---
     const reading = await generatePersonalReading({ sign, moonSign, date, astroCompact, interests, locale });
 
-    return json({ ok: true, date, sign, moonSign, locale, hasAstro: !!astroFull, reading });
+    // --- persist to cache (best-effort) ---
+    try {
+      await adminClient
+        .from("personal_horoscopes")
+        .upsert(
+          {
+            user_id: user.id,
+            date,
+            sign,
+            moon_sign: moonKey,
+            locale,
+            reading,
+            has_astro: !!astroFull,
+          },
+          { onConflict: "user_id,date,sign,moon_sign,locale" },
+        );
+    } catch (err) {
+      console.error("[personal-horoscope] cache write failed (non-fatal):", err instanceof Error ? err.message : String(err));
+    }
+
+    return json({ ok: true, date, sign, moonSign, locale, hasAstro: !!astroFull, cached: false, reading });
   } catch (e: any) {
     const reason = String(e?.message ?? e ?? "error");
     console.error("[personal-horoscope] failed:", e?.stack ?? e);

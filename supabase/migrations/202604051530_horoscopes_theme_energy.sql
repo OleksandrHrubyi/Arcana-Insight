@@ -101,14 +101,18 @@ begin
         add constraint horoscopes_theme_check
         check (theme in ('love', 'career', 'energy'));
     end if;
+
+    -- Only safe in the text/check-constraint branch: when theme is an enum that
+    -- has already had 'general'/'spirit' renamed to 'energy', casting those
+    -- literals throws "invalid input value for enum". The enum branch above
+    -- already renames the values, so no row-level update is needed there.
+    update public.horoscopes
+      set theme = 'energy'
+    where theme = 'general';
+
+    update public.horoscopes
+      set theme = 'energy'
+    where theme = 'spirit';
   end if;
-
-  update public.horoscopes
-    set theme = 'energy'
-  where theme = 'general';
-
-  update public.horoscopes
-    set theme = 'energy'
-  where theme = 'spirit';
 end
 $$;

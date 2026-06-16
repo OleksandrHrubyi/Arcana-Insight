@@ -109,6 +109,7 @@ import { Share } from '@capacitor/share'
 import { t, currentLocale } from 'src/i18n'
 import { invokeFunction, selectAppUser } from 'src/services/supabaseNative'
 import { useAuthStore } from 'stores/authStore.js'
+import { localISODate } from 'src/helpers/date.ts'
 
 import * as Astronomy from 'astronomy-engine'
 
@@ -134,7 +135,9 @@ const moonSign = ref('')
 // --- computed ---
 const hasBirthDate = computed(() => !!dateOfBirth.value)
 
-const todayISO = () => new Date().toISOString().slice(0, 10)
+// Use the device-local date (not UTC) so "today" matches the daily horoscope
+// screen and the cache bucket for users in negative-UTC timezones.
+const todayISO = () => localISODate()
 
 const dateLabel = computed(() => {
   const d = new Date(todayISO() + 'T00:00:00')

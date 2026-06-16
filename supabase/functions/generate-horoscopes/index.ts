@@ -63,6 +63,74 @@ function signArchetypesBlock(): string {
     .join("\n");
 }
 
+/* ---------------------------- per-sign Moon facts ---------------------------
+ * The Moon changes sign every ~2.5 days and is the most legitimate driver of a
+ * DAILY horoscope. The astro context gives us the Moon's sign globally; here we
+ * derive, for EACH zodiac sign, the real angular relationship between that sign
+ * and the current Moon sign (conjunction / sextile / square / trine / quincunx /
+ * opposition). This makes each of the 12 outputs astronomically distinct instead
+ * of differing only in prose. Phrasing is strictly descriptive ("the Moon is in
+ * a fellow earth sign") + gentle reflective framing — never predictive.
+ */
+const SIGN_ELEMENT: Record<string, string> = {
+  aries: "fire", leo: "fire", sagittarius: "fire",
+  taurus: "earth", virgo: "earth", capricorn: "earth",
+  gemini: "air", libra: "air", aquarius: "air",
+  cancer: "water", scorpio: "water", pisces: "water",
+};
+
+function moonRelationFor(targetSign: string, moonSign: string | null): string | null {
+  if (!moonSign) return null;
+  const ti = SIGNS.indexOf(targetSign as Sign);
+  const mi = SIGNS.indexOf(moonSign as Sign);
+  if (ti < 0 || mi < 0) return null;
+  if (ti === mi) {
+    return "the Moon is in your own sign today — feelings sit close to the surface; an inward, personal day";
+  }
+  let dist = Math.abs(ti - mi) % 12;
+  if (dist > 6) dist = 12 - dist;
+  const el = SIGN_ELEMENT[moonSign] ?? "";
+  switch (dist) {
+    case 6: return `the Moon is in ${moonSign}, the sign opposite yours — relationships and balance are in focus`;
+    case 4: return `the Moon is in ${moonSign}, a fellow ${el} sign — emotionally easy, things tend to flow`;
+    case 3: return `the Moon is in ${moonSign}, at a tense angle to your sign — a day to slow down rather than push`;
+    case 2: return `the Moon is in ${moonSign}, a friendly sign to yours — light, sociable support`;
+    case 5: return `the Moon is in ${moonSign} today, asking for a small adjustment in pace`;
+    case 1: return `the Moon is in neighbouring ${moonSign} today`;
+    default: return `the Moon is in ${moonSign} today`;
+  }
+}
+
+/* ---------------------------- per-sign ruler transit ------------------------
+ * Each sign has a traditional ruling planet. We already know each planet's sign
+ * and retrograde state, so for the signs ruled by Mercury/Venus/Mars/Jupiter/
+ * Saturn we can state a real, sign-specific fact ("your ruler Venus is in
+ * Cancer"). Cancer (Moon) and Leo (Sun) are intentionally omitted: their rulers
+ * are already covered by the Moon relation (T2) and the global Sun sign, so a
+ * ruler line there would be redundant. Strictly descriptive — never predictive.
+ */
+const SIGN_RULER: Record<string, string> = {
+  aries: "mars", scorpio: "mars",
+  taurus: "venus", libra: "venus",
+  gemini: "mercury", virgo: "mercury",
+  sagittarius: "jupiter", pisces: "jupiter",
+  capricorn: "saturn", aquarius: "saturn",
+  // cancer (Moon) and leo (Sun) handled by the Moon relation / Sun sign instead.
+};
+
+const RULER_DISPLAY: Record<string, string> = {
+  mercury: "Mercury", venus: "Venus", mars: "Mars", jupiter: "Jupiter", saturn: "Saturn",
+};
+
+function rulerTransitFor(targetSign: string, planets: any): string | null {
+  const ruler = SIGN_RULER[targetSign];
+  if (!ruler || !planets) return null;
+  const state = planets[ruler];
+  if (!state?.sign) return null;
+  const retro = state.retrograde === true ? ", currently retrograde" : "";
+  return `your ruling planet ${RULER_DISPLAY[ruler]} is in ${state.sign}${retro}`;
+}
+
 function rulesEn() {
   return `
 You write daily horoscopes. Tone: modern, calm, friendly, grounded.
@@ -78,9 +146,10 @@ SAFETY:
 REALISM (STRICT):
 - If astroContext is NOT provided: do NOT mention retrogrades, eclipses, aspects, planet positions, or specific astro dates.
 - If astroContext is provided: you may mention ONLY 1–2 facts that are explicitly present in "Allowed facts".
-- If mercuryRetrograde = false: do NOT mention retrograde at all.
+- If mercuryRetrograde / venusRetrograde / marsRetrograde = false (or null): do NOT mention that planet's retrograde at all.
 - If eclipse = null: do NOT mention eclipses at all.
 - If aspects is empty: do NOT mention aspects at all.
+- PER-SIGN FACTS: if "moonRelation" and/or "rulerTransit" is provided for the sign you are writing, you SHOULD weave ONE of them into that sign's text naturally (it counts as one allowed fact). Describe the fact, never predict from it.
 - Do NOT invent anything beyond Allowed facts.
 
 STYLE:
@@ -226,10 +295,27 @@ function compactContext(full: any) {
       sign: full?.moon?.sign ?? null,
       phase: full?.moon?.phase ?? null,
     },
-    mercuryRetrograde: typeof full?.mercuryRetrograde === "boolean" ? full.mercuryRetrograde : null,
+    // build-astro-context stores retrograde nested per planet (full.mercury.retrograde).
+    // The old flat read (full.mercuryRetrograde) never matched, so retrograde was
+    // silently dropped from every horoscope. Read nested first, keep flat as fallback.
+    mercuryRetrograde:
+      typeof full?.mercury?.retrograde === "boolean"
+        ? full.mercury.retrograde
+        : (typeof full?.mercuryRetrograde === "boolean" ? full.mercuryRetrograde : null),
+    venusRetrograde: typeof full?.venus?.retrograde === "boolean" ? full.venus.retrograde : null,
+    marsRetrograde: typeof full?.mars?.retrograde === "boolean" ? full.mars.retrograde : null,
+    // Planet signs + retrograde, used to derive each sign's ruling-planet transit (T4).
+    planets: {
+      mercury: { sign: full?.mercury?.sign ?? null, retrograde: full?.mercury?.retrograde ?? null },
+      venus:   { sign: full?.venus?.sign ?? null,   retrograde: full?.venus?.retrograde ?? null },
+      mars:    { sign: full?.mars?.sign ?? null,    retrograde: full?.mars?.retrograde ?? null },
+      jupiter: { sign: full?.jupiter?.sign ?? null, retrograde: full?.jupiter?.retrograde ?? null },
+      saturn:  { sign: full?.saturn?.sign ?? null,  retrograde: full?.saturn?.retrograde ?? null },
+    },
     eclipse: full?.eclipse
       ? {
           type: full.eclipse.type ?? null,
+          kind: full.eclipse.kind ?? null,
           date: full.eclipse.date ?? null,
           proximityDays: full.eclipse.proximityDays ?? null,
         }
@@ -537,6 +623,23 @@ async function generateTheme12En(params: {
     ? `Allowed facts (ONLY these are allowed to mention, max 1–2 facts): ${JSON.stringify(params.astroCompact)}`
     : `astroContext: NOT PROVIDED. Allowed facts: null.`;
 
+  // Per-sign grounded facts: Moon-relationship (T2) + ruling-planet transit (T4).
+  // Each is a real, sign-specific astronomical fact the model may weave in.
+  const moonSign: string | null = params.astroCompact?.moon?.sign ?? null;
+  const planets = params.astroCompact?.planets ?? null;
+  const perSignFacts = SIGNS.reduce((acc, sign) => {
+    const facts: Record<string, string> = {};
+    const moonRel = moonRelationFor(sign, moonSign);
+    if (moonRel) facts.moonRelation = moonRel;
+    const rulerRel = rulerTransitFor(sign, planets);
+    if (rulerRel) facts.rulerTransit = rulerRel;
+    if (Object.keys(facts).length) acc[sign] = facts;
+    return acc;
+  }, {} as Record<string, Record<string, string>>);
+  const perSignMoonLine = Object.keys(perSignFacts).length
+    ? `Per-sign facts (for the sign you are writing, weave in ONE of its grounded facts — moonRelation and/or rulerTransit — naturally, counting toward your allowed facts): ${JSON.stringify(perSignFacts)}`
+    : "";
+
   const user = `
 Date (UTC): ${params.date}
 Language: en
@@ -548,6 +651,7 @@ Themes (definitions — stay within these boundaries):
 - energy: inner state, emotional rhythm, intuition, mental clarity, connection to self — NOT physical health, NOT romantic or career advice
 
 ${astroLine}
+${perSignMoonLine}
 
 Generate EXACTLY 12 items: one for each zodiac sign, all with theme "${params.theme}".
 Return valid JSON strictly matching the schema.
@@ -741,7 +845,44 @@ Deno.serve(async (req) => {
     }
 
     // load astro context
-    const astroFull = await loadAstroContextFull(supabase, date);
+    let astroFull = await loadAstroContextFull(supabase, date);
+
+    // B6 guard: generate-horoscopes depends on build-astro-context having run first
+    // for this date. If the astro context is missing (cron order race / build
+    // failure), the whole day would silently generate WITHOUT any astronomical
+    // grounding (the "NOT PROVIDED" branch). Before accepting that, make ONE
+    // best-effort attempt to build the context inline, then reload. Never throw —
+    // if it still fails we proceed ungrounded but log loudly so it's visible.
+    if (!astroFull) {
+      console.error(
+        `[generate-horoscopes] astro_context MISSING for ${date} — attempting inline build-astro-context before generating ungrounded`,
+      );
+      try {
+        const cronSecret = Deno.env.get("CRON_SECRET") ?? "";
+        const res = await fetch(`${supabaseUrl}/functions/v1/build-astro-context`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${serviceRoleKey}`,
+            "x-cron-secret": cronSecret,
+          },
+          body: JSON.stringify({ date, days: 1 }),
+        });
+        if (!res.ok) {
+          console.error(`[generate-horoscopes] inline build-astro-context failed (${res.status}) for ${date}`);
+        } else {
+          astroFull = await loadAstroContextFull(supabase, date);
+        }
+      } catch (err) {
+        console.error(`[generate-horoscopes] inline build-astro-context threw for ${date}:`, serializeError(err));
+      }
+      if (!astroFull) {
+        console.error(
+          `[generate-horoscopes] PROCEEDING WITHOUT astro grounding for ${date} — horoscopes will be generic this run`,
+        );
+      }
+    }
+
     const astroCompact = compactContext(astroFull);
 
     // generate EN (canonical)

@@ -44,6 +44,7 @@ interface Aspect {
 
 interface EclipseInfo {
   type: "solar" | "lunar";
+  kind?: string;       // partial | annular | total | hybrid | penumbral
   date: string;        // ISO date of closest eclipse
   proximityDays: number;
 }
@@ -130,13 +131,17 @@ function phaseNameFromAngle(elong: number): PhaseName {
 }
 
 function getPlanetState(body: unknown, date: Date): PlanetState {
-  const dt = 24 * 3600 * 1000; // 1 day forward
+  // Centered finite difference (±12h around the representative noon) reflects the
+  // planet's motion AT this date better than a forward-only delta, which can
+  // mislabel a planet near a retrograde/direct station (the days that matter most).
+  const halfDay = 12 * 3600 * 1000;
+  const lonPrev = eclipticLon(body, new Date(date.getTime() - halfDay));
+  const lonNext = eclipticLon(body, new Date(date.getTime() + halfDay));
   const lon0 = eclipticLon(body, date);
-  const lon1 = eclipticLon(body, new Date(date.getTime() + dt));
   return {
     sign: signFromLon(lon0),
     lon: Math.round(normLon(lon0) * 100) / 100,
-    retrograde: signedDelta(lon1, lon0) < 0,
+    retrograde: signedDelta(lonNext, lonPrev) < 0,
   };
 }
 
@@ -188,57 +193,54 @@ function computeAspects(
   return result;
 }
 
+const ECLIPSE_WINDOW_DAYS = 15;
+const MS_PER_DAY = 86400000;
+
 /**
- * Check for solar or lunar eclipse within ±15 days of the given date.
- * A solar eclipse happens near a new moon when the Moon is near the ecliptic
- * (ecliptic latitude close to 0). We approximate by checking the lunar node
- * proximity using the Moon's ecliptic latitude.
+ * Find the nearest eclipse of one kind within ±ECLIPSE_WINDOW_DAYS using
+ * astronomy-engine's exact eclipse search (typed: partial/annular/total/etc.).
+ * This replaces the old Moon-latitude heuristic, which both missed partials and
+ * risked false positives. `searchFn` returns the first eclipse at/after a time,
+ * so we search from (date − window): the first result is the nearest forward one,
+ * and we accept it only if its peak also lands within +window of the date.
  */
-function checkEclipse(date: Date): EclipseInfo | null {
-  const WINDOW_DAYS = 15;
-  const MS_PER_DAY = 86400000;
-
-  // Scan new and full moons within the window
-  const candidates: { type: "solar" | "lunar"; date: Date; latDeg: number }[] = [];
-
-  for (const phaseAngle of [0, 180]) {
-    // Search backwards and forwards
-    for (const startOffset of [-WINDOW_DAYS, 0]) {
-      try {
-        const startDate = new Date(date.getTime() + startOffset * MS_PER_DAY);
-        const found = Astronomy.SearchMoonPhase(phaseAngle, startDate, WINDOW_DAYS + 2);
-        if (!found) continue;
-
-        const moonTime = makeTime(found.date);
-        const moonEcl = Astronomy.Ecliptic(Astronomy.GeoVector(Astronomy.Body.Moon, moonTime, false));
-
-        candidates.push({
-          type: phaseAngle === 0 ? "solar" : "lunar",
-          date: found.date,
-          latDeg: Math.abs(moonEcl.elat),
-        });
-      } catch {
-        // SearchMoonPhase can throw if no result in window
-      }
-    }
-  }
-
-  // Eclipse threshold: latitude < ~1.5° (solar) or < ~1.0° (lunar) near nodes
-  // Using a generous 1.5° for both since this is approximate
-  const ECLIPSE_LAT_THRESHOLD = 1.5;
-
-  for (const c of candidates) {
-    const daysAway = Math.abs((c.date.getTime() - date.getTime()) / MS_PER_DAY);
-    if (daysAway <= WINDOW_DAYS && c.latDeg < ECLIPSE_LAT_THRESHOLD) {
+function nearestEclipseOf(
+  date: Date,
+  type: "solar" | "lunar",
+  searchFn: (t: unknown) => any,
+): EclipseInfo | null {
+  try {
+    const startDate = new Date(date.getTime() - ECLIPSE_WINDOW_DAYS * MS_PER_DAY);
+    const ecl = searchFn(makeTime(startDate));
+    const peak = ecl?.peak;
+    if (!peak) return null;
+    const peakDate: Date = peak.date instanceof Date ? peak.date : new Date(peak.toString());
+    const daysAway = (peakDate.getTime() - date.getTime()) / MS_PER_DAY;
+    if (Math.abs(daysAway) <= ECLIPSE_WINDOW_DAYS) {
       return {
-        type: c.type,
-        date: c.date.toISOString().slice(0, 10),
-        proximityDays: Math.round(daysAway),
+        type,
+        kind: typeof ecl.kind === "string" ? ecl.kind : undefined,
+        date: peakDate.toISOString().slice(0, 10),
+        proximityDays: Math.round(Math.abs(daysAway)),
       };
     }
+  } catch {
+    // No eclipse in range, or the search API is unavailable — treat as none.
   }
-
   return null;
+}
+
+/**
+ * Nearest solar or lunar eclipse within ±15 days of the given date, or null.
+ */
+function checkEclipse(date: Date): EclipseInfo | null {
+  const candidates = [
+    nearestEclipseOf(date, "solar", (t) => Astronomy.SearchGlobalSolarEclipse(t)),
+    nearestEclipseOf(date, "lunar", (t) => Astronomy.SearchLunarEclipse(t)),
+  ].filter(Boolean) as EclipseInfo[];
+  if (!candidates.length) return null;
+  candidates.sort((a, b) => a.proximityDays - b.proximityDays);
+  return candidates[0];
 }
 
 /* ─── Context builder ────────────────────────────────────────────────── */
@@ -305,7 +307,7 @@ function buildContext(dateISO: string): AstroContext {
     keywords.push(`${asp.a}_${asp.type}_${asp.b}`);
   }
 
-  if (eclipse) keywords.push(`${eclipse.type}_eclipse`);
+  if (eclipse) keywords.push(eclipse.kind ? `${eclipse.kind}_${eclipse.type}_eclipse` : `${eclipse.type}_eclipse`);
 
   return {
     context_version: "v2",
