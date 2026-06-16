@@ -2,6 +2,21 @@ type DueRow = {
   token: string
   apns_env: 'sandbox' | 'production'
   locale: string | null
+  user_id?: string | null
+}
+
+// Localized zodiac names for sign-aware push titles (no static i18n in edge fns).
+const ZODIAC_NAMES: Record<'en' | 'uk', Record<string, string>> = {
+  en: {
+    aries: 'Aries', taurus: 'Taurus', gemini: 'Gemini', cancer: 'Cancer',
+    leo: 'Leo', virgo: 'Virgo', libra: 'Libra', scorpio: 'Scorpio',
+    sagittarius: 'Sagittarius', capricorn: 'Capricorn', aquarius: 'Aquarius', pisces: 'Pisces',
+  },
+  uk: {
+    aries: 'Овен', taurus: 'Телець', gemini: 'Близнюки', cancer: 'Рак',
+    leo: 'Лев', virgo: 'Діва', libra: 'Терези', scorpio: 'Скорпіон',
+    sagittarius: 'Стрілець', capricorn: 'Козоріг', aquarius: 'Водолій', pisces: 'Риби',
+  },
 }
 
 type PushFailure = {
@@ -220,28 +235,71 @@ async function rpcPushMarkSent(params: {
 
 async function fetchDue(params: { supabaseUrl: string; serviceRole: string; limit: number }) {
   const nowIso = new Date().toISOString()
-  const qs = new URLSearchParams()
-  qs.set('select', 'token,apns_env,locale')
-  qs.set('enabled', 'eq.true')
-  qs.set('platform', 'eq.ios')
-  qs.set('or', `(next_send_at.lte.${nowIso},next_send_at.is.null)`)
-  qs.set('order', 'next_send_at.asc')
-  qs.set('limit', String(params.limit))
+  const headers = {
+    apikey: params.serviceRole,
+    authorization: `Bearer ${params.serviceRole}`,
+  }
+  const buildUrl = (select: string) => {
+    const qs = new URLSearchParams()
+    qs.set('select', select)
+    qs.set('enabled', 'eq.true')
+    qs.set('platform', 'eq.ios')
+    qs.set('or', `(next_send_at.lte.${nowIso},next_send_at.is.null)`)
+    qs.set('order', 'next_send_at.asc')
+    qs.set('limit', String(params.limit))
+    return `${params.supabaseUrl}/rest/v1/push_devices?${qs.toString()}`
+  }
 
-  const url = `${params.supabaseUrl}/rest/v1/push_devices?${qs.toString()}`
-  const res = await fetchWithTimeout(url, {
-    headers: {
-      apikey: params.serviceRole,
-      authorization: `Bearer ${params.serviceRole}`,
-    },
-  })
-
+  // Prefer fetching user_id (for sign-aware push); fall back if the column is
+  // absent in this deployment (register-device handles the same possibility).
+  let res = await fetchWithTimeout(buildUrl('token,apns_env,locale,user_id'), { headers })
+  if (!res.ok) {
+    const t = await res.text().catch(() => '')
+    if (res.status === 400 && t.toLowerCase().includes('user_id')) {
+      res = await fetchWithTimeout(buildUrl('token,apns_env,locale'), { headers })
+    } else {
+      throw new Error(`fetchDue failed: ${res.status} ${t}`)
+    }
+  }
   if (!res.ok) {
     const t = await res.text().catch(() => '')
     throw new Error(`fetchDue failed: ${res.status} ${t}`)
   }
 
   return (await res.json()) as DueRow[]
+}
+
+// Resolve zodiac sign per user for sign-aware push. Best-effort: any failure
+// (column/table issues) yields an empty map → generic (non-personalized) push.
+async function fetchSignsByUser(params: {
+  supabaseUrl: string
+  serviceRole: string
+  userIds: string[]
+}): Promise<Record<string, string>> {
+  const ids = [...new Set(params.userIds.filter(Boolean))]
+  if (!ids.length) return {}
+  try {
+    const qs = new URLSearchParams()
+    qs.set('select', 'id,zodiac_sign')
+    qs.set('id', `in.(${ids.join(',')})`)
+    const url = `${params.supabaseUrl}/rest/v1/app_users?${qs.toString()}`
+    const res = await fetchWithTimeout(url, {
+      headers: {
+        apikey: params.serviceRole,
+        authorization: `Bearer ${params.serviceRole}`,
+      },
+    })
+    if (!res.ok) return {}
+    const rows = (await res.json().catch(() => [])) as Array<{ id?: string; zodiac_sign?: string }>
+    const map: Record<string, string> = {}
+    for (const r of rows) {
+      const sign = String(r?.zodiac_sign || '').toLowerCase().trim()
+      if (r?.id && ZODIAC_NAMES.en[sign]) map[String(r.id)] = sign
+    }
+    return map
+  } catch {
+    return {}
+  }
 }
 
 async function sendApns(params: {
@@ -388,7 +446,7 @@ function isoWeekdayUtc(dateIso: string) {
   return day === 0 ? 7 : day
 }
 
-function pickDailyContent(locale: string | null, dateIso: string) {
+function pickDailyContent(locale: string | null, dateIso: string, signKey = '') {
   const isEn = (locale || '').toLowerCase() === 'en'
   const weekday = isoWeekdayUtc(dateIso)
   const dayNumber = dayOfYearUtc(new Date(`${dateIso}T00:00:00.000Z`))
@@ -506,7 +564,7 @@ function pickDailyContent(locale: string | null, dateIso: string) {
         },
       }
 
-  return (
+  const content =
     contentByWeekday[weekday as 1 | 2 | 3 | 4 | 5 | 6 | 7] ||
     (isEn
       ? {
@@ -523,7 +581,12 @@ function pickDailyContent(locale: string | null, dateIso: string) {
           path: '/daily',
           contentType: 'daily_card',
         })
-  )
+
+  // Sign-aware: personalize the notification title with the user's zodiac sign
+  // when known (e.g. "Virgo" / "Діва" instead of the generic "Arcana").
+  const signName = signKey ? ZODIAC_NAMES[isEn ? 'en' : 'uk']?.[signKey] : ''
+  if (signName) return { ...content, title: signName }
+  return content
 }
 
 Deno.serve(async (req) => {
@@ -553,12 +616,20 @@ Deno.serve(async (req) => {
 
     if (!due.length) return json({ ok: true, due: 0, sent: 0 })
 
-    // групуємо: env -> locale -> tokens
+    // Resolve a zodiac sign per device (best-effort) for sign-aware titles.
+    const signByUser = await fetchSignsByUser({
+      supabaseUrl: SUPABASE_URL,
+      serviceRole: SERVICE_ROLE,
+      userIds: due.map((row) => String(row.user_id || '')).filter(Boolean),
+    })
+
+    // групуємо: env -> locale -> sign -> tokens (sign '' = generic message)
     const buckets = new Map<string, string[]>()
     for (const row of due) {
       const env = row.apns_env || 'sandbox'
       const loc = (row.locale || 'uk').toLowerCase()
-      const key = `${env}__${loc}`
+      const sign = signByUser[String(row.user_id || '')] || ''
+      const key = `${env}__${loc}__${sign}`
       if (!buckets.has(key)) buckets.set(key, [])
       buckets.get(key)!.push(row.token)
     }
@@ -570,9 +641,9 @@ Deno.serve(async (req) => {
     const sampleFailures: any[] = []
 
     for (const [key, tokens] of buckets.entries()) {
-      const [env, loc] = key.split('__') as ['sandbox' | 'production', string]
+      const [env, loc, sign] = key.split('__') as ['sandbox' | 'production', string, string]
       const dateIso = new Date().toISOString().slice(0, 10)
-      const msg = pickDailyContent(loc, dateIso)
+      const msg = pickDailyContent(loc, dateIso, sign)
       const payload = {
         aps: { alert: { title: msg.title, body: msg.body }, sound: 'default' },
         route: msg.route,

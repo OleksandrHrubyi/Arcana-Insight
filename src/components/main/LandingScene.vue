@@ -51,6 +51,12 @@
               ></span>
             </span>
             <span class="daily-track__label">{{ dailyProgressSummary }}</span>
+            <q-icon
+              v-if="dailyProgressComplete"
+              name="chevron_right"
+              size="14px"
+              class="daily-track__chevron"
+            />
           </button>
         </div>
       </header>
@@ -547,11 +553,20 @@ export default {
       return this.dailyProgressItems.filter((item) => item.done).length
     },
 
+    dailyProgressComplete() {
+      return (
+        this.dailyProgressItems.length > 0 &&
+        this.dailyProgressDoneCount >= this.dailyProgressItems.length
+      )
+    },
+
     dailyProgressSummary() {
       const done = this.dailyProgressDoneCount
       const total = this.dailyProgressItems.length
       if (done <= 0) return this.tt('landing.progress.summaryStart')
-      if (done >= total) return this.tt('landing.progress.summaryComplete')
+      // When the loop is complete, invite the user to continue into the journal
+      // (saved readings) — closes the retention loop instead of dead-ending.
+      if (done >= total) return this.tt('landing.progress.revisit')
       if (done === 1) return this.tt('landing.progress.summaryOneDone')
       if (total - done === 1) return this.tt('landing.progress.summaryOneLeft')
       return this.tt('landing.progress.summaryInProgress')
@@ -1783,6 +1798,11 @@ export default {
 
 .daily-track__label {
   white-space: nowrap;
+}
+
+.daily-track__chevron {
+  margin-left: -2px;
+  color: rgba(141, 190, 240, 0.85);
 }
 
 .status-stack {

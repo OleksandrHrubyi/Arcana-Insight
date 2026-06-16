@@ -218,7 +218,10 @@
 - **⚠️ Ops (yours):** create the **introductory free-trial offer** (3–7 days) on both subscription products in App Store Connect and attach it to the RevenueCat offering — without that there is no trial to show. Then `trial_converted`/churn come from RevenueCat webhooks.
 
 #### LR-22 · Retention loop on home (continue-state) + personal daily push — M
-- Tie saved readings + mood + streak into a visible "continue where you left off". Make daily push personal: "{sign}, your card today is {card}" (grounded tone). Push-worker already exists.
+- **Status:** [x] DONE — 2026-06-16 (commit pending push). Design agreed with user (adaptive daily-track + light sign-aware push).
+- **Part A — home continue-state (frontend):** the `daily-track` chip already showed progress + tapped to the next incomplete ritual; now when the loop is **complete** it reads "Revisit your readings" (`landing.progress.revisit`, en+uk) with a chevron and `openNextRitual` already routes to `/readings` — closing the loop into the journal instead of dead-ending. No new layout block (kept the tight hero safe). Verified via QA screenshot (no regression). The complete-state visual needs a device check (QA can't seed all-3-done).
+- **Part B — light sign-aware push (backend):** `push-worker` now resolves a zodiac sign per device (best-effort `push_devices.user_id` → `app_users.zodiac_sign`, both column-optional with graceful fallback) and personalizes the notification **title** with the localized sign name (`ZODIAC_NAMES` en/uk) — e.g. "Virgo"/"Діва" instead of "Arcana". Buckets are now `env__locale__sign`; devices with no sign get the existing generic message (zero regression). braces balanced, tests 194/194, eslint 0.
+- **Note:** sign-aware push only personalizes for signed-in users whose `zodiac_sign` is set; anonymous/no-sign devices stay generic. Verify on device once `user_id` column + signs are populated.
 
 #### LR-23 · Tarot journal with patterns (Labyrinthos-style) — M
 - Notes per reading + simple weekly pattern in `SavedReadingsPage` (don't add a new screen).
@@ -281,3 +284,4 @@
 - 2026-06-16 — **LR-20 done (P1)**: Account email row now has an explanatory hint (no longer a silent dead-end). parity 0, eslint 0, tests 194/194. Remaining P1: LR-19 (Onboarding Preferences + DOB capture).
 - 2026-06-16 — **LR-19 done (P1)**: onboarding completion flag now has a durable native Preferences backup + guard-side hydration (localStorage stays the sync hot-path); native ops are platform-guarded so the node-tested helper is safe. DOB capture confirmed (signup/account). eslint 0, tests 194/194. **ALL P1 code items done.** Remaining: P2 polish + Apple operational (LR-12/13/14/16) — yours.
 - 2026-06-16 — **LR-21 code done (P2)**: free-trial display — paywall already tracked/displayed intro offers; added `extractFreeTrial` + human "{days}-day free trial" label (was rendering "$0.00"). The trial itself must be created in App Store Connect. eslint 0, parity 0, tests 194/194.
+- 2026-06-16 — **LR-22 done (P2)**: retention loop — (A) daily-track complete-state now reads "Revisit your readings" → /readings (journal); (B) push-worker is sign-aware (personalized title, best-effort + graceful fallback). Design agreed first. tests 194/194, eslint 0, home screenshot OK.
