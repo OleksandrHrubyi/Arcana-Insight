@@ -154,6 +154,25 @@ const extractOfferLabel = (pkg, product) => {
   return ''
 }
 
+const PERIOD_UNIT_DAYS = { DAY: 1, WEEK: 7, MONTH: 30, YEAR: 365 }
+
+// Detect an introductory FREE trial on the package (intro price 0). Returns
+// { days } when the trial length is known, or { days: null } for a generic
+// "free trial". Returns null when there's no free trial. RevenueCat reports the
+// free phase as priceString "$0.00", so the raw offer label is useless on its
+// own — the paywall formats this into human copy.
+const extractFreeTrial = (pkg, product) => {
+  const intro =
+    product?.introPrice || product?.introductoryPrice || pkg?.introPrice || pkg?.introductoryPrice
+  if (!intro || typeof intro !== 'object') return null
+  const price = Number(intro.price ?? intro.amount ?? NaN)
+  if (Number.isNaN(price) || price !== 0) return null
+  const unit = String(intro.periodUnit || intro.subscriptionPeriodUnit || '').toUpperCase()
+  const count = Number(intro.periodNumberOfUnits || intro.numberOfPeriods || intro.cycles || 0)
+  const days = (PERIOD_UNIT_DAYS[unit] || 0) * (count || 0)
+  return { days: days > 0 ? days : null }
+}
+
 const extractProductId = (pkg, product) => {
   return String(
     product?.identifier ||
@@ -372,6 +391,7 @@ export const getBillingPaywallPlans = async () => {
           productId,
           priceLabel: extractPriceLabel(pkg, product),
           offerLabel: extractOfferLabel(pkg, product),
+          freeTrial: extractFreeTrial(pkg, product),
         }
       }
     }

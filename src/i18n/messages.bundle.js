@@ -1607,6 +1607,8 @@ export const messages = {
         restoring: 'Restoring...',
         processing: 'Processing...',
         pricePending: 'Price from App Store.',
+        freeTrial: 'Free trial',
+        freeTrialDays: '{days}-day free trial',
         unavailableHint: 'Purchases are unavailable on this device.',
         footnote:
           'Subscription renews automatically unless canceled at least 24 hours before renewal.',
@@ -3413,6 +3415,8 @@ export const messages = {
         restoring: 'Відновлення...',
         processing: 'Обробка...',
         pricePending: 'Ціна з App Store.',
+        freeTrial: 'Безкоштовний період',
+        freeTrialDays: '{days} днів безкоштовно',
         unavailableHint: 'Покупки недоступні на цьому пристрої.',
         footnote:
           'Підписка продовжується автоматично, якщо не скасувати щонайменше за 24 години до продовження.',

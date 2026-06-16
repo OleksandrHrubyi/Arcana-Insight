@@ -309,11 +309,13 @@ test('getBillingPaywallPlans returns live plans from offerings and tolerates mal
           productId: 'arcana.premium.monthly',
           priceLabel: '$7.99',
           offerLabel: '3 days free',
+          freeTrial: null,
         },
         yearly: {
           productId: 'arcana.premium.yearly',
           priceLabel: '$39.99',
           offerLabel: '7 days free',
+          freeTrial: null,
         },
       })
 

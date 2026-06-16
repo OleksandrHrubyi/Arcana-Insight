@@ -212,7 +212,10 @@
 ## P2 — COULD HAVE (post-launch / future versions)
 
 #### LR-21 · Free trial (3–7 days) — High revenue impact · M
-- Biggest conversion lever for this category. Add trial to the offering + paywall copy + `trial_started/converted` analytics.
+- **Status:** [x] CODE DONE — 2026-06-16 (commit pending push). Trial **creation** is an App Store Connect task (yours).
+- **Found:** the paywall already extracts/displays/tracks intro offers (`getPlanOfferLabel` → `plan-tile__saving`, `trial_start` analytics, `has_offer`). The only code gap was that a free trial's intro phase is reported as `priceString "$0.00"`, so it rendered as "$0.00".
+- **Done:** added `extractFreeTrial` in `premiumBilling.js` (detects intro price 0, derives trial length in days from the period) → new `freeTrial` field on each plan. `getPlanOfferLabel` now renders a human label — `premiumPage.billing.freeTrialDays` ("{days}-day free trial" / uk) or `freeTrial` ("Free trial" / "Безкоштовний період") — instead of "$0.00". `trial_start` detection still matches (free/trial/безкошт). Updated the billing-service test for the new plan shape. eslint 0, parity 0, tests 194/194.
+- **⚠️ Ops (yours):** create the **introductory free-trial offer** (3–7 days) on both subscription products in App Store Connect and attach it to the RevenueCat offering — without that there is no trial to show. Then `trial_converted`/churn come from RevenueCat webhooks.
 
 #### LR-22 · Retention loop on home (continue-state) + personal daily push — M
 - Tie saved readings + mood + streak into a visible "continue where you left off". Make daily push personal: "{sign}, your card today is {card}" (grounded tone). Push-worker already exists.
@@ -277,3 +280,4 @@
 - 2026-06-16 — **LR-18 robustness done (P1)**: RitualRewards dashboard sync failure now surfaces a retry toast (was silent) + ticker starts in finally. The 32-ternary i18n migration deferred to P2 (LR-24). eslint 0, tests 194/194. Next P1: LR-20 (Account email affordance) / LR-19 (Onboarding).
 - 2026-06-16 — **LR-20 done (P1)**: Account email row now has an explanatory hint (no longer a silent dead-end). parity 0, eslint 0, tests 194/194. Remaining P1: LR-19 (Onboarding Preferences + DOB capture).
 - 2026-06-16 — **LR-19 done (P1)**: onboarding completion flag now has a durable native Preferences backup + guard-side hydration (localStorage stays the sync hot-path); native ops are platform-guarded so the node-tested helper is safe. DOB capture confirmed (signup/account). eslint 0, tests 194/194. **ALL P1 code items done.** Remaining: P2 polish + Apple operational (LR-12/13/14/16) — yours.
+- 2026-06-16 — **LR-21 code done (P2)**: free-trial display — paywall already tracked/displayed intro offers; added `extractFreeTrial` + human "{days}-day free trial" label (was rendering "$0.00"). The trial itself must be created in App Store Connect. eslint 0, parity 0, tests 194/194.

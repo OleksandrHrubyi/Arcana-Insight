@@ -180,8 +180,8 @@ const {
 } = usePremiumAccess()
 const selectedPlanId = ref(premiumPlan.value)
 const billingCatalog = ref({
-  monthly: { priceLabel: '', offerLabel: '' },
-  yearly: { priceLabel: '', offerLabel: '' },
+  monthly: { priceLabel: '', offerLabel: '', freeTrial: null },
+  yearly: { priceLabel: '', offerLabel: '', freeTrial: null },
 })
 const isPurchasing = ref(false)
 const isRestoring = ref(false)
@@ -339,7 +339,14 @@ const getPlanPriceLabel = (planId) => {
 }
 
 const getPlanOfferLabel = (planId) => {
-  return String(billingCatalog.value?.[planId]?.offerLabel || '').trim()
+  const entry = billingCatalog.value?.[planId]
+  const trial = entry?.freeTrial
+  if (trial) {
+    return trial.days
+      ? tt('premiumPage.billing.freeTrialDays').replace('{days}', String(trial.days))
+      : tt('premiumPage.billing.freeTrial')
+  }
+  return String(entry?.offerLabel || '').trim()
 }
 
 const paywallSource = computed(() => {
