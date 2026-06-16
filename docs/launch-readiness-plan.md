@@ -82,7 +82,9 @@
 - **Verify:** Throw an unhandled rejection in dev → caught + logged, app stays usable.
 
 #### LR-06 · `MyDayPage`: guard onMounted + pull-to-refresh (offline hang) — 🔴/🟠 · S
-- **Status:** [ ] TODO
+- **Status:** [x] DONE (resolved by deletion) — 2026-06-16 (commit pending push)
+- **Finding:** `MyDayPage.vue` was **dead code** — the `/my-day` route redirects to `arcana` (home) (`routes.js:18`), nothing imports it, and `openMyDay()` navigates to `name: 'daily'` (DailyCardPage). The flagged offline-hang could never occur because the component never mounts.
+- **Done:** Deleted `src/pages/MyDayPage.vue` (with user permission) after a full-repo usage check (zero references). Removes the bug surface entirely + clears a chunk of dead code. `npm test` 194/194.
 - **File:** `src/pages/MyDayPage.vue:661-678`
 - **Problem:** `onMounted` awaits `loadDailyCard()` + `refreshMyDayState({includeRemote:true})` unguarded; `loadHoroscopeRegistry` throws on network error → unhandled rejection, `ready` never set (screen stuck loading), and focus/visibilitychange listeners (676-677) never register. `onPullRefresh` (661-665) unguarded → **pull-to-refresh spinner hangs forever offline** (`done()` never called).
 - **Fix:** try/catch around the async work; always set `ready`; always call `done()` in `onPullRefresh` (finally). Register listeners regardless.
@@ -232,3 +234,4 @@
 - 2026-06-16 — **LR-02 done**: `personal-horoscope` — CORS/OPTIONS/405, OpenAI→OpenRouter fallback, `fetchWithTimeout`, content guard, and structured non-leaking errors. Tests 194/194. (Side effect: this function now has a fetch timeout, partially covering LR-03; `push-worker`/`ritual-*`/`tarot-reading` timeouts still pending in LR-03.) Next: LR-03 or LR-04.
 - 2026-06-16 — **LR-04 done**: Horoscope error+retry state (kills the infinite skeleton); `common.loadError`/`common.retry` i18n. eslint 0, parity 0, tests 194/194. Next: LR-05 (global error handler) or LR-03.
 - 2026-06-16 — **LR-05 done**: global error safety net boot file (`errorHandler` + `unhandledrejection` + `error` listeners), registered first. eslint 0, tests 194/194. Next: LR-06 (MyDayPage offline guard) or LR-03.
+- 2026-06-16 — **LR-06 done (by deletion)**: `MyDayPage.vue` was dead (route redirects, no imports) → deleted with permission; offline-hang surface gone. tests 194/194. Next: LR-03 or LR-09/LR-10.
