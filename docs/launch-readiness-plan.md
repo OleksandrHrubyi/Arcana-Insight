@@ -224,15 +224,19 @@
 - **Note:** sign-aware push only personalizes for signed-in users whose `zodiac_sign` is set; anonymous/no-sign devices stay generic. Verify on device once `user_id` column + signs are populated.
 
 #### LR-23 · Tarot journal with patterns (Labyrinthos-style) — M
+- **Status:** [ ] DEFERRED (post-launch) — decided 2026-06-16. Lowest-priority "could have"; **notes** need a new `note` DB column (Supabase migration), and the **weekly pattern** has marginal value until users have a real reading history. LR-22 already links "revisit your readings" → `/readings`. Revisit post-launch once there's data.
 - Notes per reading + simple weekly pattern in `SavedReadingsPage` (don't add a new screen).
 
 #### LR-24 · Tech debt — S each
+- **Status:** [~] PARTIAL — 2026-06-16. Done the safe, release-relevant items; rest is backlog.
+- **Done:** Removed the one ungated debug `console.log` (`supabaseClient.ts` session-refresh success) — the rest were already DEV/DEBUG-gated (audit overcounted). Deleted two confirmed-dead duplicates (with permission): `ios/App/App/config 2.xml` and `src/data/cardsV1/tarot_full.json` (399K; `cardsV1` unreferenced, active data is `cardsV2`). tests 194/194.
+- **Remaining backlog (lower value / higher risk, post-launch):**
 - `netStatus.js` is dead (no real offline detection) — wire `@capacitor/network`/`navigator.onLine` or delete.
 - `PREMIUM_MODEL_LIMITS` (`premiumModel.js:89-95`) is dead config; gating uses inline literals — wire constants or annotate (docs point to it as source of truth → drift risk).
 - `ritual-track` non-atomic point award → make transactional (mirror `ritual-claim`'s single RPC).
 - `delete-account` partial-deletion → retry/queue orphaned rows.
-- Strip ~13 debug `console.log/info` from `src/` (the 86 `error`/59 `warn` are legit). Edge functions: confirm tagged `[fn-name]` prefix.
-- Remove stray dup files: `ios/App/App/config 2.xml` (tracked), `src/data/cardsV1/tarot_full.json` (392K dup; active is `src/data/cardsV2/tarot_full.json`).
+- ~~Strip debug console.log/info~~ — DONE (was already gated; 1 ungated line removed).
+- ~~Remove stray dup files (config 2.xml, cardsV1/tarot_full.json)~~ — DONE. (Note: `src/data/cardsV1/tarot_meta.json` still present — was out of the approved deletion scope; verify unused and remove later.)
 - RitualRewards: migrate the 32 inline `locale === 'uk' ? … : …` ternaries to i18n keys (from LR-18; ~64 keys, mechanical, pure polish).
 - Normalized per-period price on paywall ("$X/month").
 - Guest purchase before login can orphan entitlement — gate purchase behind auth OR verify RC alias transfer in sandbox Test 4.
@@ -285,3 +289,4 @@
 - 2026-06-16 — **LR-19 done (P1)**: onboarding completion flag now has a durable native Preferences backup + guard-side hydration (localStorage stays the sync hot-path); native ops are platform-guarded so the node-tested helper is safe. DOB capture confirmed (signup/account). eslint 0, tests 194/194. **ALL P1 code items done.** Remaining: P2 polish + Apple operational (LR-12/13/14/16) — yours.
 - 2026-06-16 — **LR-21 code done (P2)**: free-trial display — paywall already tracked/displayed intro offers; added `extractFreeTrial` + human "{days}-day free trial" label (was rendering "$0.00"). The trial itself must be created in App Store Connect. eslint 0, parity 0, tests 194/194.
 - 2026-06-16 — **LR-22 done (P2)**: retention loop — (A) daily-track complete-state now reads "Revisit your readings" → /readings (journal); (B) push-worker is sign-aware (personalized title, best-effort + graceful fallback). Design agreed first. tests 194/194, eslint 0, home screenshot OK.
+- 2026-06-16 — **LR-23 deferred** (post-launch: notes need a DB column, pattern is marginal without data). **LR-24 partial**: removed the one ungated debug log + deleted 2 dead dup files (config 2.xml, cardsV1/tarot_full.json) with permission; rest is post-launch backlog. tests 194/194. **All planned code work is now done or consciously deferred** — remaining is your Apple operational (LR-12/13/14/16) + secrets.

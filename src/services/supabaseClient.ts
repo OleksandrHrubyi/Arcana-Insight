@@ -277,11 +277,9 @@ class SupabaseClientWrapper {
         if (stored?.access_token?.includes('\n')) {
           console.warn('[Supabase] Detected corrupted token, refreshing session...')
           try {
-            const { data: { session: newSession }, error } = await this.client.auth.refreshSession()
+            const { error } = await this.client.auth.refreshSession()
             if (error) {
               console.error('[Supabase] Failed to refresh session:', error)
-            } else if (newSession) {
-              console.log('[Supabase] Session refreshed successfully')
             }
           } catch (err) {
             console.error('[Supabase] Failed to refresh session:', err)
