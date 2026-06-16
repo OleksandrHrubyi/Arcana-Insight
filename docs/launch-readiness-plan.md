@@ -194,7 +194,9 @@
 - **Fix:** Add error/retry UI; move inline strings to i18n; start the timer regardless of load outcome.
 
 #### LR-19 · Onboarding: Capacitor Preferences + birth-date capture — 🟡 · S/M
-- **Status:** [ ] TODO
+- **Status:** [x] DONE — 2026-06-16 (commit pending push)
+- **Completion-flag persistence (the eviction risk):** kept localStorage as the fast **sync** hot-path (the router guard reads it synchronously), and added a **durable native Preferences backup**. `persistOnboardingPreferences` now also writes to native (`writeOnboardingToNative`). `hydrateOnboardingFromNative` (cached) restores localStorage from native if the WebView evicted it; the router guard `await`s it (cached → only the first nav pays a native read). Both native ops are guarded by a sync `window.Capacitor?.isNativePlatform()` check (no static `@capacitor/*` import) + dynamic `import('@capacitor/preferences')` — so the unit-tested helper stays node-safe. eslint 0, tests 194/194.
+- **Birth date — confirmed no change needed:** DOB is captured in sign-up / Account (and `PersonalHoroscopePage` shows a no-DOB empty state with a CTA to `/account` or `/sign-up`). Onboarding is intentionally light (interests only); not gating it on DOB is the correct design.
 - **File:** `src/components/main/OnboardingComponent.vue`
 - **Problem:** Completion flag in `localStorage` (iOS eviction risk) not Capacitor Preferences. Captures interests only — **no birth date** (needed for personal horoscope); confirm where DOB is captured (sign-up/account) and that the path is obvious.
 - **Fix:** Move completion to `@capacitor/preferences`; ensure a clear DOB capture path early.
@@ -274,3 +276,4 @@
 - 2026-06-16 — **LR-17 done (P1)**: SavedReadings now shows error+retry on fetch failure (was masked as empty) and a toast on delete failure. eslint 0, tests 194/194. Next P1: LR-18 (RitualRewards) / LR-20 (Account email affordance).
 - 2026-06-16 — **LR-18 robustness done (P1)**: RitualRewards dashboard sync failure now surfaces a retry toast (was silent) + ticker starts in finally. The 32-ternary i18n migration deferred to P2 (LR-24). eslint 0, tests 194/194. Next P1: LR-20 (Account email affordance) / LR-19 (Onboarding).
 - 2026-06-16 — **LR-20 done (P1)**: Account email row now has an explanatory hint (no longer a silent dead-end). parity 0, eslint 0, tests 194/194. Remaining P1: LR-19 (Onboarding Preferences + DOB capture).
+- 2026-06-16 — **LR-19 done (P1)**: onboarding completion flag now has a durable native Preferences backup + guard-side hydration (localStorage stays the sync hot-path); native ops are platform-guarded so the node-tested helper is safe. DOB capture confirmed (signup/account). eslint 0, tests 194/194. **ALL P1 code items done.** Remaining: P2 polish + Apple operational (LR-12/13/14/16) — yours.

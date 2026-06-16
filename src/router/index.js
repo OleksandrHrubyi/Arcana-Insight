@@ -8,7 +8,7 @@ import {
 import routes from './routes'
 import { analytics } from 'src/services/analytics'
 import { useAuthStore } from 'stores/authStore.js'
-import { isOnboardingComplete } from 'src/helpers/onboardingPrefs'
+import { isOnboardingComplete, hydrateOnboardingFromNative } from 'src/helpers/onboardingPrefs'
 import { isDevHomeQaBypassActive, resolveRouteGuardDecision } from './guard'
 
 /*
@@ -52,6 +52,10 @@ export default defineRouter(function (/* { store, ssrContext } */) {
         new Promise((resolve) => setTimeout(resolve, SESSION_TIMEOUT_MS)),
       ])
     }
+
+    // Restore the onboarding flag from native Preferences if the WebView evicted
+    // localStorage (cached — only the first navigation pays a native read).
+    await hydrateOnboardingFromNative()
 
     const onboardingComplete = isDevHomeQaBypassActive({
       isDev: import.meta.env.DEV,
