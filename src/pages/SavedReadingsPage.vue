@@ -50,6 +50,13 @@
         <q-spinner color="white" size="32px" />
       </div>
 
+      <div v-else-if="loadError" class="readings-empty">
+        <div class="readings-empty__title">{{ tt('common.loadError') }}</div>
+        <button type="button" class="readings-empty__cta" @click="retryLoad">
+          {{ tt('common.retry') }}
+        </button>
+      </div>
+
       <div v-else-if="emptyStateText" class="readings-empty">
         <div class="readings-empty__title">{{ emptyStateText }}</div>
         <div class="readings-empty__text">
@@ -203,6 +210,7 @@
 <script setup>
 import { computed, ref, watch, onBeforeUnmount, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
 import { t, currentLocale } from 'src/i18n'
 import { getUserNative, selectTarotReadingsByUser, deleteTarotReading } from 'src/services/supabaseNative'
 import { loadTarotData } from 'src/helpers/tarotData'
@@ -216,6 +224,7 @@ import { PAYWALL_ENTRY_POINTS } from 'src/constants/analyticsEvents'
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
 const router = useRouter()
+const $q = useQuasar()
 const { hasPremiumAccess } = usePremiumAccess()
 const readingsLockBullets = computed(() => [
   tt('premiumAccess.readings.bullets.timeline'),
@@ -249,6 +258,7 @@ const deleteDialog = ref(false)
 const deleting = ref(false)
 const isLoggedIn = ref(false)
 const userId = ref('')
+const loadError = ref(false)
 
 const emptyStateText = computed(() => {
   if (loading.value) return ''
@@ -341,6 +351,7 @@ const deleteReading = async () => {
 
     if (error) {
       console.error('Delete error:', error)
+      $q.notify({ type: 'negative', message: tt('errors.generic'), position: 'top' })
       return
     }
 
@@ -350,6 +361,7 @@ const deleteReading = async () => {
     await hapticTap()
   } catch (err) {
     console.error('Delete failed:', err)
+    $q.notify({ type: 'negative', message: tt('errors.generic'), position: 'top' })
   } finally {
     deleting.value = false
   }
@@ -415,6 +427,7 @@ const loadReadings = async () => {
 
   if (snapshot.status === 'locked') {
     applyEmptySavedReadingsState()
+    loadError.value = false
     loading.value = false
     return
   }
@@ -422,6 +435,9 @@ const loadReadings = async () => {
   readings.value = snapshot.readings
   isLoggedIn.value = snapshot.isLoggedIn
   userId.value = snapshot.userId
+  // Distinguish a real fetch failure from a genuinely empty list so the UI can
+  // show an error+retry instead of the "no readings yet" empty state.
+  loadError.value = Boolean(snapshot.error)
 
   if (snapshot.error) {
     console.error('Load readings failed:', snapshot.error)
@@ -442,8 +458,14 @@ const loadReadingsSafe = async () => {
   } catch (error) {
     console.error('Load readings crashed:', error)
     applyEmptySavedReadingsState()
+    loadError.value = true
     loading.value = false
   }
+}
+
+const retryLoad = async () => {
+  await hapticTap()
+  await loadReadingsSafe()
 }
 
 watch(detailOpen, (value) => {

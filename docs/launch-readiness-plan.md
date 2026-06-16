@@ -180,7 +180,8 @@
 - **Fix:** Consciously pick the age rating; answer the questionnaire honestly. Map: Email + DOB = "linked to you"; Firebase = Usage Data (analytics); RevenueCat = Purchases. Keep consistent with `PrivacyInfo.xcprivacy` (LR-08) and the policy.
 
 #### LR-17 · Saved Readings: distinguish fetch-error from empty + surface delete failure — 🟡 · S
-- **Status:** [ ] TODO
+- **Status:** [x] DONE — 2026-06-16 (commit pending push)
+- **Done:** The core helper already returns `status: 'error'`; the component now uses it. Added `loadError` ref (set from `snapshot.error`, reset on locked/success, true on crash) + a `retryLoad`. Template shows a dedicated error+retry block (reusing `common.loadError`/`common.retry`) **before** the empty state, so a fetch failure no longer reads as "no readings yet". Delete failure now surfaces a `$q.notify` toast (`errors.generic`) on both the error result and the catch (Notify plugin already enabled). eslint 0, tests 194/194.
 - **Files:** `src/helpers/savedReadingsCore.js:38-47` (error → `[]`, indistinguishable from genuine empty); `SavedReadingsPage.vue:340-345` (delete failure silent).
 - **Fix:** Return an error status separate from empty; show a retry; toast/inline on delete failure.
 
@@ -266,3 +267,4 @@
 - 2026-06-16 — **LR-08 done**: populated `PrivacyInfo.xcprivacy` (UserDefaults CA92.1 + collected data types, validated `plutil OK`). **All P0 code + iOS-native items are now done.** Remaining P0 is purely Apple operational (LR-11..14: legal URL/EULA, sandbox IAP, ASC products, screenshots) — needs you. Plus P1/P2 polish.
 - 2026-06-16 — **LR-11 code done**: in-app Privacy/Terms now has a working contact mailto, third-party processor disclosure + Privacy Policy link, subscription EULA terms + Apple EULA link; `onBack` home-fallback. Hosted policy already lists processors. parity 0, eslint 0, tests 194/194. Remaining LR-11 = verify hosted URLs live (ops). Next pure-ops: LR-12 (sandbox IAP), LR-13 (ASC products), LR-14 (screenshots) — all need you.
 - 2026-06-16 — **LR-15 done (P1)**: paywall funnel was already fully instrumented; added the genuine gaps — `ritual_complete` (per-activity, first-of-day, in `markDailyActivity`) + `daily_active` (once/day, App.vue). Dynamic analytics import keeps the tested helper's static graph clean. tests 194/194, eslint 0. Next P1: LR-17 (SavedReadings error state) / LR-18 / LR-20.
+- 2026-06-16 — **LR-17 done (P1)**: SavedReadings now shows error+retry on fetch failure (was masked as empty) and a toast on delete failure. eslint 0, tests 194/194. Next P1: LR-18 (RitualRewards) / LR-20 (Account email affordance).
