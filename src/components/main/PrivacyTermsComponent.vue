@@ -18,18 +18,26 @@
         <p class="policy-text">{{ tt('policyPage.privacyText1') }}</p>
         <p class="policy-text">{{ tt('policyPage.privacyText2') }}</p>
         <p class="policy-text">{{ tt('policyPage.privacyText3') }}</p>
+        <p class="policy-text">{{ tt('policyPage.privacyProcessors') }}</p>
+        <a class="policy-link" :href="privacyUrl" target="_blank" rel="noopener">
+          {{ tt('policyPage.privacyPolicyCta') }}
+        </a>
       </section>
 
       <section class="policy-card">
         <div class="policy-card__title">{{ tt('policyPage.termsTitle') }}</div>
         <p class="policy-text">{{ tt('policyPage.termsText1') }}</p>
         <p class="policy-text">{{ tt('policyPage.termsText2') }}</p>
-        <p class="policy-text">{{ tt('policyPage.termsText3') }}</p>
+        <p class="policy-text">{{ tt('policyPage.termsSubscription') }}</p>
+        <a class="policy-link" :href="eulaUrl" target="_blank" rel="noopener">
+          {{ tt('policyPage.termsEulaCta') }}
+        </a>
       </section>
 
       <section class="policy-card policy-card--note">
         <div class="policy-card__title">{{ tt('policyPage.contactTitle') }}</div>
         <p class="policy-text">{{ tt('policyPage.contactText') }}</p>
+        <a class="policy-link" :href="supportMailto">{{ supportEmail }}</a>
       </section>
     </div>
   </q-page>
@@ -46,6 +54,11 @@ const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
 const router = useRouter()
 
+const supportEmail = 'ghrubyi@ukr.net'
+const supportMailto = `mailto:${supportEmail}`
+const privacyUrl = 'https://oleksandrhrubyi.github.io/Arcana-Insight/privacy-policy.html'
+const eulaUrl = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'
+
 const hapticTap = async () => {
   if (!Capacitor.isNativePlatform()) return
   try {
@@ -57,7 +70,11 @@ const hapticTap = async () => {
 
 const onBack = async () => {
   await hapticTap()
-  router.back()
+  if (typeof window !== 'undefined' && window.history.length > 1) {
+    router.back()
+    return
+  }
+  await router.replace({ name: 'arcana' })
 }
 </script>
 
@@ -163,5 +180,19 @@ const onBack = async () => {
 
 .policy-card--note {
   background: rgba(8, 12, 20, 0.75);
+}
+
+.policy-link {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9fd8f6;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.policy-link:active {
+  opacity: 0.7;
 }
 </style>

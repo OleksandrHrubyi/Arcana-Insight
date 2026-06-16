@@ -147,8 +147,16 @@
 - **Fix:** Capture filled-content screenshots for required device sizes (6.9″ + 6.5″ iPhone). Can reuse the Playwright QA harness / real device. No placeholders.
 - **Verify:** Screenshot set uploaded in ASC.
 
-#### LR-11 · Privacy/Terms: contact link + 3rd-party processors + EULA terms + live URL — 🔴 · M
-- **Status:** [ ] TODO
+#### LR-11 · Privacy/Terms: contact link + 3rd-party processors + EULA terms + live URL — 🟡 (code done; verify URLs)
+- **Status:** [x] CODE DONE — 2026-06-16 (commit pending push). Remaining = ops URL check (below).
+- **Done (in-app `PrivacyTermsComponent`):**
+  - Contact dead-end fixed → working **`mailto:ghrubyi@ukr.net`** link.
+  - Third-party **processors disclosed** (OpenAI/OpenRouter, Supabase, RevenueCat, Firebase) via `policyPage.privacyProcessors` + a "Full Privacy Policy" link to the hosted page.
+  - **Subscription EULA terms** added (`policyPage.termsSubscription`: auto-renew, billing period, cancel ≥24h, manage in App Store) + a "Terms of Use (EULA)" link to Apple's standard EULA.
+  - Bonus: `onBack` now uses history-or-home fallback (same fix as DailyCard).
+  - i18n en+uk parity 0, eslint 0, tests 194/194.
+- **Verified:** hosted `app-store/privacy-policy.html` already lists Supabase/RevenueCat/Firebase/OpenAI processors (§4) — the gap was only in-app.
+- **⚠️ Ops (yours):** confirm the GitHub Pages URLs resolve at submission — `https://oleksandrhrubyi.github.io/Arcana-Insight/privacy-policy.html` + `support.html` (a 404 = instant 5.1.1 reject). Optionally add OpenRouter to the hosted policy's §4 (OpenAI is listed; OpenRouter is just the fallback).
 - **Files:** `PrivacyTermsComponent.vue`, i18n `policyPage` (`messages.bundle.js` ~line 1758), `app-store/privacy-policy.html`, `app-store/support.html`.
 - **Problems:** (1) Contact section says "contact support" with **no email/link** (dead-end) — FAQ page has a working `mailto:`, mirror it. (2) In-app **Terms** is 3 generic sentences — for auto-renew subs Apple 3.1.2 wants title/length, **price per period**, auto-renewal terms + link to a functional Terms of Use/EULA. (3) Policy should disclose third-party processors actually used: **OpenAI, RevenueCat, Firebase, Supabase**. (4) Confirm hosted Privacy + Terms URLs (GitHub Pages) resolve at submission — a 404 = instant 5.1.1 reject.
 - **Verify:** Contact tappable; Terms states subscription terms or links to live EULA; processors listed; URLs return 200.
@@ -253,3 +261,4 @@
 - 2026-06-16 — **LR-10 done**: push-worker now requires `ADMIN_PUSH_SECRET`, per-send try/catch (one bad send no longer aborts the batch), and fetch timeouts on APNs + REST (completes LR-03 too). tests 194/194. **All P0 CODE items are now done** — remaining P0 is iOS-native (LR-07/08, needs Xcode) + Apple operational (LR-11..14). Ops reminders: set `OPENROUTER_API_KEY` + `ADMIN_PUSH_SECRET` secrets.
 - 2026-06-16 — **LR-07 done**: Info.plist `armv7→arm64`; AppIcon verified valid (single-size 1024, no alpha, RGB) — the "malformed" concern was a false alarm (Xcode 14+ single-size format). tests 194/194. Next: LR-08 (privacy manifest).
 - 2026-06-16 — **LR-08 done**: populated `PrivacyInfo.xcprivacy` (UserDefaults CA92.1 + collected data types, validated `plutil OK`). **All P0 code + iOS-native items are now done.** Remaining P0 is purely Apple operational (LR-11..14: legal URL/EULA, sandbox IAP, ASC products, screenshots) — needs you. Plus P1/P2 polish.
+- 2026-06-16 — **LR-11 code done**: in-app Privacy/Terms now has a working contact mailto, third-party processor disclosure + Privacy Policy link, subscription EULA terms + Apple EULA link; `onBack` home-fallback. Hosted policy already lists processors. parity 0, eslint 0, tests 194/194. Remaining LR-11 = verify hosted URLs live (ops). Next pure-ops: LR-12 (sandbox IAP), LR-13 (ASC products), LR-14 (screenshots) — all need you.

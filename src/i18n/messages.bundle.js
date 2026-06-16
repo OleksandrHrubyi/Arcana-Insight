@@ -1765,12 +1765,17 @@ export const messages = {
       privacyText2:
         'Your readings and preferences are stored locally on your device unless you sign in.',
       privacyText3: 'We do not sell personal data. You can request deletion at any time.',
+      privacyProcessors:
+        'We use trusted third-party services to run the app: OpenAI / OpenRouter (AI readings), Supabase (accounts & data), RevenueCat (subscriptions) and Firebase (analytics).',
+      privacyPolicyCta: 'Read the full Privacy Policy',
       termsTitle: 'Terms',
       termsText1: 'Arcana Insight provides spiritual and informational content for personal use.',
       termsText2: 'You are responsible for how you interpret and use the content.',
-      termsText3: 'Subscriptions are billed through your app store account.',
+      termsSubscription:
+        'Premium is an auto-renewable subscription (monthly or yearly). Payment is charged to your App Store account and renews automatically unless canceled at least 24 hours before the period ends. Manage or cancel anytime in your App Store account settings.',
+      termsEulaCta: 'Terms of Use (EULA)',
       contactTitle: 'Contact',
-      contactText: 'For questions about privacy or terms, contact support.',
+      contactText: 'For questions about privacy or terms, email us:',
     },
 
     onboardingPage: {
@@ -3561,13 +3566,18 @@ export const messages = {
       privacyText1: 'Ми збираємо лише дані, необхідні для роботи застосунку.',
       privacyText2: 'Твої читання і налаштування зберігаються локально, доки ти не увійдеш.',
       privacyText3: 'Ми не продаємо персональні дані. Видалення доступне за запитом.',
+      privacyProcessors:
+        'Ми використовуємо надійні сторонні сервіси для роботи застосунку: OpenAI / OpenRouter (AI-читання), Supabase (акаунти й дані), RevenueCat (підписки) та Firebase (аналітика).',
+      privacyPolicyCta: 'Повна Політика конфіденційності',
       termsTitle: 'Умови',
       termsText1:
         'Arcana Insight надає духовний та інформаційний контент для особистого використання.',
       termsText2: 'Відповідальність за інтерпретацію контенту лежить на користувачі.',
-      termsText3: 'Підписки оплачуються через ваш акаунт у магазині застосунків.',
+      termsSubscription:
+        'Premium — це підписка з автоподовженням (місячна або річна). Оплата списується з твого App Store акаунта і автоматично подовжується, якщо не скасувати щонайменше за 24 години до кінця періоду. Керувати чи скасувати можна будь-коли в налаштуваннях App Store акаунта.',
+      termsEulaCta: 'Умови використання (EULA)',
       contactTitle: 'Контакт',
-      contactText: 'З питань конфіденційності або умов звертайся у підтримку.',
+      contactText: 'З питань конфіденційності або умов напиши нам:',
     },
 
     onboardingPage: {
