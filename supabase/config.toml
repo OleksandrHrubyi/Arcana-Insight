@@ -9,6 +9,11 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/build-astro-context/index.ts"
 
+[functions.compatibility]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/compatibility/index.ts"
+
 [functions.tarot-draw]
 enabled = true
 verify_jwt = true

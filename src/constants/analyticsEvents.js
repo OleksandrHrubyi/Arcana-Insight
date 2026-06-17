@@ -64,6 +64,7 @@ export const PAYWALL_ENTRY_POINTS = Object.freeze({
 export const CONTENT_SHARE_EVENTS = Object.freeze({
   horoscopeShare: 'horoscope_share',
   personalHoroscopeShare: 'personal_horoscope_share',
+  compatibilityShare: 'compatibility_share',
 })
 
 export const RETENTION_EVENTS = Object.freeze({

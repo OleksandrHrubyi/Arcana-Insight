@@ -97,6 +97,11 @@ export default {
   opacity: 0;
   transform: translateY(16px);
   pointer-events: none;
+  /* pointer-events:none on the wrapper does NOT stop the inner .nav-tab buttons
+     (they re-enable pointer-events:auto), so the invisible nav (z-index 9999)
+     still steals taps from page content and open dialogs beneath it. visibility
+     cascades and cannot be overridden by a child's pointer-events. */
+  visibility: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {

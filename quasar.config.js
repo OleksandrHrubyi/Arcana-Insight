@@ -23,6 +23,7 @@ export default defineConfig((/* ctx */) => {
       'supabase',
       'auth',
       'analytics',
+      'quasar-lang',
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css

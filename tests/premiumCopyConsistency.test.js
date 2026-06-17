@@ -152,8 +152,10 @@ test('premium copy stays aligned on compatibility preview and energy-theme wordi
   )
 
   const compatibility = readSource('src/pages/CompatibilityPage.vue')
-  assert.match(compatibility, /Premium adds the full relationship reading/)
-  assert.match(compatibility, /Преміум відкриває повне читання сумісності/)
+  // The redesigned compatibility page renders its premium copy from the shared
+  // i18n keys (no hardcoded copy strings in the source).
+  assert.match(compatibility, /premiumAccess\.compatibility\.title/)
+  assert.match(compatibility, /premiumAccess\.compatibility\.text/)
 })
 
 test('signup keeps birth date out of the first account step', async () => {

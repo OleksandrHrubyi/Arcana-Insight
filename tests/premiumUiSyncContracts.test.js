@@ -27,10 +27,12 @@ test('key premium screens keep explicit access gating and sync hooks', () => {
   assert.match(savedReadings, /void loadReadingsSafe\(\)/)
 
   const compatibility = readSource('src/pages/CompatibilityPage.vue')
-  assert.match(compatibility, /<section v-if="hasPremiumAccess" class="compat-stack">/)
+  // Redesigned page gates premium per-dimension (isDimLocked) plus an unlock
+  // card, both reactive to hasPremiumAccess; paywall analytics + route preserved.
+  assert.match(compatibility, /v-if="!hasPremiumAccess"/)
+  assert.match(compatibility, /isDimLocked/)
   assert.match(compatibility, /PAYWALL_ENTRY_POINTS\.compatibilityLock/)
   assert.match(compatibility, /name:\s*'premium'[\s\S]*source:\s*point\.source/)
-  assert.match(compatibility, /watch\(\s*\(\) => hasPremiumAccess\.value,\s*\(next\) => \{/s)
 
   const horoscope = readSource('src/components/main/HoroscopeComponent.vue')
   assert.match(horoscope, /watch:\s*\{[\s\S]*hasPremiumAccess\(next\)/)
