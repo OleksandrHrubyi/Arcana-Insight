@@ -45,9 +45,15 @@
         </button>
       </div>
 
-      <div class="cards-count">{{ cardsCountLabel }}</div>
+      <div v-if="loaded" class="cards-count">{{ cardsCountLabel }}</div>
 
-      <section class="cards-grid">
+      <section v-if="!loaded" class="cards-grid" aria-hidden="true">
+        <div v-for="n in 9" :key="`skel-${n}`" class="cards-skel">
+          <div class="cards-skel__thumb"></div>
+          <div class="cards-skel__line"></div>
+        </div>
+      </section>
+      <section v-else class="cards-grid">
         <article
           v-for="card in filteredCards"
           :key="card.id"
@@ -146,6 +152,7 @@ const filters = [
 ]
 
 const cards = ref([])
+const loaded = ref(false)
 const activeFilter = ref('all')
 const detailOpen = ref(false)
 const selectedCard = ref(null)
@@ -170,7 +177,7 @@ const getSearchText = (card) => {
 }
 
 const emptyStateText = computed(() => {
-  if (filteredCards.value.length) return ''
+  if (!loaded.value || filteredCards.value.length) return ''
   if (searchQuery.value.trim()) return tt('cardsPage.emptySearch')
   return tt('cardsPage.emptyAll')
 })
@@ -279,6 +286,8 @@ const initializeCardLibrarySafe = async () => {
   } catch (error) {
     cards.value = []
     console.warn('[CardLibrary] init failed', error)
+  } finally {
+    loaded.value = true
   }
 }
 
@@ -751,5 +760,51 @@ onMounted(() => {
   .cards-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
+
+/* ── loading skeleton ── */
+.cards-skel {
+  display: grid;
+  gap: 8px;
+}
+
+.cards-skel__thumb {
+  width: 100%;
+  aspect-ratio: 3 / 5;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.cards-skel__line {
+  height: 12px;
+  width: 70%;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cards-skel__thumb::after,
+.cards-skel__line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  transform: translateX(-100%);
+  animation: cardsShimmer 1.3s ease-in-out infinite;
+}
+
+.cards-skel__line {
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes cardsShimmer {
+  100% { transform: translateX(100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cards-skel__thumb::after,
+  .cards-skel__line::after { animation: none; }
 }
 </style>
