@@ -10,79 +10,54 @@
       </div>
 
       <header class="premium-hero">
+        <div class="premium-hero__kicker">{{ tt('premiumPage.header.kicker') }}</div>
         <h1 class="premium-hero__title">{{ tt('premiumPage.title') }}</h1>
         <p class="premium-hero__sub">{{ tt('premiumPage.subtitle') }}</p>
       </header>
 
       <section class="premium-card premium-card--focus">
-        <div class="premium-card__label">{{ tt('premiumPage.heroBadge') }}</div>
-        <div class="premium-focus">
-          <h2 class="premium-focus__title">{{ tt('premiumPage.outcome.title') }}</h2>
-          <p class="premium-focus__text">{{ tt('premiumPage.outcome.text') }}</p>
-          <div class="premium-focus__points" role="list" :aria-label="tt('premiumPage.sections.why')">
-            <div
-              v-for="point in outcomePoints"
-              :key="point.key"
-              class="premium-focus__point"
-              role="listitem"
-            >
-              <div class="premium-focus__point-title">{{ point.title }}</div>
-              <div class="premium-focus__point-text">{{ point.text }}</div>
-            </div>
-          </div>
-          <p class="premium-focus__note">{{ tt('premiumPage.outcome.note') }}</p>
-        </div>
-      </section>
-
-      <section class="premium-card premium-card--plans">
-        <div class="premium-card__label">{{ tt('premiumPage.sections.billing') }}</div>
-        <p v-if="!billingReady" class="plan-unavailable-note">{{ billingUnavailableMessage }}</p>
-        <div class="plan-grid">
-          <button
-            v-for="plan in billingPlans"
-            :key="plan.id"
-            type="button"
-            class="plan-tile"
-            :class="{ 'plan-tile--active': selectedPlanId === plan.id }"
-            :disabled="isBillingActionPending"
-            @click="onSelectPlan(plan.id)"
+        <h2 class="premium-focus__title">{{ tt('premiumPage.outcome.title') }}</h2>
+        <p class="premium-focus__text">{{ tt('premiumPage.outcome.text') }}</p>
+        <div class="premium-focus__chips" role="list" :aria-label="tt('premiumPage.sections.why')">
+          <span
+            v-for="point in outcomePoints"
+            :key="point.key"
+            class="focus-chip"
+            role="listitem"
+            >{{ point.title }}</span
           >
-            <span class="plan-tile__head">
-              <span class="plan-tile__title">{{ tt(plan.titleKey) }}</span>
-              <span class="plan-tile__dot">
-                <q-icon v-if="selectedPlanId === plan.id" name="check" size="11px" />
-              </span>
-            </span>
-            <span class="plan-tile__price">{{ getPlanPriceLabel(plan.id) }}</span>
-            <span v-if="getPlanOfferLabel(plan.id)" class="plan-tile__saving">{{
-              getPlanOfferLabel(plan.id)
-            }}</span>
-            <span class="plan-tile__note">{{ tt(plan.noteKey) }}</span>
-          </button>
         </div>
       </section>
 
-      <section
-        class="premium-card premium-card--compare"
-        :class="{ 'premium-card--compare-visible': showCompareCard }"
-      >
+      <section class="premium-card premium-card--features">
+        <div class="premium-card__label">{{ tt('premiumPage.sections.why') }}</div>
+        <div class="feature-grid">
+          <div
+            v-for="feature in featureItems"
+            :key="feature.key"
+            class="feature-tile"
+            :style="{ '--tint': feature.tint }"
+          >
+            <span class="feature-tile__icon"><q-icon :name="feature.icon" size="20px" /></span>
+            <div class="feature-tile__title">{{ feature.title }}</div>
+            <div class="feature-tile__sub">{{ feature.sub }}</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="premium-card premium-card--compare">
         <div class="premium-card__label">{{ tt('premiumPage.sections.compare') }}</div>
         <p class="compare-table__lead">{{ compareCardCopy.lead }}</p>
         <div class="compare-table">
+          <div class="compare-table__head">
+            <span class="compare-table__head-feat"></span>
+            <span class="compare-table__head-free">{{ tt('premiumAccess.model.labels.free') }}</span>
+            <span class="compare-table__head-prem">{{ tt('premiumAccess.model.labels.premium') }}</span>
+          </div>
           <div v-for="row in quickCompareRows" :key="row.id" class="compare-table__row">
-            <div class="compare-table__feat">{{ row.feature }}</div>
-            <div class="compare-table__stack">
-              <div class="compare-table__item compare-table__item--free">
-                <div class="compare-table__item-label">{{ tt('premiumAccess.model.labels.free') }}</div>
-                <div class="compare-table__val compare-table__val--free">{{ row.free }}</div>
-              </div>
-              <div class="compare-table__item compare-table__item--premium">
-                <div class="compare-table__item-label compare-table__item-label--premium">
-                  {{ tt('premiumAccess.model.labels.premium') }}
-                </div>
-                <div class="compare-table__val compare-table__val--premium">{{ row.premium }}</div>
-              </div>
-            </div>
+            <span class="compare-table__feat">{{ row.feature }}</span>
+            <span class="compare-table__val compare-table__val--free">{{ row.free }}</span>
+            <span class="compare-table__val compare-table__val--premium">{{ row.premium }}</span>
           </div>
         </div>
         <p class="compare-table__summary">{{ compareCardCopy.summary }}</p>
@@ -97,6 +72,45 @@
           <dd>{{ tt('premiumPage.accessModel.purchasePrefix') }} {{ tt('premiumPage.accessModel.premium') }}</dd>
         </dl>
       </section>
+
+      <section class="premium-card premium-card--plans">
+        <div class="premium-card__label">{{ tt('premiumPage.sections.billing') }}</div>
+        <p class="plan-note">{{ tt('premiumPage.outcome.note') }}</p>
+        <p v-if="!billingReady" class="plan-unavailable-note">{{ billingUnavailableMessage }}</p>
+        <div class="plan-grid">
+          <button
+            v-for="plan in billingPlans"
+            :key="plan.id"
+            type="button"
+            class="plan-tile"
+            :class="{
+              'plan-tile--active': selectedPlanId === plan.id,
+              'plan-tile--featured': !!plan.badgeKey,
+            }"
+            :disabled="isBillingActionPending"
+            @click="onSelectPlan(plan.id)"
+          >
+            <span v-if="plan.badgeKey" class="plan-tile__ribbon">{{ tt(plan.badgeKey) }}</span>
+            <span class="plan-tile__head">
+              <span class="plan-tile__title">{{ tt(plan.titleKey) }}</span>
+              <span class="plan-tile__dot">
+                <q-icon v-if="selectedPlanId === plan.id" name="check" size="11px" />
+              </span>
+            </span>
+            <span class="plan-tile__price">{{ getPlanPriceLabel(plan.id) }}</span>
+            <span v-if="getPlanOfferLabel(plan.id)" class="plan-tile__saving">{{
+              getPlanOfferLabel(plan.id)
+            }}</span>
+            <span class="plan-tile__note">{{ tt(plan.noteKey) }}</span>
+          </button>
+        </div>
+        <div class="premium-trust">
+          <q-icon name="lock" size="14px" class="premium-trust__icon" />
+          <span>{{ tt('premiumPage.note') }}</span>
+        </div>
+      </section>
+
+      <p class="premium-reassure">{{ tt('premiumPage.cta.hint') }}</p>
 
       <div class="premium-legal">
         <div class="legal-links">
@@ -128,9 +142,7 @@
           @click="onPurchase"
         >
           <span class="sticky-purchase__ok-content">
-            <span class="sticky-purchase__ok-main">{{
-              isPurchasing ? tt('premiumPage.billing.processing') : tt('premiumPage.billing.button')
-            }}</span>
+            <span class="sticky-purchase__ok-main">{{ purchaseButtonLabel }}</span>
             <span class="sticky-purchase__ok-sub">{{ purchaseSubline }}</span>
           </span>
           <span class="sticky-purchase__ok-arrow">
@@ -178,7 +190,9 @@ const {
   revokePremiumAccess,
   applyPremiumAccessStatus,
 } = usePremiumAccess()
-const selectedPlanId = ref(premiumPlan.value)
+// Pre-select the yearly plan for new users (it is the best value); respect an
+// existing subscriber's actual plan.
+const selectedPlanId = ref(hasPremiumAccess.value ? premiumPlan.value : 'yearly')
 const billingCatalog = ref({
   monthly: { priceLabel: '', offerLabel: '', freeTrial: null },
   yearly: { priceLabel: '', offerLabel: '', freeTrial: null },
@@ -191,29 +205,6 @@ const paywallCloseReason = ref('route_change')
 const paywallCloseLogged = ref(false)
 const purchaseCompleted = ref(false)
 const tarotAiEnabled = import.meta.env.VITE_ENABLE_TAROT_AI === 'true'
-const showCompareCard = ref(false)
-
-let compareRevealFrame = 0
-const COMPARE_REVEAL_SCROLL_Y = 28
-const COMPARE_HIDE_SCROLL_Y = 8
-
-const updateCompareCardVisibility = () => {
-  if (typeof window === 'undefined') return
-  const y = Math.max(window.scrollY || 0, 0)
-  if (y >= COMPARE_REVEAL_SCROLL_Y) {
-    showCompareCard.value = true
-  } else if (y <= COMPARE_HIDE_SCROLL_Y) {
-    showCompareCard.value = false
-  }
-}
-
-const handleCompareCardScroll = () => {
-  if (typeof window === 'undefined' || compareRevealFrame) return
-  compareRevealFrame = window.requestAnimationFrame(() => {
-    compareRevealFrame = 0
-    updateCompareCardVisibility()
-  })
-}
 
 const outcomePoints = computed(() => [
   {
@@ -230,6 +221,51 @@ const outcomePoints = computed(() => [
     key: 'range',
     title: tt('premiumPage.outcome.points.range.title'),
     text: tt('premiumPage.outcome.points.range.text'),
+  },
+])
+
+const featureItems = computed(() => [
+  {
+    key: 'tarot',
+    icon: 'style',
+    tint: '#7aa7ff',
+    title: tt('premiumPage.feat.tarot'),
+    sub: tt('premiumPage.feat.tarotSub'),
+  },
+  {
+    key: 'spreads',
+    icon: 'grid_view',
+    tint: '#85c9ff',
+    title: tt('premiumPage.feat.spreads'),
+    sub: tt('premiumPage.feat.spreadsSub'),
+  },
+  {
+    key: 'ai',
+    icon: 'psychology',
+    tint: '#b69bff',
+    title: tt('premiumPage.feat.ai'),
+    sub: tt('premiumPage.feat.aiSub'),
+  },
+  {
+    key: 'love',
+    icon: 'favorite',
+    tint: '#ff8fab',
+    title: tt('premiumPage.feat.love'),
+    sub: tt('premiumPage.feat.loveSub'),
+  },
+  {
+    key: 'compat',
+    icon: 'group',
+    tint: '#ffb27a',
+    title: tt('premiumPage.feat.compat'),
+    sub: tt('premiumPage.feat.compatSub'),
+  },
+  {
+    key: 'history',
+    icon: 'bookmark',
+    tint: '#6fd6c0',
+    title: tt('premiumPage.feat.history'),
+    sub: tt('premiumPage.feat.historySub'),
   },
 ])
 
@@ -633,7 +669,9 @@ const onRestore = async () => {
 }
 
 watch(premiumPlan, (plan) => {
-  if (plan === 'monthly' || plan === 'yearly') {
+  // Only follow the store plan for active subscribers; for new users keep the
+  // yearly pre-selection instead of snapping to the 'monthly' default.
+  if (hasPremiumAccess.value && (plan === 'monthly' || plan === 'yearly')) {
     selectedPlanId.value = plan
   }
 })
@@ -684,21 +722,10 @@ const initializePremiumBillingStateSafe = async () => {
 }
 
 onMounted(() => {
-  if (typeof window !== 'undefined') {
-    window.addEventListener('scroll', handleCompareCardScroll, { passive: true })
-  }
-  updateCompareCardVisibility()
   void initializePremiumBillingStateSafe()
 })
 
 onBeforeUnmount(() => {
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('scroll', handleCompareCardScroll)
-  }
-  if (typeof window !== 'undefined' && compareRevealFrame) {
-    window.cancelAnimationFrame(compareRevealFrame)
-    compareRevealFrame = 0
-  }
   markPaywallClose(paywallCloseReason.value || 'route_change')
 })
 
@@ -706,11 +733,24 @@ const selectedPlan = computed(() => {
   return billingPlans.find((item) => item.id === selectedPlanId.value) || billingPlans[0]
 })
 
+const selectedHasTrial = computed(() => detectTrialOffer(selectedPlanId.value))
+
+const purchaseButtonLabel = computed(() => {
+  if (isPurchasing.value) return tt('premiumPage.billing.processing')
+  return selectedHasTrial.value
+    ? tt('premiumPage.billing.trialButton')
+    : tt('premiumPage.billing.button')
+})
+
 const purchaseSubline = computed(() => {
   if (!billingReady.value) {
     return tt('premiumPage.billing.unavailableHint')
   }
-  return `${tt(selectedPlan.value.titleKey)} \u00b7 ${getPlanPriceLabel(selectedPlan.value.id)}`
+  const price = getPlanPriceLabel(selectedPlan.value.id)
+  if (selectedHasTrial.value) {
+    return `${getPlanOfferLabel(selectedPlan.value.id)} \u00b7 ${price}`
+  }
+  return `${tt(selectedPlan.value.titleKey)} \u00b7 ${price}`
 })
 </script>
 
@@ -836,52 +876,103 @@ const purchaseSubline = computed(() => {
       border-box;
 }
 
-.premium-focus {
-  display: grid;
-  gap: 12px;
-}
-
 .premium-focus__title {
   margin: 0;
-  font-size: 22px;
-  line-height: 1.18;
-  color: rgba(244, 248, 255, 0.98);
+  font-size: 21px;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  color: rgba(245, 249, 255, 0.99);
 }
 
-.premium-focus__text,
-.premium-focus__note {
+.premium-focus__text {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.55;
-  color: rgba(214, 225, 242, 0.82);
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: rgba(222, 232, 248, 0.92);
 }
 
-.premium-focus__points {
-  display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.premium-focus__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
 }
 
-.premium-focus__point {
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
-  padding: 12px;
-  display: grid;
-  gap: 5px;
-}
-
-.premium-focus__point-title {
-  font-size: 13px;
-  line-height: 1.35;
-  font-weight: 650;
-  color: rgba(240, 246, 255, 0.95);
-}
-
-.premium-focus__point-text {
+.focus-chip {
   font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: rgba(202, 225, 255, 0.94);
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(147, 203, 255, 0.28);
+  background: rgba(147, 203, 255, 0.1);
+}
+
+/* ─── Feature grid ────────────────────────────────────────── */
+
+.premium-card--features {
+  background:
+    radial-gradient(120% 150% at 100% 0, rgba(147, 203, 255, 0.12), rgba(147, 203, 255, 0)),
+    linear-gradient(165deg, rgba(8, 12, 20, 0.9), rgba(4, 6, 12, 0.96)) padding-box,
+    linear-gradient(
+        132deg,
+        rgba(147, 203, 255, 0.3),
+        rgba(127, 162, 226, 0.18),
+        rgba(147, 203, 255, 0.1)
+      )
+      border-box;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.feature-tile {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--tint) 10%, transparent),
+    rgba(255, 255, 255, 0.02)
+  );
+  padding: 13px 12px;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.feature-tile__icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  color: var(--tint);
+  background: color-mix(in srgb, var(--tint) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tint) 34%, transparent);
+}
+
+.feature-tile__title {
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 660;
+  color: rgba(243, 248, 255, 0.97);
+}
+
+.feature-tile__sub {
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(201, 214, 236, 0.76);
+}
+
+.plan-note {
+  margin: 0;
+  font-size: 12.5px;
   line-height: 1.45;
-  color: rgba(198, 212, 235, 0.76);
+  color: rgba(200, 214, 236, 0.76);
 }
 
 /* ─── Card base ───────────────────────────────────────────── */
@@ -990,6 +1081,25 @@ const purchaseSubline = computed(() => {
   display: none;
 }
 
+.plan-tile--featured {
+  border-color: rgba(10, 132, 255, 0.34);
+}
+
+.plan-tile__ribbon {
+  justify-self: start;
+  align-self: start;
+  margin-bottom: 1px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #eaf3ff;
+  background: linear-gradient(180deg, rgba(88, 150, 231, 0.96), rgba(46, 102, 184, 0.98));
+  box-shadow: 0 4px 12px rgba(10, 132, 255, 0.32);
+}
+
 .plan-tile--active {
   border-color: rgba(10, 132, 255, 0.62);
   background: #171e28;
@@ -1086,6 +1196,26 @@ const purchaseSubline = computed(() => {
   color: rgba(208, 220, 238, 0.84);
 }
 
+.premium-trust {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 2px;
+  padding: 10px 12px;
+  border-radius: 13px;
+  border: 1px solid rgba(156, 183, 230, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(198, 212, 235, 0.8);
+}
+
+.premium-trust__icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: rgba(147, 203, 255, 0.78);
+}
+
 /* ─── Compare card ────────────────────────────────────────── */
 
 .premium-card--compare {
@@ -1099,35 +1229,95 @@ const purchaseSubline = computed(() => {
         rgba(147, 203, 255, 0.08)
       )
       border-box;
-  margin-bottom: 16px;
-  opacity: 0;
-  transform: translateY(14px);
-  pointer-events: none;
-  transition:
-    opacity 220ms ease,
-    transform 220ms ease;
 }
 
-.premium-card--compare-visible {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
+.compare-table__lead {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(214, 232, 246, 0.85);
 }
 
 .compare-table {
-  display: grid;
-  gap: 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(159, 216, 246, 0.12);
+  background: linear-gradient(180deg, rgba(141, 190, 240, 0.06), rgba(141, 190, 240, 0.015));
+  padding: 2px 14px 6px;
 }
 
-.compare-table__lead,
+/* shared 3-column geometry for header + every row */
+.compare-table__head,
+.compare-table__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.compare-table__head {
+  padding: 11px 0 9px;
+}
+
+.compare-table__head span {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.compare-table__head-free {
+  color: rgba(190, 212, 235, 0.5);
+}
+
+.compare-table__head-prem {
+  color: rgba(147, 203, 255, 0.92);
+}
+
+.compare-table__row {
+  padding: 11px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.compare-table__feat {
+  min-width: 0;
+  font-size: 15px;
+  line-height: 1.35;
+  font-weight: 600;
+  color: rgba(234, 242, 255, 0.95);
+}
+
+.compare-table__val {
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.compare-table__val--free {
+  color: rgba(186, 204, 230, 0.62);
+  font-weight: 500;
+}
+
+.compare-table__val--premium {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  color: rgba(147, 203, 255, 0.96);
+  font-weight: 650;
+}
+
+.compare-table__val--premium::before {
+  content: '✓';
+  flex-shrink: 0;
+  color: #8fd1a3;
+  font-weight: 700;
+  font-size: 12px;
+}
+
 .compare-table__summary {
   margin: 0;
   font-size: 14px;
   line-height: 1.5;
-  color: rgba(206, 219, 241, 0.78);
-}
-
-.compare-table__summary {
   padding: 12px 14px;
   border-radius: 14px;
   border: 1px solid rgba(147, 203, 255, 0.18);
@@ -1136,76 +1326,12 @@ const purchaseSubline = computed(() => {
   font-weight: 620;
 }
 
-.compare-table__row {
-  display: grid;
-  gap: 10px;
-  padding: 12px;
-  border-radius: 15px;
-  border: 1px solid rgba(156, 183, 230, 0.14);
-  background:
-    linear-gradient(180deg, rgba(18, 24, 36, 0.92), rgba(8, 12, 19, 0.96)), rgba(8, 12, 19, 0.94);
-}
-
-.compare-table__feat {
-  min-width: 0;
-  font-size: 14px;
-  line-height: 1.4;
-  color: rgba(234, 242, 255, 0.94);
-  font-weight: 620;
-}
-
-.compare-table__stack {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.compare-table__item {
-  min-width: 0;
-  border-radius: 13px;
-  padding: 10px 11px;
-  display: grid;
-  gap: 6px;
-  align-content: start;
-}
-
-.compare-table__item--free {
-  border: 1px solid rgba(156, 183, 230, 0.12);
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.compare-table__item--premium {
-  border: 1px solid rgba(147, 203, 255, 0.22);
-  background: linear-gradient(180deg, rgba(19, 46, 77, 0.5), rgba(10, 23, 39, 0.72));
-  box-shadow: inset 0 1px 0 rgba(147, 203, 255, 0.08);
-}
-
-.compare-table__item-label {
-  font-size: 10px;
-  font-weight: 650;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(177, 194, 220, 0.6);
-}
-
-.compare-table__item-label--premium {
-  color: rgba(147, 203, 255, 0.78);
-}
-
-.compare-table__val {
-  min-width: 0;
+.premium-reassure {
+  margin: -2px 6px 0;
+  text-align: center;
   font-size: 13px;
-  line-height: 1.35;
-  text-align: left;
-  color: rgba(180, 200, 230, 0.72);
-  font-weight: 560;
-  overflow-wrap: normal;
-  word-break: normal;
-}
-
-.compare-table__val--premium {
-  color: rgba(147, 203, 255, 0.94);
-  font-weight: 660;
+  line-height: 1.45;
+  color: rgba(190, 206, 232, 0.72);
 }
 
 /* ─── Legal ───────────────────────────────────────────────── */
@@ -1450,26 +1576,18 @@ const purchaseSubline = computed(() => {
     font-size: 20px;
   }
 
-  .premium-focus__points {
-    grid-template-columns: 1fr;
-  }
-
   .plan-grid {
     grid-template-columns: 1fr;
   }
 
+  .compare-table {
+    padding: 2px 12px 6px;
+  }
+
+  .compare-table__head,
   .compare-table__row {
-    padding: 11px;
-  }
-
-  .compare-table__stack {
-    grid-template-columns: 1fr;
-  }
-
-  .compare-table__lead,
-  .compare-table__summary,
-  .compare-table__val {
-    font-size: 12px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
   }
 
   .sticky-purchase {

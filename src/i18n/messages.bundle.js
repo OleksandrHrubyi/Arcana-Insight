@@ -1590,8 +1590,7 @@ export const messages = {
 
     premiumPage: {
       title: 'Premium',
-      subtitle:
-        'Go beyond the basic daily ritual with deeper guidance, no tarot limits, and one place for your patterns.',
+      subtitle: 'Deeper guidance, unlimited tarot, and every reading saved in one place.',
       header: {
         kicker: 'Unlock full access',
       },
@@ -1610,7 +1609,7 @@ export const messages = {
         'If you open the app regularly, Premium helps you build a more consistent and meaningful self-reflection practice.',
       outcome: {
         title: 'One deeper daily reflection practice',
-        text: 'Premium turns Arcana from a quick daily check-in into a fuller reflection flow: more depth when you read, more continuity when you return, and more context when one card is not enough.',
+        text: 'Premium turns a quick daily check-in into a fuller practice — more depth, more continuity, more context.',
         note: 'Everything below supports that one outcome. The plan changes only the billing period, not the feature set.',
         points: {
           depth: {
@@ -1800,6 +1799,7 @@ export const messages = {
       },
       billing: {
         button: 'Continue with Premium',
+        trialButton: 'Start free trial',
         selectedLabel: 'Selected plan',
         restore: 'Restore purchases',
         restoring: 'Restoring...',
@@ -3602,8 +3602,7 @@ export const messages = {
 
     premiumPage: {
       title: 'Преміум',
-      subtitle:
-        'Вийди за межі базового щоденного ритуалу: більше глибини, без лімітів у таро і одна стрічка для патернів.',
+      subtitle: 'Глибші підказки, безлімітне таро і всі читання в одному місці.',
       header: {
         kicker: 'Відкрий повний доступ',
       },
@@ -3622,7 +3621,7 @@ export const messages = {
         'Якщо ти регулярно користуєшся застосунком, Premium допомагає перетворити розклади на стабільну практику самоспостереження.',
       outcome: {
         title: 'Одна глибша щоденна практика рефлексії',
-        text: 'Premium переводить Arcana з короткого daily check-in у повніший ритуал рефлексії: більше глибини під час читання, більше тяглості при поверненні і більше контексту, коли однієї карти замало.',
+        text: 'Premium перетворює швидкий щоденний чек-ін на повноцінну практику — більше глибини, тяглості й контексту.',
         note: 'Усе нижче працює на цей один результат. План змінює лише період оплати, а не набір можливостей.',
         points: {
           depth: {
@@ -3812,6 +3811,7 @@ export const messages = {
       },
       billing: {
         button: 'Продовжити з Premium',
+        trialButton: 'Почати безкоштовно',
         selectedLabel: 'Обраний план',
         restore: 'Відновити покупки',
         restoring: 'Відновлення...',
