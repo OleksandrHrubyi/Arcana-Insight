@@ -155,14 +155,15 @@ function validateReading(parsed: any, dimensionKeys: string[]): Reading {
 }
 
 const PLANET_LABEL: Record<string, string> = {
-  sun: "Sun", moon: "Moon", mercury: "Mercury", venus: "Venus", mars: "Mars",
+  sun: "Sun", moon: "Moon", mercury: "Mercury", venus: "Venus", mars: "Mars", jupiter: "Jupiter", saturn: "Saturn",
 };
+const CHART_PLANETS = ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn"];
 
 function describeFacts(facts: any): string {
   const a = facts?.a ?? {};
   const b = facts?.b ?? {};
   const chart = (c: any) =>
-    ["sun", "moon", "mercury", "venus", "mars"].map((p) => `${PLANET_LABEL[p]} in ${c?.[p] ?? "?"}`).join(", ");
+    CHART_PLANETS.map((p) => `${PLANET_LABEL[p]} in ${c?.[p] ?? "?"}`).join(", ");
   const conns = Array.isArray(facts?.connections)
     ? facts.connections
         .map((c: any) => `${PLANET_LABEL[c?.pa] ?? c?.pa} ${c?.type} ${PLANET_LABEL[c?.pb] ?? c?.pb} (orb ${c?.orb}°, ${c?.harmony})`)
@@ -287,6 +288,7 @@ function normalizeFacts(body: any) {
   const chart = (c: any) => ({
     sun: validSign(c?.sun), moon: validSign(c?.moon), mercury: validSign(c?.mercury),
     venus: validSign(c?.venus), mars: validSign(c?.mars),
+    jupiter: validSign(c?.jupiter), saturn: validSign(c?.saturn),
   });
   const a = chart(body?.a);
   const b = chart(body?.b);

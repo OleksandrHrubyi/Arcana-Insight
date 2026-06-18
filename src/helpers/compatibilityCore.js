@@ -53,14 +53,14 @@ const DEFAULT_RELATIONSHIP = 'romantic'
 // e.g. romance shows attraction; work drops it for "drive"; friends/family swap
 // it for "warmth". So the result is genuinely different per relationship type.
 const RELATIONSHIP_DIMENSIONS = {
-  romantic:  [['attraction', 0.26], ['emotional', 0.24], ['communication', 0.18], ['values', 0.20], ['energy', 0.12]],
-  friend:    [['warmth', 0.24], ['emotional', 0.22], ['communication', 0.26], ['values', 0.18], ['energy', 0.10]],
-  family:    [['emotional', 0.30], ['warmth', 0.24], ['communication', 0.22], ['values', 0.18], ['energy', 0.06]],
-  colleague: [['communication', 0.34], ['values', 0.28], ['drive', 0.24], ['energy', 0.14]],
+  romantic:  [['attraction', 0.22], ['emotional', 0.20], ['communication', 0.15], ['values', 0.15], ['commitment', 0.18], ['energy', 0.10]],
+  friend:    [['warmth', 0.22], ['emotional', 0.18], ['communication', 0.22], ['values', 0.16], ['growth', 0.14], ['energy', 0.08]],
+  family:    [['emotional', 0.28], ['warmth', 0.22], ['communication', 0.18], ['values', 0.14], ['commitment', 0.18]],
+  colleague: [['communication', 0.30], ['values', 0.24], ['drive', 0.22], ['commitment', 0.16], ['energy', 0.08]],
 }
 
 // Canonical (romantic) dimension order — used by tests and as the default.
-export const DIMENSION_KEYS = ['attraction', 'emotional', 'communication', 'values', 'energy']
+export const DIMENSION_KEYS = ['attraction', 'emotional', 'communication', 'values', 'commitment', 'energy']
 
 /* ----------------------------- chart from DOB ----------------------------- */
 
@@ -117,6 +117,10 @@ export function computeChart(iso) {
     mercury: planetLonFromISO(clean, Astronomy.Body.Mercury),
     venus: planetLonFromISO(clean, Astronomy.Body.Venus),
     mars: planetLonFromISO(clean, Astronomy.Body.Mars),
+    // Jupiter (growth/generosity) and Saturn (commitment/longevity) — the social
+    // planets that give relationship synastry its long-term depth.
+    jupiter: planetLonFromISO(clean, Astronomy.Body.Jupiter),
+    saturn: planetLonFromISO(clean, Astronomy.Body.Saturn),
   }
   return {
     sun,
@@ -124,6 +128,8 @@ export function computeChart(iso) {
     mercury: signFromLon(lon.mercury),
     venus: signFromLon(lon.venus),
     mars: signFromLon(lon.mars),
+    jupiter: signFromLon(lon.jupiter),
+    saturn: signFromLon(lon.saturn),
     lon,
   }
 }
@@ -171,7 +177,7 @@ function normalizeRelationshipType(value) {
 
 /* --------------------------- real synastry aspects ------------------------ */
 
-const PLANETS = ['sun', 'moon', 'mercury', 'venus', 'mars']
+const PLANETS = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn']
 
 // Major aspects with traditional orbs (degrees) and harmony character.
 const ASPECTS = [
@@ -222,6 +228,10 @@ const DIMENSION_DOMAINS = {
   energy: [['mars', 'mars']],
   warmth: [['venus', 'venus'], ['moon', 'moon']],
   drive: [['mars', 'sun']],
+  // Saturn contacts → stability, duty, longevity.
+  commitment: [['saturn', 'sun'], ['saturn', 'moon'], ['saturn', 'venus'], ['saturn', 'saturn']],
+  // Jupiter contacts → expansion, generosity, optimism, shared growth.
+  growth: [['jupiter', 'sun'], ['jupiter', 'venus'], ['jupiter', 'moon'], ['jupiter', 'jupiter']],
 }
 
 function expandPairs(pairs) {
@@ -272,7 +282,7 @@ function buildDimensions(a, b, type) {
   })
 }
 
-const PLANET_IMPORTANCE = { sun: 1, moon: 1, venus: 0.9, mars: 0.9, mercury: 0.7 }
+const PLANET_IMPORTANCE = { sun: 1, moon: 1, venus: 0.9, mars: 0.9, mercury: 0.7, saturn: 0.85, jupiter: 0.8 }
 
 // Short theme per (unordered) planet pair — drives the "key connection" copy.
 const PLANET_PAIR_THEME = {
@@ -291,6 +301,21 @@ const PLANET_PAIR_THEME = {
   venus_venus: 'sharedTaste',
   mars_venus: 'chemistry',
   mars_mars: 'drive',
+  // Saturn (commitment / structure / longevity)
+  saturn_sun: 'commitmentTheme',
+  moon_saturn: 'security',
+  saturn_venus: 'lastingLove',
+  saturn_saturn: 'longTerm',
+  mars_saturn: 'driveRestraint',
+  mercury_saturn: 'seriousTalk',
+  // Jupiter (growth / generosity / optimism)
+  jupiter_sun: 'growthLuck',
+  jupiter_venus: 'generosity',
+  jupiter_moon: 'emotionalGrowth',
+  jupiter_jupiter: 'sharedVision',
+  jupiter_mars: 'momentum',
+  jupiter_mercury: 'bigIdeas',
+  jupiter_saturn: 'balance',
 }
 
 function pairTheme(p1, p2) {
@@ -323,6 +348,70 @@ function buildKeyConnections(a, b) {
   return [...byTheme.values()]
     .sort((x, y) => y.weight - x.weight)
     .slice(0, 5)
+    // eslint-disable-next-line no-unused-vars
+    .map(({ weight, ...rest }) => rest)
+}
+
+/* ---------------------- relationship weather (transits) ------------------- */
+
+// Circular midpoint of two ecliptic longitudes (the "composite" point — the
+// relationship treated as one chart).
+function midAngle(l1, l2) {
+  if (typeof l1 !== 'number' || typeof l2 !== 'number') return null
+  const r = Math.PI / 180
+  const x = Math.cos(l1 * r) + Math.cos(l2 * r)
+  const y = Math.sin(l1 * r) + Math.sin(l2 * r)
+  if (x === 0 && y === 0) return l1
+  return (((Math.atan2(y, x) / r) % 360) + 360) % 360
+}
+
+// Transiting planets we read for "this week" weather (Moon excluded — too fast
+// to be meaningful for a multi-day window). Each carries a theme.
+const WEATHER_TRANSITS = [
+  { planet: 'sun', body: 'Sun', theme: 'focus', importance: 0.8 },
+  { planet: 'mercury', body: 'Mercury', theme: 'talk', importance: 0.7 },
+  { planet: 'venus', body: 'Venus', theme: 'affection', importance: 1 },
+  { planet: 'mars', body: 'Mars', theme: 'passion', importance: 0.95 },
+  { planet: 'jupiter', body: 'Jupiter', theme: 'ease', importance: 0.85 },
+  { planet: 'saturn', body: 'Saturn', theme: 'test', importance: 0.85 },
+]
+const COMPOSITE_POINTS = ['sun', 'moon', 'venus', 'mars']
+
+// "Relationship weather": how today's transiting planets aspect the couple's
+// composite chart. Needs real longitudes (computeChart output). Returns the
+// strongest current influences (deduped by transiting planet), or [].
+export function computeWeather(chartA, chartB, isoToday) {
+  if (!chartA?.lon || !chartB?.lon) return []
+  const iso = /^\d{4}-\d{2}-\d{2}$/.test(String(isoToday || '')) ? isoToday : null
+  if (!iso) return []
+
+  const composite = {}
+  for (const p of COMPOSITE_POINTS) composite[p] = midAngle(chartA.lon[p], chartB.lon[p])
+
+  const byPlanet = new Map()
+  for (const t of WEATHER_TRANSITS) {
+    const tLon = planetLonFromISO(iso, Astronomy.Body[t.body])
+    if (typeof tLon !== 'number') continue
+    for (const cp of COMPOSITE_POINTS) {
+      const asp = aspectBetween(tLon, composite[cp])
+      if (!asp) continue
+      const weight = asp.strength * t.importance
+      const hit = {
+        transit: t.planet,
+        point: cp,
+        type: asp.type,
+        harmony: ASPECT_HARMONY[asp.type],
+        theme: t.theme,
+        orb: Math.round(asp.orb * 10) / 10,
+        weight,
+      }
+      const ex = byPlanet.get(t.planet)
+      if (!ex || weight > ex.weight) byPlanet.set(t.planet, hit)
+    }
+  }
+  return [...byPlanet.values()]
+    .sort((x, y) => y.weight - x.weight)
+    .slice(0, 3)
     // eslint-disable-next-line no-unused-vars
     .map(({ weight, ...rest }) => rest)
 }

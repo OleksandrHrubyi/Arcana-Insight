@@ -152,3 +152,31 @@ test('keyConnections dedupe by theme (no repeated theme)', async () => {
   const themes = res.keyConnections.map((c) => c.theme)
   assert.equal(new Set(themes).size, themes.length, 'each theme appears at most once')
 })
+
+test('charts include Jupiter and Saturn; commitment dimension exists for romance', async () => {
+  const { computeChart, computeCompatibility, SIGNS } = await importModule(MOD)
+  const a = computeChart('1990-07-15')
+  assert.ok(SIGNS.includes(a.jupiter), `jupiter sign ${a.jupiter}`)
+  assert.ok(SIGNS.includes(a.saturn), `saturn sign ${a.saturn}`)
+  assert.equal(typeof a.lon.jupiter, 'number')
+  assert.equal(typeof a.lon.saturn, 'number')
+  const res = computeCompatibility(a, computeChart('1986-03-22'), { relationshipType: 'romantic' })
+  assert.ok(res.dimensions.some((d) => d.key === 'commitment'), 'romance has a commitment dimension')
+})
+
+test('computeWeather returns current transit influences (or [])', async () => {
+  const { computeChart, computeWeather } = await importModule(MOD)
+  const a = computeChart('1990-07-15')
+  const b = computeChart('1986-03-22')
+  const w = computeWeather(a, b, '2026-06-18')
+  assert.ok(Array.isArray(w) && w.length <= 3)
+  for (const h of w) {
+    assert.ok(['conjunction', 'sextile', 'square', 'trine', 'opposition'].includes(h.type))
+    assert.ok(['flowing', 'friction', 'intense'].includes(h.harmony))
+    assert.ok(typeof h.theme === 'string' && h.theme.length > 0)
+    assert.ok(h.transit !== 'moon', 'transiting Moon excluded from weekly weather')
+  }
+  // No real longitudes (sign-only charts) or bad date → no weather.
+  assert.deepEqual(computeWeather({ sun: 'aries' }, { sun: 'leo' }, '2026-06-18'), [])
+  assert.deepEqual(computeWeather(a, b, 'bad'), [])
+})

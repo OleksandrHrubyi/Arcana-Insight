@@ -76,19 +76,37 @@
         </button>
         <div class="compat-reveal__hint">{{ tt('compatibilityPage.revealHint') }}</div>
 
-        <div v-if="recentPairs.length" class="compat-recent">
-          <div class="compat-recent__title">{{ tt('compatibilityPage.recentTitle') }}</div>
-          <div class="compat-recent__row">
-            <button
-              v-for="(pair, i) in recentPairs"
-              :key="i"
-              type="button"
-              class="compat-recent__chip"
-              @click="loadRecent(pair)"
-            >
-              {{ tt(`zodiac.${pair.a.sun}`) }} &amp; {{ tt(`zodiac.${pair.b.sun}`) }}
-            </button>
+        <div v-if="connections.length" class="compat-recent">
+          <div class="compat-recent__title">{{ tt('compatibilityPage.savedTitle') }}</div>
+          <div class="compat-connlist">
+            <div v-for="conn in connections" :key="conn.id" class="compat-savedconn">
+              <button type="button" class="compat-savedconn__open" @click="openConnection(conn)">
+                <span class="compat-savedconn__emoji">{{ conn.emoji }}</span>
+                <span class="compat-savedconn__meta">
+                  <span class="compat-savedconn__name">{{ conn.name }}</span>
+                  <span class="compat-savedconn__sign">{{ tt(`zodiac.${connectionSign(conn)}`) }}</span>
+                </span>
+              </button>
+              <button type="button" class="compat-savedconn__del" :aria-label="tt('common.close')" @click="deleteConnection(conn.id)">
+                <q-icon name="close" size="13px" />
+              </button>
+            </div>
           </div>
+
+          <button
+            v-if="reminderAvailable"
+            type="button"
+            class="compat-reminder"
+            :class="{ 'compat-reminder--on': reminderEnabled }"
+            :aria-pressed="reminderEnabled"
+            @click="toggleReminder"
+          >
+            <q-icon name="notifications_none" size="18px" class="compat-reminder__icon" />
+            <span class="compat-reminder__label">{{ tt('compatibilityPage.reminderLabel') }}</span>
+            <span class="compat-reminder__switch" :class="{ on: reminderEnabled }">
+              <span class="compat-reminder__knob"></span>
+            </span>
+          </button>
         </div>
       </div>
 
@@ -138,6 +156,25 @@
           <div class="compat-tier__headline">{{ tt(`compatibilityPage.tiers.${result.tier}.headline`) }}</div>
         </div>
 
+        <div v-if="weather.length" class="compat-weather">
+          <div class="compat-section-title">{{ tt('compatibilityPage.weatherTitle') }}</div>
+          <div class="compat-section-hint">{{ tt('compatibilityPage.weatherHint') }}</div>
+          <div
+            v-for="(w, i) in weather"
+            :key="`w-${i}`"
+            class="compat-weather__row"
+            :class="`compat-weather__row--${w.harmony}`"
+          >
+            <span class="compat-weather__glyph" aria-hidden="true">{{ planetGlyph(w.transit) }}</span>
+            <span class="compat-weather__text">{{ weatherText(w) }}</span>
+          </div>
+
+          <div v-if="weeklyAction" class="compat-weather__action">
+            <q-icon name="wb_twilight" size="16px" class="compat-weather__action-icon" />
+            <span><b>{{ tt('compatibilityPage.weatherActionLabel') }}</b> {{ weeklyAction }}</span>
+          </div>
+        </div>
+
         <div v-if="hasPremiumAccess && (aiReading || aiLoading)" class="compat-overview">
           <p v-if="aiReading" class="compat-overview__text">{{ aiReading.overview }}</p>
           <div v-else class="compat-overview__loading">
@@ -155,13 +192,10 @@
             class="compat-conn"
             :class="`compat-conn--${conn.harmony}`"
           >
-            <div class="compat-conn__glyphs" aria-hidden="true">
-              <span class="compat-conn__planet">{{ planetGlyph(conn.pa) }}</span>
-              <span class="compat-conn__aspect">{{ aspectGlyph(conn.type) }}</span>
-              <span class="compat-conn__planet">{{ planetGlyph(conn.pb) }}</span>
-            </div>
+            <div class="compat-conn__badge" aria-hidden="true">{{ aspectGlyph(conn.type) }}</div>
             <div class="compat-conn__body">
               <div class="compat-conn__title">
+                <span class="compat-conn__glyphs" aria-hidden="true">{{ planetGlyph(conn.pa) }}{{ planetGlyph(conn.pb) }}</span>
                 {{ connTitle(conn) }}
                 <span class="compat-conn__orb">{{ conn.orb }}°</span>
               </div>
@@ -180,7 +214,8 @@
             <div class="compat-dim__head">
               <q-icon :name="dimIcon(dim.key)" size="17px" class="compat-dim__icon" :class="`compat-dim__icon--${dim.level}`" />
               <span class="compat-dim__label">{{ tt(`compatibilityPage.dim.${dim.key}.label`) }}</span>
-              <span class="compat-dim__aspect">{{ aspectLabel(dim.aspect) }}</span>
+              <span v-if="!isDimLocked(dim)" class="compat-dim__aspect">{{ aspectLabel(dim.aspect) }}</span>
+              <q-icon v-else name="lock" size="13px" class="compat-dim__lock" />
               <span class="compat-dim__score">{{ dim.score }}</span>
             </div>
             <div class="compat-dim__bar">
@@ -188,9 +223,6 @@
             </div>
             <p v-if="!isDimLocked(dim)" class="compat-dim__text">
               {{ dimText(dim) }}
-            </p>
-            <p v-else class="compat-dim__text compat-dim__text--locked">
-              {{ tt('compatibilityPage.lockText') }}
             </p>
           </div>
         </div>
@@ -220,6 +252,17 @@
             {{ tt('premiumAccess.cta') }}
           </button>
         </section>
+
+        <button
+          type="button"
+          class="compat-save-btn"
+          :class="{ 'compat-save-btn--done': isCurrentSaved }"
+          :disabled="isCurrentSaved"
+          @click="openSaveSheet"
+        >
+          <q-icon :name="isCurrentSaved ? 'check' : 'bookmark_add'" size="17px" />
+          <span>{{ isCurrentSaved ? tt('compatibilityPage.saved') : tt('compatibilityPage.saveConnection') }}</span>
+        </button>
 
         <div class="compat-actions">
           <button type="button" class="compat-action compat-action--secondary" @click="shareResult">
@@ -299,6 +342,33 @@
         </button>
       </div>
     </q-dialog>
+
+    <!-- Save connection sheet -->
+    <q-dialog v-model="saveSheet" position="bottom">
+      <div class="compat-dobsheet compat-savesheet">
+        <div class="compat-dobsheet__handle" aria-hidden="true"></div>
+        <div class="compat-dobsheet__title">{{ tt('compatibilityPage.saveConnection') }}</div>
+        <input
+          v-model="saveName"
+          class="compat-savesheet__input"
+          :placeholder="tt('compatibilityPage.namePlaceholder')"
+          maxlength="24"
+        />
+        <div class="compat-savesheet__emojis">
+          <button
+            v-for="e in SAVE_EMOJI"
+            :key="e"
+            type="button"
+            class="compat-savesheet__emoji"
+            :class="{ active: saveEmoji === e }"
+            @click="saveEmoji = e"
+          >{{ e }}</button>
+        </div>
+        <button type="button" class="compat-dobsheet__confirm" @click="confirmSaveConnection">
+          {{ tt('common.save') }}
+        </button>
+      </div>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -309,13 +379,16 @@ import { t, currentLocale } from 'src/i18n'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
 import { Share } from '@capacitor/share'
+import { Filesystem, Directory } from '@capacitor/filesystem'
 import { Preferences } from '@capacitor/preferences'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
 import { analytics } from 'src/services/analytics'
 import { PAYWALL_ENTRY_POINTS, CONTENT_SHARE_EVENTS } from 'src/constants/analyticsEvents'
 import { selectAppUser, invokeFunction } from 'src/services/supabaseNative'
 import { useAuthStore } from 'stores/authStore.js'
-import { computeChart, computeCompatibility } from 'src/helpers/compatibilityCore.js'
+import { computeChart, computeCompatibility, computeWeather } from 'src/helpers/compatibilityCore.js'
+import { localISODate } from 'src/helpers/date.ts'
+import { reminderSupported, ensureReminderPermission, scheduleWeeklyReminder, cancelWeeklyReminder } from 'src/services/relationshipReminder.js'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -326,8 +399,13 @@ const locale = computed(() =>
 )
 const tt = (key) => t(locale.value, key)
 
-const RECENT_PAIRS_KEY = 'arcana_compatibility_recent_pairs_v1'
+const CONNECTIONS_KEY = 'arcana_compatibility_connections_v1'
+const REMINDER_KEY = 'arcana_compatibility_reminder_v1'
 const PROFILE_CACHE_KEY = 'profile_cache_v1'
+
+const reminderAvailable = reminderSupported()
+const reminderEnabled = ref(false)
+const reminderBusy = ref(false)
 
 const relTypes = [
   { key: 'romantic', icon: 'favorite' },
@@ -336,12 +414,31 @@ const relTypes = [
   { key: 'colleague', icon: 'work_outline' },
 ]
 
+// Default avatar emoji per relationship type (user can change when saving).
+const REL_EMOJI = { romantic: '❤️', friend: '🤝', family: '🏡', colleague: '💼' }
+const SAVE_EMOJI = ['❤️', '🤍', '🔥', '🌙', '⭐', '🌸', '🤝', '🏡']
+
 const dobA = ref('')
 const dobB = ref('')
 const relationshipType = ref('romantic')
 const result = ref(null)
-const recentPairs = ref([])
+const connections = ref([])
 const displayScore = ref(0)
+const weather = ref([])
+
+// Save-connection sheet state.
+const saveSheet = ref(false)
+const saveName = ref('')
+const saveEmoji = ref('❤️')
+
+const weatherText = (w) =>
+  `${tt(`compatibilityPage.weatherThemes.${w.theme}`)} ${tt(`compatibilityPage.weatherFraming.${w.harmony}`)}`
+
+// One concrete, grounded suggestion driven by the dominant weather influence.
+const weeklyAction = computed(() => {
+  const top = weather.value[0]
+  return top ? tt(`compatibilityPage.weatherActions.${top.theme}`) : ''
+})
 
 // AI narrative (premium): the deterministic synastry is the source of truth; the
 // edge function turns those real facts into a warm, personal reading.
@@ -409,7 +506,7 @@ const SIGN_GLYPH = {
 }
 
 // Planet glyphs for the "big four" each chart contributes.
-const PLANET_GLYPH = { sun: '☉', moon: '☾', mercury: '☿', venus: '♀', mars: '♂' }
+const PLANET_GLYPH = { sun: '☉', moon: '☾', mercury: '☿', venus: '♀', mars: '♂', jupiter: '♃', saturn: '♄' }
 const ASPECT_GLYPH = { conjunction: '☌', sextile: '⚹', square: '□', trine: '△', opposition: '☍' }
 
 // Material icon per dimension (premium, not emoji/sparkle).
@@ -421,6 +518,8 @@ const DIM_ICON = {
   energy: 'bolt',
   warmth: 'volunteer_activism',
   drive: 'trending_up',
+  commitment: 'anchor',
+  growth: 'eco',
 }
 
 // Append U+FE0E (text variation selector) so the zodiac/planet symbols render as
@@ -580,7 +679,7 @@ function confirmDob() {
 const isDimLocked = (dim) => !hasPremiumAccess.value && dim.key !== result.value?.teaserKey
 
 function pickSigns(c) {
-  return { sun: c?.sun, moon: c?.moon, mercury: c?.mercury, venus: c?.venus, mars: c?.mars }
+  return { sun: c?.sun, moon: c?.moon, mercury: c?.mercury, venus: c?.venus, mars: c?.mars, jupiter: c?.jupiter, saturn: c?.saturn }
 }
 
 // Premium: send the real deterministic synastry facts to the edge function and
@@ -620,6 +719,7 @@ function reveal() {
   const res = computeCompatibility(chartA.value, chartB.value, { relationshipType: relationshipType.value })
   if (!res) return
   result.value = res
+  weather.value = computeWeather(res.charts.a, res.charts.b, localISODate())
   displayScore.value = 0
   animateScore(res.overallScore)
   void hapticSelect()
@@ -628,12 +728,12 @@ function reveal() {
     score: res.overallScore,
     relationshipType: res.relationshipType,
   })
-  saveRecent(res)
   void requestAiReading(res)
 }
 
 function resetPairing() {
   result.value = null
+  weather.value = []
   displayScore.value = 0
   aiReading.value = null
   aiError.value = false
@@ -642,11 +742,59 @@ function resetPairing() {
   void hapticSelect()
 }
 
-function loadRecent(pair) {
-  dobA.value = pair.dobA || ''
-  dobB.value = pair.dobB || ''
-  relationshipType.value = pair.relationshipType || 'romantic'
+// Open a saved connection: their DOB + type against your chart, then reveal.
+function openConnection(conn) {
+  dobB.value = conn.dob || ''
+  relationshipType.value = conn.relationshipType || 'romantic'
+  void hapticSelect()
   if (canReveal.value) reveal()
+}
+
+// Is the currently-revealed partner already saved?
+const isCurrentSaved = computed(() =>
+  Boolean(result.value) && connections.value.some((c) => c.dob === dobB.value),
+)
+
+function openSaveSheet() {
+  if (!result.value) return
+  saveName.value = ''
+  saveEmoji.value = REL_EMOJI[relationshipType.value] || '❤️'
+  saveSheet.value = true
+  void hapticSelect()
+}
+
+async function confirmSaveConnection() {
+  if (!dobB.value) return
+  const name = saveName.value.trim() || tt(`compatibilityPage.relTypes.${relationshipType.value}`)
+  const conn = {
+    id: `c${connections.value.length}_${dobB.value}_${relationshipType.value}`,
+    name,
+    emoji: saveEmoji.value,
+    dob: dobB.value,
+    relationshipType: relationshipType.value,
+  }
+  // De-dupe by (dob + type); newest first; cap at 24.
+  const next = [conn, ...connections.value.filter((c) => !(c.dob === conn.dob && c.relationshipType === conn.relationshipType))].slice(0, 24)
+  connections.value = next
+  await persistConnections()
+  await refreshReminderIfOn()
+  saveSheet.value = false
+  void hapticSelect()
+}
+
+async function deleteConnection(id) {
+  connections.value = connections.value.filter((c) => c.id !== id)
+  await persistConnections()
+  await refreshReminderIfOn()
+  void hapticSelect()
+}
+
+async function persistConnections() {
+  try {
+    await Preferences.set({ key: CONNECTIONS_KEY, value: JSON.stringify(connections.value) })
+  } catch {
+    // storage unavailable — ignore
+  }
 }
 
 async function goPremium() {
@@ -654,6 +802,105 @@ async function goPremium() {
   const point = PAYWALL_ENTRY_POINTS.compatibilityLock
   void analytics.logEvent(point.event, { source: point.source, entry: point.entry })
   router.push({ name: 'premium', query: { source: point.source, entry: point.entry } }).catch(() => {})
+}
+
+function wrapCanvasText(ctx, text, x, y, maxW, lh) {
+  const words = String(text).split(' ')
+  let line = ''
+  let yy = y
+  for (const w of words) {
+    const test = line ? `${line} ${w}` : w
+    if (ctx.measureText(test).width > maxW && line) {
+      ctx.fillText(line, x, yy)
+      yy += lh
+      line = w
+    } else {
+      line = test
+    }
+  }
+  if (line) ctx.fillText(line, x, yy)
+}
+
+// A shareable IG/story-ready image, drawn on a canvas (no extra deps).
+function buildShareCardImage(r) {
+  if (typeof document === 'undefined') return null
+  const W = 1080
+  const H = 1350
+  const canvas = document.createElement('canvas')
+  canvas.width = W
+  canvas.height = H
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+  ctx.textAlign = 'center'
+
+  const g = ctx.createRadialGradient(W / 2, -120, 120, W / 2, H * 0.42, H)
+  g.addColorStop(0, '#0c2740')
+  g.addColorStop(0.45, '#0a1722')
+  g.addColorStop(1, '#05090f')
+  ctx.fillStyle = g
+  ctx.fillRect(0, 0, W, H)
+
+  ctx.fillStyle = 'rgba(255,255,255,0.55)'
+  for (const [x, y, rr] of [[120, 180, 2], [300, 120, 1.5], [820, 160, 2.4], [960, 320, 1.6], [200, 380, 1.4], [690, 100, 1.4], [520, 250, 1.2], [900, 560, 1.8], [170, 600, 1.3]]) {
+    ctx.beginPath()
+    ctx.arc(x, y, rr, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  const tierColors = { magnetic: '#f0a6c0', harmonious: '#8fd1a3', growing: '#8dbef0', complex: '#e0c08a', challenging: '#e09a8a' }
+  const accent = tierColors[r.tier] || '#8dbef0'
+
+  ctx.fillStyle = 'rgba(214,232,246,0.55)'
+  ctx.font = '600 30px sans-serif'
+  ctx.fillText(`ARCANA · ${tt('compatibilityPage.title').toUpperCase()}`, W / 2, 120)
+
+  ctx.fillStyle = '#d3e6f8'
+  ctx.font = '118px sans-serif'
+  ctx.fillText(signGlyph(r.charts.a.sun), W * 0.28, 370)
+  ctx.fillText(signGlyph(r.charts.b.sun), W * 0.72, 370)
+  ctx.fillStyle = 'rgba(190,212,235,0.45)'
+  ctx.font = '300 64px sans-serif'
+  ctx.fillText('&', W / 2, 350)
+  ctx.fillStyle = '#fff'
+  ctx.font = '600 42px sans-serif'
+  ctx.fillText(tt(`zodiac.${r.charts.a.sun}`), W * 0.28, 450)
+  ctx.fillText(tt(`zodiac.${r.charts.b.sun}`), W * 0.72, 450)
+
+  const cx = W / 2
+  const cy = 740
+  const rad = 185
+  ctx.lineWidth = 24
+  ctx.lineCap = 'round'
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)'
+  ctx.beginPath()
+  ctx.arc(cx, cy, rad, 0, Math.PI * 2)
+  ctx.stroke()
+  ctx.strokeStyle = accent
+  ctx.beginPath()
+  ctx.arc(cx, cy, rad, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (r.overallScore / 100))
+  ctx.stroke()
+  ctx.fillStyle = '#fff'
+  ctx.textBaseline = 'middle'
+  ctx.font = '700 158px sans-serif'
+  ctx.fillText(String(r.overallScore), cx, cy - 8)
+  ctx.font = '500 32px sans-serif'
+  ctx.fillStyle = 'rgba(190,212,235,0.6)'
+  ctx.fillText(tt('compatibilityPage.scoreLabel').toUpperCase(), cx, cy + 92)
+  ctx.textBaseline = 'alphabetic'
+
+  ctx.fillStyle = accent
+  ctx.font = '700 66px sans-serif'
+  ctx.fillText(tt(`compatibilityPage.tiers.${r.tier}.title`), W / 2, 1040)
+
+  ctx.fillStyle = 'rgba(220,232,245,0.82)'
+  ctx.font = '400 38px sans-serif'
+  wrapCanvasText(ctx, tt(`compatibilityPage.tiers.${r.tier}.headline`), W / 2, 1120, W - 240, 52)
+
+  ctx.fillStyle = 'rgba(190,212,235,0.4)'
+  ctx.font = '400 30px sans-serif'
+  ctx.fillText(tt('shareSubInfo'), W / 2, H - 70)
+
+  return { dataUrl: canvas.toDataURL('image/png') }
 }
 
 async function shareResult() {
@@ -665,15 +912,41 @@ async function shareResult() {
     score: r.overallScore,
     relationshipType: r.relationshipType,
   })
-  const lines = [
+  const title = tt('compatibilityPage.title')
+  const shareText = [
     `${tt(`zodiac.${r.charts.a.sun}`)} & ${tt(`zodiac.${r.charts.b.sun}`)}`,
     `${tt('compatibilityPage.scoreLabel')}: ${r.overallScore}/100 — ${tt(`compatibilityPage.tiers.${r.tier}.title`)}`,
     tt(`compatibilityPage.tiers.${r.tier}.headline`),
     '',
     tt('shareSubInfo'),
-  ]
+  ].join('\n')
+
+  // Native-first: share a visual card image; fall back to text.
+  if (Capacitor.isNativePlatform?.()) {
+    let tempPath = ''
+    try {
+      const img = buildShareCardImage(r)
+      const base64 = img?.dataUrl ? img.dataUrl.split(',')[1] : ''
+      if (base64) {
+        const filePath = `share/compat-${Date.now()}.png`
+        const { uri } = await Filesystem.writeFile({ path: filePath, data: base64, directory: Directory.Cache, recursive: true })
+        if (uri) {
+          tempPath = filePath
+          await Share.share({ title, dialogTitle: title, text: shareText, files: [uri] })
+          return
+        }
+      }
+    } catch (e) {
+      console.warn('[compatibility] image share failed, falling back to text', e)
+    } finally {
+      if (tempPath) {
+        try { await Filesystem.deleteFile({ path: tempPath, directory: Directory.Cache }) } catch { /* ignore */ }
+      }
+    }
+  }
+
   try {
-    await Share.share({ title: tt('compatibilityPage.title'), text: lines.join('\n') })
+    await Share.share({ title, text: shareText })
   } catch {
     // share cancelled — ignore
   }
@@ -684,32 +957,86 @@ function onBack() {
   router.back()
 }
 
-/* recent pairs persistence */
-async function loadRecentPairs() {
+/* saved connections persistence (local-first, on-device) */
+async function loadConnections() {
   try {
-    const { value } = await Preferences.get({ key: RECENT_PAIRS_KEY })
+    const { value } = await Preferences.get({ key: CONNECTIONS_KEY })
     const parsed = value ? JSON.parse(value) : []
-    if (Array.isArray(parsed)) recentPairs.value = parsed.slice(0, 4)
+    if (Array.isArray(parsed)) {
+      connections.value = parsed
+        .filter((c) => c && /^\d{4}-\d{2}-\d{2}$/.test(c.dob || ''))
+        .slice(0, 24)
+    }
   } catch {
-    recentPairs.value = []
+    connections.value = []
   }
 }
 
-async function saveRecent(res) {
-  const entry = {
-    dobA: dobA.value,
-    dobB: dobB.value,
-    relationshipType: res.relationshipType,
-    a: { sun: res.charts.a.sun },
-    b: { sun: res.charts.b.sun },
+// Sun sign for a saved connection's avatar/label (cheap, from its DOB).
+function connectionSign(conn) {
+  return computeChart(conn.dob)?.sun || ''
+}
+
+/* weekly local reminder (on-device, no server) */
+function reminderTexts() {
+  const name = connections.value[0]?.name || tt('compatibilityPage.partnerLabel')
+  return {
+    title: tt('compatibilityPage.reminderTitle'),
+    body: tt('compatibilityPage.reminderBody').replace('{name}', name),
   }
-  const next = [entry, ...recentPairs.value.filter((p) => !(p.dobA === entry.dobA && p.dobB === entry.dobB))].slice(0, 4)
-  recentPairs.value = next
+}
+
+async function persistReminderPref() {
   try {
-    await Preferences.set({ key: RECENT_PAIRS_KEY, value: JSON.stringify(next) })
+    await Preferences.set({ key: REMINDER_KEY, value: JSON.stringify({ enabled: reminderEnabled.value }) })
   } catch {
     // storage unavailable — ignore
   }
+}
+
+async function loadReminderPref() {
+  try {
+    const { value } = await Preferences.get({ key: REMINDER_KEY })
+    reminderEnabled.value = value ? Boolean(JSON.parse(value)?.enabled) : false
+  } catch {
+    reminderEnabled.value = false
+  }
+}
+
+async function toggleReminder() {
+  if (reminderBusy.value) return
+  reminderBusy.value = true
+  void hapticSelect()
+  try {
+    if (reminderEnabled.value) {
+      await cancelWeeklyReminder()
+      reminderEnabled.value = false
+      await persistReminderPref()
+      return
+    }
+    if (!connections.value.length) return // needs a saved connection to remind about
+    const granted = await ensureReminderPermission()
+    if (!granted) return
+    const ok = await scheduleWeeklyReminder(reminderTexts())
+    if (ok) {
+      reminderEnabled.value = true
+      await persistReminderPref()
+    }
+  } finally {
+    reminderBusy.value = false
+  }
+}
+
+// Keep the scheduled reminder in sync when the primary connection changes.
+async function refreshReminderIfOn() {
+  if (!reminderEnabled.value) return
+  if (!connections.value.length) {
+    await cancelWeeklyReminder()
+    reminderEnabled.value = false
+    await persistReminderPref()
+    return
+  }
+  await scheduleWeeklyReminder(reminderTexts())
 }
 
 /* profile auto-fill for "You" */
@@ -749,7 +1076,8 @@ function setHideBottomNav(enabled) {
 
 onMounted(() => {
   setHideBottomNav(true)
-  void loadRecentPairs()
+  void loadConnections()
+  void loadReminderPref()
   void loadProfileDob()
 })
 
@@ -1033,19 +1361,140 @@ onBeforeUnmount(() => {
   margin-bottom: 10px;
 }
 
-.compat-recent__row {
+/* saved connections list */
+.compat-connlist {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 8px;
 }
 
-.compat-recent__chip {
-  border-radius: 999px;
-  border: 1px solid rgba(159, 216, 246, 0.14);
-  background: rgba(7, 14, 22, 0.42);
+.compat-savedconn {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.compat-savedconn__open {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(159, 216, 246, 0.12);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  padding: 11px 14px;
+  text-align: left;
+}
+
+.compat-savedconn__open:active {
+  transform: scale(0.99);
+}
+
+.compat-savedconn__emoji {
+  font-size: 22px;
+  flex: 0 0 auto;
+  width: 30px;
+  text-align: center;
+}
+
+.compat-savedconn__meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.compat-savedconn__name {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: rgba(235, 242, 255, 0.94);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compat-savedconn__sign {
+  font-size: 12px;
+  color: rgba(190, 212, 235, 0.55);
+}
+
+.compat-savedconn__del {
+  flex: 0 0 auto;
+  width: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(159, 216, 246, 0.1);
+  background: rgba(7, 14, 22, 0.4);
+  color: rgba(190, 212, 235, 0.5);
+  display: grid;
+  place-items: center;
+}
+
+.compat-savedconn__del:active {
+  transform: scale(0.94);
+}
+
+/* weekly reminder toggle */
+.compat-reminder {
+  width: 100%;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(159, 216, 246, 0.12);
+  background: rgba(7, 14, 22, 0.4);
   color: rgba(214, 232, 246, 0.82);
-  padding: 8px 14px;
-  font-size: 13px;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.compat-reminder--on {
+  border-color: rgba(141, 190, 240, 0.4);
+  background: rgba(141, 190, 240, 0.1);
+}
+
+.compat-reminder__icon {
+  color: rgba(190, 212, 235, 0.6);
+  flex: 0 0 auto;
+}
+
+.compat-reminder--on .compat-reminder__icon {
+  color: #a9d3f0;
+}
+
+.compat-reminder__label {
+  flex: 1;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.compat-reminder__switch {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  position: relative;
+  transition: background 180ms ease;
+}
+
+.compat-reminder__switch.on {
+  background: #7fb0e8;
+}
+
+.compat-reminder__knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 180ms cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+.compat-reminder__switch.on .compat-reminder__knob {
+  transform: translateX(18px);
 }
 
 /* ── result: scorecard ── */
@@ -1203,6 +1652,76 @@ onBeforeUnmount(() => {
   line-height: 1.45;
 }
 
+/* ── relationship weather (transits) ── */
+.compat-weather {
+  margin-top: 22px;
+  border-radius: 16px;
+  border: 1px solid rgba(159, 216, 246, 0.12);
+  background: linear-gradient(180deg, rgba(141, 190, 240, 0.06), rgba(141, 190, 240, 0.015));
+  padding: 14px 16px;
+}
+
+.compat-weather__row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.compat-weather__row:first-of-type {
+  border-top: none;
+}
+
+.compat-weather__glyph {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  background: rgba(141, 190, 240, 0.12);
+  color: #a9d3f0;
+  border: 1px solid rgba(141, 190, 240, 0.25);
+}
+
+.compat-weather__row--flowing .compat-weather__glyph { color: #8fd1a3; border-color: rgba(143, 209, 163, 0.32); background: rgba(143, 209, 163, 0.12); }
+.compat-weather__row--friction .compat-weather__glyph { color: #e0c08a; border-color: rgba(224, 192, 138, 0.32); background: rgba(224, 192, 138, 0.12); }
+.compat-weather__row--intense .compat-weather__glyph { color: #f0a6c0; border-color: rgba(240, 166, 192, 0.32); background: rgba(240, 166, 192, 0.12); }
+
+.compat-weather__text {
+  flex: 1;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(214, 232, 246, 0.85);
+}
+
+.compat-weather__action {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  background: rgba(143, 209, 163, 0.1);
+  border: 1px solid rgba(143, 209, 163, 0.22);
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: rgba(220, 238, 226, 0.9);
+}
+
+.compat-weather__action b {
+  color: #9fd6ad;
+  font-weight: 600;
+}
+
+.compat-weather__action-icon {
+  color: #9fd6ad;
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
 /* ── AI overview / dynamic / advice (premium) ── */
 .compat-overview {
   margin-top: 18px;
@@ -1288,36 +1807,46 @@ onBeforeUnmount(() => {
 .compat-conn {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  margin-bottom: 9px;
-  border-radius: 14px;
+  gap: 13px;
+  padding: 13px 15px;
+  margin-bottom: 10px;
+  border-radius: 16px;
   border: 1px solid rgba(159, 216, 246, 0.1);
-  border-left: 3px solid rgba(141, 190, 240, 0.5);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.008));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.01));
 }
 
-.compat-conn--flowing { border-left-color: #8fd1a3; }
-.compat-conn--friction { border-left-color: #e0c08a; }
-.compat-conn--intense { border-left-color: #f0a6c0; }
-
-.compat-conn__glyphs {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+/* Circular, harmony-tinted aspect badge — the visual anchor of each connection. */
+.compat-conn__badge {
   flex: 0 0 auto;
-  color: rgba(216, 233, 247, 0.92);
-  font-size: 17px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  border: 1px solid rgba(141, 190, 240, 0.32);
+  background: rgba(141, 190, 240, 0.13);
+  color: #a9d3f0;
 }
 
-.compat-conn__aspect {
-  font-size: 13px;
-  color: rgba(190, 212, 235, 0.65);
+.compat-conn--flowing .compat-conn__badge {
+  border-color: rgba(143, 209, 163, 0.42);
+  background: rgba(143, 209, 163, 0.14);
+  color: #8fd1a3;
+  box-shadow: 0 0 16px rgba(143, 209, 163, 0.18);
 }
-
-.compat-conn--flowing .compat-conn__aspect { color: #8fd1a3; }
-.compat-conn--friction .compat-conn__aspect { color: #e0c08a; }
-.compat-conn--intense .compat-conn__aspect { color: #f0a6c0; }
+.compat-conn--friction .compat-conn__badge {
+  border-color: rgba(224, 192, 138, 0.42);
+  background: rgba(224, 192, 138, 0.14);
+  color: #e0c08a;
+  box-shadow: 0 0 16px rgba(224, 192, 138, 0.16);
+}
+.compat-conn--intense .compat-conn__badge {
+  border-color: rgba(240, 166, 192, 0.42);
+  background: rgba(240, 166, 192, 0.14);
+  color: #f0a6c0;
+  box-shadow: 0 0 16px rgba(240, 166, 192, 0.18);
+}
 
 .compat-conn__body {
   flex: 1;
@@ -1325,23 +1854,30 @@ onBeforeUnmount(() => {
 }
 
 .compat-conn__title {
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 600;
-  color: rgba(235, 242, 255, 0.94);
+  color: rgba(235, 242, 255, 0.95);
+}
+
+.compat-conn__glyphs {
+  color: rgba(190, 212, 235, 0.6);
+  font-size: 13px;
+  margin-right: 5px;
+  letter-spacing: 1px;
 }
 
 .compat-conn__orb {
   font-size: 11px;
   font-weight: 500;
-  color: rgba(190, 212, 235, 0.45);
-  margin-left: 4px;
+  color: rgba(190, 212, 235, 0.5);
+  margin-left: 6px;
 }
 
 .compat-conn__meaning {
   font-size: 12.5px;
   line-height: 1.45;
-  color: rgba(206, 224, 240, 0.78);
-  margin-top: 2px;
+  color: rgba(206, 224, 240, 0.74);
+  margin-top: 3px;
 }
 
 /* ── dimensions ── */
@@ -1393,6 +1929,10 @@ onBeforeUnmount(() => {
   display: none;
 }
 
+.compat-dim__lock {
+  color: rgba(190, 212, 235, 0.5);
+}
+
 .compat-dim__score {
   margin-left: auto;
   font-size: 15px;
@@ -1401,10 +1941,11 @@ onBeforeUnmount(() => {
 }
 
 .compat-dim__bar {
-  height: 6px;
+  height: 7px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
-  margin: 9px 0;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.25);
+  margin: 10px 0;
   overflow: hidden;
 }
 
@@ -1415,9 +1956,9 @@ onBeforeUnmount(() => {
   transition: width 600ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.compat-dim__bar-fill--high { background: #8fd1a3; }
-.compat-dim__bar-fill--mid { background: #8dbef0; }
-.compat-dim__bar-fill--low { background: #e0c08a; }
+.compat-dim__bar-fill--high { background: linear-gradient(90deg, rgba(143, 209, 163, 0.7), #8fd1a3); box-shadow: 0 0 10px rgba(143, 209, 163, 0.4); }
+.compat-dim__bar-fill--mid { background: linear-gradient(90deg, rgba(141, 190, 240, 0.7), #8dbef0); box-shadow: 0 0 10px rgba(141, 190, 240, 0.4); }
+.compat-dim__bar-fill--low { background: linear-gradient(90deg, rgba(224, 192, 138, 0.7), #e0c08a); box-shadow: 0 0 10px rgba(224, 192, 138, 0.35); }
 
 .compat-dim__text {
   font-size: 13.5px;
@@ -1426,13 +1967,12 @@ onBeforeUnmount(() => {
   margin: 4px 0 0;
 }
 
-.compat-dim__text--locked {
-  color: rgba(190, 212, 235, 0.5);
-  filter: blur(0.3px);
+.compat-dim--locked {
+  opacity: 0.74;
 }
 
 .compat-dim--locked .compat-dim__bar-fill {
-  opacity: 0.5;
+  opacity: 0.55;
 }
 
 /* ── unlock ── */
@@ -1509,10 +2049,38 @@ onBeforeUnmount(() => {
 }
 
 /* ── actions ── */
+.compat-save-btn {
+  width: 100%;
+  margin-top: 18px;
+  min-height: 50px;
+  border-radius: 14px;
+  border: 1px solid rgba(159, 216, 246, 0.2);
+  background: rgba(141, 190, 240, 0.1);
+  color: rgba(224, 235, 248, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: transform 120ms ease, opacity 160ms ease;
+}
+
+.compat-save-btn:active {
+  transform: translateY(1px);
+}
+
+.compat-save-btn--done {
+  border-color: rgba(143, 209, 163, 0.32);
+  background: rgba(143, 209, 163, 0.12);
+  color: #9fd6ad;
+  opacity: 0.9;
+}
+
 .compat-actions {
   display: flex;
   gap: 10px;
-  margin-top: 22px;
+  margin-top: 12px;
 }
 
 .compat-action {
@@ -1660,5 +2228,55 @@ onBeforeUnmount(() => {
 
 .compat-dobsheet__confirm:disabled {
   opacity: 0.4;
+}
+
+/* ── save-connection sheet ── */
+.compat-savesheet {
+  gap: 14px;
+}
+
+.compat-savesheet__input {
+  width: 100%;
+  height: 50px;
+  border-radius: 12px;
+  border: 1px solid rgba(159, 216, 246, 0.18);
+  background: rgba(7, 14, 22, 0.5);
+  color: #fff;
+  font-size: 15px;
+  padding: 0 14px;
+  outline: none;
+}
+
+.compat-savesheet__input::placeholder {
+  color: rgba(190, 212, 235, 0.4);
+}
+
+.compat-savesheet__input:focus {
+  border-color: rgba(141, 190, 240, 0.5);
+}
+
+.compat-savesheet__emojis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.compat-savesheet__emoji {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(159, 216, 246, 0.12);
+  background: rgba(7, 14, 22, 0.4);
+  font-size: 22px;
+  display: grid;
+  place-items: center;
+  transition: border-color 140ms ease, background 140ms ease, transform 120ms ease;
+}
+
+.compat-savesheet__emoji.active {
+  border-color: rgba(141, 190, 240, 0.55);
+  background: rgba(141, 190, 240, 0.16);
+  transform: scale(1.05);
 }
 </style>
