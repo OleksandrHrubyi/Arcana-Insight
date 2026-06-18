@@ -79,13 +79,18 @@
         <div v-if="connections.length" class="compat-recent">
           <div class="compat-recent__title">{{ tt('compatibilityPage.savedTitle') }}</div>
           <div class="compat-connlist">
-            <div v-for="conn in connections" :key="conn.id" class="compat-savedconn">
+            <div v-for="conn in rankedConnections" :key="conn.id" class="compat-savedconn">
               <button type="button" class="compat-savedconn__open" @click="openConnection(conn)">
                 <span class="compat-savedconn__emoji">{{ conn.emoji }}</span>
                 <span class="compat-savedconn__meta">
                   <span class="compat-savedconn__name">{{ conn.name }}</span>
                   <span class="compat-savedconn__sign">{{ tt(`zodiac.${connectionSign(conn)}`) }}</span>
                 </span>
+                <span
+                  v-if="conn.score != null"
+                  class="compat-savedconn__score"
+                  :class="`compat-savedconn__score--${conn.tier}`"
+                >{{ conn.score }}</span>
               </button>
               <button type="button" class="compat-savedconn__del" :aria-label="tt('common.close')" @click="deleteConnection(conn.id)">
                 <q-icon name="close" size="13px" />
@@ -1133,6 +1138,24 @@ function connectionSign(conn) {
   return computeChart(conn.dob)?.sun || ''
 }
 
+// Saved connections scored against YOUR chart and ranked by match (strongest
+// first). Score/tier are null when your own birth date isn't set yet.
+const rankedConnections = computed(() => {
+  const me = chartA.value
+  return connections.value
+    .map((conn) => {
+      let score = null
+      let tier = null
+      if (me) {
+        const their = computeChart(conn.dob, chartOpts(conn.birth, conn.dob))
+        const res = their ? computeCompatibility(me, their, { relationshipType: conn.relationshipType }) : null
+        if (res) { score = res.overallScore; tier = res.tier }
+      }
+      return { ...conn, score, tier }
+    })
+    .sort((x, y) => (y.score ?? -1) - (x.score ?? -1))
+})
+
 /* weekly local reminder (on-device, no server) */
 function reminderTexts() {
   const name = connections.value[0]?.name || tt('compatibilityPage.partnerLabel')
@@ -1554,10 +1577,29 @@ onBeforeUnmount(() => {
 }
 
 .compat-savedconn__meta {
+  flex: 1;
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
+
+.compat-savedconn__score {
+  flex: 0 0 auto;
+  min-width: 34px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 10px;
+  color: #06131f;
+  background: #8dbef0;
+}
+
+.compat-savedconn__score--magnetic { background: #f0a6c0; }
+.compat-savedconn__score--harmonious { background: #8fd1a3; }
+.compat-savedconn__score--growing { background: #8dbef0; }
+.compat-savedconn__score--complex { background: #e0c08a; }
+.compat-savedconn__score--challenging { background: #e09a8a; }
 
 .compat-savedconn__name {
   font-size: 14.5px;
