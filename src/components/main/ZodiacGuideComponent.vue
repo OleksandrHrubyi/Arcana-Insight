@@ -13,10 +13,33 @@
         </div>
       </header>
 
-      <section class="zodiac-card zodiac-card--intro">
-        <div class="zodiac-card__title">{{ tt('zodiacGuidePage.introTitle') }}</div>
-        <p class="zodiac-intro">{{ tt('zodiacGuidePage.introText') }}</p>
-      </section>
+      <p class="zodiac-lead">{{ tt('zodiacGuidePage.introText') }}</p>
+
+      <button
+        v-if="mySignCard"
+        type="button"
+        class="mysign-jump"
+        :style="{ '--accent': mySignCard.accent, '--accent-soft': mySignCard.accentSoft }"
+        @click="goToSign(mySignCard.key)"
+      >
+        <span class="mysign-jump__glyph">{{ mySignCard.emoji }}</span>
+        <span class="mysign-jump__text">
+          <span class="mysign-jump__label">{{ tt('zodiacGuidePage.mySign.title') }}</span>
+          <span class="mysign-jump__name">{{ mySignCard.name }}</span>
+        </span>
+        <q-icon name="arrow_forward" size="16px" class="mysign-jump__arrow" />
+      </button>
+
+      <button type="button" class="compat-banner" @click="goToCompatibility">
+        <div class="compat-banner__text">
+          <div class="compat-banner__title">{{ tt('zodiacGuidePage.compatCta.title') }}</div>
+          <div class="compat-banner__sub">{{ tt('zodiacGuidePage.compatCta.text') }}</div>
+        </div>
+        <span class="compat-banner__cta">
+          <span>{{ tt('zodiacGuidePage.compatCta.button') }}</span>
+          <q-icon name="arrow_forward" size="16px" />
+        </span>
+      </button>
 
       <section v-if="favoriteSigns.length" class="zodiac-card zodiac-card--favorites">
         <div class="zodiac-card__title">{{ tt('zodiacGuidePage.favorites.title') }}</div>
@@ -34,21 +57,18 @@
         </div>
       </section>
 
-      <section class="zodiac-card zodiac-card--filters">
-        <div class="zodiac-card__title">{{ tt('zodiacGuidePage.labels.filter') }}</div>
-        <div class="element-filters">
-          <button
-            v-for="item in filterItems"
-            :key="item.key"
-            type="button"
-            class="element-chip"
-            :class="{ 'element-chip--active': activeElement === item.key }"
-            @click="setElement(item.key)"
-          >
-            {{ item.label }}
-          </button>
-        </div>
-      </section>
+      <div class="element-filters">
+        <button
+          v-for="item in filterItems"
+          :key="item.key"
+          type="button"
+          class="element-chip"
+          :class="{ 'element-chip--active': activeElement === item.key }"
+          @click="setElement(item.key)"
+        >
+          {{ item.label }}
+        </button>
+      </div>
 
       <transition-group name="card-list" tag="section" class="zodiac-grid">
         <article
@@ -56,12 +76,16 @@
           :key="sign.key"
           :ref="setSignRef(sign.key)"
           class="zodiac-card zodiac-card--sign"
+          :class="{ 'zodiac-card--mine': sign.mine }"
           :style="{ '--accent': sign.accent, '--accent-soft': sign.accentSoft, '--i': index }"
         >
           <header class="sign-head">
             <div class="sign-head__icon">{{ sign.emoji }}</div>
             <div class="sign-head__text">
-              <div class="sign-head__name">{{ sign.name }}</div>
+              <div class="sign-head__name">
+                <span>{{ sign.name }}</span>
+                <span v-if="sign.mine" class="sign-mine-badge">{{ tt('zodiacGuidePage.mySign.title') }}</span>
+              </div>
               <div class="sign-head__dates">{{ sign.dates }}</div>
               <div class="sign-head__archetype">{{ sign.archetype }}</div>
             </div>
@@ -84,19 +108,18 @@
             </div>
           </div>
 
-          <div class="quick-grid">
-            <div class="quick-card">
-              <div class="quick-card__label">{{ tt('zodiacGuidePage.labels.strengths') }}</div>
-              <p class="quick-card__text">{{ sign.strengths }}</p>
-            </div>
-            <div class="quick-card">
-              <div class="quick-card__label">{{ tt('zodiacGuidePage.labels.challenge') }}</div>
-              <p class="quick-card__text">{{ sign.challenge }}</p>
-            </div>
-          </div>
-
           <transition name="expand-fade">
             <div v-if="expandedSign === sign.key" class="sign-details">
+              <div class="quick-grid">
+                <div class="quick-card">
+                  <div class="quick-card__label">{{ tt('zodiacGuidePage.labels.strengths') }}</div>
+                  <p class="quick-card__text">{{ sign.strengths }}</p>
+                </div>
+                <div class="quick-card">
+                  <div class="quick-card__label">{{ tt('zodiacGuidePage.labels.challenge') }}</div>
+                  <p class="quick-card__text">{{ sign.challenge }}</p>
+                </div>
+              </div>
               <div class="detail-row">
                 <div class="detail-row__label">{{ tt('zodiacGuidePage.labels.deepProfile') }}</div>
                 <p class="detail-row__text">{{ sign.deepProfile }}</p>
@@ -112,6 +135,21 @@
               <div class="detail-row">
                 <div class="detail-row__label">{{ tt('zodiacGuidePage.labels.focus') }}</div>
                 <p class="detail-row__text">{{ sign.focus }}</p>
+              </div>
+              <div v-if="sign.matches.length" class="detail-row detail-row--matches">
+                <div class="detail-row__label">{{ tt('zodiacGuidePage.labels.bestMatches') }}</div>
+                <div class="match-chips">
+                  <button
+                    v-for="match in sign.matches"
+                    :key="match.key"
+                    type="button"
+                    class="match-chip"
+                    @click="goToSign(match.key)"
+                  >
+                    <span class="match-chip__glyph">{{ match.emoji }}</span>
+                    <span>{{ match.name }}</span>
+                  </button>
+                </div>
               </div>
               <div class="detail-row detail-row--mantra">
                 <div class="detail-row__label">{{ tt('zodiacGuidePage.labels.mantra') }}</div>
@@ -581,6 +619,28 @@ const filterItems = computed(() => [
   { key: 'water', label: tt('compatibilityPage.elements.water') },
 ])
 
+// Append U+FE0E so zodiac glyphs render as elegant monochrome symbols (matching
+// the compatibility page), not colored emoji tiles.
+const TEXT_VS = '︎'
+
+// Element harmony: same element + complementary (fire↔air, earth↔water).
+const ELEMENT_HARMONY = {
+  fire: ['fire', 'air'],
+  earth: ['earth', 'water'],
+  air: ['air', 'fire'],
+  water: ['water', 'earth'],
+}
+
+function compatibleMatches(signKey) {
+  const self = signs.find((s) => s.key === signKey)
+  if (!self) return []
+  const good = ELEMENT_HARMONY[self.element] || []
+  return signs
+    .filter((s) => s.key !== signKey && good.includes(s.element))
+    .sort((a, b) => (a.element === self.element ? 0 : 1) - (b.element === self.element ? 0 : 1))
+    .map((s) => ({ key: s.key, emoji: s.emoji + TEXT_VS, name: tt(`zodiac.${s.key}`) }))
+}
+
 const signCards = computed(() =>
   signs.map((sign) => {
     const lang = locale.value === 'uk' ? 'uk' : 'en'
@@ -589,6 +649,9 @@ const signCards = computed(() =>
     const palette = elementPalette[sign.element] || elementPalette.air
     return {
       ...sign,
+      emoji: sign.emoji + TEXT_VS,
+      mine: sign.key === userSignKey.value,
+      matches: compatibleMatches(sign.key),
       accent: palette.accent,
       accentSoft: palette.soft,
       name: tt(`zodiac.${sign.key}`),
@@ -623,6 +686,10 @@ const filteredSigns = computed(() => {
 
 const favoriteSigns = computed(() =>
   signCards.value.filter((sign) => favoriteKeys.value.includes(sign.key)),
+)
+
+const mySignCard = computed(() =>
+  userSignKey.value ? signCards.value.find((sign) => sign.key === userSignKey.value) || null : null,
 )
 
 const loadFavorites = () => {
@@ -667,6 +734,11 @@ const goToSign = async (signKey) => {
   if (!el) return
   el.scrollIntoView({ behavior: 'smooth', block: 'center' })
   await hapticTap()
+}
+
+const goToCompatibility = async () => {
+  await hapticTap()
+  router.push({ name: 'compatibility' }).catch(() => {})
 }
 
 const normalizeText = (text = '') =>
@@ -1240,12 +1312,18 @@ onMounted(() => {
 }
 
 .zodiac-bg {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background:
-    radial-gradient(110% 52% at 50% -6%, rgba(61, 119, 160, 0.35) 0%, rgba(7, 19, 29, 0) 56%),
-    radial-gradient(90% 50% at 90% 10%, rgba(111, 93, 163, 0.18) 0%, rgba(5, 13, 21, 0) 58%),
-    radial-gradient(120% 70% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
+    radial-gradient(1px 1px at 18% 16%, rgba(255, 255, 255, 0.5), transparent 60%),
+    radial-gradient(1px 1px at 67% 11%, rgba(255, 255, 255, 0.32), transparent 60%),
+    radial-gradient(1.6px 1.6px at 83% 28%, rgba(180, 210, 245, 0.55), transparent 60%),
+    radial-gradient(1px 1px at 37% 24%, rgba(255, 255, 255, 0.3), transparent 60%),
+    radial-gradient(1px 1px at 11% 38%, rgba(255, 255, 255, 0.22), transparent 60%),
+    radial-gradient(1.4px 1.4px at 90% 52%, rgba(200, 180, 245, 0.4), transparent 60%),
+    radial-gradient(1px 1px at 52% 44%, rgba(255, 255, 255, 0.18), transparent 60%),
+    radial-gradient(120% 65% at 50% -8%, rgba(120, 150, 230, 0.16) 0%, transparent 55%),
+    radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 42%, #050d15 100%);
   z-index: 0;
 }
 
@@ -1332,15 +1410,134 @@ onMounted(() => {
   color: rgba(214, 225, 242, 0.62);
 }
 
-.zodiac-card--intro {
-  gap: 8px;
+.zodiac-lead {
+  margin: -2px 2px 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(206, 218, 240, 0.74);
 }
 
-.zodiac-intro {
+.mysign-jump {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 15px;
+  border: 1px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  background:
+    linear-gradient(150deg, color-mix(in srgb, var(--accent) 18%, transparent), rgba(11, 15, 24, 0.85));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: transform 130ms ease;
+}
+
+.mysign-jump:active {
+  transform: scale(0.99);
+}
+
+.mysign-jump__glyph {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  border: 1px solid var(--accent-soft);
+  background: var(--accent-soft);
+  font-size: 21px;
+  line-height: 1;
+  color: var(--accent);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.mysign-jump__text {
+  display: grid;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.mysign-jump__label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(214, 225, 242, 0.62);
+}
+
+.mysign-jump__name {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: rgba(238, 244, 255, 0.97);
+}
+
+.mysign-jump__arrow {
+  flex-shrink: 0;
+  color: color-mix(in srgb, var(--accent) 80%, white 10%);
+}
+
+.compat-banner {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(170, 150, 245, 0.28);
+  background:
+    radial-gradient(120% 120% at 100% 0%, rgba(150, 130, 235, 0.22), transparent 60%),
+    linear-gradient(150deg, rgba(40, 36, 68, 0.7), rgba(11, 15, 24, 0.85));
+  box-shadow:
+    0 18px 40px rgba(2, 6, 12, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: transform 130ms ease;
+}
+
+.compat-banner:active {
+  transform: scale(0.99);
+}
+
+.compat-banner__text {
+  display: grid;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.compat-banner__title {
   font-size: 15px;
-  line-height: 1.6;
-  color: rgba(214, 225, 242, 0.88);
-  margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgba(238, 242, 255, 0.97);
+}
+
+.compat-banner__sub {
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(214, 222, 245, 0.74);
+}
+
+.compat-banner__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 8px 13px;
+  border-radius: 999px;
+  background: rgba(180, 165, 250, 0.16);
+  border: 1px solid rgba(180, 165, 250, 0.4);
+  color: rgba(232, 226, 255, 0.96);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .zodiac-card--favorites {
@@ -1408,6 +1605,14 @@ onMounted(() => {
   animation-delay: calc(var(--i) * 42ms);
 }
 
+.zodiac-card--mine {
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  box-shadow:
+    0 18px 40px rgba(2, 6, 12, 0.5),
+    0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
 .sign-head {
   display: flex;
   align-items: center;
@@ -1422,8 +1627,10 @@ onMounted(() => {
   background: var(--accent-soft);
   display: grid;
   place-items: center;
-  font-size: 20px;
+  font-size: 21px;
   line-height: 1;
+  color: var(--accent);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
 .sign-head__text {
@@ -1432,10 +1639,27 @@ onMounted(() => {
 }
 
 .sign-head__name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
   font-size: 18px;
   letter-spacing: 0.04em;
   color: rgba(235, 242, 255, 0.96);
   font-weight: 600;
+}
+
+.sign-mine-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 999px;
+  padding: 2px 8px;
+  line-height: 1.4;
 }
 
 .sign-head__dates {
@@ -1592,6 +1816,39 @@ onMounted(() => {
 .detail-row--mantra .detail-row__text {
   color: rgba(236, 243, 255, 0.96);
   font-style: italic;
+}
+
+.match-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.match-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px 5px 9px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, rgba(255, 255, 255, 0.12));
+  background: color-mix(in srgb, var(--accent) 12%, rgba(8, 12, 20, 0.6));
+  color: rgba(235, 242, 255, 0.92);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+.match-chip:active {
+  transform: scale(0.96);
+}
+
+.match-chip__glyph {
+  font-size: 15px;
+  line-height: 1;
+  color: var(--accent);
 }
 
 .actions-row {

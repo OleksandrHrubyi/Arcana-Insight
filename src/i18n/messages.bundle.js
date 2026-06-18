@@ -1867,6 +1867,11 @@ export const messages = {
       favorites: {
         title: 'Favorites',
       },
+      compatCta: {
+        title: 'Curious who fits you?',
+        text: 'Check real compatibility from full birth charts — not just sun signs.',
+        button: 'Compatibility',
+      },
       labels: {
         filter: 'Filter by element',
         allElements: 'All',
@@ -1881,6 +1886,7 @@ export const messages = {
         career: 'In career',
         focus: 'Focus now',
         mantra: 'Mantra',
+        bestMatches: 'Best matches',
         share: 'Share',
         showMore: 'Read more',
         showLess: 'Hide details',
@@ -3873,6 +3879,11 @@ export const messages = {
       favorites: {
         title: 'Обране',
       },
+      compatCta: {
+        title: 'Цікаво, хто тобі підходить?',
+        text: 'Перевір реальну сумісність за повними картами народження — не лише за знаком Сонця.',
+        button: 'Сумісність',
+      },
       labels: {
         filter: 'Фільтр за стихією',
         allElements: 'Усі',
@@ -3887,6 +3898,7 @@ export const messages = {
         career: 'У карʼєрі',
         focus: 'Фокус зараз',
         mantra: 'Мантра',
+        bestMatches: 'Найкраща сумісність',
         share: 'Поділитися',
         showMore: 'Детальніше',
         showLess: 'Згорнути',
