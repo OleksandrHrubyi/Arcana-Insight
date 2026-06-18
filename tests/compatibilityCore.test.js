@@ -164,6 +164,18 @@ test('charts include Jupiter and Saturn; commitment dimension exists for romance
   assert.ok(res.dimensions.some((d) => d.key === 'commitment'), 'romance has a commitment dimension')
 })
 
+test('computeChart uses the exact birth instant when provided', async () => {
+  const { computeChart } = await importModule(MOD)
+  const { localToUTC } = await importModule('src/helpers/ascendant.js')
+  const iso = '1990-07-15'
+  const noon = computeChart(iso)
+  const exact = computeChart(iso, { utc: localToUTC(iso, '02:00', 'Europe/Kyiv') })
+  assert.equal(noon.exact, false)
+  assert.equal(exact.exact, true)
+  // The Moon moves ~13°/day, so the exact-time longitude differs from noon.
+  assert.notEqual(Math.round(noon.lon.moon), Math.round(exact.lon.moon))
+})
+
 test('computeWeather returns current transit influences (or [])', async () => {
   const { computeChart, computeWeather } = await importModule(MOD)
   const a = computeChart('1990-07-15')

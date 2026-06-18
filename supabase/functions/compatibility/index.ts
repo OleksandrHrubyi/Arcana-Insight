@@ -172,14 +172,24 @@ function describeFacts(facts: any): string {
   const dims = Array.isArray(facts?.dimensions)
     ? facts.dimensions.map((d: any) => `${d?.key}: ${d?.score}/100`).join(", ")
     : "";
-  return [
+  const lines = [
     `Relationship type: ${facts?.relationshipType}`,
     `Overall match: ${facts?.overallScore}/100 (${facts?.tier})`,
     `Person A — ${chart(a)}`,
     `Person B — ${chart(b)}`,
     `Real synastry aspects (between their charts): ${conns || "none tight"}`,
     `Dimension scores: ${dims}`,
-  ].join("\n");
+  ];
+  if (facts?.rising?.a || facts?.rising?.b) {
+    lines.push(`Rising signs — A: ${facts.rising.a ?? "unknown"}, B: ${facts.rising.b ?? "unknown"}`);
+  }
+  if (Array.isArray(facts?.houses) && facts.houses.length) {
+    const overlays = facts.houses
+      .map((o: any) => `${o?.who === "a" ? "A's" : "B's"} ${PLANET_LABEL[o?.planet] ?? o?.planet} falls in ${o?.who === "a" ? "B's" : "A's"} house ${o?.house}`)
+      .join("; ");
+    lines.push(`House overlays: ${overlays}`);
+  }
+  return lines.join("\n");
 }
 
 function buildSystem(locale: string, dimensionKeys: string[]): string {
@@ -198,6 +208,7 @@ RULES (non-negotiable):
 - No medical, financial, or fatalistic claims.
 - Reflective and practical, not fortune-telling. It's about understanding the dynamic, not foretelling it.
 - Reference the actual aspects naturally (e.g. a harmonious Venus–Mars trine, a Moon square that needs patience). Avoid jargon dumps.
+- If rising signs and "house overlays" are provided, weave 1–2 of them in naturally (e.g. "their Venus lighting up your partnership house"). If absent, don't mention houses or rising.
 - Vary sentence openings. Be specific to THIS pair, never generic.
 
 OUTPUT (JSON only, no markdown):
@@ -303,8 +314,19 @@ function normalizeFacts(body: any) {
         harmony: String(c?.harmony ?? ""), orb: Number(c?.orb) || 0,
       }))
     : [];
+  const rising = {
+    a: validSign(body?.rising?.a),
+    b: validSign(body?.rising?.b),
+  };
+  const houses = Array.isArray(body?.houses)
+    ? body.houses.slice(0, 6).map((o: any) => ({
+        who: o?.who === "b" ? "b" : "a",
+        planet: String(o?.planet ?? ""),
+        house: Number(o?.house) || 0,
+      })).filter((o: any) => o.house >= 1 && o.house <= 12)
+    : [];
   return {
-    relationshipType, locale, a, b, dimensions, connections,
+    relationshipType, locale, a, b, dimensions, connections, rising, houses,
     overallScore: Number(body?.overallScore) || 0,
     tier: String(body?.tier ?? ""),
   };

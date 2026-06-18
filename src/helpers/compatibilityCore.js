@@ -85,9 +85,13 @@ function sunSignFromISO(iso) {
   return 'pisces'
 }
 
-function planetLonFromISO(iso, body) {
+// Planet ecliptic longitude. When an exact UTC instant is known (birth time +
+// place provided), compute at that instant; otherwise fall back to noon UTC.
+function planetLonFromISO(iso, body, utc) {
   try {
-    const date = new Date(iso + 'T12:00:00Z')
+    const date = utc instanceof Date && !Number.isNaN(utc.getTime())
+      ? utc
+      : new Date(iso + 'T12:00:00Z')
     if (Number.isNaN(date.getTime())) return null
     const time = Astronomy.MakeTime(date)
     const ecl = Astronomy.Ecliptic(Astronomy.GeoVector(body, time, false))
@@ -105,22 +109,25 @@ function signFromLon(lon) {
 // Chart from an ISO date (YYYY-MM-DD): sign per planet (for display) PLUS the
 // actual ecliptic longitudes (degrees) needed for real synastry aspects.
 // Sun sign uses the tropical date ranges (matches the rest of the app); the rest
-// derive from real longitudes. Returns null on bad input.
-export function computeChart(iso) {
+// derive from real longitudes. opts.utc (a Date) computes the chart at the exact
+// birth instant — meaningfully more accurate for the fast-moving Moon. Returns
+// null on bad input.
+export function computeChart(iso, opts = {}) {
   const clean = String(iso || '').trim()
   if (!/^\d{4}-\d{2}-\d{2}$/.test(clean)) return null
   const sun = sunSignFromISO(clean)
   if (!sun) return null
+  const utc = opts?.utc instanceof Date ? opts.utc : null
   const lon = {
-    sun: planetLonFromISO(clean, Astronomy.Body.Sun),
-    moon: planetLonFromISO(clean, Astronomy.Body.Moon),
-    mercury: planetLonFromISO(clean, Astronomy.Body.Mercury),
-    venus: planetLonFromISO(clean, Astronomy.Body.Venus),
-    mars: planetLonFromISO(clean, Astronomy.Body.Mars),
+    sun: planetLonFromISO(clean, Astronomy.Body.Sun, utc),
+    moon: planetLonFromISO(clean, Astronomy.Body.Moon, utc),
+    mercury: planetLonFromISO(clean, Astronomy.Body.Mercury, utc),
+    venus: planetLonFromISO(clean, Astronomy.Body.Venus, utc),
+    mars: planetLonFromISO(clean, Astronomy.Body.Mars, utc),
     // Jupiter (growth/generosity) and Saturn (commitment/longevity) — the social
     // planets that give relationship synastry its long-term depth.
-    jupiter: planetLonFromISO(clean, Astronomy.Body.Jupiter),
-    saturn: planetLonFromISO(clean, Astronomy.Body.Saturn),
+    jupiter: planetLonFromISO(clean, Astronomy.Body.Jupiter, utc),
+    saturn: planetLonFromISO(clean, Astronomy.Body.Saturn, utc),
   }
   return {
     sun,
@@ -131,6 +138,7 @@ export function computeChart(iso) {
     jupiter: signFromLon(lon.jupiter),
     saturn: signFromLon(lon.saturn),
     lon,
+    exact: Boolean(utc),
   }
 }
 

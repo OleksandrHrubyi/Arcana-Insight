@@ -117,6 +117,7 @@
             <div class="compat-pair__person">
               <div class="compat-pair__glyph">{{ signGlyph(result.charts.a.sun) }}</div>
               <div class="compat-pair__name">{{ tt(`zodiac.${result.charts.a.sun}`) }}</div>
+              <div v-if="rising.a" class="compat-pair__rising">↑ {{ tt(`zodiac.${rising.a}`) }}</div>
               <div class="compat-pair__planets">
                 <span v-for="p in chartPlanets(result.charts.a)" :key="p.key" class="compat-pair__planet">
                   <span class="compat-pair__planet-body">{{ p.glyph }}</span>{{ signGlyph(p.sign) }}
@@ -127,6 +128,7 @@
             <div class="compat-pair__person">
               <div class="compat-pair__glyph">{{ signGlyph(result.charts.b.sun) }}</div>
               <div class="compat-pair__name">{{ tt(`zodiac.${result.charts.b.sun}`) }}</div>
+              <div v-if="rising.b" class="compat-pair__rising">↑ {{ tt(`zodiac.${rising.b}`) }}</div>
               <div class="compat-pair__planets">
                 <span v-for="p in chartPlanets(result.charts.b)" :key="p.key" class="compat-pair__planet">
                   <span class="compat-pair__planet-body">{{ p.glyph }}</span>{{ signGlyph(p.sign) }}
@@ -200,6 +202,21 @@
                 <span class="compat-conn__orb">{{ conn.orb }}°</span>
               </div>
               <div class="compat-conn__meaning">{{ connMeaning(conn) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="houseOverlays.length" class="compat-houses">
+          <div class="compat-section-title">{{ tt('compatibilityPage.housesTitle') }}</div>
+          <div class="compat-section-hint">{{ tt('compatibilityPage.housesHint') }}</div>
+          <div v-for="(o, i) in houseOverlays" :key="`h-${i}`" class="compat-house">
+            <span class="compat-house__badge">{{ o.house }}</span>
+            <div class="compat-house__body">
+              <div class="compat-house__title">
+                {{ tt(`compatibilityPage.planets.${o.planet}`) }}
+                <span class="compat-house__dir">{{ overlayDir(o) }}</span>
+              </div>
+              <div class="compat-house__meaning">{{ tt(`compatibilityPage.houseThemes.${o.house}`) }}</div>
             </div>
           </div>
         </div>
@@ -337,6 +354,41 @@
           </div>
         </div>
 
+        <button
+          type="button"
+          class="compat-timeplace-toggle"
+          :class="{ open: timePlaceOpen }"
+          @click="timePlaceOpen = !timePlaceOpen"
+        >
+          <q-icon name="schedule" size="16px" />
+          <span>{{ tt('compatibilityPage.addTimePlace') }}</span>
+          <q-icon :name="timePlaceOpen ? 'expand_less' : 'expand_more'" size="18px" class="compat-timeplace-toggle__chev" />
+        </button>
+
+        <div v-if="timePlaceOpen" class="compat-timeplace">
+          <input
+            v-model="draftTime"
+            type="time"
+            class="compat-timeplace__time"
+            :aria-label="tt('compatibilityPage.birthTime')"
+          />
+          <div class="compat-timeplace__city">
+            <input
+              v-model="citySearch"
+              class="compat-timeplace__cityinput"
+              :placeholder="tt('compatibilityPage.birthCity')"
+              @input="onCitySearch"
+            />
+            <q-spinner v-if="citySearching" size="16px" color="rgba(169,211,240,0.7)" class="compat-timeplace__spin" />
+            <ul v-if="cityResults.length" class="compat-timeplace__results">
+              <li v-for="(c, i) in cityResults" :key="i">
+                <button type="button" class="compat-timeplace__result" @click="pickCity(c)">{{ c.label }}</button>
+              </li>
+            </ul>
+          </div>
+          <div class="compat-timeplace__hint">{{ tt('compatibilityPage.timePlaceHint') }}</div>
+        </div>
+
         <button type="button" class="compat-dobsheet__confirm" @click="confirmDob">
           {{ tt('common.save') }}
         </button>
@@ -389,6 +441,8 @@ import { useAuthStore } from 'stores/authStore.js'
 import { computeChart, computeCompatibility, computeWeather } from 'src/helpers/compatibilityCore.js'
 import { localISODate } from 'src/helpers/date.ts'
 import { reminderSupported, ensureReminderPermission, scheduleWeeklyReminder, cancelWeeklyReminder } from 'src/services/relationshipReminder.js'
+import { computeAscendant, wholeSignHouse, localToUTC } from 'src/helpers/ascendant.js'
+import { searchCities } from 'src/services/geocode.js'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -420,6 +474,12 @@ const SAVE_EMOJI = ['❤️', '🤍', '🔥', '🌙', '⭐', '🌸', '🤝', '�
 
 const dobA = ref('')
 const dobB = ref('')
+// Optional birth time + place per person (for rising sign / houses).
+// Shape: { time:'HH:MM', lat, lon, tz, place } | null
+const birthA = ref(null)
+const birthB = ref(null)
+const rising = ref({ a: null, b: null })
+const houseOverlays = ref([])
 const relationshipType = ref('romantic')
 const result = ref(null)
 const connections = ref([])
@@ -433,6 +493,13 @@ const saveEmoji = ref('❤️')
 
 const weatherText = (w) =>
   `${tt(`compatibilityPage.weatherThemes.${w.theme}`)} ${tt(`compatibilityPage.weatherFraming.${w.harmony}`)}`
+
+// "Your planet → their chart" direction label for a house overlay (gender-safe:
+// uses person labels, not possessive adjectives).
+const overlayDir = (o) =>
+  o.who === 'a'
+    ? `${tt('compatibilityPage.youLabel')} → ${tt('compatibilityPage.partnerLabel')}`
+    : `${tt('compatibilityPage.partnerLabel')} → ${tt('compatibilityPage.youLabel')}`
 
 // One concrete, grounded suggestion driven by the dominant weather influence.
 const weeklyAction = computed(() => {
@@ -469,6 +536,15 @@ function animateScore(target) {
 const dobSheet = ref(false)
 const activeDob = ref('a')
 
+// DOB-sheet optional "birth time & city" sub-section.
+const timePlaceOpen = ref(false)
+const draftTime = ref('')
+const draftPlace = ref(null) // { label, lat, lon, tz }
+const citySearch = ref('')
+const cityResults = ref([])
+const citySearching = ref(false)
+let citySearchTimer = 0
+
 // iOS-style day/month/year wheel picker (same pattern the app already uses for
 // birth date in Account / Sign-up — one screen, scroll each column).
 const ITEM_H = 44
@@ -483,8 +559,17 @@ const monthWheelRef = ref(null)
 const yearWheelRef = ref(null)
 let lastWheelHaptic = 0
 
-const chartA = computed(() => computeChart(dobA.value))
-const chartB = computed(() => computeChart(dobB.value))
+// When birth time + place are known, compute the chart at the exact UTC instant
+// (much more accurate for the fast-moving Moon) instead of noon.
+function chartOpts(birth, iso) {
+  if (birth?.time && birth?.tz) {
+    const utc = localToUTC(iso, birth.time, birth.tz)
+    if (utc) return { utc }
+  }
+  return undefined
+}
+const chartA = computed(() => computeChart(dobA.value, chartOpts(birthA.value, dobA.value)))
+const chartB = computed(() => computeChart(dobB.value, chartOpts(birthB.value, dobB.value)))
 const canReveal = computed(() => Boolean(chartA.value && chartB.value))
 
 const ringCirc = computed(() => 2 * Math.PI * 52)
@@ -656,6 +741,13 @@ function openDob(which) {
   activeDob.value = which
   buildDateOptions()
   syncSelectionFromISO(which === 'a' ? dobA.value : dobB.value)
+  // Load existing birth time/place into the draft.
+  const birth = which === 'a' ? birthA.value : birthB.value
+  draftTime.value = birth?.time || ''
+  draftPlace.value = birth ? { label: birth.place, lat: birth.lat, lon: birth.lon, tz: birth.tz } : null
+  citySearch.value = birth?.place || ''
+  cityResults.value = []
+  timePlaceOpen.value = Boolean(birth)
   dobSheet.value = true
   void hapticSelect()
   nextTick(() => {
@@ -670,10 +762,67 @@ function confirmDob() {
   const month = monthOptions.value[selMonth.value]?.value || 1
   const year = yearOptions.value[selYear.value] || (new Date().getFullYear() - 28)
   const iso = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-  if (activeDob.value === 'a') dobA.value = iso
-  else dobB.value = iso
+  // Birth time + place only count when BOTH are present (rising needs both).
+  const birth = (draftTime.value && draftPlace.value)
+    ? { time: draftTime.value, lat: draftPlace.value.lat, lon: draftPlace.value.lon, tz: draftPlace.value.tz, place: draftPlace.value.label }
+    : null
+  if (activeDob.value === 'a') { dobA.value = iso; birthA.value = birth }
+  else { dobB.value = iso; birthB.value = birth }
   dobSheet.value = false
   void hapticSelect()
+}
+
+function onCitySearch() {
+  const q = citySearch.value
+  draftPlace.value = null
+  window.clearTimeout(citySearchTimer)
+  if (String(q || '').trim().length < 2) { cityResults.value = []; return }
+  citySearchTimer = window.setTimeout(async () => {
+    citySearching.value = true
+    try {
+      cityResults.value = await searchCities(q, locale.value)
+    } finally {
+      citySearching.value = false
+    }
+  }, 350)
+}
+
+function pickCity(city) {
+  draftPlace.value = { label: city.label, lat: city.lat, lon: city.lon, tz: city.tz }
+  citySearch.value = city.label
+  cityResults.value = []
+  void hapticSelect()
+}
+
+// Rising signs (needs each person's time+place) and whole-sign house overlays
+// (needs BOTH ascendants). Graceful: leaves nulls/[] when data is missing.
+function computeRisingAndHouses(res) {
+  const ascA = birthA.value
+    ? computeAscendant({ iso: dobA.value, time: birthA.value.time, lat: birthA.value.lat, lon: birthA.value.lon, tz: birthA.value.tz })
+    : null
+  const ascB = birthB.value
+    ? computeAscendant({ iso: dobB.value, time: birthB.value.time, lat: birthB.value.lat, lon: birthB.value.lon, tz: birthB.value.tz })
+    : null
+  rising.value = { a: ascA?.ascSign || null, b: ascB?.ascSign || null }
+
+  if (!ascA?.ascSign || !ascB?.ascSign) {
+    houseOverlays.value = []
+    return
+  }
+  const planets = ['sun', 'moon', 'venus', 'mars']
+  const overlays = []
+  for (const p of planets) {
+    const h = wholeSignHouse(ascB.ascSign, res.charts.a[p])
+    if (h) overlays.push({ who: 'a', planet: p, house: h })
+  }
+  for (const p of planets) {
+    const h = wholeSignHouse(ascA.ascSign, res.charts.b[p])
+    if (h) overlays.push({ who: 'b', planet: p, house: h })
+  }
+  // Surface the most relationship-relevant house placements first.
+  const priority = { 7: 6, 5: 6, 1: 5, 8: 5, 4: 4, 10: 4, 11: 3, 2: 2 }
+  overlays.sort((x, y) => (priority[y.house] || 1) - (priority[x.house] || 1))
+  houseOverlays.value = overlays.slice(0, 4)
 }
 
 const isDimLocked = (dim) => !hasPremiumAccess.value && dim.key !== result.value?.teaserKey
@@ -700,6 +849,8 @@ async function requestAiReading(res) {
       b: pickSigns(res.charts.b),
       dimensions: res.dimensions.map((d) => ({ key: d.key, score: d.score, aspect: d.aspect })),
       connections: (res.keyConnections || []).map((c) => ({ pa: c.pa, pb: c.pb, type: c.type, harmony: c.harmony, orb: c.orb })),
+      rising: { a: rising.value.a, b: rising.value.b },
+      houses: houseOverlays.value.map((o) => ({ who: o.who, planet: o.planet, house: o.house })),
     }
     const { data, error } = await invokeFunction('compatibility', payload, 30000)
     if (reqId !== aiRequestId) return
@@ -720,6 +871,7 @@ function reveal() {
   if (!res) return
   result.value = res
   weather.value = computeWeather(res.charts.a, res.charts.b, localISODate())
+  computeRisingAndHouses(res)
   displayScore.value = 0
   animateScore(res.overallScore)
   void hapticSelect()
@@ -734,6 +886,8 @@ function reveal() {
 function resetPairing() {
   result.value = null
   weather.value = []
+  rising.value = { a: null, b: null }
+  houseOverlays.value = []
   displayScore.value = 0
   aiReading.value = null
   aiError.value = false
@@ -745,6 +899,7 @@ function resetPairing() {
 // Open a saved connection: their DOB + type against your chart, then reveal.
 function openConnection(conn) {
   dobB.value = conn.dob || ''
+  birthB.value = conn.birth || null
   relationshipType.value = conn.relationshipType || 'romantic'
   void hapticSelect()
   if (canReveal.value) reveal()
@@ -771,6 +926,7 @@ async function confirmSaveConnection() {
     name,
     emoji: saveEmoji.value,
     dob: dobB.value,
+    birth: birthB.value || null,
     relationshipType: relationshipType.value,
   }
   // De-dupe by (dob + type); newest first; cap at 24.
@@ -2278,5 +2434,158 @@ onBeforeUnmount(() => {
   border-color: rgba(141, 190, 240, 0.55);
   background: rgba(141, 190, 240, 0.16);
   transform: scale(1.05);
+}
+
+/* ── rising sign (hero) ── */
+.compat-pair__rising {
+  font-size: 11.5px;
+  color: rgba(190, 212, 235, 0.72);
+  margin-top: 3px;
+}
+
+/* ── birth time & place (DOB sheet) ── */
+.compat-timeplace-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1px dashed rgba(159, 216, 246, 0.22);
+  background: rgba(7, 14, 22, 0.4);
+  color: rgba(190, 212, 235, 0.78);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.compat-timeplace-toggle.open {
+  border-style: solid;
+  border-color: rgba(141, 190, 240, 0.3);
+}
+
+.compat-timeplace-toggle__chev {
+  margin-left: auto;
+}
+
+.compat-timeplace {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.compat-timeplace__time,
+.compat-timeplace__cityinput {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid rgba(159, 216, 246, 0.18);
+  background: rgba(7, 14, 22, 0.5);
+  color: #fff;
+  font-size: 16px;
+  padding: 0 14px;
+  outline: none;
+}
+
+.compat-timeplace__time:focus,
+.compat-timeplace__cityinput:focus {
+  border-color: rgba(141, 190, 240, 0.5);
+}
+
+.compat-timeplace__city {
+  position: relative;
+}
+
+.compat-timeplace__spin {
+  position: absolute;
+  right: 12px;
+  top: 16px;
+}
+
+.compat-timeplace__results {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid rgba(159, 216, 246, 0.14);
+  background: #0a131d;
+  overflow: hidden;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.compat-timeplace__result {
+  width: 100%;
+  text-align: left;
+  padding: 11px 14px;
+  background: transparent;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  color: rgba(224, 235, 248, 0.9);
+  font-size: 14px;
+}
+
+.compat-timeplace__results li:first-child .compat-timeplace__result {
+  border-top: none;
+}
+
+.compat-timeplace__hint {
+  font-size: 11.5px;
+  color: rgba(190, 212, 235, 0.45);
+}
+
+/* ── house overlays ── */
+.compat-houses {
+  margin-top: 26px;
+}
+
+.compat-house {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 9px;
+  border-radius: 14px;
+  border: 1px solid rgba(159, 216, 246, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+}
+
+.compat-house__badge {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #a9d3f0;
+  background: rgba(141, 190, 240, 0.13);
+  border: 1px solid rgba(141, 190, 240, 0.28);
+}
+
+.compat-house__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.compat-house__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(235, 242, 255, 0.94);
+}
+
+.compat-house__dir {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(190, 212, 235, 0.5);
+  margin-left: 6px;
+}
+
+.compat-house__meaning {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: rgba(206, 224, 240, 0.74);
+  margin-top: 2px;
 }
 </style>
