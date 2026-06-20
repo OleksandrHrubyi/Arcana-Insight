@@ -33,7 +33,37 @@ Deno.serve(async (req: Request) => {
     return json({ error: 'Method Not Allowed' }, 405)
   }
 
+  // AI tarot is a paid, premium-only feature. verify_jwt = true rejects invalid
+  // tokens at the gateway; this internal check is defense-in-depth so a logged-out
+  // caller can never trigger paid OpenAI/OpenRouter completions.
+  const auth = req.headers.get('Authorization')
+  if (!auth) {
+    return json({ error: 'Missing authorization' }, 401)
+  }
+  try {
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2')
+    const supabase = createClient(
+      Deno.env.get('URL')!,
+      Deno.env.get('ANON_KEY')!,
+      { global: { headers: { Authorization: auth } } }
+    )
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return json({ error: 'Unauthorized' }, 401)
+    }
+  } catch (error) {
+    console.error('[tarot-reading] auth check failed', error)
+    return json({ error: 'Unauthorized' }, 401)
+  }
+
   const body = await req.json().catch(() => null)
+
+  // Clarify mode: before the cards are drawn, return ONE focusing question + a few
+  // suggested answers. Isolated early-return so the reading path below is untouched.
+  if (body?.mode === 'clarify') {
+    return await handleClarify(body)
+  }
+
   if (!body?.cards?.length) {
     return json({ error: 'Missing cards payload' }, 400)
   }
@@ -179,7 +209,7 @@ async function requestOpenRouterReading({ body, apiKey, language }) {
 }
 
 function buildSystemPrompt(language) {
-  return `You write premium tarot interpretations in ${language} for a mobile app. Return strict JSON only. Tone: mystical, calm, emotionally precise, modern, not cheesy. Explain meanings only. Do NOT predict the future, do NOT promise outcomes, do NOT give advice or directives, and avoid fortune-telling language (no "will happen", "you will", "soon", "destined"). Do NOT mention health, medical, legal, financial, or safety advice. Do NOT tell the user what to do. Describe what each card symbolizes and how it relates to the chosen theme/subtheme and the user question in the present moment. Keep it meaning-focused, reflective, and non-prescriptive. Make the reading detailed but concise for a mobile UI. Avoid markdown, disclaimers, therapy talk, and generic filler.`
+  return `You write premium tarot interpretations in ${language} for a mobile app. Return strict JSON only. Read the spread as one connected reading, the way a thoughtful tarot reader would: show how the cards relate to, build on, or stand in tension with one another, and follow the thread across the positions of the spread instead of describing each card in isolation. Use the position each card sits in, and whether it is reversed, to shape its meaning. Notice any repeated suits, numbers, or motifs and what they emphasize. Tone: mystical, calm, emotionally precise, modern, not cheesy. Explain meanings only. Do NOT predict the future, do NOT promise outcomes, do NOT give advice or directives, and avoid fortune-telling language (no "will happen", "you will", "soon", "destined"). Do NOT mention health, medical, legal, financial, or safety advice. Do NOT tell the user what to do. Relate everything to the chosen theme/subtheme and the user question in the present moment. Keep it meaning-focused, reflective, and non-prescriptive. Make the reading detailed but concise for a mobile UI. Avoid markdown, disclaimers, therapy talk, and generic filler.`
 }
 
 function tarotReadingSchema() {
@@ -221,21 +251,164 @@ function buildPrompt(body) {
       subTheme: body.subTheme,
       subThemeLabel: body.subThemeLabel,
       question: body.question,
+      clarifyQuestion: body.clarifyQuestion,
+      clarifyAnswer: body.clarifyAnswer,
       depth: body.depth,
       cards: body.cards,
       instructions: {
-        summaryTitle: '2-4 words',
-        opening: 'One strong opening sentence for the whole spread. Present-focused, non-predictive, no advice.',
-        summary: 'A fuller overall interpretation, 2-3 sentences. Explain meaning in the chosen theme/subtheme. No advice.',
-        advice: 'One closing line that is reflective only (no advice, no directives, no predictions).',
-        cardMessage: '1 short mystical sentence per card. Meaning-based, not predictive, no advice.',
-        cardDetail: '1 more concrete explanatory sentence per card. Tie to theme/subtheme and question. No advice.',
-        cardQuestion: '1 reflective question per card.'
+        summaryTitle: '2-4 words that capture the spread as a whole.',
+        opening: 'One strong opening sentence that frames the whole spread as a single connected story. Present-focused, non-predictive, no advice.',
+        summary: 'The heart of the reading, 3-4 sentences: weave the cards into one narrative — how they relate, reinforce, or create tension as you move across the positions. Refer to cards by their position and name any repeated suit, number, or motif. Do not just list the cards. No advice.',
+        advice: 'One closing line that ties the spread together, reflective only (no advice, no directives, no predictions).',
+        cardMessage: '1 short evocative sentence per card, read through its position and orientation (reversed or upright). Meaning-based, not predictive, no advice.',
+        cardDetail: '1 sentence per card connecting it to the neighbouring cards or the overall arc, and to the theme/subtheme and question. No advice.',
+        cardQuestion: '1 reflective question per card.',
+        positions: 'Keep each card\'s given positionLabel and cardTitle unchanged; interpret each card for the position it occupies.',
+        clarification: 'If clarifyQuestion and clarifyAnswer are present, treat the answer as the querent\'s focus and let it shape the whole reading.'
       }
     },
     null,
     2
   )
+}
+
+// ---- Clarify mode (one focusing question before the draw) ----
+
+async function handleClarify(body) {
+  const locale = normalizeLocale(body?.locale)
+  const language = locale === 'en' ? 'English' : 'Ukrainian'
+
+  const openAiKey = Deno.env.get('OPENAI_API_KEY')
+  if (openAiKey) {
+    try {
+      return json(await requestOpenAiClarify({ body, apiKey: openAiKey, language }))
+    } catch (error) {
+      console.error('[tarot-clarify] openai failed', resolveReason(error, 'openai_exception'), error)
+    }
+  }
+
+  const openRouterKey = Deno.env.get('OPENROUTER_API_KEY')
+  if (openRouterKey) {
+    try {
+      return json(await requestOpenRouterClarify({ body, apiKey: openRouterKey, language }))
+    } catch (error) {
+      console.error('[tarot-clarify] openrouter failed', resolveReason(error, 'openrouter_exception'), error)
+    }
+  }
+
+  return aiError('Clarify is unavailable', 503, 'clarify_unavailable')
+}
+
+function clarifySchema() {
+  return {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      question: { type: 'string' },
+      options: { type: 'array', items: { type: 'string' } },
+    },
+    required: ['question', 'options'],
+  }
+}
+
+function buildClarifySystemPrompt(language) {
+  return `You are a thoughtful tarot reader speaking in ${language}. Before any cards are drawn, ask ONE short clarifying question that focuses the reading, based on the querent's theme and their question. It should help narrow what they actually want to look at. Then offer 2 or 3 short, concrete answers they might choose (each a few words, distinct from one another). Warm, calm, concise. Do NOT predict the future, do NOT give advice, do NOT reference specific cards. Return strict JSON only with keys "question" and "options".`
+}
+
+function buildClarifyPrompt(body) {
+  return JSON.stringify(
+    {
+      locale: body.locale,
+      theme: body.theme,
+      themeLabel: body.themeLabel,
+      subTheme: body.subTheme,
+      subThemeLabel: body.subThemeLabel,
+      question: body.question,
+      instructions: {
+        question: 'One short clarifying question (max ~12 words) to focus the reading.',
+        options: '2-3 short candidate answers (each max ~5 words), distinct from each other.',
+      },
+    },
+    null,
+    2,
+  )
+}
+
+async function requestOpenAiClarify({ body, apiKey, language }) {
+  const response = await fetchWithTimeout('https://api.openai.com/v1/responses', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: OPENAI_MODEL,
+      input: [
+        { role: 'system', content: [{ type: 'input_text', text: buildClarifySystemPrompt(language) }] },
+        { role: 'user', content: [{ type: 'input_text', text: buildClarifyPrompt(body) }] },
+      ],
+      text: { format: { type: 'json_schema', name: 'tarot_clarify', schema: clarifySchema() } },
+    }),
+  })
+
+  if (!response.ok) {
+    const details = await response.text().catch(() => '')
+    throw providerError('openai_http_error', { status: response.status, details })
+  }
+
+  const result = await response.json()
+  const text = result.output_text || extractOutputText(result) || '{}'
+  return validateClarify(parseJsonStrict(text, 'openai_invalid_json'))
+}
+
+async function requestOpenRouterClarify({ body, apiKey, language }) {
+  const response = await fetchWithTimeout(OPENROUTER_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': Deno.env.get('OPENROUTER_HTTP_REFERER') || 'https://arcana-insight.app',
+      'X-Title': Deno.env.get('OPENROUTER_X_TITLE') || 'Arcana Insight',
+    },
+    body: JSON.stringify({
+      model: OPENROUTER_MODEL,
+      temperature: 0.4,
+      response_format: { type: 'json_object' },
+      messages: [
+        {
+          role: 'system',
+          content: `${buildClarifySystemPrompt(language)} Return a JSON object with keys question and options.`,
+        },
+        { role: 'user', content: buildClarifyPrompt(body) },
+      ],
+    }),
+  })
+
+  if (!response.ok) {
+    const details = await response.text().catch(() => '')
+    throw providerError('openrouter_http_error', { status: response.status, details })
+  }
+
+  const result = await response.json()
+  return validateClarify(parseJsonStrict(extractOpenRouterText(result), 'openrouter_invalid_json'))
+}
+
+function validateClarify(data) {
+  if (!data || typeof data.question !== 'string' || !data.question.trim()) {
+    throw providerError('clarify_invalid_payload')
+  }
+  const options = Array.isArray(data.options)
+    ? data.options.map((opt) => String(opt || '').trim()).filter(Boolean).slice(0, 3)
+    : []
+  // Reuse the reading content filter so clarifier copy stays non-predictive/safe.
+  const guardShape = {
+    summaryTitle: data.question,
+    opening: '',
+    summary: '',
+    advice: '',
+    cards: options.map((opt) => ({ message: opt })),
+  }
+  if (containsDisallowed(guardShape)) {
+    throw providerError('clarify_disallowed')
+  }
+  return { question: data.question.trim(), options }
 }
 
 function normalizeLocale(locale) {
