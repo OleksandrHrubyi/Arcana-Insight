@@ -58,6 +58,7 @@
               'oracle-dialogue__prompt',
               'oracle-bubble',
               isSummaryBubble ? 'oracle-bubble--summary' : 'oracle-bubble--normal',
+              { 'oracle-bubble--clarify': isClarifyBubble },
             ]"
           >
             {{ bubbleText }}
@@ -1825,6 +1826,7 @@ const bubbleText = computed(() => {
 })
 const bubbleKey = computed(() => (stage.value === 'started' ? 'started-list' : bubbleText.value))
 const isSummaryBubble = computed(() => stage.value === 'ready')
+const isClarifyBubble = computed(() => stage.value === 'clarify')
 const showDeckHotspot = computed(() => stage.value === 'ready')
 const questionValidationError = computed(() => {
   if (!showQuestionInput.value) {
@@ -2481,6 +2483,10 @@ onBeforeUnmount(() => {
   .oracle-bubble-fade-leave-active {
     transition: opacity 120ms ease;
   }
+  .oracle-bubble-fade-enter-from,
+  .oracle-bubble-fade-leave-to {
+    transform: none;
+  }
 }
 
 .oracle-scene-dim {
@@ -2770,11 +2776,8 @@ onBeforeUnmount(() => {
   white-space: pre-line;
   overflow: visible;
   box-shadow:
-    0 16px 36px rgba(0, 0, 0, 0.7),
-    0 2px 12px rgba(60, 90, 140, 0.1),
-    inset 0 1px 0 rgba(140, 160, 200, 0.1),
-    inset 0 -1px 0 rgba(30, 45, 75, 0.2),
-    inset 0 0 0 1px rgba(80, 105, 150, 0.12);
+    0 18px 40px -12px rgba(4, 8, 16, 0.62),
+    inset 0 1px 0 rgba(150, 170, 210, 0.12);
   backdrop-filter: blur(12px) saturate(140%);
   -webkit-backdrop-filter: blur(12px) saturate(140%);
 }
@@ -2790,30 +2793,47 @@ onBeforeUnmount(() => {
   pointer-events: none;
 }
 
+/* Quiet sigil marker = the oracle's voice (no chat-style tail). */
 .oracle-bubble::after {
-  content: '';
+  content: '\2726';
   position: absolute;
-  left: 50%;
-  bottom: -7px;
-  width: 12px;
-  height: 12px;
-  transform: translateX(-50%) rotate(45deg);
-  background: linear-gradient(135deg, rgba(6, 9, 16, 0.99), rgba(4, 6, 12, 0.99));
-  border-right: 1px solid var(--oracle-bubble-border);
-  border-bottom: 1px solid var(--oracle-bubble-border);
-  box-shadow:
-    2px 2px 8px rgba(0, 0, 0, 0.5),
-    inset -1px -1px 0 rgba(80, 105, 150, 0.1);
+  top: -22px;
+  left: 4px;
+  font-size: 13px;
+  line-height: 1;
+  color: rgba(150, 170, 210, 0.45);
+  pointer-events: none;
 }
 
-.oracle-bubble-fade-enter-active,
+/* When the oracle asks a clarifying question, lift the edge + marker subtly. */
+.oracle-bubble--clarify {
+  --oracle-bubble-border: rgba(140, 170, 215, 0.34);
+}
+
+.oracle-bubble--clarify::after {
+  color: rgba(170, 195, 235, 0.78);
+}
+
+.oracle-bubble-fade-enter-active {
+  transition:
+    opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .oracle-bubble-fade-leave-active {
-  transition: opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    opacity 240ms ease,
+    transform 240ms ease;
 }
 
-.oracle-bubble-fade-enter-from,
+.oracle-bubble-fade-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
 .oracle-bubble-fade-leave-to {
   opacity: 0;
+  transform: translateY(-4px);
 }
 
 .oracle-actions {
