@@ -31,7 +31,7 @@
         type="button"
         :class="['oracle-deck-hit', { 'oracle-deck-hit--lit': isDeckHotspotActive }]"
         :style="deckHitStyle"
-        :aria-label="currentLang === 'uk' ? 'Торкнутися колоди' : 'Touch the deck'"
+        :aria-label="t.ui.ariaTouchDeck"
         @click.stop="touchDeck"
       ></button>
     </div>
@@ -40,10 +40,19 @@
       <button
         type="button"
         class="oracle-exit"
-        :aria-label="currentLang === 'uk' ? 'Вийти' : 'Exit'"
+        :aria-label="t.ui.ariaExit"
         @click="onExit"
       >
         ←
+      </button>
+      <button
+        v-if="stage === 'intro'"
+        type="button"
+        class="oracle-intro-skip"
+        :aria-label="t.ui.skipIntro"
+        @click="skipIntro"
+      >
+        <span class="oracle-intro-skip__hint">{{ t.ui.skipIntro }}</span>
       </button>
       <transition name="oracle-dim-fade">
         <div v-if="isReadingActive" class="oracle-scene-dim" aria-hidden="true"></div>
@@ -104,6 +113,9 @@
       </section>
 
       <section v-if="showInterpretationActions" class="oracle-interpret" aria-live="polite">
+        <p v-if="interpretationError" class="oracle-interpret__error">
+          {{ interpretationError }}
+        </p>
         <div class="oracle-interpret__actions">
           <button
             type="button"
@@ -163,12 +175,12 @@
             <button
               type="button"
               class="oracle-card-preview__back"
-              :aria-label="currentLang === 'uk' ? 'Назад' : 'Back'"
+              :aria-label="t.ui.ariaBack"
               @click="cardPreviewOpen = false"
             >
               <q-icon name="chevron_left" size="18px" />
             </button>
-            <div class="sheet-title">{{ currentLang === 'uk' ? 'Карта' : 'Card' }}</div>
+            <div class="sheet-title">{{ t.ui.sheetCard }}</div>
           </div>
 
           <div class="oracle-card-preview__content">
@@ -203,7 +215,7 @@
 
           <div class="oracle-actions__footer">
             <button type="button" class="oracle-actions__ok" @click="cardPreviewOpen = false">
-              {{ currentLang === 'uk' ? 'Закрити' : 'Close' }}
+              {{ t.ui.sheetClose }}
             </button>
           </div>
         </section>
@@ -295,10 +307,10 @@ import {
   getRitualRewardQuantity,
   RITUAL_REWARD_KEYS,
 } from 'src/helpers/ritualRewardInventory'
-import { getTarotReading } from 'src/services/tarotOracle'
+import { getTarotReading, getTarotClarify } from 'src/services/tarotOracle'
 import { getUserNative, insertTarotReading } from 'src/services/supabaseNative'
 import { analytics } from 'src/services/analytics'
-import { PAYWALL_ENTRY_POINTS } from 'src/constants/analyticsEvents'
+import { PAYWALL_ENTRY_POINTS, TAROT_SESSION_EVENTS } from 'src/constants/analyticsEvents'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
 import { useAuthStore } from 'stores/authStore.js'
 
@@ -306,6 +318,11 @@ const videoRef = ref(null)
 const sceneRef = ref(null)
 const narrationLine = ref('')
 const currentPrompt = ref('')
+// Adaptive clarifying question (premium, between the question and the draw).
+const clarifierQuestion = ref('')
+const clarifierOptions = ref([])
+const clarifierLoading = ref(false)
+const clarification = ref('')
 const controlsUnlocked = ref(false)
 const actionsSheetOpen = ref(false)
 const wheelRef = ref(null)
@@ -361,6 +378,25 @@ const INTRO_LINE_STEP_DELAY = 3400
 const INTRO_LINES_TO_SHOW = 2
 const INTRO_TO_THEME_DELAY = 1000
 const THEME_CONFIRM_HOLD_DELAY = INTRO_LINE_STEP_DELAY
+
+// The cinematic intro plays once per app session. Returning to /tarot (e.g. back
+// from the interpretation screen) then skips straight to theme selection instead
+// of replaying the full ~8s narration every time.
+const INTRO_SEEN_SESSION_KEY = 'arcana_oracle_intro_seen_v1'
+const hasSeenIntroThisSession = () => {
+  try {
+    return sessionStorage.getItem(INTRO_SEEN_SESSION_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+const markIntroSeenThisSession = () => {
+  try {
+    sessionStorage.setItem(INTRO_SEEN_SESSION_KEY, '1')
+  } catch {
+    // ignore storage failures
+  }
+}
 const READY_HOTSPOT_REVEAL_DELAY = 1800
 const QUESTION_MIN_LENGTH = 10
 const QUESTION_MAX_LENGTH = 220
@@ -468,6 +504,11 @@ const markFreeTarotUsedToday = () => {
 const notifyFreeTarotDailyLimit = () => {
   const message = i18nT(currentLang.value, 'premiumAccess.tarot.dailyLimit')
 
+  void analytics.logEvent(TAROT_SESSION_EVENTS.upsellShown, {
+    ...buildTarotFunnelPayload(),
+    source: PAYWALL_ENTRY_POINTS.tarotDailyLimit.source,
+  })
+
   $q.notify({
     message,
     color: 'dark',
@@ -489,6 +530,11 @@ const notifyFreeTarotDailyLimit = () => {
 const notifyPremiumSpreadLock = () => {
   const message = i18nT(currentLang.value, 'premiumAccess.spreads.notify')
   if (!message) return
+
+  void analytics.logEvent(TAROT_SESSION_EVENTS.upsellShown, {
+    ...buildTarotFunnelPayload(),
+    source: PAYWALL_ENTRY_POINTS.tarotSpreadLock.source,
+  })
 
   $q.notify({
     message,
@@ -583,15 +629,15 @@ const questionTemplates = computed(() => t.value.questionTemplates)
 const cardPool = ref([])
 const yesTitle = computed(() => i18nT(currentLang.value, 'yesTitle'))
 const noTitle = computed(() => i18nT(currentLang.value, 'noTitle'))
-const interpretationLoadingBase = computed(() =>
-  currentLang.value === 'uk'
-    ? 'Добре. Дай мені мить — формую тлумачення'
-    : 'All right. Give me a moment — shaping the interpretation',
-)
+const interpretationLoadingBase = computed(() => t.value.ui.loadingBase)
 const interpretationLoadingLine = computed(
   () => `${interpretationLoadingBase.value}${'.'.repeat(loadingDots.value)}`,
 )
 const interpretationUnavailableLine = computed(() => i18nT(currentLang.value, 'errors.generic'))
+
+// Fill {placeholder} tokens in a localized template string (src/i18n tarotOracle.ui.*).
+const fillTemplate = (template, values = {}) =>
+  String(template || '').replace(/\{(\w+)\}/g, (_, key) => (values[key] ?? ''))
 
 const loadCardPool = async () => {
   const data = await loadTarotData()
@@ -678,8 +724,8 @@ const impact = async (style = ImpactStyle.Light) => {
   }
   try {
     await Haptics.impact({ style })
-  } catch (error) {
-    console.error(error)
+  } catch {
+    // Haptics are cosmetic; ignore unsupported-device failures.
   }
 }
 
@@ -854,6 +900,10 @@ const askThemePrimary = () => {
   selectedSpread.value = 0
   pendingSpreadRewardKey.value = ''
   draftQuestion.value = ''
+  clarifierQuestion.value = ''
+  clarifierOptions.value = []
+  clarifierLoading.value = false
+  clarification.value = ''
   isReadingActive.value = false
   spreadCards.value = []
   revealedCardsCount.value = 0
@@ -868,6 +918,17 @@ const askThemePrimary = () => {
     return
   }
   revealControlsWithDelay(1400)
+}
+
+// Tap-to-skip the cinematic intro narration so returning users aren't forced
+// through the full ~8s sequence on every visit. Only intro timers are pending at
+// this stage, so clearing them is safe (the video watchdog is a separate interval).
+const skipIntro = () => {
+  if (stage.value !== 'intro') return
+  timers.forEach((timer) => window.clearTimeout(timer))
+  timers.length = 0
+  narrationLine.value = ''
+  askThemePrimary()
 }
 
 const openCustomQuestionInput = ({ resetDraft = true } = {}) => {
@@ -938,9 +999,66 @@ const toSubTheme = () => {
 
 const pickTemplate = (template) => {
   selectedQuestion.value = template
+  void maybeAskClarifier()
+}
+
+const proceedToSpread = () => {
   stage.value = 'spread_primary'
   setPrompt('spread')
   revealControlsWithDelay(850)
+}
+
+// Like a reader narrowing your question before laying cards: ask ONE adaptive
+// follow-up. Premium + AI only; any failure falls straight through to the spread,
+// so the existing flow is the fallback and nothing can break.
+const maybeAskClarifier = async () => {
+  if (!hasPremiumAccess.value || !tarotAiEnabled) {
+    proceedToSpread()
+    return
+  }
+
+  clarification.value = ''
+  clarifierQuestion.value = ''
+  clarifierOptions.value = []
+  clarifierLoading.value = true
+  stage.value = 'clarify'
+  controlsUnlocked.value = false
+  actionsSheetOpen.value = false
+  currentPrompt.value = t.value.ui.clarifyThinking
+
+  try {
+    const result = await getTarotClarify({
+      locale: currentLang.value,
+      theme: selectedTheme.value,
+      themeLabel: t.value.themeLabels[selectedTheme.value] || t.value.themeLabels.default,
+      subTheme: selectedSubTheme.value || '',
+      subThemeLabel: subThemeLabels.value?.[selectedTheme.value]?.[selectedSubTheme.value] || '',
+      question: selectedQuestion.value || '',
+    })
+
+    // User left the clarify stage while waiting, or nothing usable came back.
+    if (stage.value !== 'clarify' || !result?.question) {
+      if (stage.value === 'clarify') proceedToSpread()
+      return
+    }
+
+    clarifierQuestion.value = result.question
+    clarifierOptions.value = result.options
+    currentPrompt.value = result.question
+    revealControlsWithDelay(700)
+  } catch (error) {
+    console.error(error)
+    if (stage.value === 'clarify') proceedToSpread()
+  } finally {
+    clarifierLoading.value = false
+  }
+}
+
+const answerClarifier = (optionText) => {
+  if (stage.value !== 'clarify') return
+  void impact(ImpactStyle.Light)
+  clarification.value = String(optionText || '')
+  proceedToSpread()
 }
 
 const normalizeQuestionDraft = (value) =>
@@ -984,9 +1102,7 @@ const confirmQuestion = () => {
   }
 
   selectedQuestion.value = value
-  stage.value = 'spread_primary'
-  setPrompt('spread')
-  revealControlsWithDelay(850)
+  void maybeAskClarifier()
 }
 
 const clampText = (text, max = 42) => {
@@ -998,7 +1114,7 @@ const clampText = (text, max = 42) => {
 }
 
 const buildReadySummaryWithTouchPrompt = (spread) => {
-  const isUk = currentLang.value === 'uk'
+  const ui = t.value.ui
   const themeLabel = t.value.themeLabels[selectedTheme.value] || t.value.themeLabels.default
   const subThemeLabelRaw =
     subThemeLabels.value?.[selectedTheme.value]?.[selectedSubTheme.value] ||
@@ -1006,24 +1122,19 @@ const buildReadySummaryWithTouchPrompt = (spread) => {
     selectedSubTheme.value
   const subThemeLabel = String(subThemeLabelRaw || '').trim()
   const question = clampText(selectedQuestion.value, 46)
-  const spreadLabel = isUk
-    ? { 1: '1 карта', 3: '3 карти', 5: '5 карт' }[spread]
-    : { 1: '1 card', 3: '3 cards', 5: '5 cards' }[spread]
+  const spreadLabel = ui.spreadLabels[spread]
   const touchPrompt = pickVariant('ready', t.value.prompts.ready)
-  const subThemeLineUk = subThemeLabel ? `Підтема: «${subThemeLabel}»\n` : ''
-  const subThemeLineEn = subThemeLabel ? `Subtheme: “${subThemeLabel}”\n` : ''
+  const subThemeLine = subThemeLabel
+    ? fillTemplate(ui.summarySubthemeLine, { subtheme: subThemeLabel })
+    : ''
 
-  if (isUk) {
-    return `Тема: «${themeLabel}»
-${subThemeLineUk}Питання: «${question}»
-Глибина: ${spreadLabel}
-${touchPrompt}`
-  }
-
-  return `Theme: “${themeLabel}”
-${subThemeLineEn}Question: “${question}”
-Depth: ${spreadLabel}
-${touchPrompt}`
+  return fillTemplate(ui.summaryLine, {
+    theme: themeLabel,
+    subtheme: subThemeLine,
+    question,
+    depth: spreadLabel,
+    touch: touchPrompt,
+  })
 }
 
 const setSpread = (spread, options = {}) => {
@@ -1045,6 +1156,14 @@ const setSpread = (spread, options = {}) => {
 }
 
 const selectSpreadWithAccess = async (spread) => {
+  void analytics.logEvent(TAROT_SESSION_EVENTS.spreadSelected, {
+    spread: String(spread),
+    theme: String(selectedTheme.value || 'unknown'),
+    premium: hasPremiumAccess.value ? 'true' : 'false',
+    premium_required: spread !== 1 && !hasPremiumAccess.value ? 'true' : 'false',
+    has_reward_token: getExtraTarotSpreadTokens() > 0 ? 'true' : 'false',
+  })
+
   if (spread === 1 && !hasPremiumAccess.value && hasUsedFreeTarotToday()) {
     notifyFreeTarotDailyLimit()
     return
@@ -1064,26 +1183,37 @@ const selectSpreadWithAccess = async (spread) => {
   notifyPremiumSpreadLock()
 }
 
+// Theme-aware position set for 3- and 5-card spreads (relationships → You/Them/…,
+// decision → Option A/B/…). Returns null for 1-card or unknown themes, so those
+// fall back to the generic Root/Focus/Vector labels — i.e. unchanged behaviour.
+const resolveThemeSpread = (total) => {
+  const totalKey = total === 3 ? 'three' : total === 5 ? 'five' : null
+  if (!totalKey) return null
+  const spreads = i18nT(currentLang.value, 'tarotSpreads')
+  const set = spreads?.[selectedTheme.value]?.[totalKey]
+  return Array.isArray(set) ? set : null
+}
+
 const getCardRole = (index, total) => {
-  const isUk = currentLang.value === 'uk'
-  if (total === 1) {
-    return isUk ? 'Суть' : 'Core'
-  }
-  if (total === 3) {
-    return (
-      (isUk ? ['Корінь', 'Фокус', 'Вектор'] : ['Root', 'Focus', 'Vector'])[index] ||
-      (isUk ? `Карта ${index + 1}` : `Card ${index + 1}`)
-    )
-  }
-  if (total === 5) {
-    return (
-      (isUk
-        ? ['Основа', 'Минуле', 'Тепер', 'Тінь', 'Вектор']
-        : ['Base', 'Past', 'Now', 'Shadow', 'Vector'])[index] ||
-      (isUk ? `Карта ${index + 1}` : `Card ${index + 1}`)
-    )
-  }
-  return isUk ? `Карта ${index + 1}` : `Card ${index + 1}`
+  const themed = resolveThemeSpread(total)
+  if (themed?.[index]?.label) return themed[index].label
+  const ui = t.value.ui
+  const fallback = `${ui.cardN} ${index + 1}`
+  if (total === 1) return ui.roleCore
+  if (total === 3) return ui.roles3[index] || fallback
+  if (total === 5) return ui.roles5[index] || fallback
+  return fallback
+}
+
+// The explanatory line shown under each position on the interpretation screen.
+// Theme-aware when available, otherwise the generic per-position meanings.
+const getPositionMeaning = (index, total) => {
+  const themed = resolveThemeSpread(total)
+  if (themed?.[index]?.meaning) return themed[index].meaning
+  const generic = i18nT(currentLang.value, 'tarotInterpretation.positions')
+  const totalKey = total === 1 ? 'one' : total === 3 ? 'three' : total === 5 ? 'five' : null
+  const set = totalKey && generic ? generic[totalKey] : null
+  return (Array.isArray(set) && set[index]) || ''
 }
 
 const getCardTitle = (card) =>
@@ -1115,11 +1245,7 @@ const previewKeywords = computed(() => {
 const revealedCardList = computed(() =>
   spreadCards.value.slice(0, flippedCardsCount.value).map((card, index) => {
     const title = getCardTitle(card)
-    const reversedSuffix = card?.reversed
-      ? currentLang.value === 'uk'
-        ? ' (перевернута)'
-        : ' (reversed)'
-      : ''
+    const reversedSuffix = card?.reversed ? t.value.ui.reversedSuffix : ''
 
     return {
       index,
@@ -1136,15 +1262,7 @@ const revealedCardListText = computed(() =>
 const buildCardRevealPrompt = (card, index, total) => {
   const role = getCardRole(index, total)
   const title = getCardTitle(card)
-  const reversedTag = card?.reversed
-    ? currentLang.value === 'uk'
-      ? ', перевернута'
-      : ', reversed'
-    : ''
-
-  if (currentLang.value === 'uk') {
-    return `${role}.\n${title}${reversedTag}.`
-  }
+  const reversedTag = card?.reversed ? t.value.ui.reversedTag : ''
 
   return `${role}.\n${title}${reversedTag}.`
 }
@@ -1156,13 +1274,7 @@ const getCardText = (source, locale) => {
     .filter(Boolean)
 }
 
-const buildReadingReadyPrompt = () => {
-  if (currentLang.value === 'uk') {
-    return 'Карти відкриті. Бажаєш, щоб я перейшла до тлумачення?'
-  }
-
-  return 'The cards are open. Do you want me to move to the interpretation?'
-}
+const buildReadingReadyPrompt = () => t.value.ui.readingReady
 
 const resetInterpretationState = () => {
   interpretationChoicesVisible.value = false
@@ -1215,6 +1327,8 @@ const buildInterpretationPayload = () => {
     subTheme: selectedSubTheme.value || '',
     subThemeLabel,
     question: selectedQuestion.value || '',
+    clarifyQuestion: clarifierQuestion.value || '',
+    clarifyAnswer: clarification.value || '',
     depth: total,
     cards: spreadCards.value.map((card, index) => ({
       position: getPositionKey(index, total),
@@ -1228,7 +1342,7 @@ const buildInterpretationPayload = () => {
 }
 
 const buildBasicInterpretation = (payload) => {
-  const isUk = currentLang.value === 'uk'
+  const ui = t.value.ui
   const total = spreadCards.value.length || selectedSpread.value || 1
   const cards = spreadCards.value.map((card, index) => {
     const message = String(getCardMeaningText(card) || '').trim()
@@ -1245,15 +1359,9 @@ const buildBasicInterpretation = (payload) => {
   })
 
   return {
-    summaryTitle: isUk ? 'Базове тлумачення' : 'Basic interpretation',
-    opening: isUk
-      ? 'Тлумачення нижче побудоване на значеннях карт із бібліотеки.'
-      : 'The interpretation below is based on card meanings from the library.',
-    summary: payload?.question
-      ? isUk
-        ? `Фокус цього розкладу: ${payload.question}`
-        : `Focus of this spread: ${payload.question}`
-      : '',
+    summaryTitle: ui.basicTitle,
+    opening: ui.basicOpening,
+    summary: payload?.question ? fillTemplate(ui.basicFocus, { question: payload.question }) : '',
     advice: '',
     cards,
   }
@@ -1269,7 +1377,7 @@ const trimInterpretationText = (value, max = 220) => {
 }
 
 const buildPremiumStructuredFallback = (payload, { aiUnavailable = false } = {}) => {
-  const isUk = currentLang.value === 'uk'
+  const ui = t.value.ui
   const total = spreadCards.value.length || selectedSpread.value || 1
   const cards = spreadCards.value.map((card, index) => {
     const role = getCardRole(index, total)
@@ -1277,13 +1385,9 @@ const buildPremiumStructuredFallback = (payload, { aiUnavailable = false } = {})
     const detail = trimInterpretationText(getCardDetailText(card), 220)
     const keywords = getCardKeywords(card).slice(0, 3)
     const keywordsLine = keywords.length
-      ? isUk
-        ? `Ключі: ${keywords.join(', ')}.`
-        : `Keywords: ${keywords.join(', ')}.`
+      ? fillTemplate(ui.premiumKeywords, { keywords: keywords.join(', ') })
       : ''
-    const question = isUk
-      ? `Фокус дії: який маленький крок у темі «${role}» ти зробиш сьогодні?`
-      : `Action focus: what small step can you take today in the “${role}” area?`
+    const question = fillTemplate(ui.premiumActionFocus, { role })
 
     return {
       position: getPositionKey(index, total),
@@ -1304,28 +1408,20 @@ const buildPremiumStructuredFallback = (payload, { aiUnavailable = false } = {})
     .filter((word, index, arr) => arr.indexOf(word) === index)
     .slice(0, 6)
   const keywordsSummary = allKeywords.length
-    ? isUk
-      ? `Повторювані акценти: ${allKeywords.join(', ')}.`
-      : `Recurring accents: ${allKeywords.join(', ')}.`
+    ? fillTemplate(ui.premiumRecurring, { keywords: allKeywords.join(', ') })
     : ''
   const focusLabel =
-    payload?.question || payload?.subThemeLabel || payload?.themeLabel || (isUk ? 'поточний фокус' : 'current focus')
+    payload?.question || payload?.subThemeLabel || payload?.themeLabel || ui.premiumDefaultFocus
 
   const opening = aiUnavailable
-    ? isUk
-      ? `AI-інтерпретація тимчасово недоступна, тому нижче сформовано розширене Premium-тлумачення на основі структури розкладу та значень карт.`
-      : `AI interpretation is temporarily unavailable, so the extended Premium interpretation below is built from spread structure and card meanings.`
-    : isUk
-      ? `Розширене Premium-тлумачення для фокусу «${focusLabel}». Воно зібране зі структури розкладу та змісту кожної карти.`
-      : `Extended Premium interpretation for “${focusLabel}”, built from spread structure and each card meaning.`
+    ? ui.premiumOpeningUnavailable
+    : fillTemplate(ui.premiumOpeningFocus, { focus: focusLabel })
 
   const summary = [primary, secondary, keywordsSummary].filter(Boolean).join(' ')
-  const advice = isUk
-    ? 'Наступний крок: обери один конкретний фокус із розкладу, зафіксуй дію на сьогодні та ввечері коротко перевір, що змінилось.'
-    : 'Next step: pick one concrete focus from the spread, commit one action for today, and do a short evening check-in on what shifted.'
+  const advice = ui.premiumAdvice
 
   return {
-    summaryTitle: isUk ? 'Розширене Premium-тлумачення' : 'Extended Premium interpretation',
+    summaryTitle: ui.premiumTitle,
     opening,
     summary,
     advice,
@@ -1334,6 +1430,15 @@ const buildPremiumStructuredFallback = (payload, { aiUnavailable = false } = {})
 }
 
 const persistInterpretationAndOpen = async (data, payload) => {
+  // Attach each position's explanatory line (theme-aware) so the interpretation
+  // screen can show it regardless of source (basic, fallback, or AI).
+  if (Array.isArray(data?.cards)) {
+    const total = Number(payload?.depth) || data.cards.length
+    data.cards = data.cards.map((card, index) => ({
+      ...card,
+      positionMeaning: card.positionMeaning || getPositionMeaning(index, total),
+    }))
+  }
   interpretationData.value = data
   try {
     sessionStorage.setItem(
@@ -1419,6 +1524,7 @@ const startSpreadScene = () => {
           activeCardIndex.value = spreadCards.value.length - 1
           void impact(ImpactStyle.Heavy)
           currentPrompt.value = buildReadingReadyPrompt()
+          void analytics.logEvent(TAROT_SESSION_EVENTS.cardsRevealed, buildTarotFunnelPayload())
         })
         return
       }
@@ -1456,6 +1562,9 @@ const touchDeck = async () => {
     return
   }
 
+  // Captured before consumeRitualReward clears pendingSpreadRewardKey below.
+  const usesReward = !hasPremiumAccess.value && Boolean(pendingSpreadRewardKey.value)
+
   if (!hasPremiumAccess.value && hasUsedFreeTarotToday()) {
     notifyFreeTarotDailyLimit()
     return
@@ -1484,6 +1593,11 @@ const touchDeck = async () => {
   void trackRitualActivityWithGuestFallback(DAILY_ACTIVITY_KEYS.tarot, {
     source: 'tarot_oracle',
     userId: authStore.state.user?.id || '',
+  })
+
+  void analytics.logEvent(TAROT_SESSION_EVENTS.drawStart, {
+    ...buildTarotFunnelPayload(),
+    uses_reward: usesReward ? 'true' : 'false',
   })
 
   void impact(ImpactStyle.Light)
@@ -1547,14 +1661,12 @@ const backFromQuestionInput = () => {
 
 const historyRows = computed(() => {
   const rows = []
-  const isUk = currentLang.value === 'uk'
-  const labelTheme = isUk ? 'Тема' : 'Theme'
-  const labelSubTheme = isUk ? 'Підтема' : 'Subtheme'
-  const labelQuestion = isUk ? 'Питання' : 'Question'
-  const labelSpread = isUk ? 'Розклад' : 'Spread'
-  const spreadLabels = isUk
-    ? { 1: '1 карта', 3: '3 карти', 5: '5 карт' }
-    : { 1: '1 card', 3: '3 cards', 5: '5 cards' }
+  const ui = t.value.ui
+  const labelTheme = ui.histTheme
+  const labelSubTheme = ui.histSubtheme
+  const labelQuestion = ui.histQuestion
+  const labelSpread = ui.histSpread
+  const spreadLabels = ui.spreadLabels
 
   if (selectedTheme.value) {
     rows.push(
@@ -1622,6 +1734,19 @@ const choices = computed(() => {
     return []
   }
 
+  if (stage.value === 'clarify') {
+    if (clarifierLoading.value) {
+      return []
+    }
+    return withLeaveSession([
+      ...clarifierOptions.value.map((option) => ({
+        label: option,
+        action: () => answerClarifier(option),
+      })),
+      { label: t.value.ui.clarifySkip, action: () => answerClarifier('') },
+    ])
+  }
+
   if (stage.value === 'subtheme') {
     const labels =
       subThemeLabels.value?.[selectedTheme.value] ?? subThemeLabels.value?.default ?? {}
@@ -1661,17 +1786,21 @@ const choices = computed(() => {
 
   if (stage.value === 'spread_primary') {
     const premiumLabel = i18nT(currentLang.value, 'premiumAccess.badge')
-    const spread3Label = hasPremiumAccess.value
-      ? t.value.choices.spread3
-      : `${t.value.choices.spread3} · ${premiumLabel}`
-    const spread5Label = hasPremiumAccess.value
-      ? t.value.choices.spread5
-      : `${t.value.choices.spread5} · ${premiumLabel}`
+    const rewardLabel = t.value.ui.rewardBadge
+    // A free user with an earned ritual token can unlock one multi-card spread.
+    const hasRewardToken = !hasPremiumAccess.value && getExtraTarotSpreadTokens() > 0
+    // Multi-card spread label: plain for premium, "· Reward" when a token is
+    // available (tap consumes it), "· Premium" otherwise (tap opens the upsell).
+    const multiSpreadLabel = (label) => {
+      if (hasPremiumAccess.value) return label
+      if (hasRewardToken) return `${label} · ${rewardLabel}`
+      return `${label} · ${premiumLabel}`
+    }
 
     return withLeaveSession([
       { label: t.value.choices.spread1, action: () => selectSpreadWithAccess(1) },
-      { label: spread3Label, action: () => selectSpreadWithAccess(3) },
-      { label: spread5Label, action: () => selectSpreadWithAccess(5) },
+      { label: multiSpreadLabel(t.value.choices.spread3), action: () => selectSpreadWithAccess(3) },
+      { label: multiSpreadLabel(t.value.choices.spread5), action: () => selectSpreadWithAccess(5) },
       { label: t.value.choices.back, action: toQuestionMode },
     ])
   }
@@ -1698,9 +1827,7 @@ const bubbleText = computed(() => {
       return interpretationLoadingLine.value
     }
     if (interpretationDecision.value === 'no') {
-      return currentLang.value === 'uk'
-        ? 'Добре. Якщо захочеш тлумачення — просто скажи.'
-        : 'All right. If you want the interpretation, just say so.'
+      return t.value.ui.declinedHint
     }
     if (interpretationDecision.value === 'yes') {
       return interpretationLoadingLine.value
@@ -1741,6 +1868,7 @@ watch(isReadingComplete, (ready) => {
   }
   interpretationChoicesVisible.value = true
   void impact(ImpactStyle.Light)
+  void analytics.logEvent(TAROT_SESSION_EVENTS.interpretationPromptShown, buildTarotFunnelPayload())
 })
 
 watch(interpretationLoading, (loading) => {
@@ -1763,37 +1891,37 @@ watch(interpretationLoading, (loading) => {
 })
 
 const saveReadingToDatabase = async (interpretationData, payload) => {
-  try {
-    const { data: user } = await getUserNative(8000)
-    if (!user) {
-      // Not logged in — skip saving to database
-      return
-    }
+  // Saved reading history is a premium-only capability (docs/premium-matrix.md).
+  // Free copy promises "today's reading is not saved to history", so free users
+  // must not be persisted to the DB — saving them here is a misleading-claim risk.
+  if (!hasPremiumAccess.value) {
+    return
+  }
 
-    const cardsData = spreadCards.value.map((card) => ({
-      id: card.id,
-      reversed: Boolean(card.reversed),
-    }))
+  const { data: user } = await getUserNative(8000)
+  if (!user) {
+    // Not logged in — skip saving to database
+    return
+  }
 
-    const { error } = await insertTarotReading(
-      {
-        user_id: user.id,
-        spread_type: selectedSpread.value || spreadCards.value.length,
-        cards: cardsData,
-        question: payload.question || null,
-        interpretation: interpretationData.interpretation || null,
-      },
-      8000,
-    )
+  const cardsData = spreadCards.value.map((card) => ({
+    id: card.id,
+    reversed: Boolean(card.reversed),
+  }))
 
-    if (error) {
-      console.error('Supabase insert error:', error)
-      throw error
-    }
+  const { error } = await insertTarotReading(
+    {
+      user_id: user.id,
+      spread_type: selectedSpread.value || spreadCards.value.length,
+      cards: cardsData,
+      question: payload.question || null,
+      interpretation: interpretationData.interpretation || null,
+    },
+    8000,
+  )
 
-    // Reading saved successfully
-  } catch (error) {
-    console.error('Error saving reading to database:', error)
+  // Failure is logged once by the background caller (persistInterpretationAndOpen).
+  if (error) {
     throw error
   }
 }
@@ -1809,6 +1937,13 @@ const buildInterpretationAnalyticsPayload = (payload) => {
     theme: String(payload?.theme || selectedTheme.value || 'unknown'),
   }
 }
+
+// Lightweight params shared by the mid-funnel tarot events.
+const buildTarotFunnelPayload = () => ({
+  spread: String(selectedSpread.value || spreadCards.value.length || 1),
+  theme: String(selectedTheme.value || 'unknown'),
+  premium: hasPremiumAccess.value ? 'true' : 'false',
+})
 
 const logInterpretationOutcome = (eventName, payload, extra = {}) => {
   void analytics.logEvent(eventName, {
@@ -1830,14 +1965,16 @@ const acceptInterpretation = async () => {
   try {
     if (!hasPremiumAccess.value) {
       const data = buildBasicInterpretation(payload)
-      logInterpretationOutcome('tarot_free_basic_interpretation', payload, { reason: 'free_access' })
+      logInterpretationOutcome(TAROT_SESSION_EVENTS.freeBasicInterpretation, payload, {
+        reason: 'free_access',
+      })
       await persistInterpretationAndOpen(data, payload)
       return
     }
 
     if (!tarotAiEnabled) {
       const data = buildPremiumStructuredFallback(payload)
-      logInterpretationOutcome('tarot_premium_structured_fallback', payload, { reason: 'ai_disabled' })
+      logInterpretationOutcome(TAROT_SESSION_EVENTS.premiumStructuredFallback, payload, { reason: 'ai_disabled' })
       await persistInterpretationAndOpen(data, payload)
       return
     }
@@ -1845,11 +1982,8 @@ const acceptInterpretation = async () => {
     const data = await getTarotReading(payload)
     if (!data) {
       const fallbackData = buildPremiumStructuredFallback(payload, { aiUnavailable: true })
-      logInterpretationOutcome('tarot_premium_structured_fallback', payload, { reason: 'ai_no_data' })
-      const fallbackMessage =
-        currentLang.value === 'uk'
-          ? 'AI-інтерпретація тимчасово недоступна. Показую розширене Premium-тлумачення.'
-          : 'AI interpretation is temporarily unavailable. Showing the extended Premium interpretation.'
+      logInterpretationOutcome(TAROT_SESSION_EVENTS.premiumStructuredFallback, payload, { reason: 'ai_no_data' })
+      const fallbackMessage = t.value.ui.aiFallbackNotify
       $q.notify({
         message: fallbackMessage,
         color: 'dark',
@@ -1860,20 +1994,17 @@ const acceptInterpretation = async () => {
       return
     }
 
-    logInterpretationOutcome('tarot_premium_ai_success', payload)
+    logInterpretationOutcome(TAROT_SESSION_EVENTS.premiumAiSuccess, payload)
     await persistInterpretationAndOpen(data, payload)
   } catch (error) {
     console.error(error)
     if (hasPremiumAccess.value) {
       try {
         const fallbackData = buildPremiumStructuredFallback(payload, { aiUnavailable: true })
-        logInterpretationOutcome('tarot_premium_structured_fallback', payload, {
+        logInterpretationOutcome(TAROT_SESSION_EVENTS.premiumStructuredFallback, payload, {
           reason: 'ai_error',
         })
-        const fallbackMessage =
-          currentLang.value === 'uk'
-            ? 'AI-інтерпретація тимчасово недоступна. Показую розширене Premium-тлумачення.'
-            : 'AI interpretation is temporarily unavailable. Showing the extended Premium interpretation.'
+        const fallbackMessage = t.value.ui.aiFallbackNotify
         $q.notify({
           message: fallbackMessage,
           color: 'dark',
@@ -1884,7 +2015,7 @@ const acceptInterpretation = async () => {
         return
       } catch (fallbackError) {
         console.error(fallbackError)
-        logInterpretationOutcome('tarot_premium_ai_error_unrecovered', payload, {
+        logInterpretationOutcome(TAROT_SESSION_EVENTS.premiumAiErrorUnrecovered, payload, {
           reason: 'fallback_failed',
         })
       }
@@ -1904,6 +2035,7 @@ const declineInterpretation = () => {
   void impact(ImpactStyle.Light)
   interpretationDecision.value = 'no'
   interpretationChoicesVisible.value = false
+  void analytics.logEvent(TAROT_SESSION_EVENTS.interpretationDeclined, buildTarotFunnelPayload())
 }
 
 watch(showChoices, (visible) => {
@@ -2011,15 +2143,15 @@ const triggerSelectionHaptic = async () => {
     }
     lastWheelHapticAt.value = now
     await Haptics.impact({ style: ImpactStyle.Light })
-  } catch (error) {
+  } catch {
+    // Haptics are cosmetic; retry once, then ignore unsupported-device failures.
     try {
       if (Capacitor.isNativePlatform()) {
         await Haptics.impact({ style: ImpactStyle.Light })
       }
-    } catch (innerError) {
-      console.error(innerError)
+    } catch {
+      // ignore
     }
-    console.error(error)
   }
 }
 
@@ -2076,6 +2208,14 @@ onMounted(() => {
       isVideoPlaying.value = true
     }
   }, 1200)
+
+  // Already saw the intro this session (e.g. returning from interpretation) —
+  // go straight to theme selection, no narration replay.
+  if (hasSeenIntroThisSession()) {
+    askThemePrimary()
+    return
+  }
+  markIntroSeenThisSession()
 
   const introSet = pickVariant('introSet', t.value.introSets)
   const introLines = Array.isArray(introSet)
@@ -2344,6 +2484,55 @@ onBeforeUnmount(() => {
   pointer-events: auto;
 }
 
+.oracle-intro-skip {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 0 calc(env(safe-area-inset-bottom, 0px) + 120px);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.oracle-intro-skip__hint {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: rgba(214, 225, 242, 0.55);
+  animation: oracle-intro-skip-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes oracle-intro-skip-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.7; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oracle-intro-skip__hint {
+    animation: none;
+    opacity: 0.55;
+  }
+  /* Stop ambient drift/breathing for vestibular-sensitive users. */
+  .oracle-smoke--one,
+  .oracle-smoke--two,
+  .oracle-deck-aura--revealed,
+  .oracle-deck-aura--revealed::before,
+  .oracle-deck-aura--revealed::after {
+    animation: none;
+  }
+  /* Card flip and bubble fade resolve instantly instead of animating. */
+  .oracle-card__inner {
+    transition: none;
+  }
+  .oracle-bubble-fade-enter-active,
+  .oracle-bubble-fade-leave-active {
+    transition: opacity 120ms ease;
+  }
+}
+
 .oracle-scene-dim {
   position: absolute;
   inset: 0;
@@ -2367,7 +2556,9 @@ onBeforeUnmount(() => {
 .oracle-spread {
   position: absolute;
   left: 50%;
-  bottom: 20%;
+  /* 20% on normal/tall screens; floor keeps cards clear of the home indicator on
+     the shortest devices (env() wins only when 20% would sit too low). */
+  bottom: max(20%, calc(env(safe-area-inset-bottom, 0px) + 96px));
   transform: translateX(-50%);
   z-index: 3;
   width: 92vw;
@@ -2907,7 +3098,7 @@ onBeforeUnmount(() => {
   border-radius: 0;
   padding: calc(env(safe-area-inset-top, 0px) + 70px) 16px
     calc(env(safe-area-inset-bottom, 0px) + 24px);
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -2935,8 +3126,8 @@ onBeforeUnmount(() => {
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(10, 14, 22, 0.7);

@@ -49,6 +49,12 @@
           </div>
           <div class="interpret-card__content">
             <div class="interpret-card__role">{{ card.positionLabel || card.position }}</div>
+            <div
+              v-if="card.positionMeaning || positionMeaning(index, mergedCards.length)"
+              class="interpret-card__position"
+            >
+              {{ card.positionMeaning || positionMeaning(index, mergedCards.length) }}
+            </div>
             <div class="interpret-card__name">{{ card.cardTitle }}</div>
             <div v-if="card.message" class="interpret-card__text">{{ card.message }}</div>
             <div v-if="card.detail" class="interpret-card__text interpret-card__text--soft">{{ card.detail }}</div>
@@ -119,7 +125,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { currentLocale, t } from 'src/i18n'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
 import { analytics } from 'src/services/analytics'
-import { PAYWALL_ENTRY_POINTS } from 'src/constants/analyticsEvents'
+import { PAYWALL_ENTRY_POINTS, TAROT_SESSION_EVENTS } from 'src/constants/analyticsEvents'
 
 const STORAGE_KEY = 'tarot-interpretation-v1'
 
@@ -136,43 +142,23 @@ const tt = (key, fallback = '') => {
   return translated
 }
 
-const headerKicker = computed(() => (locale.value === 'uk' ? 'ТАРО • ТЛУМАЧЕННЯ' : 'TAROT • INTERPRETATION'))
-const fallbackTitle = computed(() => (locale.value === 'uk' ? 'Тлумачення' : 'Interpretation'))
-const emptyText = computed(() =>
-  locale.value === 'uk'
-    ? 'Немає активного тлумачення. Повернись до розкладу.'
-    : 'No active interpretation. Return to the spread.'
-)
-const metaThemeLabel = computed(() => (locale.value === 'uk' ? 'Тема' : 'Theme'))
-const metaSubThemeLabel = computed(() => (locale.value === 'uk' ? 'Підтема' : 'Subtheme'))
-const metaQuestionLabel = computed(() => (locale.value === 'uk' ? 'Питання' : 'Question'))
-const endSessionLabel = computed(() => (locale.value === 'uk' ? 'Завершити сеанс' : 'End session'))
-const newSessionLabel = computed(() => (locale.value === 'uk' ? 'Новий сеанс' : 'New session'))
-const overviewLabel = computed(() => (locale.value === 'uk' ? 'Суть розкладу' : 'Overview'))
-const cardsLabel = computed(() => (locale.value === 'uk' ? 'Карти' : 'Cards'))
-const adviceLabel = computed(() => (locale.value === 'uk' ? 'Підсумок' : 'Closing'))
+const headerKicker = computed(() => tt('tarotInterpretation.headerKicker'))
+const fallbackTitle = computed(() => tt('tarotInterpretation.fallbackTitle'))
+const emptyText = computed(() => tt('tarotInterpretation.emptyText'))
+const metaThemeLabel = computed(() => tt('tarotInterpretation.metaThemeLabel'))
+const metaSubThemeLabel = computed(() => tt('tarotInterpretation.metaSubThemeLabel'))
+const metaQuestionLabel = computed(() => tt('tarotInterpretation.metaQuestionLabel'))
+const endSessionLabel = computed(() => tt('tarotInterpretation.endSessionLabel'))
+const newSessionLabel = computed(() => tt('tarotInterpretation.newSessionLabel'))
+const overviewLabel = computed(() => tt('tarotInterpretation.overviewLabel'))
+const cardsLabel = computed(() => tt('tarotInterpretation.cardsLabel'))
+const adviceLabel = computed(() => tt('tarotInterpretation.adviceLabel'))
 const showPremiumAha = computed(() => Boolean(reading.value) && !hasPremiumAccess.value)
-const premiumBadge = computed(() => (locale.value === 'uk' ? 'PREMIUM' : 'PREMIUM'))
-const premiumTitle = computed(() =>
-  tt(
-    'premiumAccess.tarot.aha.title',
-    locale.value === 'uk' ? 'Відкрий глибший формат наступного розкладу' : 'Unlock a deeper format for your next spread',
-  ),
-)
-const premiumLead = computed(() =>
-  tt(
-    'premiumAccess.tarot.aha.lead',
-    locale.value === 'uk'
-      ? 'Ти вже отримав базовий інсайт. Premium додає більше контексту і чіткіший напрям дії.'
-      : 'You already got a baseline insight. Premium adds more context and clearer next steps.',
-  ),
-)
-const premiumPreviewLabel = computed(() =>
-  tt('premiumAccess.tarot.aha.previewLabel', locale.value === 'uk' ? 'PREVIEW NEXT' : 'PREVIEW NEXT'),
-)
-const premiumCta = computed(() =>
-  tt('premiumAccess.cta', locale.value === 'uk' ? 'Відкрити Premium' : 'Unlock Premium'),
-)
+const premiumBadge = computed(() => tt('tarotInterpretation.premiumBadge'))
+const premiumTitle = computed(() => tt('premiumAccess.tarot.aha.title'))
+const premiumLead = computed(() => tt('premiumAccess.tarot.aha.lead'))
+const premiumPreviewLabel = computed(() => tt('premiumAccess.tarot.aha.previewLabel'))
+const premiumCta = computed(() => tt('premiumAccess.cta'))
 
 const mergedCards = computed(() => {
   const cards = reading.value?.cards || []
@@ -186,45 +172,26 @@ const mergedCards = computed(() => {
   })
 })
 
-const premiumPreviewText = computed(() => {
-  const card = mergedCards.value[0]
-  const fallback = tt(
-    'premiumAccess.tarot.aha.previewFallback',
-    locale.value === 'uk'
-      ? 'У Premium ти побачиш ширший контекст, глибшу інтерпретацію та рекомендації для наступного кроку.'
-      : 'Premium adds broader context, deeper interpretation, and practical next-step guidance.',
-  )
-  if (!card) return fallback
+// What each spread position represents, so the reading explains its structure the
+// way a reader would ("Shadow — what works beneath the surface") instead of leaving
+// position labels unexplained. Derived by index/total (the spread's fixed structure).
+const positionMeaning = (index, total) => {
+  const sets = t(locale.value, 'tarotInterpretation.positions')
+  if (!sets || typeof sets !== 'object') return ''
+  const set = total === 1 ? sets.one : total === 3 ? sets.three : total === 5 ? sets.five : null
+  if (!Array.isArray(set)) return ''
+  return set[index] || ''
+}
 
-  const line = String(card.message || card.detail || reading.value?.summary || '').trim()
-  if (!line) return fallback
-  const clipped = line.length > 132 ? `${line.slice(0, 131)}…` : line
-  const prefix = tt('premiumAccess.tarot.aha.previewNowPrefix', locale.value === 'uk' ? 'Зараз' : 'Now')
-  return `${prefix}: ${clipped}`
-})
+// Describe what Premium adds, rather than clipping the user's own free reading and
+// labelling it a "preview" — that misrepresented free content as a premium teaser.
+const premiumPreviewText = computed(() => tt('premiumAccess.tarot.aha.previewFallback'))
 
-const premiumAhaPoints = computed(() =>
-  [
-    tt(
-      'premiumAccess.tarot.aha.points.unlimited',
-      locale.value === 'uk'
-        ? 'Необмежені таро-сесії без денного ліміту.'
-        : 'Unlimited tarot sessions without daily limits.',
-    ),
-    tt(
-      'premiumAccess.tarot.aha.points.spreads',
-      locale.value === 'uk'
-        ? 'Розклади на 3 і 5 карт для ширшої картини.'
-        : '3-card and 5-card spreads for wider context.',
-    ),
-    tt(
-      'premiumAccess.tarot.aha.points.history',
-      locale.value === 'uk'
-        ? 'Збереження історії розкладів і повернення до патернів.'
-        : 'Saved reading history to revisit recurring patterns.',
-    ),
-  ],
-)
+const premiumAhaPoints = computed(() => [
+  tt('premiumAccess.tarot.aha.points.unlimited'),
+  tt('premiumAccess.tarot.aha.points.spreads'),
+  tt('premiumAccess.tarot.aha.points.history'),
+])
 
 const loadReading = () => {
   try {
@@ -280,7 +247,7 @@ const buildShareText = () => {
   if (reading.value.opening) lines.push(reading.value.opening)
   if (reading.value.summary) lines.push(reading.value.summary)
   mergedCards.value.forEach((card, idx) => {
-    const role = card.positionLabel || `Card ${idx + 1}`
+    const role = card.positionLabel || `${tt('tarotInterpretation.cardFallback')} ${idx + 1}`
     lines.push(`${role}: ${card.cardTitle}`)
     if (card.message) lines.push(card.message)
   })
@@ -301,7 +268,7 @@ const saveReading = () => {
       visuals: visuals.value,
     })
     localStorage.setItem('tarot-saved-readings', JSON.stringify(existing.slice(0, 20)))
-    $q.notify({ message: locale.value === 'uk' ? 'Збережено' : 'Saved', color: 'dark' })
+    $q.notify({ message: tt('tarotInterpretation.saved'), color: 'dark' })
   } catch (error) {
     console.error(error)
   }
@@ -338,6 +305,14 @@ const openPremiumFromAha = async () => {
 
 onMounted(() => {
   loadReading()
+  // Post-session paywall impression — lets us measure impression→tap on the aha block.
+  if (showPremiumAha.value) {
+    const point = PAYWALL_ENTRY_POINTS.tarotPostSession
+    void analytics.logEvent(TAROT_SESSION_EVENTS.upsellShown, {
+      source: point.source,
+      entry: point.entry,
+    })
+  }
 })
 </script>
 
@@ -382,8 +357,8 @@ onMounted(() => {
   position: absolute;
   left: 16px;
   top: calc(90px + env(safe-area-inset-top, 0px));
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(10, 14, 22, 0.7);
@@ -415,8 +390,8 @@ onMounted(() => {
 }
 
 .interpret-icon {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   border: 1px solid rgba(156, 184, 235, 0.2);
   background: rgba(8, 12, 18, 0.62);
@@ -539,6 +514,12 @@ onMounted(() => {
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: rgba(190, 205, 232, 0.7);
+}
+
+.interpret-card__position {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(196, 205, 222, 0.74);
 }
 
 .interpret-card__name {
