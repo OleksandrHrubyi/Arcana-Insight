@@ -61,6 +61,23 @@ export const PAYWALL_ENTRY_POINTS = Object.freeze({
   }),
 })
 
+export const TAROT_SESSION_EVENTS = Object.freeze({
+  // Mid-funnel tarot events so drop-off between oracle open → draw → cards →
+  // interpretation → upsell can be measured (paywall conversion is covered by
+  // PAYWALL_ENTRY_POINTS / PAYWALL_FUNNEL_EVENTS).
+  drawStart: 'tarot_draw_start',
+  cardsRevealed: 'tarot_cards_revealed',
+  spreadSelected: 'tarot_spread_selected',
+  interpretationPromptShown: 'tarot_interpretation_prompt_shown',
+  interpretationDeclined: 'tarot_interpretation_declined',
+  upsellShown: 'tarot_upsell_shown',
+  // Interpretation outcomes (which content path the user actually received).
+  freeBasicInterpretation: 'tarot_free_basic_interpretation',
+  premiumStructuredFallback: 'tarot_premium_structured_fallback',
+  premiumAiSuccess: 'tarot_premium_ai_success',
+  premiumAiErrorUnrecovered: 'tarot_premium_ai_error_unrecovered',
+})
+
 export const CONTENT_SHARE_EVENTS = Object.freeze({
   horoscopeShare: 'horoscope_share',
   personalHoroscopeShare: 'personal_horoscope_share',

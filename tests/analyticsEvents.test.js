@@ -80,6 +80,48 @@ test('paywall funnel analytics constants expose required event set', async () =>
   })
 })
 
+test('tarot session analytics constants expose the mid-funnel event set', async () => {
+  const { TAROT_SESSION_EVENTS } = await importModule('src/constants/analyticsEvents.js')
+
+  assert.deepEqual(TAROT_SESSION_EVENTS, {
+    drawStart: 'tarot_draw_start',
+    cardsRevealed: 'tarot_cards_revealed',
+    spreadSelected: 'tarot_spread_selected',
+    interpretationPromptShown: 'tarot_interpretation_prompt_shown',
+    interpretationDeclined: 'tarot_interpretation_declined',
+    upsellShown: 'tarot_upsell_shown',
+    freeBasicInterpretation: 'tarot_free_basic_interpretation',
+    premiumStructuredFallback: 'tarot_premium_structured_fallback',
+    premiumAiSuccess: 'tarot_premium_ai_success',
+    premiumAiErrorUnrecovered: 'tarot_premium_ai_error_unrecovered',
+  })
+
+  const values = Object.values(TAROT_SESSION_EVENTS)
+  assert.equal(new Set(values).size, values.length)
+})
+
+test('TarotOraclePage uses tarot session constants and avoids hardcoded tarot event strings', async () => {
+  const componentPath = path.resolve(process.cwd(), 'src/components/TarotOraclePage.vue')
+  const source = fs.readFileSync(componentPath, 'utf8')
+
+  assert.match(source, /TAROT_SESSION_EVENTS\.drawStart/)
+  assert.match(source, /TAROT_SESSION_EVENTS\.interpretationPromptShown/)
+  assert.match(source, /TAROT_SESSION_EVENTS\.upsellShown/)
+  assert.match(source, /TAROT_SESSION_EVENTS\.freeBasicInterpretation/)
+
+  const rawEventStrings = [
+    "'tarot_draw_start'",
+    "'tarot_free_basic_interpretation'",
+    "'tarot_premium_structured_fallback'",
+    "'tarot_premium_ai_success'",
+    "'tarot_premium_ai_error_unrecovered'",
+  ]
+
+  for (const token of rawEventStrings) {
+    assert.equal(source.includes(token), false, `hardcoded event remains in TarotOraclePage: ${token}`)
+  }
+})
+
 test('onboarding analytics constants expose required event set', async () => {
   const { ONBOARDING_EVENTS, REQUIRED_ONBOARDING_EVENTS } = await importModule(
     'src/constants/analyticsEvents.js',
