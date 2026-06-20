@@ -45,15 +45,6 @@
       >
         ←
       </button>
-      <button
-        v-if="stage === 'intro'"
-        type="button"
-        class="oracle-intro-skip"
-        :aria-label="t.ui.skipIntro"
-        @click="skipIntro"
-      >
-        <span class="oracle-intro-skip__hint">{{ t.ui.skipIntro }}</span>
-      </button>
       <transition name="oracle-dim-fade">
         <div v-if="isReadingActive" class="oracle-scene-dim" aria-hidden="true"></div>
       </transition>
@@ -918,17 +909,6 @@ const askThemePrimary = () => {
     return
   }
   revealControlsWithDelay(1400)
-}
-
-// Tap-to-skip the cinematic intro narration so returning users aren't forced
-// through the full ~8s sequence on every visit. Only intro timers are pending at
-// this stage, so clearing them is safe (the video watchdog is a separate interval).
-const skipIntro = () => {
-  if (stage.value !== 'intro') return
-  timers.forEach((timer) => window.clearTimeout(timer))
-  timers.length = 0
-  narrationLine.value = ''
-  askThemePrimary()
 }
 
 const openCustomQuestionInput = ({ resetDraft = true } = {}) => {
@@ -2484,37 +2464,7 @@ onBeforeUnmount(() => {
   pointer-events: auto;
 }
 
-.oracle-intro-skip {
-  position: absolute;
-  inset: 0;
-  z-index: 8;
-  border: 0;
-  background: transparent;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 0 0 calc(env(safe-area-inset-bottom, 0px) + 120px);
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-.oracle-intro-skip__hint {
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  color: rgba(214, 225, 242, 0.55);
-  animation: oracle-intro-skip-pulse 2.6s ease-in-out infinite;
-}
-
-@keyframes oracle-intro-skip-pulse {
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 0.7; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .oracle-intro-skip__hint {
-    animation: none;
-    opacity: 0.55;
-  }
   /* Stop ambient drift/breathing for vestibular-sensitive users. */
   .oracle-smoke--one,
   .oracle-smoke--two,
