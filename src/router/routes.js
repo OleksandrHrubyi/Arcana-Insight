@@ -11,7 +11,6 @@ const routes = [
       { path: 'personal-horoscope', name: 'personalHoroscope', component: () => import('src/pages/PersonalHoroscopePage.vue'), meta: { tab: 'horoscope', hideBottomNav: true } },
       { path: 'tarot', name: 'tarot', component: () => import('src/pages/TarotPage.vue'), meta: { tab: 'tarot', hideBottomNav: true } },
       { path: 'tarot-interpretation', name: 'tarotInterpretation', component: () => import('src/pages/TarotInterpretationPage.vue'), meta: { tab: 'tarot', hideBottomNav: true } },
-      { path: 'tarot/:id', name: 'TarotResult', component: () => import('src/pages/TarotResult.vue'), meta: { tab: 'tarot', hideBottomNav: true } },
 
       { path: 'menu', name: 'menu', component: () => import('src/pages/MenuPage.vue'), meta: { tab: 'menu' } },
       { path: 'daily', name: 'daily', component: () => import('src/pages/DailyCardPage.vue'), meta: { hideBottomNav: true } },

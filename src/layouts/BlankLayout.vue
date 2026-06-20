@@ -7,7 +7,7 @@ export default {
   computed: {
     // Той самий список сторінок без навігації, що й у оригіналі.
     hideNavigation() {
-      return ['tarot', 'tarotInterpretation', 'TarotResult', 'daily'].includes(this.$route.name)
+      return ['tarot', 'tarotInterpretation', 'daily'].includes(this.$route.name)
     },
   },
   watch: {
