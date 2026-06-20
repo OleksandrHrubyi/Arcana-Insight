@@ -72,7 +72,6 @@ Typical path:
 Related depth routes:
 
 - `/tarot-interpretation`
-- `/tarot/:id`
 
 Typical path:
 

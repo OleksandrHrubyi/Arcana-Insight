@@ -13,7 +13,6 @@ These are the active page files wired into `src/router/routes.js`:
 - `src/pages/PersonalHoroscopePage.vue`
 - `src/pages/TarotPage.vue`
 - `src/pages/TarotInterpretationPage.vue`
-- `src/pages/TarotResult.vue`
 - `src/pages/MenuPage.vue`
 - `src/pages/DailyCardPage.vue`
 - `src/pages/OnboardingPage.vue`
