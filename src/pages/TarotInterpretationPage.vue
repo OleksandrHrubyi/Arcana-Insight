@@ -86,7 +86,7 @@
           </div>
         </div>
 
-        <button type="button" class="interpret-upgrade__cta" @click="openPremiumFromAha">
+        <button type="button" class="arcana-btn arcana-btn--primary" @click="openPremiumFromAha">
           {{ premiumCta }}
         </button>
       </section>
@@ -105,10 +105,10 @@
           <q-icon name="share" size="18px" />
         </button>
       </div>
-      <button type="button" class="interpret-btn interpret-btn--ghost" @click="endSession">
+      <button type="button" class="arcana-btn arcana-btn--secondary" @click="endSession">
         {{ endSessionLabel }}
       </button>
-      <button type="button" class="interpret-btn" @click="newSession">
+      <button type="button" class="arcana-btn arcana-btn--primary" @click="newSession">
         {{ newSessionLabel }}
       </button>
     </footer>
@@ -625,19 +625,6 @@ onMounted(() => {
   color: rgba(222, 234, 251, 0.9);
 }
 
-.interpret-upgrade__cta {
-  width: 100%;
-  min-height: 46px;
-  border-radius: 12px;
-  border: 1px solid rgba(168, 224, 255, 0.72);
-  padding: 11px 12px;
-  background: linear-gradient(180deg, rgba(88, 150, 231, 0.96), rgba(46, 102, 184, 0.98));
-  color: #f4f9ff;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
 .interpret-empty {
   padding: 40px 16px;
   text-align: center;
@@ -660,25 +647,6 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   gap: 10px;
-}
-
-.interpret-btn {
-  min-height: 48px;
-  border-radius: 14px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  padding: 12px 14px;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: rgba(248, 242, 232, 0.96);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
-}
-
-.interpret-btn--ghost {
-  background: rgba(8, 12, 18, 0.62);
-  border-color: rgba(156, 184, 235, 0.18);
-  color: rgba(214, 225, 242, 0.88);
 }
 
 @media (max-width: 520px) {

@@ -117,7 +117,7 @@
                   </template>
                   <div v-else-if="horoscopeLoadError" class="horoscope-error">
                     <p class="horoscope-error__text">{{ tt('common.loadError') }}</p>
-                    <button type="button" class="horoscope-error__retry" @click="retryHoroscopes">
+                    <button type="button" class="arcana-btn arcana-btn--secondary" @click="retryHoroscopes">
                       {{ tt('common.retry') }}
                     </button>
                   </div>
@@ -149,7 +149,7 @@
                   </template>
                   <div v-else-if="horoscopeLoadError" class="horoscope-error">
                     <p class="horoscope-error__text">{{ tt('common.loadError') }}</p>
-                    <button type="button" class="horoscope-error__retry" @click="retryHoroscopes">
+                    <button type="button" class="arcana-btn arcana-btn--secondary" @click="retryHoroscopes">
                       {{ tt('common.retry') }}
                     </button>
                   </div>
@@ -195,7 +195,7 @@
                   </template>
                   <div v-else-if="horoscopeLoadError" class="horoscope-error">
                     <p class="horoscope-error__text">{{ tt('common.loadError') }}</p>
-                    <button type="button" class="horoscope-error__retry" @click="retryHoroscopes">
+                    <button type="button" class="arcana-btn arcana-btn--secondary" @click="retryHoroscopes">
                       {{ tt('common.retry') }}
                     </button>
                   </div>
@@ -2270,24 +2270,6 @@ export default {
   font-size: 14px;
   line-height: 1.5;
   color: rgba(226, 232, 241, 0.78);
-}
-
-.horoscope-error__retry {
-  min-height: 40px;
-  padding: 9px 20px;
-  border-radius: 999px;
-  border: 1px solid rgba(159, 216, 246, 0.36);
-  background: rgba(159, 216, 246, 0.12);
-  color: #e9edf4;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-}
-
-.horoscope-error__retry:active {
-  transform: translateY(1px);
-  filter: saturate(0.92);
 }
 
 .horoscope-text-skeleton__line {

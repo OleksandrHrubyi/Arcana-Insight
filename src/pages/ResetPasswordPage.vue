@@ -8,7 +8,7 @@
 
     <q-form @submit.prevent="onUpdate" class="q-gutter-md">
       <q-input v-model="password" type="password" :label="tt('resetPassword.newPassword')" filled :disable="!sessionReady"/>
-      <q-btn :loading="saving" :disable="!sessionReady" type="submit" color="primary" :label="tt('common.save')"/>
+      <q-btn :loading="saving" :disable="!sessionReady" type="submit" no-caps class="reset-submit-btn" :label="tt('common.save')"/>
     </q-form>
 
     <q-banner v-if="ok" class="bg-green-2 text-green-10 q-mt-md">{{ tt('resetPassword.updated') }}</q-banner>
@@ -111,3 +111,15 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.reset-submit-btn {
+  width: 100%;
+  min-height: var(--btn-min-height);
+  border-radius: var(--btn-radius);
+  background: var(--btn-primary-bg);
+  border: 1px solid var(--btn-primary-border);
+  color: var(--btn-primary-text);
+  font-weight: 600;
+}
+</style>

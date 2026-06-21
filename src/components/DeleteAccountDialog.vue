@@ -143,8 +143,8 @@ export default defineComponent({
 }
 
 .delete-card-btn--cancel {
-  border: 1px solid rgba(156, 184, 235, 0.28);
-  color: rgba(214, 225, 242, 0.84);
+  border-color: var(--btn-secondary-border);
+  color: var(--btn-secondary-text);
   background: transparent;
 }
 

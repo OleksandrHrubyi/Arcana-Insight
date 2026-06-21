@@ -60,7 +60,7 @@
       </div>
 
       <div class="oracle-actions__footer">
-        <button type="button" class="oracle-actions__ok" @click="onClose">
+        <button type="button" class="arcana-btn arcana-btn--secondary" @click="onClose">
           {{ tt('common.close') }}
         </button>
       </div>
@@ -719,26 +719,6 @@ watch(
     0 10px 24px rgba(0, 0, 0, 0.3);
 }
 
-.oracle-actions__ok {
-  width: 100%;
-  min-height: 48px;
-  border-radius: 12px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  padding: 12px 14px;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: #e9edf4;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  box-shadow: none;
-}
-
-.oracle-actions__ok:active {
-  transform: translateY(1px);
-  border-color: rgba(156, 184, 235, 0.28);
-  filter: saturate(0.92);
-}
 
 @media (max-height: 760px) {
   .daily-main {

@@ -191,7 +191,7 @@
       <div class="rewards-actions__close-wrap">
         <button
           type="button"
-          class="rewards-actions__secondary"
+          class="arcana-btn arcana-btn--secondary"
           @click.stop.prevent="onBackClick"
         >
           {{ closeButtonLabel }}
@@ -772,26 +772,6 @@ const onBackClick = async () => {
   pointer-events: auto;
 }
 
-.rewards-actions__secondary {
-  width: 100%;
-  min-height: 48px;
-  border-radius: 12px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  padding: 12px 14px;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: #e9edf4;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  box-shadow: none;
-}
-
-.rewards-actions__secondary:active {
-  transform: translateY(1px);
-  border-color: rgba(156, 184, 235, 0.28);
-  filter: saturate(0.92);
-}
 
 .rewards-hero {
   display: grid;

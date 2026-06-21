@@ -40,7 +40,7 @@
             <span>{{ tt('readingsPage.spread5') }}</span>
           </div>
         </div>
-        <button type="button" class="readings-lock__cta" @click="goPremium">
+        <button type="button" class="arcana-btn arcana-btn--primary" @click="goPremium">
           <q-icon name="workspace_premium" size="16px" />
           <span>{{ tt('premiumAccess.cta') }}</span>
         </button>
@@ -52,7 +52,7 @@
 
       <div v-else-if="loadError" class="readings-empty">
         <div class="readings-empty__title">{{ tt('common.loadError') }}</div>
-        <button type="button" class="readings-empty__cta" @click="retryLoad">
+        <button type="button" class="arcana-btn arcana-btn--primary" @click="retryLoad">
           {{ tt('common.retry') }}
         </button>
       </div>
@@ -62,10 +62,10 @@
         <div class="readings-empty__text">
           {{ isLoggedIn ? tt('readingsPage.emptyHint') : tt('readingsPage.emptyHintNotLoggedIn') }}
         </div>
-        <button v-if="isLoggedIn" type="button" class="readings-empty__cta" @click="goToTarot">
+        <button v-if="isLoggedIn" type="button" class="arcana-btn arcana-btn--primary" @click="goToTarot">
           {{ tt('readingsPage.emptyCta') }}
         </button>
-        <button v-else type="button" class="readings-empty__cta" @click="goToLogin">
+        <button v-else type="button" class="arcana-btn arcana-btn--primary" @click="goToLogin">
           {{ tt('readingsPage.loginCta') }}
         </button>
       </div>
@@ -172,7 +172,7 @@
         </div>
 
         <div class="oracle-actions__footer">
-          <button type="button" class="oracle-actions__ok" @click="closeDetail">
+          <button type="button" class="arcana-btn arcana-btn--secondary" @click="closeDetail">
             {{ tt('common.close') }}
           </button>
         </div>
@@ -738,28 +738,6 @@ onMounted(() => {
   text-transform: uppercase;
 }
 
-.readings-lock__cta {
-  width: 100%;
-  margin-top: 6px;
-  border-radius: 14px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  padding: 14px 16px;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: #e9edf4;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: transform 180ms ease;
-}
-
-.readings-lock__cta:active {
-  transform: scale(0.98);
-}
 
 .readings-empty {
   text-align: center;
@@ -788,17 +766,6 @@ onMounted(() => {
   max-width: 280px;
 }
 
-.readings-empty__cta {
-  margin-top: 8px;
-  padding: 10px 20px;
-  border-radius: 12px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: #e9edf4;
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
 
 .readings-list {
   display: grid;
@@ -1069,20 +1036,6 @@ onMounted(() => {
     0 10px 24px rgba(0, 0, 0, 0.3);
 }
 
-.oracle-actions__ok {
-  width: 100%;
-  min-height: 48px;
-  border-radius: 12px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  padding: 12px 14px;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: #e9edf4;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  box-shadow: none;
-}
 
 .sheet-title {
   text-align: center;
@@ -1132,8 +1085,8 @@ onMounted(() => {
 }
 
 .delete-dialog__btn--cancel {
-  border: 1px solid rgba(156, 184, 235, 0.28);
-  color: rgba(214, 225, 242, 0.84);
+  border-color: var(--btn-secondary-border);
+  color: var(--btn-secondary-text);
 }
 
 .delete-dialog__btn--delete {

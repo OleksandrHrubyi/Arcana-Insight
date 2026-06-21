@@ -144,7 +144,7 @@
       <div class="energy-actions__close-wrap energy-actions__close-wrap--dock">
         <button
           type="button"
-          class="energy-actions__secondary"
+          class="arcana-btn arcana-btn--secondary"
           @click.stop.prevent="onCloseClick"
         >
           {{ tt('common.close') }}
@@ -1148,26 +1148,6 @@ const resolveStepStatusLabel = (item) => {
     0 10px 24px rgba(0, 0, 0, 0.3);
 }
 
-.energy-actions__secondary {
-  width: 100%;
-  min-height: 48px;
-  border-radius: 12px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  padding: 12px 14px;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: #e9edf4;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  box-shadow: none;
-}
-
-.energy-actions__secondary:active {
-  transform: translateY(1px);
-  border-color: rgba(156, 184, 235, 0.28);
-  filter: saturate(0.92);
-}
 
 .energy-actions__close-wrap--dock {
   background:
@@ -1360,7 +1340,7 @@ const resolveStepStatusLabel = (item) => {
   padding: 6px;
 }
 
-.energy-sheet-dock--compact .energy-actions__secondary {
+.energy-sheet-dock--compact .arcana-btn--secondary {
   min-height: 44px;
   padding: 10px 12px;
 }

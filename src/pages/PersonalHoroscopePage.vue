@@ -66,11 +66,11 @@
 
     <div class="personal-sticky">
       <div v-if="reading" class="personal-sticky__actions personal-sticky__actions--double">
-        <button type="button" class="personal-sticky__action personal-sticky__action--secondary" @click="shareReading">
+        <button type="button" class="arcana-btn arcana-btn--secondary" @click="shareReading">
           <q-icon name="ios_share" size="16px" />
           <span>{{ tt('misc.share') }}</span>
         </button>
-        <button type="button" class="personal-sticky__action personal-sticky__action--primary" :disabled="loading" @click="generate">
+        <button type="button" class="arcana-btn arcana-btn--primary" :disabled="loading" @click="generate">
           <q-icon v-if="!loading" name="refresh" size="16px" />
           <q-spinner v-else size="16px" color="white" />
           <span>{{ tt('personalHoroscope.btnRegenerate') }}</span>
@@ -78,7 +78,7 @@
       </div>
 
       <div v-else-if="hasBirthDate" class="personal-sticky__actions">
-        <button type="button" class="personal-sticky__action personal-sticky__action--primary" :disabled="loading || !profileReady" @click="generate">
+        <button type="button" class="arcana-btn arcana-btn--primary" :disabled="loading || !profileReady" @click="generate">
           <q-icon v-if="!loading" name="nightlight" size="16px" />
           <q-spinner v-else size="16px" color="white" />
           <span>{{ tt('personalHoroscope.btnGenerate') }}</span>
@@ -86,14 +86,14 @@
       </div>
 
       <div v-else-if="profileReady" class="personal-sticky__actions">
-        <button type="button" class="personal-sticky__action personal-sticky__action--primary" @click="goToBirthDateSetup">
+        <button type="button" class="arcana-btn arcana-btn--primary" @click="goToBirthDateSetup">
           <q-icon name="manage_accounts" size="16px" />
           <span>{{ tt('personalHoroscope.noBirthDateBtn') }}</span>
         </button>
       </div>
 
       <div class="sticky-purchase__close-wrap">
-        <button type="button" class="sticky-purchase__close" @click="onBack">
+        <button type="button" class="arcana-btn arcana-btn--secondary" @click="onBack">
           {{ tt('common.close') }}
         </button>
       </div>
@@ -722,39 +722,6 @@ onMounted(async () => {
   grid-template-columns: 1fr 1fr;
 }
 
-.personal-sticky__action {
-  min-height: 56px;
-  border-radius: 16px;
-  border: 1px solid rgba(141, 176, 232, 0.24);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 14px;
-  font-size: 14px;
-  font-weight: 650;
-  letter-spacing: 0.01em;
-  color: #eff6ff;
-}
-
-.personal-sticky__action--primary {
-  border: 1px solid rgba(168, 224, 255, 0.56);
-  background: linear-gradient(180deg, rgba(88, 150, 231, 0.96), rgba(46, 102, 184, 0.98));
-  box-shadow:
-    inset 0 1px 0 rgba(220, 236, 255, 0.28),
-    0 12px 22px rgba(8, 18, 34, 0.42);
-}
-
-.personal-sticky__action--secondary {
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  box-shadow: inset 0 1px 0 rgba(186, 207, 247, 0.08);
-}
-
-.personal-sticky__action:disabled {
-  opacity: 0.52;
-  pointer-events: none;
-}
-
 .sticky-purchase__close-wrap {
   padding: 8px;
   border-radius: 16px;
@@ -765,27 +732,6 @@ onMounted(async () => {
   box-shadow:
     inset 0 1px 0 rgba(186, 207, 247, 0.08),
     0 10px 24px rgba(0, 0, 0, 0.3);
-}
-
-.sticky-purchase__close {
-  width: 100%;
-  min-height: 48px;
-  border-radius: 12px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  padding: 12px 14px;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: #e9edf4;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  box-shadow: none;
-}
-
-.sticky-purchase__close:active {
-  transform: translateY(1px);
-  border-color: rgba(156, 184, 235, 0.28);
-  filter: saturate(0.92);
 }
 
 @media (min-width: 620px) {

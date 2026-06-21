@@ -270,7 +270,7 @@
               <span class="compat-unlock__row-text">{{ row.text }}</span>
             </div>
           </div>
-          <button type="button" class="compat-unlock__cta" @click="goPremium">
+          <button type="button" class="arcana-btn arcana-btn--primary" @click="goPremium">
             {{ tt('premiumAccess.cta') }}
           </button>
         </section>
@@ -287,11 +287,11 @@
         </button>
 
         <div class="compat-actions">
-          <button type="button" class="compat-action compat-action--secondary" @click="shareResult">
+          <button type="button" class="arcana-btn arcana-btn--secondary" @click="shareResult">
             <q-icon name="share" size="16px" />
             <span>{{ tt('compatibilityPage.shareCta') }}</span>
           </button>
-          <button type="button" class="compat-action compat-action--primary" @click="resetPairing">
+          <button type="button" class="arcana-btn arcana-btn--primary" @click="resetPairing">
             <q-icon name="refresh" size="16px" />
             <span>{{ tt('compatibilityPage.newPairing') }}</span>
           </button>
@@ -394,7 +394,7 @@
           <div class="compat-timeplace__hint">{{ tt('compatibilityPage.timePlaceHint') }}</div>
         </div>
 
-        <button type="button" class="compat-dobsheet__confirm" @click="confirmDob">
+        <button type="button" class="arcana-btn arcana-btn--primary" @click="confirmDob">
           {{ tt('common.save') }}
         </button>
       </div>
@@ -421,7 +421,7 @@
             @click="saveEmoji = e"
           >{{ e }}</button>
         </div>
-        <button type="button" class="compat-dobsheet__confirm" @click="confirmSaveConnection">
+        <button type="button" class="arcana-btn arcana-btn--primary" @click="confirmSaveConnection">
           {{ tt('common.save') }}
         </button>
       </div>
@@ -2213,17 +2213,6 @@ onBeforeUnmount(() => {
   color: rgba(225, 218, 200, 0.7);
 }
 
-.compat-unlock__cta {
-  margin-top: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #06131f;
-  background: #f0d2a0;
-  border: none;
-  border-radius: 999px;
-  padding: 11px 26px;
-}
-
 /* ── actions ── */
 .compat-save-btn {
   width: 100%;
@@ -2257,30 +2246,6 @@ onBeforeUnmount(() => {
   display: flex;
   gap: 10px;
   margin-top: 12px;
-}
-
-.compat-action {
-  flex: 1;
-  min-height: 52px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.compat-action--secondary {
-  border: 1px solid rgba(159, 216, 246, 0.18);
-  background: rgba(7, 14, 22, 0.45);
-  color: rgba(214, 232, 246, 0.9);
-}
-
-.compat-action--primary {
-  border: none;
-  color: #06131f;
-  background: linear-gradient(180deg, #a9d3f0, #7fb0e8);
 }
 
 .compat-disclaimer {
@@ -2389,21 +2354,6 @@ onBeforeUnmount(() => {
   color: rgba(244, 248, 255, 0.98);
   font-weight: 600;
   transform: scale(1.04);
-}
-
-.compat-dobsheet__confirm {
-  width: 100%;
-  height: 50px;
-  border-radius: 14px;
-  border: none;
-  font-size: 15px;
-  font-weight: 600;
-  color: #06131f;
-  background: linear-gradient(180deg, #a9d3f0, #7fb0e8);
-}
-
-.compat-dobsheet__confirm:disabled {
-  opacity: 0.4;
 }
 
 /* ── save-connection sheet ── */

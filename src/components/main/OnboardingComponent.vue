@@ -64,7 +64,7 @@
           {{ tt('onboardingPage.continue') }}
         </button>
         <div class="onboarding-skip-wrap">
-          <button type="button" class="onboarding-skip" :disabled="isNavigating" @click="skip">
+          <button type="button" class="arcana-btn arcana-btn--secondary" :disabled="isNavigating" @click="skip">
             {{ tt('onboardingPage.skip') }}
           </button>
         </div>
@@ -493,11 +493,10 @@ onMounted(() => {
   position: relative;
   overflow: hidden;
   min-height: 50px;
-  border: 1px solid rgba(168, 206, 242, 0.34);
+  border: 1px solid var(--btn-primary-border);
   border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(73, 110, 149, 0.98) 0%, rgba(42, 68, 95, 0.98) 58%, rgba(30, 47, 66, 0.98) 100%);
-  color: #f6faff;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.1em;
@@ -550,30 +549,9 @@ onMounted(() => {
     0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.onboarding-skip {
-  min-height: 44px;
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid rgba(156, 184, 235, 0.18);
-  padding: 10px 14px;
-  background: linear-gradient(180deg, rgba(22, 31, 49, 0.72), rgba(8, 13, 23, 0.84));
-  color: rgba(233, 237, 244, 0.82);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  box-shadow: none;
-}
-
-.onboarding-skip:active:not(:disabled) {
-  transform: translateY(1px);
-  border-color: rgba(156, 184, 235, 0.28);
-  filter: saturate(0.92);
-}
 
 .onboarding-interest:disabled,
-.onboarding-continue:disabled,
-.onboarding-skip:disabled {
+.onboarding-continue:disabled {
   opacity: 0.72;
 }
 
@@ -606,8 +584,7 @@ onMounted(() => {
 @media (prefers-reduced-motion: reduce) {
   .onboarding-progress__track span,
   .onboarding-interest,
-  .onboarding-continue,
-  .onboarding-skip {
+  .onboarding-continue {
     transition: none;
   }
 }

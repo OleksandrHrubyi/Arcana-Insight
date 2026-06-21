@@ -72,9 +72,9 @@ const goHome = () => {
 .notfound-btn {
   margin-top: 6px;
   border-radius: 12px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  color: rgba(214, 225, 242, 0.9);
-  background: rgba(10, 15, 27, 0.7);
+  border-color: var(--btn-secondary-border);
+  color: var(--btn-secondary-text);
+  background: var(--btn-secondary-bg);
   height: 44px;
   padding: 0 18px;
   letter-spacing: 0.06em;

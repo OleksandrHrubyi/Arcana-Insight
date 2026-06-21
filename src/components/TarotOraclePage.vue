@@ -111,7 +111,7 @@
         <div class="oracle-interpret__actions">
           <button
             type="button"
-            class="oracle-interpret__btn oracle-interpret__btn--ghost"
+            class="arcana-btn arcana-btn--secondary"
             :disabled="interpretationLoading"
             @click="declineInterpretation"
           >
@@ -119,7 +119,7 @@
           </button>
           <button
             type="button"
-            class="oracle-interpret__btn"
+            class="arcana-btn arcana-btn--primary"
             :disabled="interpretationLoading"
             @click="acceptInterpretation"
           >
@@ -137,12 +137,12 @@
         <div class="oracle-interpret__actions">
           <button
             type="button"
-            class="oracle-interpret__btn oracle-interpret__btn--ghost"
+            class="arcana-btn arcana-btn--secondary"
             @click="onExit"
           >
             {{ t.choices.leaveSession }}
           </button>
-          <button type="button" class="oracle-interpret__btn" @click="acceptInterpretation">
+          <button type="button" class="arcana-btn arcana-btn--primary" @click="acceptInterpretation">
             {{ t.choices.newInterpretation }}
           </button>
         </div>
@@ -206,7 +206,7 @@
           </div>
 
           <div class="oracle-actions__footer">
-            <button type="button" class="oracle-actions__ok" @click="cardPreviewOpen = false">
+            <button type="button" class="arcana-btn arcana-btn--secondary" @click="cardPreviewOpen = false">
               {{ t.ui.sheetClose }}
             </button>
           </div>
@@ -268,7 +268,7 @@
           <div class="oracle-actions__footer">
             <button
               type="button"
-              class="oracle-actions__ok"
+              class="arcana-btn arcana-btn--secondary"
               :disabled="selectedChoiceDisabled"
               @click="confirmWheelSelection"
             >
@@ -2685,28 +2685,6 @@ onBeforeUnmount(() => {
   gap: 10px;
 }
 
-.oracle-interpret__btn {
-  min-height: 44px;
-  border-radius: 12px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  padding: 10px 12px;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: var(--oracle-text-main);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.oracle-interpret__btn--ghost {
-  background: rgba(8, 12, 18, 0.62);
-  border-color: rgba(156, 184, 235, 0.18);
-  color: rgba(214, 225, 242, 0.88);
-}
-
-.oracle-interpret__btn:disabled {
-  opacity: 0.5;
-}
-
 .oracle-interpret__error {
   margin: 0;
   font-size: 12px;
@@ -3009,40 +2987,6 @@ onBeforeUnmount(() => {
   box-shadow:
     inset 0 1px 0 rgba(186, 207, 247, 0.08),
     0 10px 24px rgba(0, 0, 0, 0.3);
-}
-
-.oracle-actions__ok {
-  width: 100%;
-  min-height: 48px;
-  border-radius: 12px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  padding: 12px 14px;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: var(--oracle-text-main);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  box-shadow: none;
-  transition:
-    transform 120ms ease,
-    box-shadow 160ms ease,
-    border-color 160ms ease,
-    filter 160ms ease;
-}
-
-.oracle-actions__ok:active:not(:disabled) {
-  transform: translateY(1px);
-  border-color: rgba(156, 184, 235, 0.28);
-  filter: saturate(0.92);
-  box-shadow: none;
-}
-
-.oracle-actions__ok:disabled {
-  opacity: 0.42;
-  border-color: rgba(120, 146, 194, 0.18);
-  background: linear-gradient(180deg, rgba(20, 29, 46, 0.72), rgba(6, 10, 19, 0.82));
-  box-shadow: inset 0 1px 0 rgba(214, 229, 255, 0.08);
 }
 
 .oracle-card-preview {

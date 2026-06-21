@@ -152,7 +152,7 @@
         </button>
 
         <div class="sticky-purchase__close-wrap">
-          <button type="button" class="sticky-purchase__close" @click="onClose">
+          <button type="button" class="arcana-btn arcana-btn--secondary" @click="onClose">
             {{ tt('common.close') }}
           </button>
         </div>
@@ -1441,10 +1441,10 @@ const purchaseSubline = computed(() => {
   width: 100%;
   min-height: 68px;
   border-radius: 16px;
-  border: 1px solid rgba(168, 224, 255, 0.56);
+  border-color: var(--btn-primary-border);
   padding: 12px 14px 12px 18px;
-  background: linear-gradient(180deg, rgba(88, 150, 231, 0.96), rgba(46, 102, 184, 0.98));
-  color: #f4f9ff;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
   box-shadow:
     inset 0 1px 0 rgba(220, 236, 255, 0.28),
     0 12px 22px rgba(8, 18, 34, 0.42);
@@ -1474,7 +1474,7 @@ const purchaseSubline = computed(() => {
   font-size: 17px;
   font-weight: 700;
   letter-spacing: 0.01em;
-  color: #f4f9ff;
+  color: var(--btn-primary-text);
 }
 
 .sticky-purchase__ok-sub {
@@ -1519,27 +1519,6 @@ const purchaseSubline = computed(() => {
   box-shadow:
     inset 0 1px 0 rgba(186, 207, 247, 0.08),
     0 10px 24px rgba(0, 0, 0, 0.3);
-}
-
-.sticky-purchase__close {
-  width: 100%;
-  min-height: 48px;
-  border-radius: 12px;
-  border: 1px solid rgba(156, 184, 235, 0.36);
-  padding: 12px 14px;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  color: #e9edf4;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  box-shadow: none;
-}
-
-.sticky-purchase__close:active {
-  transform: translateY(1px);
-  border-color: rgba(156, 184, 235, 0.28);
-  filter: saturate(0.92);
 }
 
 /* ─── Media queries ───────────────────────────────────────── */

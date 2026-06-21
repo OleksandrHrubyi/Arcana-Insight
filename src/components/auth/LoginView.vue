@@ -628,20 +628,19 @@ export default {
 .no-auth-btn {
   height: 52px;
   width: 100%;
-  background: linear-gradient(180deg, rgba(28, 38, 58, 0.92), rgba(10, 15, 27, 0.98));
-  border: 1px solid rgba(156, 184, 235, 0.36);
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-border);
+  color: var(--btn-primary-text);
   border-radius: 14px;
   font-size: 14px;
   line-height: 1.4;
   font-weight: 600;
-  color: rgba(235, 242, 255, 0.96);
   letter-spacing: 0.04em;
   box-shadow: none;
   transition: all 180ms ease;
 
   &:active:not(:disabled) {
     transform: scale(0.98);
-    background: linear-gradient(180deg, rgba(32, 42, 62, 0.95), rgba(14, 19, 31, 1));
   }
 }
 
