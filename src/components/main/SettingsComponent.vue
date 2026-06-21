@@ -328,7 +328,7 @@
         </div>
 
         <div class="oracle-actions__footer">
-          <button type="button" class="arcana-btn arcana-btn--secondary" @click="confirmLanguageWheel">
+          <button type="button" class="arcana-btn arcana-btn--primary" @click="confirmLanguageWheel">
             Apply
           </button>
         </div>
@@ -367,7 +367,7 @@
         </div>
 
         <div class="oracle-actions__footer">
-          <button type="button" class="arcana-btn arcana-btn--secondary" :disabled="busy" @click="confirmTimeWheel">
+          <button type="button" class="arcana-btn arcana-btn--primary" :disabled="busy" @click="confirmTimeWheel">
             <q-spinner-dots v-if="busy" size="18px" color="white" />
             <span v-else>Apply</span>
           </button>

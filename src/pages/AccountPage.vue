@@ -100,7 +100,7 @@
       </div>
 
       <div class="oracle-actions__footer">
-        <button type="button" class="arcana-btn arcana-btn--secondary" :disabled="editSaving" @click="saveEdit">
+        <button type="button" class="arcana-btn arcana-btn--primary" :disabled="editSaving" @click="saveEdit">
           <q-spinner-dots v-if="editSaving" size="18px" color="white" />
           <span v-else>{{ tt('common.save') }}</span>
         </button>
@@ -181,7 +181,7 @@
       </div>
 
       <div class="oracle-actions__footer">
-        <button type="button" class="arcana-btn arcana-btn--secondary" :disabled="dateSaving" @click="confirmDateWheel">
+        <button type="button" class="arcana-btn arcana-btn--primary" :disabled="dateSaving" @click="confirmDateWheel">
           <q-spinner-dots v-if="dateSaving" size="18px" color="white" />
           <span v-else>{{ tt('common.save') }}</span>
         </button>

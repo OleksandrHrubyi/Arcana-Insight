@@ -268,7 +268,7 @@
           <div class="oracle-actions__footer">
             <button
               type="button"
-              class="arcana-btn arcana-btn--secondary"
+              class="arcana-btn arcana-btn--primary"
               :disabled="selectedChoiceDisabled"
               @click="confirmWheelSelection"
             >
