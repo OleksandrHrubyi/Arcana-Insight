@@ -68,7 +68,7 @@
 
         <button
           type="button"
-          class="compat-reveal"
+          class="arcana-btn arcana-btn--primary"
           :disabled="!canReveal"
           @click="reveal"
         >
@@ -1498,28 +1498,6 @@ onBeforeUnmount(() => {
 }
 
 /* ── reveal ── */
-.compat-reveal {
-  width: 100%;
-  height: 54px;
-  border-radius: 16px;
-  border: none;
-  font-size: 16px;
-  font-weight: 600;
-  color: #06131f;
-  background: linear-gradient(180deg, #a9d3f0, #7fb0e8);
-  box-shadow: 0 10px 24px rgba(127, 176, 232, 0.28);
-  transition: transform 120ms ease, opacity 160ms ease;
-}
-
-.compat-reveal:active {
-  transform: translateY(1px);
-}
-
-.compat-reveal:disabled {
-  opacity: 0.4;
-  box-shadow: none;
-}
-
 .compat-reveal__hint {
   text-align: center;
   font-size: 12px;
