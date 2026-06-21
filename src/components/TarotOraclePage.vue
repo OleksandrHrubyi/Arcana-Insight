@@ -2793,25 +2793,9 @@ onBeforeUnmount(() => {
   pointer-events: none;
 }
 
-/* Quiet sigil marker = the oracle's voice (no chat-style tail). */
-.oracle-bubble::after {
-  content: '\2726';
-  position: absolute;
-  top: -22px;
-  left: 4px;
-  font-size: 13px;
-  line-height: 1;
-  color: rgba(150, 170, 210, 0.45);
-  pointer-events: none;
-}
-
-/* When the oracle asks a clarifying question, lift the edge + marker subtly. */
+/* When the oracle asks a clarifying question, lift the edge subtly. */
 .oracle-bubble--clarify {
   --oracle-bubble-border: rgba(140, 170, 215, 0.34);
-}
-
-.oracle-bubble--clarify::after {
-  color: rgba(170, 195, 235, 0.78);
 }
 
 .oracle-bubble-fade-enter-active {
