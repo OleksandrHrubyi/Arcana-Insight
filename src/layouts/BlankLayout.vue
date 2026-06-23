@@ -22,7 +22,6 @@ export default {
         document.body.classList.remove('astro-sheet-open')
         document.body.classList.remove('settings-sheet-open')
         document.body.classList.remove('oracle-sheet-open')
-        document.body.classList.remove('energy-sheet-open')
       }
     },
   },
