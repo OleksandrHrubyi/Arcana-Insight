@@ -246,7 +246,7 @@
 - **Remaining backlog (lower value / higher risk, post-launch):**
 - `netStatus.js` is dead (no real offline detection) — wire `@capacitor/network`/`navigator.onLine` or delete.
 - `PREMIUM_MODEL_LIMITS` (`premiumModel.js:89-95`) is dead config; gating uses inline literals — wire constants or annotate (docs point to it as source of truth → drift risk).
-- `ritual-track` non-atomic point award → make transactional (mirror `ritual-claim`'s single RPC).
+- ~~`ritual-track` non-atomic point award → make transactional~~ — DONE 2026-06-23. New `ritual_award_points` RPC inserts the dedupe ledger row + bumps the balance in one plpgsql transaction (was a REST insert then a separate `ritual_apply_points` call — a crash between them lost points permanently). Verified live: idempotent, full-day bonus once, ledger sum == balance. Migrations `202606241100` + `202606241200` (out-param ambiguity fix) applied; fn deployed. (`ritual_apply_points` now unused but left in place.)
 - `delete-account` partial-deletion → retry/queue orphaned rows.
 - ~~Strip debug console.log/info~~ — DONE (was already gated; 1 ungated line removed).
 - ~~Remove stray dup files (config 2.xml, cardsV1/tarot_full.json)~~ — DONE. (Note: `src/data/cardsV1/tarot_meta.json` still present — was out of the approved deletion scope; verify unused and remove later.)
