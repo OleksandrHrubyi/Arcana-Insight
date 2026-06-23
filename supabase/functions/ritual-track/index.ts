@@ -205,48 +205,29 @@ Deno.serve(async (req) => {
     }
 
     const insertedEvent = toRows(eventUpsert.data).length > 0
-    let awardedActivityPoints = false
 
-    const activityLedgerUpsert = await restRequest({
+    // Atomic: ledger insert (dedupe) + balance bump in one transaction. Replaces
+    // the old two-step (REST ledger insert → separate ritual_apply_points), which
+    // could lose points if the function died between the steps.
+    const activityAward = await rpcRequest({
       supabaseUrl,
       serviceRole,
-      path: 'ritual_points_ledger',
-      method: 'POST',
-      query: { on_conflict: 'user_id,uniq_key' },
-      prefer: 'resolution=ignore-duplicates,return=representation',
-      body: [
-        {
-          user_id: userId,
-          reason: 'activity',
-          points: ACTIVITY_POINTS,
-          uniq_key: `activity:${activity}:${dateKey}`,
-          activity,
-          event_date: dateKey,
-          metadata: { source },
-        },
-      ],
+      name: 'ritual_award_points',
+      body: {
+        p_user_id: userId,
+        p_reason: 'activity',
+        p_points: ACTIVITY_POINTS,
+        p_uniq_key: `activity:${activity}:${dateKey}`,
+        p_activity: activity,
+        p_event_date: dateKey,
+        p_metadata: { source },
+      },
     })
-    if (!activityLedgerUpsert.ok) {
-      console.error('[ritual-track] activity_ledger_failed:', activityLedgerUpsert.status, activityLedgerUpsert.data)
+    if (!activityAward.ok) {
+      console.error('[ritual-track] activity_award_failed:', activityAward.status, activityAward.data)
       return json({ ok: false, error: 'internal_error' }, 500)
     }
-
-    if (toRows(activityLedgerUpsert.data).length > 0) {
-      const apply = await rpcRequest({
-        supabaseUrl,
-        serviceRole,
-        name: 'ritual_apply_points',
-        body: {
-          p_user_id: userId,
-          p_delta: ACTIVITY_POINTS,
-        },
-      })
-      if (!apply.ok) {
-        console.error('[ritual-track] apply_activity_points_failed:', apply.status, apply.data)
-        return json({ ok: false, error: 'internal_error' }, 500)
-      }
-      awardedActivityPoints = true
-    }
+    const awardedActivityPoints = Boolean(readSingleRow<{ awarded?: boolean }>(activityAward.data)?.awarded)
 
     const todayEventsQuery = new URLSearchParams()
     todayEventsQuery.set('select', 'activity')
@@ -278,44 +259,26 @@ Deno.serve(async (req) => {
     let streakSnapshot = await readStreak({ supabaseUrl, serviceRole, userId })
 
     if (todayTotal >= 3) {
-      const bonusLedgerUpsert = await restRequest({
+      const bonusAward = await rpcRequest({
         supabaseUrl,
         serviceRole,
-        path: 'ritual_points_ledger',
-        method: 'POST',
-        query: { on_conflict: 'user_id,uniq_key' },
-        prefer: 'resolution=ignore-duplicates,return=representation',
-        body: [
-          {
-            user_id: userId,
-            reason: 'full_day_bonus',
-            points: FULL_DAY_BONUS_POINTS,
-            uniq_key: `full:${dateKey}`,
-            activity: null,
-            event_date: dateKey,
-            metadata: { source },
-          },
-        ],
+        name: 'ritual_award_points',
+        body: {
+          p_user_id: userId,
+          p_reason: 'full_day_bonus',
+          p_points: FULL_DAY_BONUS_POINTS,
+          p_uniq_key: `full:${dateKey}`,
+          p_activity: null,
+          p_event_date: dateKey,
+          p_metadata: { source },
+        },
       })
-      if (!bonusLedgerUpsert.ok) {
-        console.error('[ritual-track] bonus_ledger_failed:', bonusLedgerUpsert.status, bonusLedgerUpsert.data)
+      if (!bonusAward.ok) {
+        console.error('[ritual-track] bonus_award_failed:', bonusAward.status, bonusAward.data)
         return json({ ok: false, error: 'internal_error' }, 500)
       }
 
-      if (toRows(bonusLedgerUpsert.data).length > 0) {
-        const applyBonus = await rpcRequest({
-          supabaseUrl,
-          serviceRole,
-          name: 'ritual_apply_points',
-          body: {
-            p_user_id: userId,
-            p_delta: FULL_DAY_BONUS_POINTS,
-          },
-        })
-        if (!applyBonus.ok) {
-          console.error('[ritual-track] apply_bonus_points_failed:', applyBonus.status, applyBonus.data)
-          return json({ ok: false, error: 'internal_error' }, 500)
-        }
+      if (readSingleRow<{ awarded?: boolean }>(bonusAward.data)?.awarded) {
         awardedFullBonus = true
 
         const streakUpsert = await upsertStreakAfterFullDay({
