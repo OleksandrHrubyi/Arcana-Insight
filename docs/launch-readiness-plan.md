@@ -241,7 +241,7 @@
 - Notes per reading + simple weekly pattern in `SavedReadingsPage` (don't add a new screen).
 
 #### LR-24 · Tech debt — S each
-- **Status:** [~] PARTIAL — 2026-06-16. Done the safe, release-relevant items; rest is backlog.
+- **Status:** [x] DONE — 2026-06-23. The 2026-06-16 safe items plus the full backlog are now cleared: dead code removed (4 files), PREMIUM_MODEL_LIMITS annotated, paywall per-month price, RitualRewards i18n migration, ritual-track atomicity, delete-account atomic deletion. tests 220/220. (Only the consciously-deferred LR-23 remains, post-launch.)
 - **Done:** Removed the one ungated debug `console.log` (`supabaseClient.ts` session-refresh success) — the rest were already DEV/DEBUG-gated (audit overcounted). Deleted two confirmed-dead duplicates (with permission): `ios/App/App/config 2.xml` and `src/data/cardsV1/tarot_full.json` (399K; `cardsV1` unreferenced, active data is `cardsV2`). tests 194/194.
 - **Remaining backlog (lower value / higher risk, post-launch):**
 - `netStatus.js` is dead (no real offline detection) — wire `@capacitor/network`/`navigator.onLine` or delete.
