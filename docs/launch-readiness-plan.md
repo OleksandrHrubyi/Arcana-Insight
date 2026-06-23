@@ -168,14 +168,14 @@
 ## P1 — SHOULD HAVE (strongly recommended before/at launch)
 
 #### ⏰ LR-25 · TURN ON server-side premium enforcement — DON'T FORGET
-- **Status:** [ ] TODO — **waiting for back-fill** (do NOT enable yet)
-- **What's already live (2026-06-23):** RevenueCat webhook → `user_entitlements` table is connected and recording every new purchase/renewal/cancellation automatically. Server check in `personal-horoscope` is **coded but dormant** behind the `RC_ENFORCE_PREMIUM` flag (currently OFF — no effect).
-- **The single remaining action:** once the table has had a few weeks to fill with real subscribers (so existing premium users have a row from a renewal event), flip the switch:
+- **Status:** [ ] TODO — **safe to enable any time** (pre-launch, zero existing subscribers → no back-fill needed)
+- **What's already live (2026-06-23):** RevenueCat webhook → `user_entitlements` table is connected and recording every purchase/renewal/cancellation automatically. Server check in `personal-horoscope` is **coded but dormant** behind the `RC_ENFORCE_PREMIUM` flag (currently OFF — no effect).
+- **The single remaining action** — flip the switch:
   ```
   supabase secrets set RC_ENFORCE_PREMIUM=true
   ```
-- **⚠️ Do NOT flip it before back-fill** — existing subscribers without a row yet would be wrongly blocked (403). Safe target: a few weeks post-launch, or after confirming the table has rows for your active subscribers.
-- **How to check the table has filled:** Supabase → Table editor → `user_entitlements` → confirm rows with `is_premium = true` exist for real users.
+- **No back-fill concern:** the app is still in development with **no existing paid users**, so there's nobody to wrongly block. (The original back-fill warning only applies once real subscribers exist.) Enabling now is even useful — a TestFlight/Sandbox purchase exercises the full chain (purchase → webhook → row → access).
+- **Only minor caveat:** a brand-new subscriber's webhook lands a few seconds after purchase, so the server may briefly (seconds) not yet know them. Negligible in practice.
 - **Optional:** `tarot-reading` can reuse the same `_shared/premium.ts` helper for a server check (one line) when you enable enforcement.
 
 #### LR-15 · Monetization analytics lifecycle events — 🟠 · M
