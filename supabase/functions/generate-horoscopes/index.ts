@@ -438,7 +438,8 @@ async function callOpenAIJsonSchema(params: {
 
   if (!resp.ok) {
     const err = await resp.text().catch(() => "");
-    throw new Error(`OpenAI error: ${resp.status} ${err}`);
+    console.error(`[generate-horoscopes] OpenAI error ${resp.status}:`, err);
+    throw new Error(`OpenAI error ${resp.status}`);
   }
 
   const data = await resp.json();
@@ -517,7 +518,8 @@ async function callOpenRouterJson(params: {
 
   if (!resp.ok) {
     const err = await resp.text().catch(() => "");
-    throw new Error(`OpenRouter error: ${resp.status} ${err}`);
+    console.error(`[generate-horoscopes] OpenRouter error ${resp.status}:`, err);
+    throw new Error(`OpenRouter error ${resp.status}`);
   }
 
   const data = await resp.json();

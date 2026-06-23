@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { createHmac } from 'node:crypto'
+import { createHmac, timingSafeEqual } from 'node:crypto'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -70,7 +70,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2')
-    const supabase = createClient(supabaseUrl, serviceRoleKey)
+    const supabase = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } })
 
     // Create or get user
     // Since Telegram doesn't provide email, we create a fake email based on Telegram ID
@@ -164,10 +164,14 @@ Deno.serve(async (req: Request) => {
     console.log('[TelegramAuth] Session created successfully')
 
     // Return session data to client
+    const u = new URL(sessionData.properties.action_link)
+    const params = new URLSearchParams(u.hash.replace(/^#/, ''))
+    const access_token = params.get('access_token') || ''
+    const refresh_token = params.get('refresh_token') || ''
     return json({
       success: true,
-      access_token: sessionData.properties.action_link.split('#access_token=')[1]?.split('&')[0],
-      refresh_token: sessionData.properties.action_link.split('&refresh_token=')[1]?.split('&')[0],
+      access_token,
+      refresh_token,
       user_id: userId,
     })
 
@@ -200,8 +204,10 @@ function verifyTelegramAuth(data: TelegramAuthData, botToken: string): boolean {
     .update(dataCheckString)
     .digest('hex')
 
-  // Compare hashes
-  return hash === data.hash
+  // Compare hashes (timing-safe)
+  const a = Buffer.from(hash)
+  const b = Buffer.from(String(data.hash || ''))
+  return a.length === b.length && timingSafeEqual(a, b)
 }
 
 function json(data: unknown, status = 200) {

@@ -367,10 +367,8 @@ Deno.serve(async (req) => {
   try {
     // simple auth for manual calls
     const adminSecret = Deno.env.get('ADMIN_PUSH_SECRET')
-    if (adminSecret) {
-      const got = req.headers.get('x-push-secret')
-      if (got !== adminSecret) return json({ error: 'Unauthorized' }, 401)
-    }
+    const got = req.headers.get('x-push-secret')
+    if (!adminSecret || got !== adminSecret) return json({ error: 'Unauthorized' }, 401)
 
     const body: ReqBody = await req.json().catch(() => ({}))
 

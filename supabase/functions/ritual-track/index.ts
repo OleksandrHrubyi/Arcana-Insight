@@ -200,15 +200,8 @@ Deno.serve(async (req) => {
       ],
     })
     if (!eventUpsert.ok) {
-      return json(
-        {
-          ok: false,
-          error: 'event_upsert_failed',
-          status: eventUpsert.status,
-          details: eventUpsert.data,
-        },
-        500,
-      )
+      console.error('[ritual-track] event_upsert_failed:', eventUpsert.status, eventUpsert.data)
+      return json({ ok: false, error: 'internal_error' }, 500)
     }
 
     const insertedEvent = toRows(eventUpsert.data).length > 0
@@ -234,15 +227,8 @@ Deno.serve(async (req) => {
       ],
     })
     if (!activityLedgerUpsert.ok) {
-      return json(
-        {
-          ok: false,
-          error: 'activity_ledger_failed',
-          status: activityLedgerUpsert.status,
-          details: activityLedgerUpsert.data,
-        },
-        500,
-      )
+      console.error('[ritual-track] activity_ledger_failed:', activityLedgerUpsert.status, activityLedgerUpsert.data)
+      return json({ ok: false, error: 'internal_error' }, 500)
     }
 
     if (toRows(activityLedgerUpsert.data).length > 0) {
@@ -256,15 +242,8 @@ Deno.serve(async (req) => {
         },
       })
       if (!apply.ok) {
-        return json(
-          {
-            ok: false,
-            error: 'apply_activity_points_failed',
-            status: apply.status,
-            details: apply.data,
-          },
-          500,
-        )
+        console.error('[ritual-track] apply_activity_points_failed:', apply.status, apply.data)
+        return json({ ok: false, error: 'internal_error' }, 500)
       }
       awardedActivityPoints = true
     }
@@ -282,15 +261,8 @@ Deno.serve(async (req) => {
       query: todayEventsQuery,
     })
     if (!todayEventsRes.ok) {
-      return json(
-        {
-          ok: false,
-          error: 'today_events_failed',
-          status: todayEventsRes.status,
-          details: todayEventsRes.data,
-        },
-        500,
-      )
+      console.error('[ritual-track] today_events_failed:', todayEventsRes.status, todayEventsRes.data)
+      return json({ ok: false, error: 'internal_error' }, 500)
     }
 
     const todayActivities = [
@@ -326,15 +298,8 @@ Deno.serve(async (req) => {
         ],
       })
       if (!bonusLedgerUpsert.ok) {
-        return json(
-          {
-            ok: false,
-            error: 'bonus_ledger_failed',
-            status: bonusLedgerUpsert.status,
-            details: bonusLedgerUpsert.data,
-          },
-          500,
-        )
+        console.error('[ritual-track] bonus_ledger_failed:', bonusLedgerUpsert.status, bonusLedgerUpsert.data)
+        return json({ ok: false, error: 'internal_error' }, 500)
       }
 
       if (toRows(bonusLedgerUpsert.data).length > 0) {
@@ -348,15 +313,8 @@ Deno.serve(async (req) => {
           },
         })
         if (!applyBonus.ok) {
-          return json(
-            {
-              ok: false,
-              error: 'apply_bonus_points_failed',
-              status: applyBonus.status,
-              details: applyBonus.data,
-            },
-            500,
-          )
+          console.error('[ritual-track] apply_bonus_points_failed:', applyBonus.status, applyBonus.data)
+          return json({ ok: false, error: 'internal_error' }, 500)
         }
         awardedFullBonus = true
 
@@ -367,15 +325,8 @@ Deno.serve(async (req) => {
           fullDateKey: dateKey,
         })
         if (!streakUpsert.ok) {
-          return json(
-            {
-              ok: false,
-              error: 'streak_upsert_failed',
-              status: streakUpsert.error?.status || 500,
-              details: streakUpsert.error?.details || null,
-            },
-            500,
-          )
+          console.error('[ritual-track] streak_upsert_failed:', streakUpsert.error?.status, streakUpsert.error?.details)
+          return json({ ok: false, error: 'internal_error' }, 500)
         }
         streakSnapshot = streakUpsert.streak
       }

@@ -72,7 +72,7 @@ Deno.serve(async (req: Request) => {
   }
 
   if (!user) {
-    return json({ error: 'Unauthorized', detail: userErr?.message || null }, 401)
+    return json({ error: 'Unauthorized' }, 401)
   }
 
   const admin = createClient(url, serviceRole, {

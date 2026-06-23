@@ -109,7 +109,8 @@ Deno.serve(async (req) => {
         if (res.status === 400 && lower.includes("user_id")) {
           return json({ ok: true, preference: null, reason: "user_id_column_missing" });
         }
-        return json({ error: "Resolve preference failed", status: res.status, body: bodyText }, 500);
+        console.error("[register-device] Resolve preference failed:", res.status, bodyText);
+        return json({ error: "device_registration_failed" }, 500);
       }
 
       const rows = await res.json().catch(() => []);
@@ -167,13 +168,15 @@ Deno.serve(async (req) => {
       if (res.status === 400 && lower.includes("user_id")) {
         res = await callUpsert(plainPayload);
       } else {
-        return json({ error: "Upsert failed", status: res.status, body: bodyText }, 500);
+        console.error("[register-device] Upsert failed (with user_id):", res.status, bodyText);
+        return json({ error: "device_registration_failed" }, 500);
       }
     }
 
     if (!res.ok) {
       const t = await res.text().catch(() => "");
-      return json({ error: "Upsert failed", status: res.status, body: t }, 500);
+      console.error("[register-device] Upsert failed:", res.status, t);
+      return json({ error: "device_registration_failed" }, 500);
     }
 
     const saved = await res.json().catch(() => []);
