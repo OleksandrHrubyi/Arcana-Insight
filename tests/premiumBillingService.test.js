@@ -288,6 +288,8 @@ test('getBillingPaywallPlans returns live plans from offerings and tolerates mal
                       storeProduct: {
                         identifier: 'arcana.premium.yearly',
                         priceString: '$39.99',
+                        price: 39.99,
+                        currencyCode: 'USD',
                         introductoryPrice: { localizedPriceString: '7 days free' },
                       },
                     },
@@ -310,12 +312,16 @@ test('getBillingPaywallPlans returns live plans from offerings and tolerates mal
           priceLabel: '$7.99',
           offerLabel: '3 days free',
           freeTrial: null,
+          pricePerMonth: null,
+          currencyCode: '',
         },
         yearly: {
           productId: 'arcana.premium.yearly',
           priceLabel: '$39.99',
           offerLabel: '7 days free',
           freeTrial: null,
+          pricePerMonth: 39.99 / 12,
+          currencyCode: 'USD',
         },
       })
 
@@ -337,4 +343,16 @@ test('premiumBilling exposes stable product id mapping helper', async () => {
     },
     { native: false, iosKey: '' },
   )
+})
+
+test('formatCurrencyAmount formats valid amounts and hides invalid input', async () => {
+  const billing = await importModule('src/services/premiumBilling.js')
+  // 39.99 / 12 = 3.3325 → rounds to 3.33 in en-US USD
+  assert.equal(billing.formatCurrencyAmount(39.99 / 12, 'USD', 'en-US'), '$3.33')
+  // Graceful empty string when it cannot format
+  assert.equal(billing.formatCurrencyAmount(null, 'USD', 'en-US'), '')
+  assert.equal(billing.formatCurrencyAmount(3.33, '', 'en-US'), '')
+  assert.equal(billing.formatCurrencyAmount(0, 'USD', 'en-US'), '')
+  assert.equal(billing.formatCurrencyAmount(NaN, 'USD', 'en-US'), '')
+  assert.equal(billing.formatCurrencyAmount(5, 'NOT_A_CURRENCY', 'en-US'), '')
 })

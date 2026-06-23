@@ -98,6 +98,9 @@
               </span>
             </span>
             <span class="plan-tile__price">{{ getPlanPriceLabel(plan.id) }}</span>
+            <span v-if="getPlanPerMonthLabel(plan.id)" class="plan-tile__permonth">{{
+              getPlanPerMonthLabel(plan.id)
+            }}</span>
             <span v-if="getPlanOfferLabel(plan.id)" class="plan-tile__saving">{{
               getPlanOfferLabel(plan.id)
             }}</span>
@@ -173,6 +176,7 @@ import {
   getBillingPaywallPlans,
   purchasePremiumPlan,
   restorePremiumPurchases,
+  formatCurrencyAmount,
 } from 'src/services/premiumBilling'
 import { PAYWALL_FUNNEL_EVENTS } from 'src/constants/analyticsEvents'
 import { analytics } from 'src/services/analytics'
@@ -194,8 +198,8 @@ const {
 // existing subscriber's actual plan.
 const selectedPlanId = ref(hasPremiumAccess.value ? premiumPlan.value : 'yearly')
 const billingCatalog = ref({
-  monthly: { priceLabel: '', offerLabel: '', freeTrial: null },
-  yearly: { priceLabel: '', offerLabel: '', freeTrial: null },
+  monthly: { priceLabel: '', offerLabel: '', freeTrial: null, pricePerMonth: null, currencyCode: '' },
+  yearly: { priceLabel: '', offerLabel: '', freeTrial: null, pricePerMonth: null, currencyCode: '' },
 })
 const isPurchasing = ref(false)
 const isRestoring = ref(false)
@@ -383,6 +387,15 @@ const getPlanOfferLabel = (planId) => {
       : tt('premiumPage.billing.freeTrial')
   }
   return String(entry?.offerLabel || '').trim()
+}
+
+// Normalized "≈ $X/mo" hint for the annual plan (helps the yearly price read as
+// cheap-per-month). Empty when the amount/currency aren't known → hidden.
+const getPlanPerMonthLabel = (planId) => {
+  const entry = billingCatalog.value?.[planId]
+  const formatted = formatCurrencyAmount(entry?.pricePerMonth, entry?.currencyCode, locale.value)
+  if (!formatted) return ''
+  return tt('premiumPage.billing.perMonth').replace('{price}', formatted)
 }
 
 const paywallSource = computed(() => {
@@ -1168,6 +1181,18 @@ const purchaseSubline = computed(() => {
 
 .plan-tile--active .plan-tile__price {
   color: rgba(250, 252, 255, 1);
+}
+
+.plan-tile__permonth {
+  font-size: 12.5px;
+  line-height: 1.3;
+  color: rgba(168, 180, 200, 0.72);
+  font-weight: 560;
+  margin-top: -2px;
+}
+
+.plan-tile--active .plan-tile__permonth {
+  color: rgba(206, 218, 236, 0.82);
 }
 
 .plan-tile__saving {

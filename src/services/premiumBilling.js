@@ -173,6 +173,46 @@ const extractFreeTrial = (pkg, product) => {
   return { days: days > 0 ? days : null }
 }
 
+// Numeric price amount in the storefront currency (RevenueCat reports a localized
+// `price` number; Android exposes `priceAmountMicros`). Returns NaN when unknown.
+const extractPriceAmount = (pkg, product) => {
+  const direct = Number(product?.price ?? pkg?.price ?? NaN)
+  if (!Number.isNaN(direct) && direct > 0) return direct
+  const micros = Number(product?.priceAmountMicros ?? pkg?.priceAmountMicros ?? NaN)
+  if (!Number.isNaN(micros) && micros > 0) return micros / 1_000_000
+  return NaN
+}
+
+const extractCurrencyCode = (pkg, product) =>
+  String(product?.currencyCode || product?.priceCurrencyCode || pkg?.currencyCode || '').trim()
+
+// Per-month equivalent for annual plans (the conversion-relevant "≈ $X/mo" hint).
+// Monthly plans return null — their price is already per-month, so the hint is
+// redundant. Returns null when the amount/period can't be resolved. The label is
+// formatted in the component, where the UI locale is known.
+const PLAN_PERIOD_MONTHS = { yearly: 12, monthly: 1 }
+const computePricePerMonth = (planId, priceAmount) => {
+  const months = PLAN_PERIOD_MONTHS[planId]
+  if (months !== 12) return null // only annual gets a normalized hint
+  if (Number.isNaN(priceAmount) || priceAmount <= 0) return null
+  return priceAmount / months
+}
+
+// Pure currency formatter (exported for tests). Returns '' when it can't format,
+// so callers can hide the hint gracefully.
+export const formatCurrencyAmount = (amount, currencyCode, locale) => {
+  if (typeof amount !== 'number' || Number.isNaN(amount) || amount <= 0) return ''
+  if (!currencyCode) return ''
+  try {
+    return new Intl.NumberFormat(locale || undefined, {
+      style: 'currency',
+      currency: currencyCode,
+    }).format(amount)
+  } catch {
+    return ''
+  }
+}
+
 const extractProductId = (pkg, product) => {
   return String(
     product?.identifier ||
@@ -389,6 +429,8 @@ export const getBillingPaywallPlans = async () => {
           priceLabel: extractPriceLabel(pkg, product),
           offerLabel: extractOfferLabel(pkg, product),
           freeTrial: extractFreeTrial(pkg, product),
+          pricePerMonth: computePricePerMonth(planId, extractPriceAmount(pkg, product)),
+          currencyCode: extractCurrencyCode(pkg, product),
         }
       }
     }
