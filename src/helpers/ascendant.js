@@ -37,7 +37,9 @@ function tzOffsetMinutes(date, tz) {
       hour: '2-digit', minute: '2-digit', second: '2-digit',
     })
     const p = dtf.formatToParts(date).reduce((acc, x) => { acc[x.type] = x.value; return acc }, {})
-    const asIfUTC = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour === 24 ? 0 : +p.hour, +p.minute, +p.second)
+    const asIfUTC = +p.hour === 24
+      ? Date.UTC(+p.year, +p.month - 1, +p.day + 1, 0, +p.minute, +p.second)
+      : Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second)
     return Math.round((asIfUTC - date.getTime()) / 60000)
   } catch {
     return 0

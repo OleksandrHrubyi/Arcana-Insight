@@ -655,6 +655,10 @@ export default {
     applyThemeFromRoute(value) {
       const nextTheme = this.normalizeRouteTheme(value)
       if (!nextTheme) return
+      if (this.isThemeLocked(nextTheme)) {
+        void this.openPremiumPaywall()
+        return
+      }
       this.themeTab = nextTheme
     },
 
@@ -1399,6 +1403,10 @@ export default {
 
     async setTheme(tab) {
       if (!tab || this.themeTab === tab) return
+      if (this.isThemeLocked(tab)) {
+        void this.openPremiumPaywall()
+        return
+      }
       this.themeTab = tab
       try {
         await Haptics.impact({ style: ImpactStyle.Light })

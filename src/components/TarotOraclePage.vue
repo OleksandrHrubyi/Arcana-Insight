@@ -1910,7 +1910,7 @@ const saveReadingToDatabase = async (interpretationData, payload) => {
       spread_type: selectedSpread.value || spreadCards.value.length,
       cards: cardsData,
       question: payload.question || null,
-      interpretation: interpretationData.interpretation || null,
+      interpretation: [interpretationData.opening, interpretationData.summary, interpretationData.advice].filter(Boolean).join('\n\n') || null,
     },
     8000,
   )

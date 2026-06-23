@@ -3,7 +3,7 @@
 import { ref } from 'vue'
 
 const DEFAULT_LOCALE = 'en'
-export const currentLocale = ref(localStorage.getItem('locale') || DEFAULT_LOCALE)
+export const currentLocale = ref((typeof localStorage !== 'undefined' && localStorage.getItem('locale')) || DEFAULT_LOCALE)
 
 export function setLocale(locale) {
   const next = locale || DEFAULT_LOCALE
