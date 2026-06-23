@@ -167,8 +167,8 @@
 
 ## P1 — SHOULD HAVE (strongly recommended before/at launch)
 
-#### ⏰ LR-25 · TURN ON server-side premium enforcement — DON'T FORGET
-- **Status:** [ ] TODO — **safe to enable any time** (pre-launch, zero existing subscribers → no back-fill needed)
+#### ⏰ LR-25 · Server-side premium enforcement — ✅ LIVE
+- **Status:** [x] DONE — 2026-06-23. `RC_ENFORCE_PREMIUM=true` set; verified live (non-premium user → `personal-horoscope` returns HTTP 403 `premium_required`). Enabled pre-launch (zero existing subscribers → no back-fill risk).
 - **What's already live (2026-06-23):** RevenueCat webhook → `user_entitlements` table is connected and recording every purchase/renewal/cancellation automatically. Server check in `personal-horoscope` is **coded but dormant** behind the `RC_ENFORCE_PREMIUM` flag (currently OFF — no effect).
 - **The single remaining action** — flip the switch:
   ```
