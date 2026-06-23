@@ -136,33 +136,21 @@ async function requestOpenAiReading({ body, apiKey, language }) {
     },
     body: JSON.stringify({
       model: OPENAI_MODEL,
+      store: false,
       input: [
-        {
-          role: 'system',
-          content: [
-            {
-              type: 'input_text',
-              text: buildSystemPrompt(language)
-            }
-          ]
-        },
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'input_text',
-              text: buildPrompt(body)
-            }
-          ]
-        }
+        { role: 'system', content: buildSystemPrompt(language) },
+        { role: 'user', content: buildPrompt(body) },
       ],
       text: {
         format: {
           type: 'json_schema',
           name: 'tarot_reading',
+          strict: true,
           schema: tarotReadingSchema(),
         }
-      }
+      },
+      temperature: 0.6,
+      max_output_tokens: 2000,
     })
   })
 
@@ -354,11 +342,14 @@ async function requestOpenAiClarify({ body, apiKey, language }) {
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: OPENAI_MODEL,
+      store: false,
       input: [
-        { role: 'system', content: [{ type: 'input_text', text: buildClarifySystemPrompt(language) }] },
-        { role: 'user', content: [{ type: 'input_text', text: buildClarifyPrompt(body) }] },
+        { role: 'system', content: buildClarifySystemPrompt(language) },
+        { role: 'user', content: buildClarifyPrompt(body) },
       ],
-      text: { format: { type: 'json_schema', name: 'tarot_clarify', schema: clarifySchema() } },
+      text: { format: { type: 'json_schema', name: 'tarot_clarify', strict: true, schema: clarifySchema() } },
+      temperature: 0.6,
+      max_output_tokens: 400,
     }),
   })
 
