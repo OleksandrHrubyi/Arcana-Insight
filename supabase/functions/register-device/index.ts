@@ -133,8 +133,41 @@ Deno.serve(async (req) => {
     if (platform !== "ios") return json({ error: "Only ios supported" }, 400);
     if (apns_env !== "sandbox" && apns_env !== "production") return json({ error: "Invalid apns_env" }, 400);
 
+    // Compute the next send time NOW (single source of truth = the DB function the
+    // push-worker also uses) so a fresh registration or a changed time/timezone
+    // schedules correctly. Without this, next_send_at stayed NULL until the first
+    // send, so push-worker fired at whatever time its cron ran (not the chosen hour),
+    // and changing the time never rescheduled. On RPC failure we omit it (push_mark_sent
+    // self-heals after the first send).
+    let nextSendAt: string | null = null;
+    if (enabled) {
+      try {
+        const rpcRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/compute_next_send_at`, {
+          method: "POST",
+          headers: {
+            apikey: SERVICE_ROLE,
+            authorization: `Bearer ${SERVICE_ROLE}`,
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            p_hour: notify_hour ?? 8,
+            p_minute: notify_minute ?? 0,
+            p_tz: tz || "UTC",
+          }),
+        });
+        if (rpcRes.ok) {
+          const v = await rpcRes.json();
+          nextSendAt = typeof v === "string" ? v : (Array.isArray(v) ? (v[0] ?? null) : null);
+        } else {
+          console.error("[register-device] compute_next_send_at failed:", rpcRes.status);
+        }
+      } catch (e) {
+        console.error("[register-device] compute_next_send_at threw:", e);
+      }
+    }
+
     const url = `${SUPABASE_URL}/rest/v1/push_devices?on_conflict=token`;
-    const payloadBase = {
+    const payloadBase: Record<string, unknown> = {
       token,
       platform,
       locale,
@@ -145,6 +178,9 @@ Deno.serve(async (req) => {
       tz,
       last_seen_at: new Date().toISOString(),
     };
+    // Only set next_send_at when we computed it, so a transient RPC failure never
+    // wipes a previously-correct schedule on re-registration.
+    if (nextSendAt) payloadBase.next_send_at = nextSendAt;
 
     const withUserPayload = authUserId ? [{ ...payloadBase, user_id: authUserId }] : null;
     const plainPayload = [payloadBase];
