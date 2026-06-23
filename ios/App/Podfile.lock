@@ -20,6 +20,8 @@ PODS:
     - Capacitor
   - CapacitorHaptics (5.0.8):
     - Capacitor
+  - CapacitorLocalNotifications (5.0.8):
+    - Capacitor
   - CapacitorPreferences (5.0.8):
     - Capacitor
   - CapacitorPushNotifications (5.1.2):
@@ -128,6 +130,7 @@ DEPENDENCIES:
   - "CapacitorFirebaseAnalytics (from `../../node_modules/@capacitor-firebase/analytics`)"
   - "CapacitorFirebaseAnalytics/Analytics (from `../../node_modules/@capacitor-firebase/analytics`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
+  - "CapacitorLocalNotifications (from `../../node_modules/@capacitor/local-notifications`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
   - "CapacitorPushNotifications (from `../../node_modules/@capacitor/push-notifications`)"
   - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
@@ -164,6 +167,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor-firebase/analytics"
   CapacitorHaptics:
     :path: "../../node_modules/@capacitor/haptics"
+  CapacitorLocalNotifications:
+    :path: "../../node_modules/@capacitor/local-notifications"
   CapacitorPreferences:
     :path: "../../node_modules/@capacitor/preferences"
   CapacitorPushNotifications:
@@ -184,6 +189,7 @@ SPEC CHECKSUMS:
   CapacitorFilesystem: afe2c055f1e379385c80eafdece32751926b2910
   CapacitorFirebaseAnalytics: 1023995c4b63c90e7dcd12f658375df38da1665d
   CapacitorHaptics: acd823c6ed0ec2cd968a09316768144b0495a1e7
+  CapacitorLocalNotifications: 73765422be07829b2d0a4c7c22a77ea2252ca210
   CapacitorPreferences: 5331d7a33044d252dcb2f7fee712f0322c04bae7
   CapacitorPushNotifications: 95dc889e9f3540e3c4f118f7ed53fd61db82100b
   CapacitorShare: 0a43832a9e09fca9ada569ee1856de75d54c61bf
@@ -200,6 +206,6 @@ SPEC CHECKSUMS:
   RevenueCat: 3d934653b7e8b09af88fd47e9e84cfaf5d0a89ba
   RevenuecatPurchasesCapacitor: 70ecf4905bbbce9b6d6bd243504a7001b6054ac0
 
-PODFILE CHECKSUM: 705475adf4e9aa50a2a2715b36361ec6bc1e914f
+PODFILE CHECKSUM: 9bdd4dc69fdb02b6bead94f992c32947b1d207ad
 
 COCOAPODS: 1.16.2

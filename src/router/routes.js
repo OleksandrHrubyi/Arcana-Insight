@@ -14,7 +14,6 @@ const routes = [
 
       { path: 'menu', name: 'menu', component: () => import('src/pages/MenuPage.vue'), meta: { tab: 'menu' } },
       { path: 'daily', name: 'daily', component: () => import('src/pages/DailyCardPage.vue'), meta: { hideBottomNav: true } },
-      { path: 'my-day', redirect: { name: 'arcana' } },
       { path: 'support', name: 'support', component: () => import('src/pages/FaqSupportPage.vue'), meta: { allowWithoutOnboarding: true } },
       { path: 'privacy-terms', name: 'privacyTerms', component: () => import('src/pages/PrivacyTermsPage.vue'), meta: { allowWithoutOnboarding: true } },
       { path: 'onboarding', name: 'onboarding', component: () => import('src/pages/OnboardingPage.vue'), meta: { hideBottomNav: true, allowWithoutOnboarding: true } },
