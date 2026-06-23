@@ -250,6 +250,7 @@
 - `delete-account` partial-deletion → retry/queue orphaned rows.
 - ~~Strip debug console.log/info~~ — DONE (was already gated; 1 ungated line removed).
 - ~~Remove stray dup files (config 2.xml, cardsV1/tarot_full.json)~~ — DONE. (Note: `src/data/cardsV1/tarot_meta.json` still present — was out of the approved deletion scope; verify unused and remove later.)
+- ~~Dead pages/components~~ — DONE 2026-06-23 (with permission): removed `MyDayPage.vue` (re-resurrected after LR-06; route + orphan `nav.myDay` i18n dropped) and `DailyRitualProgressComponent.vue` (1420-line orphan energy-sheet, last mounted in MyDayPage; rewards covered by live `RitualRewardsPage` via Menu) + their dead CSS/layout tails. **Verified orphan sweep: every page is routed, every component imported — no orphans remain.** eslint 0, tests 221/221, `quasar build` OK.
 - RitualRewards: migrate the 32 inline `locale === 'uk' ? … : …` ternaries to i18n keys (from LR-18; ~64 keys, mechanical, pure polish).
 - Normalized per-period price on paywall ("$X/month").
 - Guest purchase before login can orphan entitlement — gate purchase behind auth OR verify RC alias transfer in sandbox Test 4.
