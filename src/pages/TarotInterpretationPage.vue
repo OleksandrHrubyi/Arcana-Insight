@@ -98,9 +98,6 @@
 
     <footer class="interpret-footer">
       <div class="interpret-footer__icons">
-        <button type="button" class="interpret-icon" @click="saveReading">
-          <q-icon name="bookmark_border" size="18px" />
-        </button>
         <button type="button" class="interpret-icon" @click="shareReading">
           <q-icon name="share" size="18px" />
         </button>
@@ -118,7 +115,6 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'
 import { Share } from '@capacitor/share'
 import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
@@ -130,7 +126,6 @@ import { PAYWALL_ENTRY_POINTS, TAROT_SESSION_EVENTS } from 'src/constants/analyt
 const STORAGE_KEY = 'tarot-interpretation-v1'
 
 const router = useRouter()
-const $q = useQuasar()
 const { hasPremiumAccess } = usePremiumAccess()
 const reading = ref(null)
 const meta = ref({ themeLabel: '', subThemeLabel: '', question: '' })
@@ -253,25 +248,6 @@ const buildShareText = () => {
   })
   if (reading.value.advice) lines.push(reading.value.advice)
   return lines.join('\n')
-}
-
-const saveReading = () => {
-  if (!reading.value) return
-  void hapticTap()
-  try {
-    const raw = localStorage.getItem('tarot-saved-readings')
-    const existing = raw ? JSON.parse(raw) : []
-    existing.unshift({
-      savedAt: new Date().toISOString(),
-      reading: reading.value,
-      meta: meta.value,
-      visuals: visuals.value,
-    })
-    localStorage.setItem('tarot-saved-readings', JSON.stringify(existing.slice(0, 20)))
-    $q.notify({ message: tt('tarotInterpretation.saved'), color: 'dark' })
-  } catch (error) {
-    console.error(error)
-  }
 }
 
 const shareReading = async () => {

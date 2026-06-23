@@ -329,7 +329,7 @@
 
         <div class="oracle-actions__footer">
           <button type="button" class="arcana-btn arcana-btn--primary" @click="confirmLanguageWheel">
-            Apply
+            {{ tt('common.apply') }}
           </button>
         </div>
       </section>
@@ -369,7 +369,7 @@
         <div class="oracle-actions__footer">
           <button type="button" class="arcana-btn arcana-btn--primary" :disabled="busy" @click="confirmTimeWheel">
             <q-spinner-dots v-if="busy" size="18px" color="white" />
-            <span v-else>Apply</span>
+            <span v-else>{{ tt('common.apply') }}</span>
           </button>
         </div>
       </section>

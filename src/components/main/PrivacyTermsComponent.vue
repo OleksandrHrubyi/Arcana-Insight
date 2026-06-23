@@ -19,7 +19,7 @@
         <p class="policy-text">{{ tt('policyPage.privacyText2') }}</p>
         <p class="policy-text">{{ tt('policyPage.privacyText3') }}</p>
         <p class="policy-text">{{ tt('policyPage.privacyProcessors') }}</p>
-        <a class="policy-link" :href="privacyUrl" target="_blank" rel="noopener">
+        <a class="policy-link" :href="privacyUrl" target="_blank" rel="noopener" @click.prevent="openExternal(privacyUrl)">
           {{ tt('policyPage.privacyPolicyCta') }}
         </a>
       </section>
@@ -29,7 +29,7 @@
         <p class="policy-text">{{ tt('policyPage.termsText1') }}</p>
         <p class="policy-text">{{ tt('policyPage.termsText2') }}</p>
         <p class="policy-text">{{ tt('policyPage.termsSubscription') }}</p>
-        <a class="policy-link" :href="eulaUrl" target="_blank" rel="noopener">
+        <a class="policy-link" :href="eulaUrl" target="_blank" rel="noopener" @click.prevent="openExternal(eulaUrl)">
           {{ tt('policyPage.termsEulaCta') }}
         </a>
       </section>
@@ -66,6 +66,13 @@ const hapticTap = async () => {
   } catch (e) {
     console.error(e)
   }
+}
+
+// On iOS (WKWebView) a plain <a target="_blank"> does nothing; window.open routes
+// external https to the system browser. Works on web too. .prevent avoids double-open.
+const openExternal = (url) => {
+  if (!url) return
+  window.open(url, '_blank', 'noopener')
 }
 
 const onBack = async () => {

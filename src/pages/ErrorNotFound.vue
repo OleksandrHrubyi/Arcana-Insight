@@ -1,5 +1,5 @@
 <template>
-  <q-page class="notfound-page">
+  <div class="notfound-page">
     <div class="notfound-bg" aria-hidden="true"></div>
     <div class="notfound-content">
       <div class="notfound-title">{{ tt('common.notFoundTitle') }}</div>
@@ -12,7 +12,7 @@
         @click="goHome"
       />
     </div>
-  </q-page>
+  </div>
 </template>
 
 <script setup>
@@ -31,7 +31,7 @@ const goHome = () => {
 
 <style scoped>
 .notfound-page {
-  min-height: 100vh;
+  min-height: 100dvh;
   color: #e9edf4;
   position: relative;
   overflow: hidden;
@@ -47,7 +47,7 @@ const goHome = () => {
 .notfound-content {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   align-content: center;
   justify-items: center;

@@ -708,6 +708,7 @@ export const messages = {
     common: {
       cancel: 'Cancel',
       save: 'Save',
+      apply: 'Apply',
       close: 'Close',
       retry: 'Try again',
       loadError: 'Couldn’t load. Check your connection and try again.',
@@ -2865,6 +2866,7 @@ export const messages = {
     common: {
       cancel: 'Скасувати',
       save: 'Зберегти',
+      apply: 'Застосувати',
       close: 'Закрити',
       retry: 'Спробувати ще',
       loadError: 'Не вдалося завантажити. Перевір зʼєднання і спробуй ще.',
