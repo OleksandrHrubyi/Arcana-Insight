@@ -1,6 +1,6 @@
 const EMPTY_CATALOG = Object.freeze({
-  monthly: { priceLabel: '', offerLabel: '' },
-  yearly: { priceLabel: '', offerLabel: '' },
+  monthly: { priceLabel: '', offerLabel: '', freeTrial: null },
+  yearly: { priceLabel: '', offerLabel: '', freeTrial: null },
 })
 
 export const createEmptyBillingCatalog = () => ({
@@ -12,10 +12,12 @@ export const toBillingCatalog = (plans) => ({
   monthly: {
     priceLabel: String(plans?.monthly?.priceLabel || ''),
     offerLabel: String(plans?.monthly?.offerLabel || ''),
+    freeTrial: plans?.monthly?.freeTrial ?? null,
   },
   yearly: {
     priceLabel: String(plans?.yearly?.priceLabel || ''),
     offerLabel: String(plans?.yearly?.offerLabel || ''),
+    freeTrial: plans?.yearly?.freeTrial ?? null,
   },
 })
 

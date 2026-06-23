@@ -203,15 +203,12 @@ const resolvePlanFromCustomerInfo = (customerInfo) => {
 const resolvePremiumStatus = (customerInfo) => {
   const activeEntitlements = customerInfo?.entitlements?.active || {}
   const hasNamedEntitlement = Boolean(activeEntitlements[PREMIUM_ENTITLEMENT_ID])
-  const hasAnyPremiumEntitlement =
-    hasNamedEntitlement ||
-    Object.keys(activeEntitlements).some((key) => key.toLowerCase().includes('premium'))
 
   const activeSubscriptions = Array.isArray(customerInfo?.activeSubscriptions)
     ? customerInfo.activeSubscriptions
     : []
   const hasSubscriptionProduct = activeSubscriptions.some((productId) => Boolean(PLAN_BY_PRODUCT_ID[productId]))
-  const hasPremium = hasAnyPremiumEntitlement || hasSubscriptionProduct
+  const hasPremium = hasNamedEntitlement || hasSubscriptionProduct
 
   return {
     hasPremium,
@@ -222,7 +219,7 @@ const resolvePremiumStatus = (customerInfo) => {
 const ensureConfigured = async () => {
   if (!isNative()) return { ok: false, reason: 'not_native' }
   if (isConfigured) return { ok: true }
-  if (configureAttempted && !isConfigured) return { ok: false, reason: 'configure_failed' }
+  if (configureAttempted) return { ok: false, reason: 'configure_failed' }
 
   configureAttempted = true
   const apiKey = getRevenueCatApiKey()
