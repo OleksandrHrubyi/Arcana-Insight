@@ -5,9 +5,11 @@ export default {
   name: 'BlankLayout',
   components: { BottomNavigation },
   computed: {
-    // Той самий список сторінок без навігації, що й у оригіналі.
+    // Source of truth — meta.hideBottomNav на маршруті (routes.js). Раніше тут був
+    // жорсткий список з 3 імен, що ігнорував meta → premium / personalHoroscope /
+    // onboarding / get-started / rewards показували nav усупереч своїй meta (overlap).
     hideNavigation() {
-      return ['tarot', 'tarotInterpretation', 'daily'].includes(this.$route.name)
+      return this.$route.meta?.hideBottomNav === true
     },
   },
   watch: {
