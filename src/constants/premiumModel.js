@@ -86,6 +86,19 @@ export const PREMIUM_COMPARE_ROWS = Object.freeze([
   },
 ])
 
+// ⚠️ REFERENCE MIRROR — documentation source of truth for the premium matrix,
+// NOT read at runtime. The live gating hardcodes these same values; if you change
+// a value here you MUST change it at the mirrored call-site (and vice-versa):
+//   • freeTarotSessionsPerDay / freeTarotMaxCards (1) →
+//       TarotOraclePage.vue — `spread === 1` / `spread !== 1` (single-card = free),
+//       and `hasUsedFreeTarotToday()` (one free session/day).
+//   • premiumTarotMaxCards (5) → selectable spreads are 1 / 3 / 5 cards; premium
+//       unlocks 3- and 5-card spreads (TarotOraclePage.vue `resolveThemeSpread` /
+//       `getPositionMeaning` handle total === 3 and total === 5).
+//   • freeHoroscopeThemes (['energy']) / premiumHoroscopeThemes (['love','career']) →
+//       HoroscopeComponent.vue — `isThemeLocked('love')` / `isThemeLocked('career')`,
+//       free theme rendered as `'energy'`.
+// `tests/premiumModel.test.js` pins these values so a doc/matrix change is intentional.
 export const PREMIUM_MODEL_LIMITS = Object.freeze({
   freeTarotSessionsPerDay: 1,
   freeTarotMaxCards: 1,

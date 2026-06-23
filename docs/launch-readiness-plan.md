@@ -19,7 +19,7 @@
 - Work top-down by section: **P0 (blockers) → Apple operational → P1 → P2.**
 - Each item has a stable ID (`LR-NN`), severity, files/evidence, the fix, how to verify, effort, and a status box.
 - Update the **Status** field as you go: `[ ] TODO` → `[~] IN PROGRESS` → `[x] DONE (date + commit)`.
-- After any code change: `npm test` (221 baseline) + `npx eslint -c ./eslint.config.js <file>`; for UI use the Playwright QA screenshots (`npx playwright test --project=iphone-14 --update-snapshots`, QA route `/?qa=home`).
+- After any code change: `npm test` (219 baseline) + `npx eslint -c ./eslint.config.js <file>`; for UI use the Playwright QA screenshots (`npx playwright test --project=iphone-14 --update-snapshots`, QA route `/?qa=home`).
 - Log each day in the **Daily Progress Log** at the bottom.
 - Effort key: **S** <2h · **M** half-day · **L** 1–2 days.
 
