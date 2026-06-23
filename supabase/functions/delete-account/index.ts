@@ -81,53 +81,43 @@ Deno.serve(async (req: Request) => {
     },
   })
 
-  console.log(`[DeleteAccount] Deleting user data for: ${user.id}`)
+  console.log(`[DeleteAccount] Deleting user: ${user.id}`)
 
-  // Delete user profile data first
-  const { error: profileError } = await admin
-    .from('app_users')
-    .delete()
-    .eq('id', user.id)
-
-  if (profileError) {
-    console.error('[DeleteAccount] Failed to delete profile:', profileError)
-    // Continue anyway - auth deletion is more important
-  }
-
-  // Delete tarot reading history stored by the current app.
-  const { error: tarotReadingsError } = await admin
-    .from('tarot_readings')
-    .delete()
-    .eq('user_id', user.id)
-
-  if (tarotReadingsError) {
-    console.error('[DeleteAccount] Failed to delete tarot readings:', tarotReadingsError)
-    // Continue anyway - auth deletion remains the priority.
-  }
-
-  // Best-effort cleanup for legacy schema/table name if it still exists in some environments.
-  const { error: legacyReadingsError } = await admin
-    .from('saved_readings')
-    .delete()
-    .eq('user_id', user.id)
-
-  if (legacyReadingsError) {
-    const details = String(legacyReadingsError?.message || '').toLowerCase()
-    const missingTable =
-      details.includes('relation') ||
-      details.includes('does not exist') ||
-      details.includes('not found')
-
-    if (!missingTable) {
-      console.error('[DeleteAccount] Failed to delete legacy saved readings:', legacyReadingsError)
-    }
-  }
-
-  // Delete auth user (this will cascade to other tables if configured)
+  // Delete the auth user FIRST. Every user-data table FK-references auth.users(id)
+  // with ON DELETE CASCADE (app_users, tarot_readings, ritual_*, user_entitlements,
+  // personal_horoscopes_cache), so this removes ALL of the user's data in a single
+  // atomic transaction — we can never end up half-deleted. If it fails, nothing is
+  // removed and the client can safely retry.
   const { error: authError } = await admin.auth.admin.deleteUser(user.id)
   if (authError) {
     console.error('[DeleteAccount] Failed to delete auth user:', authError)
     return json({ error: authError.message || 'Failed to delete user' }, 400)
+  }
+
+  // Belt-and-suspenders: best-effort cleanup for any environment whose schema is
+  // missing a cascade FK. These are no-ops once the cascade has removed the rows,
+  // and they never fail the request — the account itself is already gone.
+  const cleanups: Array<readonly [string, Promise<{ error: unknown }>]> = [
+    ['app_users', admin.from('app_users').delete().eq('id', user.id)],
+    ['tarot_readings', admin.from('tarot_readings').delete().eq('user_id', user.id)],
+    ['saved_readings', admin.from('saved_readings').delete().eq('user_id', user.id)],
+  ]
+  for (const [table, op] of cleanups) {
+    try {
+      const { error } = await op
+      if (error) {
+        const details = String((error as { message?: string })?.message || '').toLowerCase()
+        const missingTable =
+          details.includes('relation') ||
+          details.includes('does not exist') ||
+          details.includes('not found')
+        if (!missingTable) {
+          console.error(`[DeleteAccount] post-delete cleanup warning (${table}):`, error)
+        }
+      }
+    } catch (cleanupErr) {
+      console.error(`[DeleteAccount] post-delete cleanup threw (${table}):`, cleanupErr)
+    }
   }
 
   console.log(`[DeleteAccount] Successfully deleted user: ${user.id}`)
