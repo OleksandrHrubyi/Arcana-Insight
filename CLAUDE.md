@@ -66,7 +66,7 @@ src/
   components/    — main/ (Landing, Horoscope, Menu…), auth/, ui/ (BottomNavigation)
   helpers/       — бізнес-логіка без UI (source-of-truth, див. таблицю вище)
   services/      — supabaseNative, analytics, premium billing
-  stores/        — Pinia (auth, premium, netStatus, appEpoch)
+  stores/        — Pinia (auth, premium, appEpoch)
   i18n/          — uk.json (основна), en.json, messages.bundle.js
   constants/     — premiumModel, premiumBilling, analyticsEvents
 supabase/functions/ — Deno Edge Functions (див. нижче)
