@@ -188,7 +188,7 @@
 - **Fix:** Add events; emit at purchase success/fail/restore in `premiumBilling`/`PremiumInfoComponent`, and on ritual completion. Retention/churn derive from Firebase + RevenueCat webhooks.
 
 #### LR-16 · Age rating decision + App Privacy questionnaire mapping — 🟠 · S
-- **Status:** [ ] TODO
+- **Status:** [~] CHEAT-SHEET READY — 2026-06-23. `app-store/asc-age-rating-and-privacy.md` has click-ready ASC answers built from the real code: **Age rating** all None/No → **4+** (Made for Kids = No); **App Privacy** = 7 data types (Name, Email, User ID, Device ID, Purchase History, Product Interaction, Other=DOB+birth-city), all **Linked=Yes / Tracking=No** (no IDFA/ATT). Filling the ASC forms = yours. **Flagged 2 gaps to close:** (a) `PrivacyInfo.xcprivacy` is missing **Device ID** (push token) — manifest must match the questionnaire; (b) tarot free-text question goes to OpenAI — confirm whether it's stored (User Content).
 - **Problem:** Metadata sets 4+ for a fortune-telling app (often lands 12+ under reviewer discretion). App Privacy "nutrition label" has no recorded data-type → answer mapping.
 - **Fix:** Consciously pick the age rating; answer the questionnaire honestly. Map: Email + DOB = "linked to you"; Firebase = Usage Data (analytics); RevenueCat = Purchases. Keep consistent with `PrivacyInfo.xcprivacy` (LR-08) and the policy.
 
