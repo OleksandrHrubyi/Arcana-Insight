@@ -19,7 +19,7 @@
 - Work top-down by section: **P0 (blockers) → Apple operational → P1 → P2.**
 - Each item has a stable ID (`LR-NN`), severity, files/evidence, the fix, how to verify, effort, and a status box.
 - Update the **Status** field as you go: `[ ] TODO` → `[~] IN PROGRESS` → `[x] DONE (date + commit)`.
-- After any code change: `npm test` (219 baseline) + `npx eslint -c ./eslint.config.js <file>`; for UI use the Playwright QA screenshots (`npx playwright test --project=iphone-14 --update-snapshots`, QA route `/?qa=home`).
+- After any code change: `npm test` (220 baseline) + `npx eslint -c ./eslint.config.js <file>`; for UI use the Playwright QA screenshots (`npx playwright test --project=iphone-14 --update-snapshots`, QA route `/?qa=home`).
 - Log each day in the **Daily Progress Log** at the bottom.
 - Effort key: **S** <2h · **M** half-day · **L** 1–2 days.
 
@@ -252,7 +252,7 @@
 - ~~Remove stray dup files (config 2.xml, cardsV1/tarot_full.json)~~ — DONE. (Note: `src/data/cardsV1/tarot_meta.json` still present — was out of the approved deletion scope; verify unused and remove later.)
 - ~~Dead pages/components~~ — DONE 2026-06-23 (with permission): removed `MyDayPage.vue` (re-resurrected after LR-06; route + orphan `nav.myDay` i18n dropped) and `DailyRitualProgressComponent.vue` (1420-line orphan energy-sheet, last mounted in MyDayPage; rewards covered by live `RitualRewardsPage` via Menu) + their dead CSS/layout tails. **Verified orphan sweep: every page is routed, every component imported — no orphans remain.** eslint 0, tests 221/221, `quasar build` OK.
 - RitualRewards: migrate the 32 inline `locale === 'uk' ? … : …` ternaries to i18n keys (from LR-18; ~64 keys, mechanical, pure polish).
-- Normalized per-period price on paywall ("$X/month").
+- ~~Normalized per-period price on paywall ("$X/month")~~ — DONE 2026-06-23. Annual tile shows "≈ $X/mo" via pure `formatCurrencyAmount` (Intl) + RC numeric price; hidden when unknown. tests 220/220.
 - Guest purchase before login can orphan entitlement — gate purchase behind auth OR verify RC alias transfer in sandbox Test 4.
 - Refactor giant components (TarotOraclePage 3185, LandingScene 3085) — maintainability only.
 - **(2026-06 bug-hunt) PersonalHoroscope AI fn is ungated** — free users can call `personal-horoscope` (gpt-4o-mini) unlimited. Decide free vs premium; add server-side rate-limit/entitlement check either way.
