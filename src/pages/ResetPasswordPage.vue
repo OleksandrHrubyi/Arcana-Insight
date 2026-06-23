@@ -94,6 +94,7 @@ export default {
     },
 
     async onUpdate () {
+      if (this.saving) return
       this.error = ''; this.ok = false; this.saving = true
       try {
       const { error } = await updateUserPasswordNative(this.password, 8000)

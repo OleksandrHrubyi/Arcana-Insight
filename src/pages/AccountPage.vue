@@ -206,6 +206,7 @@ import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import DeleteAccountDialog from 'src/components/DeleteAccountDialog.vue'
 import { useAuthStore } from 'stores/authStore.js'
+import { usePremiumAccess } from 'stores/premiumAccess.js'
 import { Preferences } from '@capacitor/preferences'
 import { useAppEpoch } from 'stores/appEpoch'
 import { resolveAccountBootstrapUser } from 'src/helpers/accountBootstrapCore.js'
@@ -223,6 +224,7 @@ export default defineComponent({
     return {
       authStore: useAuthStore(),
       appEpoch: useAppEpoch(),
+      premiumAccess: usePremiumAccess(),
       profile: {
         name: '',
         email: '',
@@ -662,6 +664,7 @@ export default defineComponent({
         console.warn('[AccountPage] signOut failed:', err)
       } finally {
         await clearStoredSession()
+        this.premiumAccess.revokePremiumAccess()
         this.authStore.clearUser()
         this.$router.replace('/menu')
         this.logoutLoading = false
@@ -685,7 +688,7 @@ export default defineComponent({
       this.deletingAccount = true
 
       try {
-        await this.ensureUser()
+        if (!await this.ensureUser()) return
         const elapsed = Date.now() - (this.appEpoch.lastBackgroundAt.value || 0)
         if (elapsed < 5000) {
           await new Promise((r) => setTimeout(r, 5000 - elapsed))
@@ -720,6 +723,7 @@ export default defineComponent({
             await Preferences.remove({ key: 'profile_cache_v1' })
             await this.authStore.clearProfileQueue()
             await clearStoredSession()
+            this.premiumAccess.revokePremiumAccess()
           } catch {
             // ignore cleanup errors
           }

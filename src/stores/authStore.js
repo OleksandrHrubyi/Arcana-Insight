@@ -1,9 +1,10 @@
-import { supabase, withAuthLock, readStoredSession } from 'src/services/supabaseClient'
+import { supabase, withAuthLock, readStoredSession, clearStoredSession } from 'src/services/supabaseClient'
 import { upsertAppUser, refreshAccessTokenNative, selectAppUser } from 'src/services/supabaseNative'
 import { Preferences } from '@capacitor/preferences'
 import { createAuthStore } from './authStoreCore'
 import { syncGuestRitualState } from 'src/helpers/ritualRewardsBackend.js'
 import { loginToRevenueCat } from 'src/services/premiumBilling.js'
+import { usePremiumAccess } from './premiumAccess.js'
 
 const authLogger = {
   log: () => {},
@@ -19,6 +20,8 @@ const store = createAuthStore({
   supabase,
   withAuthLock,
   readStoredSession,
+  clearStoredSession,
+  revokePremiumAccess: () => usePremiumAccess().revokePremiumAccess(),
   upsertAppUser,
   refreshAccessTokenNative,
   selectAppUser,

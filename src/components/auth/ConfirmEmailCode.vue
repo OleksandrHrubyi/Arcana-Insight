@@ -147,6 +147,7 @@ export default {
     },
 
     async confirm() {
+      if (this.loading) return
       this.loading = true;
       this.errorMessage = '';
 

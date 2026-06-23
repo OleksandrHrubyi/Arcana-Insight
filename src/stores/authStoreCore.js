@@ -25,6 +25,8 @@ export function createAuthStore({
   refreshAccessTokenNative,
   selectAppUser,
   preferences,
+  clearStoredSession = null,
+  revokePremiumAccess = null,
   logger = console,
   onUserAuthenticated = null,
 } = {}) {
@@ -244,6 +246,29 @@ export function createAuthStore({
               logger.warn?.('[AuthStore] onUserAuthenticated(signedIn) failed:', error)
             },
           )
+        }
+      }
+
+      if (event === 'SIGNED_OUT') {
+        state.user = null
+        try {
+          if (typeof clearStoredSession === 'function') {
+            await clearStoredSession()
+          }
+        } catch (err) {
+          logger.warn?.('[AuthStore] clearStoredSession on SIGNED_OUT failed:', err)
+        }
+        try {
+          localStorage.removeItem('profile_cache_v1')
+        } catch {
+          // ignore if localStorage unavailable
+        }
+        try {
+          if (typeof revokePremiumAccess === 'function') {
+            revokePremiumAccess()
+          }
+        } catch (err) {
+          logger.warn?.('[AuthStore] revokePremiumAccess on SIGNED_OUT failed:', err)
         }
       }
     })
