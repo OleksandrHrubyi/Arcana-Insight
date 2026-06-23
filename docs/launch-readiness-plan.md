@@ -130,14 +130,14 @@
 ### Apple operational (P0 — external/process, gate submission)
 
 #### LR-12 · Run real-device iOS sandbox IAP flow + fill report — 🔴 · M
-- **Status:** [ ] TODO
+- **Status:** [~] CORE VERIFIED — 2026-06-23. Real-device sandbox purchase **succeeded** (catalog loaded, paywall rendered plans, "Premium Yearly $29.99" purchase → "Готово! Покупку завершено [Sandbox]"). **Full server chain confirmed live:** the purchase auto-created a `user_entitlements` row (`82c22a79-…`, `is_premium=true`, `arcana.premium.yearly`, event `RENEWAL`) — i.e. real device → RC → webhook → DB → enforcement all work end-to-end. **Still worth running** (remaining runbook checks): restore-purchases, cancel, entitlement-survives-app-restart, negative-restore (non-subscriber). Confirm prod `VITE_RC_IOS_API_KEY` in release env.
 - **Files:** `docs/release-reviewer/references/ios-sandbox-billing-report.md` (all checks `pending`); runbook `docs/release-reviewer/references/ios-sandbox-billing-runbook.md`.
 - **Problem:** Apple tests IAP during review. Catalog load / purchase / restore / cancel / entitlement-survives-restart / negative-restore all unrun. Highest reject probability.
 - **Fix:** On a real device with a sandbox account, run the runbook; record pass/fail per check. Confirm prod `VITE_RC_IOS_API_KEY` in the release env.
 - **Verify:** Report filled, all checks pass.
 
 #### LR-13 · App Store Connect: create/approve subscriptions + RC offering — 🔴 · S/M (+Apple time)
-- **Status:** [ ] TODO (external)
+- **Status:** [~] WIRED & TESTABLE — 2026-06-23. Subscriptions exist in ASC and are connected to the RC offering: sandbox purchase of "Premium Yearly $29.99" routed through RevenueCat successfully (see LR-12). **Remaining:** confirm each subscription reaches ASC state **"Ready to Submit"** / approved for production (the sandbox tile showed `UNRATED`), and that they're attached to the app version submission.
 - **Evidence:** Product IDs `arcana.premium.monthly` / `arcana.premium.yearly`, entitlement `premium` (`src/constants/premiumBilling.js:1-11`).
 - **Fix:** In ASC create both auto-renewable subscriptions (localized name, price, review screenshot), attach to the first build submission. In RevenueCat: "current" offering must expose both packages with the `premium` entitlement attached.
 - **Verify:** Products "Ready to Submit"; RC offering returns both packages on device (ties to LR-12).
