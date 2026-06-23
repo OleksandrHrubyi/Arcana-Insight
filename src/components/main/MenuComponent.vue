@@ -280,6 +280,7 @@ export default defineComponent({
       },
       { key: 'readings', labelKey: 'nav.readings', icon: 'history', routeName: 'readings' },
       { key: 'zodiacGuide', labelKey: 'nav.zodiacGuide', icon: 'stars', routeName: 'zodiacGuide' },
+      { key: 'personalHoroscope', labelKey: 'nav.personalHoroscope', icon: 'nightlight', routeName: 'personalHoroscope' },
       { key: 'rewards', labelKey: 'nav.rewards', icon: 'redeem', routeName: 'ritualRewards' },
       { key: 'premium', labelKey: 'nav.premium', icon: 'workspace_premium', routeName: 'premium' },
     ]
