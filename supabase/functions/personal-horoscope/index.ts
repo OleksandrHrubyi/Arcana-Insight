@@ -1,5 +1,6 @@
 // supabase/functions/personal-horoscope/index.ts
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { isUserPremium, premiumEnforcementEnabled } from "../_shared/premium.ts";
 
 const SIGNS = [
   "aries","taurus","gemini","cancer","leo","virgo",
@@ -382,6 +383,13 @@ Deno.serve(async (req) => {
     // --- load user profile ---
     const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const adminClient = createClient(supabaseUrl, serviceRole, { auth: { persistSession: false } });
+
+    // --- server-side premium gate (personal horoscope is Premium-only) ---
+    // Opt-in via RC_ENFORCE_PREMIUM so it can ship before the webhook back-fills
+    // existing subscribers (otherwise paying users with no row yet would get 403).
+    if (premiumEnforcementEnabled() && !(await isUserPremium(adminClient, user.id))) {
+      return json({ ok: false, error: "premium_required" }, 403);
+    }
 
     const { data: profile } = await adminClient
       .from("app_users")
