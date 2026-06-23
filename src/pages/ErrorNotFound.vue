@@ -72,7 +72,7 @@ const goHome = () => {
 .notfound-btn {
   margin-top: 6px;
   border-radius: 12px;
-  border-color: var(--btn-secondary-border);
+  border: 1px solid var(--btn-secondary-border);
   color: var(--btn-secondary-text);
   background: var(--btn-secondary-bg);
   height: 44px;

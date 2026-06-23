@@ -650,7 +650,7 @@ export default {
   height: 52px;
   width: 100%;
   background: var(--btn-primary-bg);
-  border-color: var(--btn-primary-border);
+  border: 1px solid var(--btn-primary-border);
   color: var(--btn-primary-text);
   border-radius: 14px;
   font-size: 14px;

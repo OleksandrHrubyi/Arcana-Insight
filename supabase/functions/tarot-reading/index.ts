@@ -43,8 +43,8 @@ Deno.serve(async (req: Request) => {
   try {
     const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2')
     const supabase = createClient(
-      Deno.env.get('URL')!,
-      Deno.env.get('ANON_KEY')!,
+      Deno.env.get('SUPABASE_URL') ?? Deno.env.get('URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY') ?? Deno.env.get('ANON_KEY')!,
       { global: { headers: { Authorization: auth } } }
     )
     const { data: { user } } = await supabase.auth.getUser()

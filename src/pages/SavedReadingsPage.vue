@@ -1085,7 +1085,7 @@ onMounted(() => {
 }
 
 .delete-dialog__btn--cancel {
-  border-color: var(--btn-secondary-border);
+  border: 1px solid var(--btn-secondary-border);
   color: var(--btn-secondary-text);
 }
 

@@ -610,6 +610,19 @@ const t = computed(() => {
       ok: '',
       start: '',
     },
+    ui: {
+      ariaTouchDeck: '', ariaExit: '', ariaBack: '', sheetCard: '', sheetClose: '',
+      loadingBase: '', readingReady: '', declinedHint: '', aiFallbackNotify: '',
+      reversedSuffix: '', reversedTag: '', cardN: '', roleCore: '',
+      rewardBadge: '', clarifyThinking: '', clarifySkip: '',
+      summaryLine: '', summarySubthemeLine: '',
+      basicTitle: '', basicOpening: '', basicFocus: '',
+      premiumKeywords: '', premiumActionFocus: '', premiumRecurring: '',
+      premiumDefaultFocus: '', premiumOpeningUnavailable: '', premiumOpeningFocus: '',
+      premiumAdvice: '', premiumTitle: '',
+      histTheme: '', histSubtheme: '', histQuestion: '', histSpread: '',
+      roles3: [], roles5: [], spreadLabels: {},
+    },
   }
 })
 

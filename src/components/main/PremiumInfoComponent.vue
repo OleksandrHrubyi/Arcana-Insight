@@ -1441,7 +1441,7 @@ const purchaseSubline = computed(() => {
   width: 100%;
   min-height: 68px;
   border-radius: 16px;
-  border-color: var(--btn-primary-border);
+  border: 1px solid var(--btn-primary-border);
   padding: 12px 14px 12px 18px;
   background: var(--btn-primary-bg);
   color: var(--btn-primary-text);
