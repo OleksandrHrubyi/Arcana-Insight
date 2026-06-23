@@ -204,7 +204,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { currentLocale } from 'src/i18n'
+import { currentLocale, t } from 'src/i18n'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from 'stores/authStore.js'
 import { computeLocalRitualPoints } from 'src/helpers/dailyRitual'
@@ -222,6 +222,7 @@ import {
 const router = useRouter()
 const authStore = useAuthStore()
 const locale = computed(() => currentLocale.value || 'en')
+const tt = (key) => t(locale.value, key)
 const nowTick = ref(Date.now())
 const remoteDashboard = ref(null)
 const localPoints = ref(computeLocalRitualPoints(new Date()))
@@ -255,10 +256,10 @@ const notifyDashboardSyncFailed = () => {
   $q.notify({
     type: 'warning',
     position: 'top',
-    message: locale.value === 'uk' ? 'Не вдалося синхронізувати нагороди.' : 'Couldn’t sync rewards.',
+    message: tt('ritualRewards.syncFailed'),
     actions: [
       {
-        label: locale.value === 'uk' ? 'Ще раз' : 'Retry',
+        label: tt('common.retry'),
         color: 'white',
         handler: async () => {
           const ok = await refreshRemoteDashboard(true)
@@ -400,22 +401,12 @@ const unlockedByPointsCount = computed(() =>
   rewardCatalog.value.filter((reward) => Math.max(0, Number(reward.costPoints || 0) || 0) <= pointsBalance.value).length,
 )
 const claimableCount = computed(() => rewardCatalog.value.filter((reward) => reward.canClaim).length)
-const filterOptions = computed(() => {
-  if (locale.value === 'uk') {
-    return [
-      { key: 'all', label: 'Усі' },
-      { key: 'tarot', label: 'Таро' },
-      { key: 'horoscope', label: 'Гороскоп' },
-      { key: 'profile', label: 'Профіль' },
-    ]
-  }
-  return [
-    { key: 'all', label: 'All' },
-    { key: 'tarot', label: 'Tarot' },
-    { key: 'horoscope', label: 'Horoscope' },
-    { key: 'profile', label: 'Profile' },
-  ]
-})
+const filterOptions = computed(() => [
+  { key: 'all', label: tt('ritualRewards.filterAll') },
+  { key: 'tarot', label: tt('ritualRewards.filterTarot') },
+  { key: 'horoscope', label: tt('ritualRewards.filterHoroscope') },
+  { key: 'profile', label: tt('ritualRewards.filterProfile') },
+])
 
 const filteredRewards = computed(() => {
   if (rewardFilter.value === 'all') return rewardCatalog.value
@@ -429,57 +420,36 @@ const lockedRewards = computed(() =>
     .sort(compareNonClaimableRewards),
 )
 
-const heroEyebrow = computed(() =>
-  locale.value === 'uk' ? 'Mystic ritual economy' : 'Mystic ritual economy',
-)
-const heroTitle = computed(() =>
-  locale.value === 'uk' ? 'Усі бонуси та прайси' : 'All bonuses and pricing',
-)
-const heroSubtitle = computed(() =>
-  locale.value === 'uk'
-    ? 'Тут видно, скільки коштує кожна нагорода та скільки ще потрібно балів.'
-    : 'See exact reward prices and how many points you still need.',
-)
+const heroEyebrow = computed(() => tt('ritualRewards.heroEyebrow'))
+const heroTitle = computed(() => tt('ritualRewards.heroTitle'))
+const heroSubtitle = computed(() => tt('ritualRewards.heroSubtitle'))
 const thresholdLine = computed(() => {
   if (nextRewardCost.value > 0) {
-    if (locale.value === 'uk') {
-      return `Наступний поріг: ${nextRewardCost.value} pts`
-    }
-    return `Next threshold: ${nextRewardCost.value} pts`
+    return tt('ritualRewards.thresholdNext').replace('{points}', String(nextRewardCost.value))
   }
-  return locale.value === 'uk'
-    ? 'Усі нагороди вже доступні за балансом.'
-    : 'All rewards are already affordable.'
+  return tt('ritualRewards.thresholdAllAffordable')
 })
-const thresholdLabel = computed(() =>
-  locale.value === 'uk' ? 'Статус прогресу' : 'Progress status',
-)
+const thresholdLabel = computed(() => tt('ritualRewards.thresholdLabel'))
 const progressLine = computed(() =>
-  locale.value === 'uk'
-    ? `Зібрано ${pointsBalance.value} з ${totalCatalogPoints.value} pts`
-    : `Collected ${pointsBalance.value} of ${totalCatalogPoints.value} pts`,
+  tt('ritualRewards.progressLine')
+    .replace('{collected}', String(pointsBalance.value))
+    .replace('{total}', String(totalCatalogPoints.value)),
 )
 const unlockedByPointsLabel = computed(() =>
-  locale.value === 'uk'
-    ? `Відкрито: ${unlockedByPointsCount.value}/${rewardCatalog.value.length}`
-    : `Unlocked: ${unlockedByPointsCount.value}/${rewardCatalog.value.length}`,
+  tt('ritualRewards.unlockedByPoints')
+    .replace('{unlocked}', String(unlockedByPointsCount.value))
+    .replace('{total}', String(rewardCatalog.value.length)),
 )
 const claimableNowLabel = computed(() =>
-  locale.value === 'uk'
-    ? `До клейму зараз: ${claimableCount.value}`
-    : `Claimable now: ${claimableCount.value}`,
+  tt('ritualRewards.claimableNow').replace('{count}', String(claimableCount.value)),
 )
-const availableTitle = computed(() => (locale.value === 'uk' ? 'Доступно зараз' : 'Available now'))
-const lockedTitle = computed(() => (locale.value === 'uk' ? 'Заблоковано' : 'Locked'))
-const emptyFilterLabel = computed(() =>
-  locale.value === 'uk'
-    ? 'У цій категорії поки немає бонусів.'
-    : 'No rewards in this category yet.',
-)
+const availableTitle = computed(() => tt('ritualRewards.availableTitle'))
+const lockedTitle = computed(() => tt('ritualRewards.lockedTitle'))
+const emptyFilterLabel = computed(() => tt('ritualRewards.emptyFilter'))
 const skeletonCards = [1, 2, 3]
-const closeButtonLabel = computed(() => (locale.value === 'uk' ? 'Закрити' : 'Close'))
-const claimNowLabel = computed(() => (locale.value === 'uk' ? 'Забрати' : 'Claim'))
-const claimInProgressLabel = computed(() => (locale.value === 'uk' ? 'Обробка' : 'Claiming'))
+const closeButtonLabel = computed(() => tt('common.close'))
+const claimNowLabel = computed(() => tt('ritualRewards.claimNow'))
+const claimInProgressLabel = computed(() => tt('ritualRewards.claimInProgress'))
 
 const resolveRewardItemTitle = (reward) => {
   const titleUk = String(reward?.titleUk || '').trim()
@@ -520,32 +490,19 @@ const resolveRewardFilterGroup = (reward) => {
 
 const resolveRewardCategoryLabel = (reward) => {
   const group = resolveRewardFilterGroup(reward)
-  if (locale.value === 'uk') {
-    if (group === 'tarot') return 'Таро'
-    if (group === 'horoscope') return 'Гороскоп'
-    if (group === 'profile') return 'Профіль'
-    return 'Нагорода'
-  }
-  if (group === 'tarot') return 'Tarot'
-  if (group === 'horoscope') return 'Horoscope'
-  if (group === 'profile') return 'Profile'
-  return 'Reward'
+  if (group === 'tarot') return tt('ritualRewards.filterTarot')
+  if (group === 'horoscope') return tt('ritualRewards.filterHoroscope')
+  if (group === 'profile') return tt('ritualRewards.filterProfile')
+  return tt('ritualRewards.categoryFallback')
 }
 
 const resolveRewardItemSubtitle = (reward) => {
   const key = String(reward?.key || '')
-  if (locale.value === 'uk') {
-    if (key === RITUAL_REWARD_KEYS.extraTarotSpread) return 'Додатковий преміум розклад'
-    if (key === RITUAL_REWARD_KEYS.horoscopeLoveUnlock24h) return 'Секція Love на 24 год'
-    if (key === RITUAL_REWARD_KEYS.horoscopeCareerUnlock24h) return 'Секція Career на 24 год'
-    if (key === RITUAL_REWARD_KEYS.mysticBadge) return 'Колекційний бейдж профілю'
-    return 'Нагорода ритуалу'
-  }
-  if (key === RITUAL_REWARD_KEYS.extraTarotSpread) return 'Extra premium spread'
-  if (key === RITUAL_REWARD_KEYS.horoscopeLoveUnlock24h) return 'Love section for 24h'
-  if (key === RITUAL_REWARD_KEYS.horoscopeCareerUnlock24h) return 'Career section for 24h'
-  if (key === RITUAL_REWARD_KEYS.mysticBadge) return 'Collectible profile badge'
-  return 'Ritual reward'
+  if (key === RITUAL_REWARD_KEYS.extraTarotSpread) return tt('ritualRewards.subtitleExtraTarotSpread')
+  if (key === RITUAL_REWARD_KEYS.horoscopeLoveUnlock24h) return tt('ritualRewards.subtitleLoveUnlock')
+  if (key === RITUAL_REWARD_KEYS.horoscopeCareerUnlock24h) return tt('ritualRewards.subtitleCareerUnlock')
+  if (key === RITUAL_REWARD_KEYS.mysticBadge) return tt('ritualRewards.subtitleMysticBadge')
+  return tt('ritualRewards.subtitleFallback')
 }
 
 const resolveRewardItemStatus = (reward) => {
@@ -560,7 +517,7 @@ const resolveRewardItemStatus = (reward) => {
   if (reward?.canClaim) {
     return {
       tone: 'available',
-      label: locale.value === 'uk' ? 'Готово до клейму' : 'Ready to claim',
+      label: tt('ritualRewards.statusReadyToClaim'),
     }
   }
 
@@ -568,34 +525,31 @@ const resolveRewardItemStatus = (reward) => {
     if (TIMED_UNLOCK_KEYS.has(String(reward?.key || ''))) {
       return {
         tone: 'active',
-        label: locale.value === 'uk' ? 'Активно 24г' : 'Active 24h',
+        label: tt('ritualRewards.statusActive24h'),
       }
     }
     if (String(reward?.key || '') === RITUAL_REWARD_KEYS.extraTarotSpread) {
       return {
         tone: 'active',
-        label: locale.value === 'uk' ? 'Токен в інвентарі' : 'Token in inventory',
+        label: tt('ritualRewards.statusTokenInInventory'),
       }
     }
     return {
       tone: 'active',
-      label: locale.value === 'uk' ? 'Вже отримано' : 'Owned',
+      label: tt('ritualRewards.statusOwned'),
     }
   }
 
   if (shortfall > 0) {
     return {
       tone: 'locked',
-      label:
-        locale.value === 'uk'
-          ? `Потрібно ще ${shortfall} pts`
-          : `Need ${shortfall} more pts`,
+      label: tt('ritualRewards.statusNeedMore').replace('{points}', String(shortfall)),
     }
   }
 
   return {
     tone: 'locked',
-    label: locale.value === 'uk' ? 'Недоступно' : 'Unavailable',
+    label: tt('ritualRewards.statusUnavailable'),
   }
 }
 
@@ -635,9 +589,9 @@ const resolveRewardActionLabel = (reward) => {
   if (reward?.canClaim) return claimNowLabel.value
   const status = resolveRewardItemStatus(reward)
   if (status.tone === 'active') {
-    return locale.value === 'uk' ? 'Активно' : 'Active'
+    return tt('ritualRewards.actionActive')
   }
-  return locale.value === 'uk' ? 'Недоступно' : 'Locked'
+  return tt('ritualRewards.actionLocked')
 }
 
 const resolveRewardActionIcon = (reward) => {
@@ -651,12 +605,12 @@ const resolveRewardActionIcon = (reward) => {
 const resolveClaimErrorMessage = (error) => {
   const code = String(error?.message || error || '').toLowerCase()
   if (code.includes('insufficient_points')) {
-    return locale.value === 'uk' ? 'Недостатньо балів для клейму.' : 'Not enough points to claim.'
+    return tt('ritualRewards.claimErrorInsufficient')
   }
   if (code.includes('already_owned')) {
-    return locale.value === 'uk' ? 'Цю нагороду вже отримано.' : 'This reward is already owned.'
+    return tt('ritualRewards.claimErrorAlreadyOwned')
   }
-  return locale.value === 'uk' ? 'Не вдалося забрати нагороду.' : 'Failed to claim reward.'
+  return tt('ritualRewards.claimErrorGeneric')
 }
 
 const onClaimRewardClick = async (reward) => {
@@ -684,10 +638,7 @@ const onClaimRewardClick = async (reward) => {
       claimFeedback.value = {
         key: String(reward.key),
         tone: 'success',
-        message:
-          locale.value === 'uk'
-            ? 'Нагороду успішно додано в інвентар.'
-            : 'Reward claimed and added to inventory.',
+        message: tt('ritualRewards.claimSuccess'),
       }
       refreshLocalState()
       await refreshRemoteDashboard(true)
