@@ -5,10 +5,24 @@
 > Pairs with: `docs/screen-status.md`, `docs/release-reviewer/references/launch-checklist.md`, `docs/release-reviewer/references/ios-sandbox-billing-report.md`.
 
 ## Current status
-- **Readiness: 74 / 100.** Verdict: **B — Release After Fixes** (not architectural; ~1 week of focused work).
-- **Biggest reject risk:** Apple tests the in-app purchase during review and IAP is unverified.
+- **Readiness: ~92 / 100 (2026-06-23). Code-complete** — every code/backend item is done & verified live; only Apple-operational steps remain (see "REMAINING TO SUBMIT" below). Original 2026-06-16 verdict was "74/100 · B — Release After Fixes".
+- **Biggest reject risk:** ~~IAP unverified~~ → **resolved**: real-device sandbox purchase succeeded end-to-end (RC → webhook → entitlement). Residual: finish the 4 sandbox runbook checks (LR-12).
 - **Target submission:** ~10–14 calendar days from 2026-06-16 (dev + sandbox + screenshots + ASC product approval). In-Store ~2–2.5 weeks.
 - **2026-06 follow-up pass (post-plan, merged to `main` + deployed):** full tarot deep-audit (security: `tarot-reading` now auth-required; reliability; analytics funnel), tarot "real-session" depth (explained/theme-matched positions, woven AI narrative, adaptive clarifying question), oracle-dialogue redesign, a **unified app-wide button system** (`.arcana-btn` tokens), and a multi-agent **bug-hunt** (edge security hardening, billing/auth premium-leak fixes, error-leak removal). 7 edge functions deployed; **AI tarot verified live end-to-end**. Tests 194→**221**. This raised code-health/stability/UX but **does not change the submission gate** — remaining blockers are Apple-operational (LR-12/13/14/16 + LR-11 URL check), all yours.
+
+### 🚀 REMAINING TO SUBMIT (as of 2026-06-23) — all Apple-operational, ~40 min of your action
+
+> **Code/backend is 100% done & verified.** Nothing below is a code task — it's clicks in App Store Connect / on your device. Each is prepped; details in the linked LR item.
+
+- [ ] **LR-12 — On-device sandbox checks (~10 min).** Purchase already works. On a real device + sandbox account, run the remaining 4: **Restore Purchases**, **Cancel subscription**, **entitlement survives app restart**, **Restore as non-subscriber (negative)**. Runbook: `docs/release-reviewer/references/ios-sandbox-billing-runbook.md`; record results in `…/ios-sandbox-billing-report.md`. Confirm prod `VITE_RC_IOS_API_KEY` in the release env.
+- [ ] **LR-13 — Subscriptions "Ready to Submit" in ASC (~5 min).** Both subs exist & route through RevenueCat. In ASC confirm each subscription is in state **Ready to Submit** (the sandbox tile showed `UNRATED`) and **attached to the app version** you submit.
+- [ ] **LR-14 — Upload screenshots (~15 min).** Raw set is generated and on disk (tooling committed). Review, optionally polish, and **upload to ASC**.
+- [ ] **LR-16 — Fill Age Rating + App Privacy forms (~10 min).** Click-ready answers in **`app-store/asc-age-rating-and-privacy.md`** (Age rating → **4+**; App Privacy → 8 data types, all Linked / no Tracking). Manifest already matches. Just transcribe into ASC.
+- [ ] **Submit for review** → Apple review ~1–2 weeks.
+
+**Deferred (NOT a blocker):** LR-23 tarot journal/patterns — post-launch (needs real user history + a `note` DB column).
+
+**Rollout reminder (post-launch, optional):** LR-25 server premium enforcement is already LIVE (`RC_ENFORCE_PREMIUM=true`). Nothing to do.
 
 ### Launch Readiness Scorecard (1–10)
 | Product | UX | UI | Stability | Performance | Security | Monetization | ASO | Compliance |
