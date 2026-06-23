@@ -406,7 +406,7 @@ function goToBirthDateSetup() {
 // while on this screen, regenerate so the text matches the new language
 // (mirrors the daily horoscope screen's locale watcher).
 watch(locale, () => {
-  if (hasBirthDate.value && !loading.value) {
+  if (hasPremiumAccess.value && hasBirthDate.value && !loading.value) {
     void generate()
   }
 })
@@ -418,6 +418,12 @@ onMounted(async () => {
   } finally {
     profileReady.value = true
   }
+
+  // Non-premium users see the lock panel — do NOT auto-generate, which calls
+  // goPremium() and bounces back to /premium, creating a redirect loop (back/close
+  // from the paywall returned here and re-redirected). The "Unlock Premium" CTA is
+  // the only path to the paywall.
+  if (!hasPremiumAccess.value) return
 
   if (!hasBirthDate.value) return
 

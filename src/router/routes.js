@@ -3,7 +3,7 @@ const routes = [
     path: '/',
     component: () => import('src/layouts/BlankLayout.vue'),
     children: [
-      { path: '', name: 'arcana', component: () => import('src/pages/GetStartedPage.vue'), meta: { tab: 'arcana', hideBottomNav: true } },
+      { path: '', name: 'arcana', component: () => import('src/pages/GetStartedPage.vue'), meta: { tab: 'arcana' } },
       { path: 'login', name: 'login', component: () => import('src/pages/LoginPage.vue'), meta: { allowWithoutOnboarding: true } },
       { path: 'sign-up', name: 'signUp', component: () => import('src/pages/SignUpPage.vue'), meta: { allowWithoutOnboarding: true } },
       { path: 'confirm-code', component: () => import('src/pages/ConfirmEmailCodePage.vue'), meta: { hideBottomNav: true, allowWithoutOnboarding: true } },

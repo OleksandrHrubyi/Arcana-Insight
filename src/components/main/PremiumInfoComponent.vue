@@ -533,6 +533,12 @@ const markBillingReady = () => {
 }
 
 const onPurchase = async () => {
+  // Already Premium (incl. just-completed purchase): the button is a "done" action,
+  // never a re-purchase — re-buying here let the user open and then cancel the IAP.
+  if (hasPremiumAccess.value) {
+    await onClose()
+    return
+  }
   if (isBillingActionPending.value || !billingReady.value) {
     if (!billingReady.value) {
       $q.notify({
@@ -750,12 +756,16 @@ const selectedHasTrial = computed(() => detectTrialOffer(selectedPlanId.value))
 
 const purchaseButtonLabel = computed(() => {
   if (isPurchasing.value) return tt('premiumPage.billing.processing')
+  if (hasPremiumAccess.value) return tt('premiumPage.billing.premiumActive')
   return selectedHasTrial.value
     ? tt('premiumPage.billing.trialButton')
     : tt('premiumPage.billing.button')
 })
 
 const purchaseSubline = computed(() => {
+  if (hasPremiumAccess.value) {
+    return tt('premiumPage.billing.premiumActiveSub')
+  }
   if (!billingReady.value) {
     return tt('premiumPage.billing.unavailableHint')
   }

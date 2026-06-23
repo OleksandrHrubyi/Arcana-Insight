@@ -1986,6 +1986,8 @@ export const messages = {
       },
       billing: {
         button: 'Continue with Premium',
+        premiumActive: 'You’re Premium',
+        premiumActiveSub: 'Tap to go back',
         trialButton: 'Start free trial',
         selectedLabel: 'Selected plan',
         restore: 'Restore purchases',
@@ -4186,6 +4188,8 @@ export const messages = {
       },
       billing: {
         button: 'Продовжити з Premium',
+        premiumActive: 'У вас Premium',
+        premiumActiveSub: 'Натисніть, щоб повернутися',
         trialButton: 'Почати безкоштовно',
         selectedLabel: 'Обраний план',
         restore: 'Відновити покупки',

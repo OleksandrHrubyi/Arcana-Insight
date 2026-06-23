@@ -477,7 +477,7 @@ export default defineComponent({
         had_daily_card_today: hasDailyCardToday.value,
       })
       await router.push({
-        name: 'arcana',
+        name: 'daily',
         query: { source: 'menu_daily_launcher', entry: 'menu_launcher' },
       })
     }
