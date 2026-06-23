@@ -13,7 +13,7 @@
         </div>
       </header>
 
-      <section v-if="profileReady && hasBirthDate" class="personal-hero-card">
+      <section v-if="hasPremiumAccess && profileReady && hasBirthDate" class="personal-hero-card">
         <div class="personal-hero-card__eyebrow">{{ tt('personalHoroscope.generatedLabel') }}</div>
         <div class="personal-hero-card__title">{{ signLabel }}</div>
         <div class="personal-meta">
@@ -25,8 +25,14 @@
         <div class="personal-hero-card__text">{{ tt('personalHoroscope.subtitle') }}</div>
       </section>
 
-      <div class="personal-body" :class="{ 'personal-body--centered': !reading }">
-        <div v-if="!profileReady" class="personal-panel personal-panel--center personal-loading">
+      <div class="personal-body" :class="{ 'personal-body--centered': !reading || !hasPremiumAccess }">
+        <div v-if="!hasPremiumAccess" class="personal-panel personal-lock">
+          <div class="personal-lock__badge">{{ tt('premiumAccess.badge') }}</div>
+          <div class="personal-lock__title">{{ tt('premiumAccess.personalHoroscope.title') }}</div>
+          <p class="personal-lock__text">{{ tt('premiumAccess.personalHoroscope.text') }}</p>
+        </div>
+
+        <div v-else-if="!profileReady" class="personal-panel personal-panel--center personal-loading">
           <q-spinner color="rgba(147,197,253,0.7)" size="32px" />
           <div class="personal-loading__text">{{ tt('personalHoroscope.loading') }}</div>
         </div>
@@ -65,7 +71,14 @@
     </section>
 
     <div class="personal-sticky">
-      <div v-if="reading" class="personal-sticky__actions personal-sticky__actions--double">
+      <div v-if="!hasPremiumAccess" class="personal-sticky__actions">
+        <button type="button" class="arcana-btn arcana-btn--primary" @click="goPremium">
+          <q-icon name="workspace_premium" size="16px" />
+          <span>{{ tt('premiumAccess.cta') }}</span>
+        </button>
+      </div>
+
+      <div v-else-if="reading" class="personal-sticky__actions personal-sticky__actions--double">
         <button type="button" class="arcana-btn arcana-btn--secondary" @click="shareReading">
           <q-icon name="ios_share" size="16px" />
           <span>{{ tt('misc.share') }}</span>
@@ -111,12 +124,14 @@ import { invokeFunction, selectAppUser } from 'src/services/supabaseNative'
 import { useAuthStore } from 'stores/authStore.js'
 import { localISODate } from 'src/helpers/date.ts'
 import { analytics } from 'src/services/analytics'
-import { CONTENT_SHARE_EVENTS } from 'src/constants/analyticsEvents'
+import { CONTENT_SHARE_EVENTS, PAYWALL_ENTRY_POINTS } from 'src/constants/analyticsEvents'
+import { usePremiumAccess } from 'src/stores/premiumAccess'
 
 import * as Astronomy from 'astronomy-engine'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { hasPremiumAccess } = usePremiumAccess()
 const PROFILE_CACHE_KEY = 'profile_cache_v1'
 
 
@@ -304,6 +319,10 @@ async function saveToCache(data) {
 
 // --- generate ---
 async function generate() {
+  if (!hasPremiumAccess.value) {
+    goPremium()
+    return
+  }
   if (!sign.value) return
   loading.value = true
   error.value = ''
@@ -368,6 +387,12 @@ async function shareReading() {
 
 // --- navigation ---
 function onBack() { router.back() }
+
+function goPremium() {
+  const point = PAYWALL_ENTRY_POINTS.personalHoroscopeLock
+  void analytics.logEvent(point.event, { source: point.source, entry: point.entry })
+  router.push({ name: 'premium', query: { source: point.source, entry: point.entry } })
+}
 
 function goToBirthDateSetup() {
   if (authStore.state.user?.id) {
@@ -571,6 +596,41 @@ onMounted(async () => {
     inset 0 1px 0 rgba(197, 221, 255, 0.04),
     0 18px 36px rgba(0, 0, 0, 0.24);
   padding: 18px 16px;
+}
+
+.personal-lock {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  text-align: center;
+  padding: 24px 18px;
+}
+
+.personal-lock__badge {
+  justify-self: center;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(230, 242, 255, 0.95);
+  border: 1px solid rgba(141, 201, 255, 0.5);
+  background: rgba(147, 203, 255, 0.16);
+}
+
+.personal-lock__title {
+  font-size: 18px;
+  line-height: 1.35;
+  color: rgba(246, 242, 232, 0.96);
+}
+
+.personal-lock__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(214, 225, 242, 0.82);
+  max-width: 340px;
 }
 
 .personal-panel--center {

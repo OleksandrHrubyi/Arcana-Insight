@@ -54,6 +54,11 @@ export const PAYWALL_ENTRY_POINTS = Object.freeze({
     source: 'horoscope_lock',
     entry: 'secondary',
   }),
+  personalHoroscopeLock: Object.freeze({
+    event: PAYWALL_ENTRY_EVENTS.secondary,
+    source: 'personal_horoscope_lock',
+    entry: 'secondary',
+  }),
   menuPremium: Object.freeze({
     event: PAYWALL_ENTRY_EVENTS.secondary,
     source: 'menu_premium',

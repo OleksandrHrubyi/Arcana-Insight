@@ -1576,6 +1576,10 @@ export const messages = {
           patterns: 'Track repeating themes instead of reading each session in isolation.',
         },
       },
+      personalHoroscope: {
+        title: 'Personal horoscope is in Premium',
+        text: 'Free includes your daily sign horoscope. Premium adds a personal reading shaped by your Sun and Moon signs.',
+      },
       spreads: {
         notify:
           'Free mode includes 1-card reading. Premium unlocks 3-card and 5-card spreads with deeper interpretation.',
@@ -3731,6 +3735,10 @@ export const messages = {
           search: 'Швидко повертайся до важливих сесій і запитів.',
           patterns: 'Відстежуй повторювані теми, а не окремі випадкові читання.',
         },
+      },
+      personalHoroscope: {
+        title: 'Персональний гороскоп — у Premium',
+        text: 'У безкоштовній версії — щоденний гороскоп за знаком. Premium додає персональне читання за твоїм Сонцем і Місяцем.',
       },
       spreads: {
         notify:

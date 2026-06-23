@@ -72,6 +72,11 @@ test('paywall funnel analytics constants expose required event set', async () =>
       source: 'horoscope_lock',
       entry: 'secondary',
     },
+    personalHoroscopeLock: {
+      event: 'paywall_entry_secondary',
+      source: 'personal_horoscope_lock',
+      entry: 'secondary',
+    },
     menuPremium: {
       event: 'paywall_entry_secondary',
       source: 'menu_premium',
