@@ -58,6 +58,7 @@ ASC: **App Privacy → Get Started / Edit**.
 | **Identifiers → Device ID** | ✅ Yes | APNs push-токен (`register-device`) для сповіщень |
 | **Purchases → Purchase History** | ✅ Yes | RevenueCat (підписки) |
 | **Usage Data → Product Interaction** | ✅ Yes | Firebase Analytics (екрани, кліки, воронка) |
+| **User Content → Other User Content** | ✅ Yes | текст питання таро (зберігається у `tarot_readings` для premium) |
 | **Other Data → Other Data Types** | ✅ Yes | дата народження + місто народження (для гороскопу/асценденту) |
 
 **Усі інші типи — НЕ збираємо** (сміливо лишай порожніми):
@@ -76,6 +77,7 @@ Health & Fitness · Financial Info (крім purchases) · **Precise/Coarse Loca
 | Device ID | **Yes** | **No** | App Functionality *(push-сповіщення)* |
 | Purchase History | **Yes** | **No** | App Functionality |
 | Product Interaction | **Yes** | **No** | **Analytics** |
+| Other User Content (питання таро) | **Yes** | **No** | App Functionality |
 | Other Data Types (DOB + місто) | **Yes** | **No** | App Functionality |
 
 > **Used for tracking = No** скрізь — бо в застосунку немає IDFA/ATT/реклами (`NSPrivacyTracking=false`). Це також означає, що **банер App Tracking Transparency не потрібен**.
@@ -94,17 +96,19 @@ Health & Fitness · Financial Info (крім purchases) · **Precise/Coarse Loca
 
 ---
 
-## ⚠️ 2 розбіжності, які варто закрити (occVerify перед сабмітом)
+## ✅ Розбіжності закрито (2026-06-23)
 
-1. **Device ID відсутній у `ios/App/App/PrivacyInfo.xcprivacy`.**
-   Маніфест декларує Email, Other, User ID, Product Interaction, Purchase History — але **не** Device ID (push-токен). Анкета ASC і маніфест мають збігатися. → Додати блок `NSPrivacyCollectedDataTypeDeviceID` (Linked=true, Tracking=false, Purpose=AppFunctionality), **або** прибрати push, якщо не використовується на релізі. *(Скажи — додам у маніфест.)*
+1. **Device ID** — ДОДАНО в `ios/App/App/PrivacyInfo.xcprivacy` (Linked=true, Tracking=false, Purpose=AppFunctionality). Маніфест валідний (`plutil -lint OK`).
 
-2. **Текст питання таро** користувача йде в OpenAI.
-   Якщо ці питання **зберігаються** (кеш/БД), технічно це «User Content». Зараз усе підпадає під «Other Data Types». Якщо не зберігаємо надовго — можна лишити як є. *(Варто перевірити, чи кешуються питання разом із розкладом.)*
+2. **Текст питання таро** — перевірено: **зберігається** у таблиці `tarot_readings` (`saveReadingToDatabase`, premium-only, рядок користувача) → це User Content. Додано **Other User Content** і в маніфест, і в анкету вище. Сервер `tarot-reading` питання **не** зберігає (лише шле в OpenAI і повертає).
+
+Тепер маніфест декларує **8 типів**: Email, Name(Other? — див. нижче), User ID, Device ID, Product Interaction, Purchase History, Other User Content, Other Data Types. Анкета ASC має збігатися 1:1.
+
+> Дрібниця на майбутнє: ім'я (`full_name`) у маніфесті покрите під `OtherDataTypes` разом із DOB/містом. В анкеті ASC я радив виокремити **Contact Info → Name** для точності — це не конфлікт (обидва Linked/AppFunctionality), просто детальніше. Якщо хочеш ідеальної відповідності 1:1, можна або винести Name окремим типом і в маніфесті, або в анкеті теж лишити ім'я під «Other». Будь-який варіант чесний.
 
 ---
 
 ## TL;DR (за 30 секунд)
 - **Age Rating:** усе **None/No** → **4+**. Made for Kids = No.
-- **App Privacy:** збираємо 7 типів (Name, Email, User ID, Device ID, Purchase History, Product Interaction, Other=DOB+місто). Скрізь **Linked=Yes, Tracking=No**. ATT-банер не потрібен.
-- Закрити: Device ID у privacy-маніфесті.
+- **App Privacy:** збираємо 8 типів (Name, Email, User ID, Device ID, Purchase History, Product Interaction, Other User Content=питання таро, Other=DOB+місто). Скрізь **Linked=Yes, Tracking=No**. ATT-банер не потрібен.
+- Маніфест `PrivacyInfo.xcprivacy` оновлено й валідний — збігається з анкетою.
