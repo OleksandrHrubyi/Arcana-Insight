@@ -142,10 +142,11 @@
 - **Fix:** In ASC create both auto-renewable subscriptions (localized name, price, review screenshot), attach to the first build submission. In RevenueCat: "current" offering must expose both packages with the `premium` entitlement attached.
 - **Verify:** Products "Ready to Submit"; RC offering returns both packages on device (ties to LR-12).
 
-#### LR-14 · Produce App Store screenshots — 🔴 · M
-- **Status:** [ ] TODO
-- **Evidence:** `launch-checklist.md` line ~109 still open; metadata plans 5 screens, none captured.
-- **Fix:** Capture filled-content screenshots for required device sizes (6.9″ + 6.5″ iPhone). Can reuse the Playwright QA harness / real device. No placeholders.
+#### LR-14 · Produce App Store screenshots — 🟡 · M (raw set generated; review + upload = yours)
+- **Status:** [~] RAW SET GENERATED — 2026-06-23. Tooling committed; PNGs on disk; upload + optional polish = yours.
+- **Done:** `tests/visual/appstore-shots.spec.js` generates filled-content screenshots → `app-store/screenshots/<size>/` at exact Apple dims: **6.9″ 1320×2868** and **6.5″ 1242×2688**. 5 screens captured with real content (no placeholders): `1-home` (streak + astro strip + card of the day), `2-tarot` (oracle scene), `3-horoscope` (full Capricorn/Energy reading), `4-compatibility`, `5-premium`. Regenerate anytime: `npx playwright test tests/visual/appstore-shots.spec.js --project=iphone-14`.
+- **⚠️ Yours:** review the 10 PNGs, optionally add marketing captions/frames, then upload in App Store Connect. (Raw device screenshots are Apple-valid as-is.)
+- **Evidence:** `launch-checklist.md` line ~109 still open; metadata plans 5 screens.
 - **Verify:** Screenshot set uploaded in ASC.
 
 #### LR-11 · Privacy/Terms: contact link + 3rd-party processors + EULA terms + live URL — ✅ DONE
