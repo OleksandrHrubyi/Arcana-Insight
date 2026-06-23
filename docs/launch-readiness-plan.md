@@ -8,6 +8,7 @@
 - **Readiness: 74 / 100.** Verdict: **B — Release After Fixes** (not architectural; ~1 week of focused work).
 - **Biggest reject risk:** Apple tests the in-app purchase during review and IAP is unverified.
 - **Target submission:** ~10–14 calendar days from 2026-06-16 (dev + sandbox + screenshots + ASC product approval). In-Store ~2–2.5 weeks.
+- **2026-06 follow-up pass (post-plan, merged to `main` + deployed):** full tarot deep-audit (security: `tarot-reading` now auth-required; reliability; analytics funnel), tarot "real-session" depth (explained/theme-matched positions, woven AI narrative, adaptive clarifying question), oracle-dialogue redesign, a **unified app-wide button system** (`.arcana-btn` tokens), and a multi-agent **bug-hunt** (edge security hardening, billing/auth premium-leak fixes, error-leak removal). 7 edge functions deployed; **AI tarot verified live end-to-end**. Tests 194→**221**. This raised code-health/stability/UX but **does not change the submission gate** — remaining blockers are Apple-operational (LR-12/13/14/16 + LR-11 URL check), all yours.
 
 ### Launch Readiness Scorecard (1–10)
 | Product | UX | UI | Stability | Performance | Security | Monetization | ASO | Compliance |
@@ -18,7 +19,7 @@
 - Work top-down by section: **P0 (blockers) → Apple operational → P1 → P2.**
 - Each item has a stable ID (`LR-NN`), severity, files/evidence, the fix, how to verify, effort, and a status box.
 - Update the **Status** field as you go: `[ ] TODO` → `[~] IN PROGRESS` → `[x] DONE (date + commit)`.
-- After any code change: `npm test` (194 baseline) + `npx eslint -c ./eslint.config.js <file>`; for UI use the Playwright QA screenshots (`npx playwright test --project=iphone-14 --update-snapshots`, QA route `/?qa=home`).
+- After any code change: `npm test` (221 baseline) + `npx eslint -c ./eslint.config.js <file>`; for UI use the Playwright QA screenshots (`npx playwright test --project=iphone-14 --update-snapshots`, QA route `/?qa=home`).
 - Log each day in the **Daily Progress Log** at the bottom.
 - Effort key: **S** <2h · **M** half-day · **L** 1–2 days.
 
@@ -241,6 +242,10 @@
 - Normalized per-period price on paywall ("$X/month").
 - Guest purchase before login can orphan entitlement — gate purchase behind auth OR verify RC alias transfer in sandbox Test 4.
 - Refactor giant components (TarotOraclePage 3185, LandingScene 3085) — maintainability only.
+- **(2026-06 bug-hunt) PersonalHoroscope AI fn is ungated** — free users can call `personal-horoscope` (gpt-4o-mini) unlimited. Decide free vs premium; add server-side rate-limit/entitlement check either way.
+- **(2026-06 bug-hunt) billing `configure_failed` latch** (`premiumBilling.js`) — intentional + tested (won't re-call `Purchases.configure()` after a failure). Review whether a transient failure should be retryable instead of latched for the session.
+- **(2026-06) dead/orphaned edge fns** `horoscope` (reads stale `zodiac_texts`) + `tarot-draw` — not called by the client (client reads the `horoscopes` table directly / draws locally). Optional: delete both.
+- **(2026-06) RitualRewards 32 `uk?:en` ternaries** still pending (the 2026-06 i18n sweep covered tarot screens only).
 
 ---
 
@@ -291,3 +296,4 @@
 - 2026-06-16 — **LR-22 done (P2)**: retention loop — (A) daily-track complete-state now reads "Revisit your readings" → /readings (journal); (B) push-worker is sign-aware (personalized title, best-effort + graceful fallback). Design agreed first. tests 194/194, eslint 0, home screenshot OK.
 - 2026-06-16 — **Bugfix (hidden bottom-nav stole taps)**: on nav-hidden routes (`/daily`, `/tarot`, `/tarot-interpretation`, `/tarot/:id`) the `.bottom-nav-wrap--hidden` was `opacity:0 + pointer-events:none`, but the inner `.nav-tab` buttons re-enable `pointer-events:auto`, so the invisible nav (z-index 9999) still intercepted taps over page content (e.g. the Daily "Close" button). Fixed by adding `visibility:hidden` to `--hidden` (cascades, can't be overridden by a child's pointer-events). Verified via Playwright `elementFromPoint`. tests 194/194.
 - 2026-06-16 — **LR-23 deferred** (post-launch: notes need a DB column, pattern is marginal without data). **LR-24 partial**: removed the one ungated debug log + deleted 2 dead dup files (config 2.xml, cardsV1/tarot_full.json) with permission; rest is post-launch backlog. tests 194/194. **All planned code work is now done or consciously deferred** — remaining is your Apple operational (LR-12/13/14/16) + secrets.
+- 2026-06-19..23 — **Tarot deep-audit + real-session + button-system + bug-hunt** (outside the LR plan; merged to `main`, deployed). Tarot: `tarot-reading` auth-required (verify_jwt + internal check, `SUPABASE_*` env), client AI timeout 65s, DB-save premium-gated, woven-narrative prompt, **adaptive clarifying question** (`mode:'clarify'`), explained + theme-matched spread positions (`tarotSpreads`), intro-once-per-session, oracle-dialogue redesign, full mid-funnel analytics (`TAROT_SESSION_EVENTS`), i18n sweep (tarot screens), removed dead i18n namespace + orphaned `TarotResult`. **Unified button system** (`.arcana-btn`/`--primary`/`--secondary` tokens in `app.scss`) rolled out across ~20 files. **Multi-agent bug-hunt fixes:** edge `send-broadcast` auth required, timing-safe `telegram-auth`, stopped raw error-body leakage (4 fns); billing `freeTrial` carried + tightened entitlement match; auth premium-revoke on logout/delete/`SIGNED_OUT` + double-submit guards; tarot save-content, retriable tarot-data cache, i18n localStorage guard, ascendant `hour===24`, horoscope theme-lock guard; repaired button-migration border regressions + tarot i18n `ui` fallback. **Deployed all 7 edge functions**; **smoke-tested premium AI tarot end-to-end live** (real user → openai/gpt-4o-mini woven reading + clarify → cleaned up). Tests **221/221**. Branch `tarot-deep-audit` merged + deleted. New backlog/decisions logged under LR-24.
