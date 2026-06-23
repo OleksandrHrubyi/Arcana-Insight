@@ -148,8 +148,8 @@
 - **Fix:** Capture filled-content screenshots for required device sizes (6.9″ + 6.5″ iPhone). Can reuse the Playwright QA harness / real device. No placeholders.
 - **Verify:** Screenshot set uploaded in ASC.
 
-#### LR-11 · Privacy/Terms: contact link + 3rd-party processors + EULA terms + live URL — 🟡 (code done; verify URLs)
-- **Status:** [x] CODE DONE — 2026-06-16 (commit pending push). Remaining = ops URL check (below).
+#### LR-11 · Privacy/Terms: contact link + 3rd-party processors + EULA terms + live URL — ✅ DONE
+- **Status:** [x] DONE — code 2026-06-16; **hosted URLs verified 200 on 2026-06-23** (privacy-policy.html + support.html both live).
 - **Done (in-app `PrivacyTermsComponent`):**
   - Contact dead-end fixed → working **`mailto:ghrubyi@ukr.net`** link.
   - Third-party **processors disclosed** (OpenAI/OpenRouter, Supabase, RevenueCat, Firebase) via `policyPage.privacyProcessors` + a "Full Privacy Policy" link to the hosted page.
