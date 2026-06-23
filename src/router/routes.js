@@ -4,8 +4,8 @@ const routes = [
     component: () => import('src/layouts/BlankLayout.vue'),
     children: [
       { path: '', name: 'arcana', component: () => import('src/pages/GetStartedPage.vue'), meta: { tab: 'arcana' } },
-      { path: 'login', name: 'login', component: () => import('src/pages/LoginPage.vue'), meta: { allowWithoutOnboarding: true } },
-      { path: 'sign-up', name: 'signUp', component: () => import('src/pages/SignUpPage.vue'), meta: { allowWithoutOnboarding: true } },
+      { path: 'login', name: 'login', component: () => import('src/pages/LoginPage.vue'), meta: { allowWithoutOnboarding: true, hideBottomNav: true } },
+      { path: 'sign-up', name: 'signUp', component: () => import('src/pages/SignUpPage.vue'), meta: { allowWithoutOnboarding: true, hideBottomNav: true } },
       { path: 'confirm-code', component: () => import('src/pages/ConfirmEmailCodePage.vue'), meta: { hideBottomNav: true, allowWithoutOnboarding: true } },
       { path: 'horoscope', name: 'horoscope', component: () => import('src/pages/HoroscopePage.vue'), meta: { tab: 'horoscope' } },
       { path: 'personal-horoscope', name: 'personalHoroscope', component: () => import('src/pages/PersonalHoroscopePage.vue'), meta: { tab: 'horoscope', hideBottomNav: true } },

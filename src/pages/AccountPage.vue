@@ -340,7 +340,7 @@ export default defineComponent({
     },
 
     mysticBadgeLabel() {
-      return this.locale === 'uk' ? 'Містичний ритуал активний' : 'Mystic ritual badge active'
+      return this.tt('accountPage.mysticBadgeActive')
     },
 
     hasMysticBadge() {
@@ -754,7 +754,13 @@ export default defineComponent({
 
     async onBack() {
       await this.hapticTap()
-      this.$router.back()
+      // Account can be the first navigation (deep link / external auth redirect to
+      // /account); a bare back() would dead-end there. Fall back to Menu.
+      if (window.history.length > 1) {
+        this.$router.back()
+      } else {
+        this.$router.replace('/menu')
+      }
     },
 
     onOpenDateSheet() {

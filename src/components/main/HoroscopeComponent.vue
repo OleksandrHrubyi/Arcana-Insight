@@ -655,10 +655,9 @@ export default {
     applyThemeFromRoute(value) {
       const nextTheme = this.normalizeRouteTheme(value)
       if (!nextTheme) return
-      if (this.isThemeLocked(nextTheme)) {
-        void this.openPremiumPaywall()
-        return
-      }
+      // Land on the requested theme even when locked — the screen renders a blurred
+      // panel with an "Unlock" CTA. Do NOT auto-redirect to the paywall (that was an
+      // aggressive bounce, inconsistent with the rest of the app's locked states).
       this.themeTab = nextTheme
     },
 

@@ -182,11 +182,21 @@
           </div>
         </div>
 
-        <div v-if="hasPremiumAccess && (aiReading || aiLoading)" class="compat-overview">
+        <div v-if="hasPremiumAccess && (aiReading || aiLoading || aiError)" class="compat-overview">
           <p v-if="aiReading" class="compat-overview__text">{{ aiReading.overview }}</p>
-          <div v-else class="compat-overview__loading">
+          <div v-else-if="aiLoading" class="compat-overview__loading">
             <q-spinner-dots size="22px" color="rgba(169,211,240,0.8)" />
             <span>{{ tt('compatibilityPage.aiLoading') }}</span>
+          </div>
+          <div v-else class="compat-overview__error">
+            <span>{{ tt('common.loadError') }}</span>
+            <button
+              type="button"
+              class="arcana-btn arcana-btn--secondary compat-overview__retry"
+              @click="requestAiReading(result)"
+            >
+              {{ tt('common.retry') }}
+            </button>
           </div>
         </div>
 
@@ -1920,6 +1930,21 @@ onBeforeUnmount(() => {
   gap: 10px;
   font-size: 13px;
   color: rgba(190, 212, 235, 0.6);
+}
+
+.compat-overview__error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: rgba(212, 190, 195, 0.75);
+}
+
+.compat-overview__retry {
+  min-height: 38px;
+  padding: 0 16px;
+  font-size: 13px;
 }
 
 .compat-ai-extra {

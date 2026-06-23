@@ -463,7 +463,7 @@ const resolveRewardIcon = (reward) => {
   if (key === RITUAL_REWARD_KEYS.horoscopeLoveUnlock24h) return 'favorite'
   if (key === RITUAL_REWARD_KEYS.horoscopeCareerUnlock24h) return 'trending_up'
   if (key === RITUAL_REWARD_KEYS.mysticBadge) return 'workspace_premium'
-  return 'auto_awesome'
+  return 'redeem'
 }
 
 const resolveRewardAccent = (reward) => {

@@ -1055,7 +1055,7 @@ const buildShareCardImage = async (sign) => {
 const buildShareTextCard = (sign) => {
   const title = `${sign.emoji} ${sign.name} (${sign.dates})`
   return normalizeText([
-    `✨ ${tt('zodiacGuidePage.title')}`,
+    tt('zodiacGuidePage.title'),
     title,
     `${tt('zodiacGuidePage.labels.element')}: ${sign.elementLabel}`,
     `${tt('zodiacGuidePage.labels.modality')}: ${sign.modalityLabel}`,
