@@ -8,6 +8,7 @@
 //
 // @ts-nocheck
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { isUserPremium, premiumEnforcementEnabled } from "../_shared/premium.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -350,13 +351,22 @@ Deno.serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return json({ ok: false, error: "unauthorized" }, 401);
 
+    const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const adminClient = createClient(supabaseUrl, serviceRole, { auth: { persistSession: false } });
+
+    // AI synastry narrative is a premium feature (deterministic synastry is computed
+    // client-side). Flag-gated server enforcement so a logged-in non-subscriber can't
+    // trigger paid AI completions by calling the API directly. Checked before parsing
+    // facts so premium gating doesn't depend on input shape.
+    if (premiumEnforcementEnabled() && !(await isUserPremium(adminClient, user.id))) {
+      return json({ ok: false, error: "premium_required" }, 403);
+    }
+
     const body = await req.json().catch(() => ({} as any));
     const facts = normalizeFacts(body);
     if (!facts) return json({ ok: false, error: "invalid_facts" }, 400);
 
     const dimensionKeys = facts.dimensions.map((d: any) => d.key);
-    const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const adminClient = createClient(supabaseUrl, serviceRole, { auth: { persistSession: false } });
 
     // Deterministic cache: same charts + type + locale -> same reading. Hashed so
     // raw inputs aren't stored. Global (not per-user) since it's just astrology text.

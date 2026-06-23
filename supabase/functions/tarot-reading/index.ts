@@ -1,4 +1,6 @@
 // @ts-nocheck
+import { isUserPremium, premiumEnforcementEnabled } from '../_shared/premium.ts'
+
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -50,6 +52,18 @@ Deno.serve(async (req: Request) => {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return json({ error: 'Unauthorized' }, 401)
+    }
+    // Server-side premium enforcement (flag-gated, same as personal-horoscope) so a
+    // logged-in non-subscriber can't trigger paid AI completions by calling the API.
+    if (premiumEnforcementEnabled()) {
+      const admin = createClient(
+        Deno.env.get('SUPABASE_URL') ?? Deno.env.get('URL')!,
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY')!,
+        { auth: { persistSession: false } },
+      )
+      if (!(await isUserPremium(admin, user.id))) {
+        return json({ error: 'premium_required' }, 403)
+      }
     }
   } catch (error) {
     console.error('[tarot-reading] auth check failed', error)
