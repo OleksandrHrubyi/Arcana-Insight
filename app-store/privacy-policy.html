@@ -242,8 +242,18 @@
       </tr>
       <tr>
         <td><strong>OpenAI</strong></td>
-        <td>Generating horoscope text — called server-side only; no user-identifiable data is sent to OpenAI</td>
-        <td>Date, zodiac sign, astronomical context only</td>
+        <td>Generating AI tarot interpretations and horoscope text — called server-side only</td>
+        <td>Zodiac/moon sign, drawn cards, astronomical context, and the optional free-text question you type for a tarot reading</td>
+      </tr>
+      <tr>
+        <td><strong>OpenRouter</strong></td>
+        <td>Fallback AI provider for tarot/horoscope generation, used only if the primary provider is unavailable</td>
+        <td>Same as OpenAI (zodiac/moon sign, drawn cards, astronomical context, optional reading question)</td>
+      </tr>
+      <tr>
+        <td><strong>Open-Meteo (geocoding)</strong></td>
+        <td>Converting the birth city you enter into coordinates for astrological calculations</td>
+        <td>Birth city name only (not linked to your identity)</td>
       </tr>
       <tr>
         <td><strong>Apple App Store</strong></td>
