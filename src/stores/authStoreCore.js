@@ -269,6 +269,11 @@ export function createAuthStore({
         }
         try {
           localStorage.removeItem('profile_cache_v1')
+          // Account-scoped local flags must not leak to the next account on a
+          // shared device (e.g. the one-free-AI-reading gift, the daily free
+          // tarot limit). The server stays the source of truth either way.
+          localStorage.removeItem('arcana_free_ai_tarot_used_v1')
+          localStorage.removeItem('arcana_free_tarot_daily_v1')
         } catch {
           // ignore if localStorage unavailable
         }

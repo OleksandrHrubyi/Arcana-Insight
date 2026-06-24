@@ -242,6 +242,7 @@
             :key="dim.key"
             class="compat-dim"
             :class="{ 'compat-dim--locked': isDimLocked(dim) }"
+            @click="isDimLocked(dim) && goPremium()"
           >
             <div class="compat-dim__head">
               <q-icon :name="dimIcon(dim.key)" size="17px" class="compat-dim__icon" :class="`compat-dim__icon--${dim.level}`" />

@@ -20,5 +20,5 @@ export const resolveRouteGuardDecision = ({ to, onboardingComplete, hasUser }) =
 
   if (!to?.meta?.requiresAuth) return true
   if (hasUser) return true
-  return { name: 'login' }
+  return { name: 'login', query: { redirect: String(to?.fullPath || '') } }
 }

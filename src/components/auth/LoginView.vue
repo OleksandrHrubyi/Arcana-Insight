@@ -7,6 +7,7 @@ import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { analytics } from 'src/services/analytics'
 import { useAuthStore } from 'stores/authStore.js'
+import { resolveAuthRedirect } from 'src/helpers/authRedirect.js'
 
 export default {
   name: 'LoginView',
@@ -218,7 +219,7 @@ export default {
         this.logAuth('apple_before_redirect')
         analytics.logLogin('apple')
         this.logAuth('apple_success_redirect')
-        this.$router.push('/')
+        this.$router.push(resolveAuthRedirect(this.$route.query.redirect, '/'))
       } catch (err) {
         this.errorMessage = `Apple login failed: ${err.message || err.toString()}`
         console.error('Apple login failed', err)
@@ -315,6 +316,7 @@ export default {
           query: {
             email: this.email,
             mode: 'login',
+            ...(this.$route.query.redirect ? { redirect: String(this.$route.query.redirect) } : {}),
           },
         })
       } catch (e) {

@@ -65,7 +65,22 @@ test('router guard redirects requiresAuth routes to login when user is missing',
     hasUser: false,
   })
 
-  assert.deepEqual(result, { name: 'login' })
+  // Carries the intended destination so login can return the user there.
+  assert.deepEqual(result, { name: 'login', query: { redirect: '/account' } })
+})
+
+test('resolveAuthRedirect only allows safe same-origin paths', async () => {
+  const { resolveAuthRedirect } = await importModule('src/helpers/authRedirect.js')
+
+  // Valid in-app paths pass through.
+  assert.equal(resolveAuthRedirect('/premium?source=menu'), '/premium?source=menu')
+  // Empty / missing falls back.
+  assert.equal(resolveAuthRedirect('', '/'), '/')
+  assert.equal(resolveAuthRedirect(undefined, '/menu'), '/menu')
+  // Open-redirect attempts are rejected.
+  assert.equal(resolveAuthRedirect('https://evil.com', '/'), '/')
+  assert.equal(resolveAuthRedirect('//evil.com', '/'), '/')
+  assert.equal(resolveAuthRedirect('javascript:alert(1)', '/'), '/')
 })
 
 test('router guard allows requiresAuth routes for authenticated users', async () => {

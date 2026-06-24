@@ -7,6 +7,7 @@ import CodeInput from 'components/ui/CodeInput.vue';
 import { t, currentLocale } from 'src/i18n';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
+import { resolveAuthRedirect } from 'src/helpers/authRedirect.js';
 
 export default {
   name: 'ConfirmEmailCode',
@@ -188,7 +189,7 @@ export default {
           }
         }
 
-        this.$router.push('/')
+        this.$router.push(resolveAuthRedirect(this.$route.query.redirect, '/'))
       } catch (e) {
         console.error(e);
         this.errorMessage = this.tt('auth.wrongOrExpiredCode');

@@ -202,7 +202,9 @@ const ensureSignedInForBilling = async () => {
     textColor: 'white',
     position: 'bottom',
   })
-  await router.push({ name: 'login' }).catch(() => {})
+  // Return the user to the paywall (with its entry params) after they sign in,
+  // instead of dropping them on the home screen mid-purchase.
+  await router.push({ name: 'login', query: { redirect: route.fullPath } }).catch(() => {})
   return false
 }
 const {
