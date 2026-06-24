@@ -60,9 +60,10 @@ ASC: **App Privacy → Get Started / Edit**.
 | **Usage Data → Product Interaction** | ✅ Yes | Firebase Analytics (екрани, кліки, воронка) |
 | **User Content → Other User Content** | ✅ Yes | текст питання таро (зберігається у `tarot_readings` для premium) |
 | **Other Data → Other Data Types** | ✅ Yes | дата народження + місто народження (для гороскопу/асценденту) |
+| **Diagnostics → Crash Data** | ✅ Yes | Firebase Crashlytics (краш-логи; `setUserId` лінкує до акаунта) |
 
 **Усі інші типи — НЕ збираємо** (сміливо лишай порожніми):
-Health & Fitness · Financial Info (крім purchases) · **Precise/Coarse Location** *(місто народження вводиться вручну — це не геолокація пристрою)* · Sensitive Info · Contacts · Photos/Videos · Audio · Browsing History · Search History · Diagnostics/Crash *(Crashlytics не підключено — лише Analytics)*.
+Health & Fitness · Financial Info (крім purchases) · **Precise/Coarse Location** *(місто народження вводиться вручну — це не геолокація пристрою)* · Sensitive Info · Contacts · Photos/Videos · Audio · Browsing History · Search History · Diagnostics → Performance Data / Other Diagnostic Data *(лише Crash Data, див. вище)*.
 
 ### Крок 2 — Для КОЖНОГО обраного типу Apple питає 3 речі. Ось відповіді:
 
@@ -79,6 +80,7 @@ Health & Fitness · Financial Info (крім purchases) · **Precise/Coarse Loca
 | Product Interaction | **Yes** | **No** | **Analytics** |
 | Other User Content (питання таро) | **Yes** | **No** | App Functionality |
 | Other Data Types (DOB + місто) | **Yes** | **No** | App Functionality |
+| Crash Data (Crashlytics) | **Yes** | **No** | App Functionality |
 
 > **Used for tracking = No** скрізь — бо в застосунку немає IDFA/ATT/реклами (`NSPrivacyTracking=false`). Це також означає, що **банер App Tracking Transparency не потрібен**.
 
@@ -90,6 +92,7 @@ Health & Fitness · Financial Info (крім purchases) · **Precise/Coarse Loca
 |---|---|---|
 | **Supabase** | email, ім'я, DOB, місто, user-id | наша БД (бекенд) |
 | **Firebase Analytics** | user-id, події взаємодії | аналітика, без IDFA |
+| **Firebase Crashlytics** | user-id, краш-логи (стек, девайс/ОС) | стабільність застосунку |
 | **RevenueCat** | user-id, статус підписки | біллінг |
 | **Open-Meteo** (geocode) | лише **назву міста** | без DOB, без ідентифікації — анонімний запит |
 | **OpenAI / OpenRouter** | знак/місячний знак + (опц.) текст питання таро | генерація тексту; питання — вільний текст користувача |
@@ -102,7 +105,9 @@ Health & Fitness · Financial Info (крім purchases) · **Precise/Coarse Loca
 
 2. **Текст питання таро** — перевірено: **зберігається** у таблиці `tarot_readings` (`saveReadingToDatabase`, premium-only, рядок користувача) → це User Content. Додано **Other User Content** і в маніфест, і в анкету вище. Сервер `tarot-reading` питання **не** зберігає (лише шле в OpenAI і повертає).
 
-Тепер маніфест декларує **8 типів**: Email, Name(Other? — див. нижче), User ID, Device ID, Product Interaction, Purchase History, Other User Content, Other Data Types. Анкета ASC має збігатися 1:1.
+3. **Crash Data (Crashlytics)** — ДОДАНО (2026-06-24): цієї сесії підключено `@capacitor-firebase/crashlytics` + `src/services/crashReporting.js` (з `setUserId`). Декларовано в маніфесті (Linked=true, Tracking=false, AppFunctionality) — `plutil -lint OK`.
+
+Тепер маніфест декларує **9 типів**: Email, Name(Other — див. нижче), User ID, Device ID, Product Interaction, Purchase History, Other User Content, Other Data Types, Crash Data. Анкета ASC має збігатися 1:1.
 
 > Дрібниця на майбутнє: ім'я (`full_name`) у маніфесті покрите під `OtherDataTypes` разом із DOB/містом. В анкеті ASC я радив виокремити **Contact Info → Name** для точності — це не конфлікт (обидва Linked/AppFunctionality), просто детальніше. Якщо хочеш ідеальної відповідності 1:1, можна або винести Name окремим типом і в маніфесті, або в анкеті теж лишити ім'я під «Other». Будь-який варіант чесний.
 
@@ -110,5 +115,5 @@ Health & Fitness · Financial Info (крім purchases) · **Precise/Coarse Loca
 
 ## TL;DR (за 30 секунд)
 - **Age Rating:** усе **None/No** → **4+**. Made for Kids = No.
-- **App Privacy:** збираємо 8 типів (Name, Email, User ID, Device ID, Purchase History, Product Interaction, Other User Content=питання таро, Other=DOB+місто). Скрізь **Linked=Yes, Tracking=No**. ATT-банер не потрібен.
+- **App Privacy:** збираємо 9 типів (Name, Email, User ID, Device ID, Purchase History, Product Interaction, Other User Content=питання таро, Other=DOB+місто, Crash Data=Crashlytics). Скрізь **Linked=Yes, Tracking=No**. ATT-банер не потрібен.
 - Маніфест `PrivacyInfo.xcprivacy` оновлено й валідний — збігається з анкетою.
