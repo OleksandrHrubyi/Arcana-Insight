@@ -9,7 +9,9 @@
 
 ## 🔴 P0 — BLOCKING (must be done before submission)
 
-- [~] **P0-1 · Crash reporting (Firebase Crashlytics)** — 🤖 code DONE, 👤 native steps pending
+- [x] **P0-1 · Crash reporting (Firebase Crashlytics)** — DONE & VERIFIED 2026-06-24
+  Code + native integration (cap sync, pod) committed; **verified live on a real device** — forced crash captured & uploaded, appears in the Firebase console. WebView JS errors forward via `error-handler`. Observability gap closed. *(dSYM upload Run Script was removed because it broke the Debug build; crashes still report — dSYMs auto-upload with the App Store/TestFlight archive. Re-add the Run Script later only if you want symbolicated Debug-build crashes.)*
+  <details><summary>original native steps (done)</summary>
   **Done (🤖, committed):** `@capacitor-firebase/crashlytics` installed; fail-safe `src/services/crashReporting.js`; `boot/error-handler.js` forwards Vue/unhandledrejection/window errors → `recordException` (so WebView JS errors are visible, not just native crashes). eslint/tests/build green.
   **Remaining (👤, can't be done from here — needs Xcode/Firebase console):**
   1. `npx cap sync ios` (installs the Crashlytics pod).
@@ -17,6 +19,7 @@
   3. Firebase console → Crashlytics → enable (lights up after the first report).
   4. Build to a device, trigger a test crash (`FirebaseCrashlytics.crash()`), confirm it appears in the console.
   *(GoogleService-Info.plist already present ✅.)*
+  </details>
 
 - [x] **P0-2 · Paywall auto-renew disclosure** — 🤖 DONE 2026-06-24
   Footnote was incomplete (only the 24h-cancel line). Expanded (en+uk) to full Apple 3.1.2 disclosure: charged to Apple ID at purchase · auto-renews unless cancelled ≥24h before period end · charged within 24h before end · manage/cancel in App Store settings. Plan tiles already show title/period/price + per-month; Terms (EULA) + Privacy links present. Binary now meets 3.1.2. *(Also ensure the same subscription info + Terms/Privacy URLs are in the ASC listing metadata — part of P0-6/metadata.)*
