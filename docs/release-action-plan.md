@@ -18,8 +18,8 @@
   4. Build to a device, trigger a test crash (`FirebaseCrashlytics.crash()`), confirm it appears in the console.
   *(GoogleService-Info.plist already present ✅.)*
 
-- [ ] **P0-2 · Paywall auto-renew disclosure** — 🤖
-  Verify/ add the exact subscription disclosure on the paywall: title, length, price-per-period, "auto-renews unless cancelled ≥24h before period end", + functional Terms (EULA) & Privacy links. *Top cause of 3.1.2 rejection.*
+- [x] **P0-2 · Paywall auto-renew disclosure** — 🤖 DONE 2026-06-24
+  Footnote was incomplete (only the 24h-cancel line). Expanded (en+uk) to full Apple 3.1.2 disclosure: charged to Apple ID at purchase · auto-renews unless cancelled ≥24h before period end · charged within 24h before end · manage/cancel in App Store settings. Plan tiles already show title/period/price + per-month; Terms (EULA) + Privacy links present. Binary now meets 3.1.2. *(Also ensure the same subscription info + Terms/Privacy URLs are in the ASC listing metadata — part of P0-6/metadata.)*
 
 - [ ] **P0-3 · Real-device QA pass** — 👤 (🤖 provides the script)
   Run the full §10 test plan on a real iPhone (release build): smoke flow + subscription (purchase / **restore / cancel / survives app-kill / restore-as-non-subscriber**) + auth + edge cases + airplane/slow network + push timing.
