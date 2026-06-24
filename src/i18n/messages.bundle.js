@@ -1056,12 +1056,6 @@ export const messages = {
       share: 'Share',
     },
 
-    template: {
-      waitingSoon: 'What you are waiting for will soon appear',
-      futureLine: 'Can you know your future? We think YES you can. Just take it',
-      lookForFuture: 'Looking for my future',
-    },
-
     baas: {
       loginTab: 'Login',
       signupTab: 'Sign up',
@@ -3277,12 +3271,6 @@ export const messages = {
       apple: 'Apple',
       google: 'Google',
       share: 'Поділитися',
-    },
-
-    template: {
-      waitingSoon: 'Те, на що ти чекаєш, скоро з’явиться',
-      futureLine: 'Чи можна знати своє майбутнє? Ми вважаємо, що так. Просто візьми його',
-      lookForFuture: 'Шукаю своє майбутнє',
     },
 
     baas: {

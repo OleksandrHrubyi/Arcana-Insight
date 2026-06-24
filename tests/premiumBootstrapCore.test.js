@@ -9,8 +9,8 @@ test('toBillingCatalog normalizes monthly/yearly labels', async () => {
     yearly: { priceLabel: '$59.99', offerLabel: '7-day trial' },
   })
   assert.deepEqual(catalog, {
-    monthly: { priceLabel: '$9.99', offerLabel: '', freeTrial: null },
-    yearly: { priceLabel: '$59.99', offerLabel: '7-day trial', freeTrial: null },
+    monthly: { priceLabel: '$9.99', offerLabel: '', freeTrial: null, pricePerMonth: null, currencyCode: '' },
+    yearly: { priceLabel: '$59.99', offerLabel: '7-day trial', freeTrial: null, pricePerMonth: null, currencyCode: '' },
   })
 })
 
@@ -35,8 +35,8 @@ test('loadPremiumBootstrapSnapshot maps happy path plans and entitlement status'
 
   assert.equal(result.billingReady, true)
   assert.deepEqual(result.billingCatalog, {
-    monthly: { priceLabel: '$9.99', offerLabel: '', freeTrial: null },
-    yearly: { priceLabel: '$59.99', offerLabel: 'Save 50%', freeTrial: null },
+    monthly: { priceLabel: '$9.99', offerLabel: '', freeTrial: null, pricePerMonth: null, currencyCode: '' },
+    yearly: { priceLabel: '$59.99', offerLabel: 'Save 50%', freeTrial: null, pricePerMonth: null, currencyCode: '' },
   })
   assert.deepEqual(result.status, { hasPremium: true, plan: 'yearly' })
   assert.deepEqual(result.errors, [])
@@ -101,8 +101,8 @@ test('loadPremiumBootstrapSnapshot handles status exceptions after plans load', 
   assert.equal(result.billingReady, false)
   assert.equal(result.status, null)
   assert.deepEqual(result.billingCatalog, {
-    monthly: { priceLabel: '$9.99', offerLabel: '', freeTrial: null },
-    yearly: { priceLabel: '$59.99', offerLabel: '', freeTrial: null },
+    monthly: { priceLabel: '$9.99', offerLabel: '', freeTrial: null, pricePerMonth: null, currencyCode: '' },
+    yearly: { priceLabel: '$59.99', offerLabel: '', freeTrial: null, pricePerMonth: null, currencyCode: '' },
   })
   assert.deepEqual(result.errors, ['status:exception'])
 })
