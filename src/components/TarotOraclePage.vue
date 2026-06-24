@@ -1180,6 +1180,9 @@ const selectSpreadWithAccess = async (spread) => {
 
   if (spread === 1 && !hasPremiumAccess.value && hasUsedFreeTarotToday()) {
     notifyFreeTarotDailyLimit()
+    // runChoice() hid the controls before this ran; bring the spread choices back
+    // so the user isn't stranded on an empty scene with only an exit.
+    revealControlsWithDelay(700)
     return
   }
 
@@ -1195,6 +1198,9 @@ const selectSpreadWithAccess = async (spread) => {
   }
 
   notifyPremiumSpreadLock()
+  // Locked spread: keep the user in the flow — restore the choices so they can pick
+  // the free 1-card spread or open Premium, instead of being stuck on the background.
+  revealControlsWithDelay(700)
 }
 
 // Theme-aware position set for 3- and 5-card spreads (relationships → You/Them/…,
