@@ -20,6 +20,7 @@ export default defineConfig((/* ctx */) => {
     boot: [
       'error-handler',
       'theme',
+      'notify',
       'supabase',
       'auth',
       'analytics',
