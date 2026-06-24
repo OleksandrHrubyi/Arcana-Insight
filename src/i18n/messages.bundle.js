@@ -1726,6 +1726,8 @@ export const messages = {
       saved: 'Saved',
       freeGift: {
         note: 'For your first reading, I looked deeper than usual — this is the full interpretation, offered as a gift. Open Premium to keep this depth every time you draw.',
+        signInLead: 'This time I read only the surface. Sign in, and your next reading becomes a full AI interpretation — a gift, free.',
+        signInCta: 'Sign in for the deeper reading',
       },
       positions: {
         one: ['The heart of the matter — the central energy of this reading.'],
@@ -3945,6 +3947,8 @@ export const messages = {
       saved: 'Збережено',
       freeGift: {
         note: 'Для твого першого розкладу я зазирнув глибше, ніж зазвичай — це повне тлумачення, як дар. Відкрий Premium, щоб ця глибина була щоразу, коли тягнеш карти.',
+        signInLead: 'Цього разу я прочитав лише поверхню. Увійди — і наступний розклад стане повним AI-розбором. Це дар, безкоштовно.',
+        signInCta: 'Увійти для глибшого розбору',
       },
       positions: {
         one: ['Серцевина питання — центральна енергія цього читання.'],

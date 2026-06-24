@@ -74,6 +74,14 @@
         <div class="interpret-advice">{{ reading.advice }}</div>
       </div>
 
+      <section v-if="showGiftSignIn" class="interpret-upgrade interpret-upgrade--gift">
+        <q-icon name="nights_stay" size="18px" class="interpret-gift__icon" />
+        <p class="interpret-upgrade__lead">{{ giftSignInLead }}</p>
+        <button type="button" class="arcana-btn arcana-btn--primary" @click="signInForGift">
+          {{ giftSignInCta }}
+        </button>
+      </section>
+
       <section v-if="showPremiumAha" class="interpret-upgrade">
         <div class="interpret-upgrade__badge">{{ premiumBadge }}</div>
         <div class="interpret-upgrade__title">{{ premiumTitle }}</div>
@@ -125,6 +133,7 @@ import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { currentLocale, t } from 'src/i18n'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
+import { useAuthStore } from 'stores/authStore.js'
 import { analytics } from 'src/services/analytics'
 import { PAYWALL_ENTRY_POINTS, TAROT_SESSION_EVENTS } from 'src/constants/analyticsEvents'
 
@@ -132,6 +141,7 @@ const STORAGE_KEY = 'tarot-interpretation-v1'
 
 const router = useRouter()
 const { hasPremiumAccess } = usePremiumAccess()
+const authStore = useAuthStore()
 const reading = ref(null)
 const meta = ref({ themeLabel: '', subThemeLabel: '', question: '', freeAiGift: false })
 const visuals = ref([])
@@ -157,7 +167,17 @@ const adviceLabel = computed(() => tt('tarotInterpretation.adviceLabel'))
 // "this was the deep version" message appears (never on the immersive oracle scene).
 const isFreeGift = computed(() => Boolean(reading.value) && Boolean(meta.value.freeAiGift))
 const giftNote = computed(() => tt('tarotInterpretation.freeGift.note'))
-const showPremiumAha = computed(() => Boolean(reading.value) && !hasPremiumAccess.value)
+// A logged-out newcomer just read the basic interpretation — invite them to sign in
+// so their next reading is the full AI gift (the gift requires an account). Shown
+// only here on the result page, never on the immersive oracle scene.
+const isSignedOut = computed(() => !authStore.state.user?.id)
+const showGiftSignIn = computed(() => Boolean(reading.value) && isSignedOut.value && !isFreeGift.value)
+const giftSignInLead = computed(() => tt('tarotInterpretation.freeGift.signInLead'))
+const giftSignInCta = computed(() => tt('tarotInterpretation.freeGift.signInCta'))
+// Premium upsell only for signed-in free users (the signed-out get the gift invite above).
+const showPremiumAha = computed(
+  () => Boolean(reading.value) && !hasPremiumAccess.value && !isSignedOut.value,
+)
 const premiumBadge = computed(() => tt('tarotInterpretation.premiumBadge'))
 const premiumTitle = computed(() => tt('premiumAccess.tarot.aha.title'))
 const premiumLead = computed(() => tt('premiumAccess.tarot.aha.lead'))
@@ -289,6 +309,16 @@ const openPremiumFromAha = async () => {
       entry: point.entry,
     },
   }).catch(() => {})
+}
+
+const signInForGift = async () => {
+  void analytics.logEvent(TAROT_SESSION_EVENTS.upsellShown, {
+    source: 'tarot_gift_signin',
+    entry: 'interpretation',
+  })
+  await hapticTap()
+  // Back to the oracle after sign-in so the next reading delivers the AI gift.
+  router.push({ name: 'login', query: { redirect: '/tarot' } }).catch(() => {})
 }
 
 onMounted(() => {
@@ -576,6 +606,19 @@ onMounted(() => {
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
   display: grid;
   gap: 10px;
+}
+
+/* Gift sign-in variant — warm accent (matches the gift note), not the premium blue. */
+.interpret-upgrade--gift {
+  border-color: rgba(200, 188, 162, 0.32);
+  background:
+    radial-gradient(120% 140% at 0% 0, rgba(200, 188, 162, 0.14), rgba(200, 188, 162, 0)),
+    linear-gradient(165deg, rgba(10, 14, 22, 0.9), rgba(5, 8, 14, 0.96));
+}
+
+.interpret-upgrade--gift .interpret-upgrade__lead {
+  font-style: italic;
+  color: rgba(228, 222, 206, 0.94);
 }
 
 .interpret-upgrade__badge {
