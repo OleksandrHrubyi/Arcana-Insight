@@ -35,35 +35,29 @@ Deno.serve(async (req: Request) => {
     return json({ error: 'Method Not Allowed' }, 405)
   }
 
-  // AI tarot is a paid, premium-only feature. verify_jwt = true rejects invalid
-  // tokens at the gateway; this internal check is defense-in-depth so a logged-out
-  // caller can never trigger paid OpenAI/OpenRouter completions.
+  // AI tarot is a paid feature (verify_jwt rejects invalid tokens at the gateway;
+  // this is defense-in-depth). Premium users always get it. Non-premium users get
+  // exactly ONE free AI reading per account — "your first reading is a gift" — then
+  // it's premium-only. Enforcement is flag-gated (RC_ENFORCE_PREMIUM).
   const auth = req.headers.get('Authorization')
   if (!auth) {
     return json({ error: 'Missing authorization' }, 401)
   }
+
+  const SUPA_URL = Deno.env.get('SUPABASE_URL') ?? Deno.env.get('URL')!
+  const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') ?? Deno.env.get('ANON_KEY')!
+  const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY')!
+
+  let user = null
+  let admin = null
   try {
     const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2')
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? Deno.env.get('URL')!,
-      Deno.env.get('SUPABASE_ANON_KEY') ?? Deno.env.get('ANON_KEY')!,
-      { global: { headers: { Authorization: auth } } }
-    )
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return json({ error: 'Unauthorized' }, 401)
-    }
-    // Server-side premium enforcement (flag-gated, same as personal-horoscope) so a
-    // logged-in non-subscriber can't trigger paid AI completions by calling the API.
+    const supabase = createClient(SUPA_URL, ANON_KEY, { global: { headers: { Authorization: auth } } })
+    const res = await supabase.auth.getUser()
+    user = res?.data?.user || null
+    if (!user) return json({ error: 'Unauthorized' }, 401)
     if (premiumEnforcementEnabled()) {
-      const admin = createClient(
-        Deno.env.get('SUPABASE_URL') ?? Deno.env.get('URL')!,
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY')!,
-        { auth: { persistSession: false } },
-      )
-      if (!(await isUserPremium(admin, user.id))) {
-        return json({ error: 'premium_required' }, 403)
-      }
+      admin = createClient(SUPA_URL, SERVICE_KEY, { auth: { persistSession: false } })
     }
   } catch (error) {
     console.error('[tarot-reading] auth check failed', error)
@@ -71,15 +65,24 @@ Deno.serve(async (req: Request) => {
   }
 
   const body = await req.json().catch(() => null)
+  const isPremium = admin ? await isUserPremium(admin, user.id) : true
 
-  // Clarify mode: before the cards are drawn, return ONE focusing question + a few
-  // suggested answers. Isolated early-return so the reading path below is untouched.
+  // Clarify mode: premium-only (not part of the free first-reading gift).
   if (body?.mode === 'clarify') {
+    if (admin && !isPremium) return json({ error: 'premium_required' }, 403)
     return await handleClarify(body)
   }
 
   if (!body?.cards?.length) {
     return json({ error: 'Missing cards payload' }, 400)
+  }
+
+  // Reading: premium → always; otherwise consume the one free AI reading (the gift).
+  let freeAiGift = false
+  if (admin && !isPremium) {
+    const granted = await consumeFreeAiGrant(admin, user.id, 'tarot')
+    if (!granted) return json({ error: 'premium_required' }, 403)
+    freeAiGift = true
   }
 
   try {
@@ -91,7 +94,7 @@ Deno.serve(async (req: Request) => {
     if (openAiKey) {
       try {
         const openAiReading = await requestOpenAiReading({ body, apiKey: openAiKey, language })
-        return withProviderMeta(openAiReading, 'openai', OPENAI_MODEL)
+        return withProviderMeta(openAiReading, 'openai', OPENAI_MODEL, freeAiGift)
       } catch (error) {
         const reason = resolveReason(error, 'openai_exception')
         providerErrors.push({ provider: 'openai', reason })
@@ -109,7 +112,7 @@ Deno.serve(async (req: Request) => {
           apiKey: openRouterKey,
           language,
         })
-        return withProviderMeta(openRouterReading, 'openrouter', OPENROUTER_MODEL)
+        return withProviderMeta(openRouterReading, 'openrouter', OPENROUTER_MODEL, freeAiGift)
       } catch (error) {
         const reason = resolveReason(error, 'openrouter_exception')
         providerErrors.push({ provider: 'openrouter', reason })
@@ -120,12 +123,43 @@ Deno.serve(async (req: Request) => {
     }
 
     console.error('[tarot-reading] all providers failed', providerErrors)
+    // The AI failed — don't burn the user's one free reading on a failure.
+    if (freeAiGift && admin) await refundFreeAiGrant(admin, user.id, 'tarot')
     return aiError('AI interpretation is unavailable', 503, 'all_providers_failed')
   } catch (error) {
     console.error('[tarot-reading] unhandled error', error)
+    if (freeAiGift && admin) await refundFreeAiGrant(admin, user.id, 'tarot')
     return aiError('AI interpretation is unavailable', 503, 'provider_flow_exception')
   }
 })
+
+// One free AI reading per account: atomically insert the grant. Returns true only
+// when newly inserted (= this is their free one); false if it already existed.
+async function consumeFreeAiGrant(admin, userId, feature) {
+  try {
+    const { data, error } = await admin
+      .from('ai_free_grants')
+      .upsert([{ user_id: userId, feature }], { onConflict: 'user_id,feature', ignoreDuplicates: true })
+      .select()
+    if (error) {
+      console.error('[tarot-reading] free-grant upsert failed', error.message)
+      return false
+    }
+    return Array.isArray(data) && data.length > 0
+  } catch (e) {
+    console.error('[tarot-reading] free-grant exception', e)
+    return false
+  }
+}
+
+// Refund the grant if the AI call failed, so a failure doesn't consume the gift.
+async function refundFreeAiGrant(admin, userId, feature) {
+  try {
+    await admin.from('ai_free_grants').delete().eq('user_id', userId).eq('feature', feature)
+  } catch (e) {
+    console.error('[tarot-reading] free-grant refund failed', e)
+  }
+}
 
 async function requestOpenAiReading({ body, apiKey, language }) {
   const response = await fetchWithTimeout('https://api.openai.com/v1/responses', {
@@ -551,12 +585,13 @@ function json(data, status = 200) {
   })
 }
 
-function withProviderMeta(data, provider, model) {
+function withProviderMeta(data, provider, model, freeAiGift = false) {
   return json({
     ...data,
     meta: {
       provider,
       model,
+      freeAiGift,
     },
   })
 }
