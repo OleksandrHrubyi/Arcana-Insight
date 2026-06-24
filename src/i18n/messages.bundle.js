@@ -2000,7 +2000,7 @@ export const messages = {
         freeTrialDays: '{days}-day free trial',
         unavailableHint: 'Purchases are unavailable on this device.',
         footnote:
-          'Subscription renews automatically unless canceled at least 24 hours before renewal.',
+          'Payment is charged to your Apple ID at confirmation of purchase. The subscription renews automatically unless canceled at least 24 hours before the end of the current period; your account is charged for renewal within 24 hours before the period ends. You can manage or cancel anytime in your App Store account settings.',
         includesTitle: 'Every plan includes:',
         includes: {
           unlimitedReadings: 'Unlimited tarot readings (1, 3, and 5 cards)',
@@ -4203,7 +4203,7 @@ export const messages = {
         freeTrialDays: '{days} днів безкоштовно',
         unavailableHint: 'Покупки недоступні на цьому пристрої.',
         footnote:
-          'Підписка продовжується автоматично, якщо не скасувати щонайменше за 24 години до продовження.',
+          'Оплата списується з твого Apple ID при підтвердженні покупки. Підписка поновлюється автоматично, якщо не скасувати щонайменше за 24 години до кінця поточного періоду; кошти за поновлення списуються протягом 24 годин до завершення періоду. Керувати чи скасувати можна будь-коли в налаштуваннях App Store.',
         includesTitle: 'У кожному плані ти отримуєш:',
         includes: {
           unlimitedReadings: 'Необмежені розклади таро (1, 3 і 5 карт)',
