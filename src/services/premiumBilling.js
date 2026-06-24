@@ -477,6 +477,15 @@ export const logoutFromRevenueCat = async () => {
   const configured = await ensureConfigured()
   if (!configured.ok) return { ok: false, reason: configured.reason }
   try {
+    // Skip when the RC user is already anonymous (fresh install / logged-out launch):
+    // calling logOut on an anonymous user throws RC error 22 ("LogOut was called but
+    // the current user is anonymous"), which is just noise (and would pollute crash
+    // reports). Only log out a genuinely identified user.
+    const idRes = await Purchases.getAppUserID()
+    const appUserID = String((idRes && idRes.appUserID) || idRes || '')
+    if (!appUserID || appUserID.startsWith('$RCAnonymousID:')) {
+      return { ok: true, skipped: 'anonymous' }
+    }
     await Purchases.logOut()
     return { ok: true }
   } catch (error) {
