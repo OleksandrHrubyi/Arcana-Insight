@@ -2030,6 +2030,7 @@ export const messages = {
           purchaseFailed: 'Unable to complete purchase. Please try again.',
           restoreFailed: 'Unable to restore purchases. Please try again.',
         },
+        signInRequired: 'Sign in first — Premium is saved to your account.',
         results: {
           activated: 'Premium unlocked.',
           updated: 'Premium plan updated.',
@@ -4247,6 +4248,7 @@ export const messages = {
           purchaseFailed: 'Не вдалося завершити покупку. Спробуй ще раз.',
           restoreFailed: 'Не вдалося відновити покупки. Спробуй ще раз.',
         },
+        signInRequired: 'Спершу увійди — Premium зберігається на твоєму акаунті.',
         results: {
           activated: 'Premium активовано.',
           updated: 'План Premium оновлено.',

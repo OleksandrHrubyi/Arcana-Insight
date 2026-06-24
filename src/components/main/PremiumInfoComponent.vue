@@ -171,6 +171,7 @@ import { useQuasar } from 'quasar'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
+import { useAuthStore } from 'stores/authStore.js'
 import {
   getBillingPremiumStatus,
   getBillingPaywallPlans,
@@ -187,6 +188,23 @@ const tt = (key) => t(locale.value, key)
 const router = useRouter()
 const route = useRoute()
 const $q = useQuasar()
+const authStore = useAuthStore()
+
+// Premium is tied to the account (server enforces entitlement by Supabase user id,
+// RevenueCat identity = that id). Buying/restoring while logged out would charge an
+// anonymous RevenueCat user, then get revoked on the next premium sync and rejected
+// by the server — money in, no access. So billing actions require sign-in first.
+const ensureSignedInForBilling = async () => {
+  if (authStore.state.user?.id) return true
+  $q.notify({
+    message: tt('premiumPage.billing.signInRequired'),
+    color: 'dark',
+    textColor: 'white',
+    position: 'bottom',
+  })
+  await router.push({ name: 'login' }).catch(() => {})
+  return false
+}
 const {
   state: premiumState,
   hasPremiumAccess,
@@ -465,6 +483,9 @@ const onPurchase = async () => {
     await onClose()
     return
   }
+  if (!(await ensureSignedInForBilling())) {
+    return
+  }
   if (isBillingActionPending.value || !billingReady.value) {
     if (!billingReady.value) {
       $q.notify({
@@ -555,6 +576,9 @@ const onOpenPolicy = async (section) => {
 }
 
 const onRestore = async () => {
+  if (!(await ensureSignedInForBilling())) {
+    return
+  }
   if (isBillingActionPending.value || !billingReady.value) {
     if (!billingReady.value) {
       $q.notify({
