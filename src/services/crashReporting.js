@@ -62,6 +62,16 @@ class CrashReportingService {
     }
   }
 
+  // Force a native crash — for verifying Crashlytics during setup only.
+  async testCrash() {
+    if (!this.enabled) return
+    try {
+      await FirebaseCrashlytics.crash()
+    } catch {
+      /* ignore */
+    }
+  }
+
   formatMessage(error, context) {
     const base =
       error instanceof Error

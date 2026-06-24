@@ -18,6 +18,9 @@ PODS:
     - FirebaseAnalytics (~> 10.8)
   - CapacitorFirebaseAnalytics/Lite (5.4.1):
     - Capacitor
+  - CapacitorFirebaseCrashlytics (5.4.1):
+    - Capacitor
+    - FirebaseCrashlytics (~> 10.8)
   - CapacitorHaptics (5.0.8):
     - Capacitor
   - CapacitorLocalNotifications (5.0.8):
@@ -52,13 +55,34 @@ PODS:
     - FirebaseCoreInternal (~> 10.0)
     - GoogleUtilities/Environment (~> 7.12)
     - GoogleUtilities/Logger (~> 7.12)
+  - FirebaseCoreExtension (10.29.0):
+    - FirebaseCore (~> 10.0)
   - FirebaseCoreInternal (10.29.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
+  - FirebaseCrashlytics (10.29.0):
+    - FirebaseCore (~> 10.5)
+    - FirebaseInstallations (~> 10.0)
+    - FirebaseRemoteConfigInterop (~> 10.23)
+    - FirebaseSessions (~> 10.5)
+    - GoogleDataTransport (~> 9.2)
+    - GoogleUtilities/Environment (~> 7.8)
+    - nanopb (< 2.30911.0, >= 2.30908.0)
+    - PromisesObjC (~> 2.1)
   - FirebaseInstallations (10.29.0):
     - FirebaseCore (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/UserDefaults (~> 7.8)
     - PromisesObjC (~> 2.1)
+  - FirebaseRemoteConfigInterop (10.29.0)
+  - FirebaseSessions (10.29.0):
+    - FirebaseCore (~> 10.5)
+    - FirebaseCoreExtension (~> 10.0)
+    - FirebaseInstallations (~> 10.0)
+    - GoogleDataTransport (~> 9.2)
+    - GoogleUtilities/Environment (~> 7.13)
+    - GoogleUtilities/UserDefaults (~> 7.13)
+    - nanopb (< 2.30911.0, >= 2.30908.0)
+    - PromisesSwift (~> 2.1)
   - GoogleAppMeasurement (10.29.0):
     - GoogleAppMeasurement/AdIdSupport (= 10.29.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
@@ -79,6 +103,10 @@ PODS:
     - GoogleUtilities/Network (~> 7.11)
     - "GoogleUtilities/NSData+zlib (~> 7.11)"
     - nanopb (< 2.30911.0, >= 2.30908.0)
+  - GoogleDataTransport (9.4.1):
+    - GoogleUtilities/Environment (~> 7.7)
+    - nanopb (< 2.30911.0, >= 2.30908.0)
+    - PromisesObjC (< 3.0, >= 1.2)
   - GoogleUtilities/AppDelegateSwizzler (7.13.3):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -113,6 +141,8 @@ PODS:
   - nanopb/decode (2.30910.0)
   - nanopb/encode (2.30910.0)
   - PromisesObjC (2.4.0)
+  - PromisesSwift (2.4.0):
+    - PromisesObjC (= 2.4.0)
   - PurchasesHybridCommon (11.1.1):
     - RevenueCat (= 4.43.2)
   - RevenueCat (4.43.2)
@@ -129,6 +159,7 @@ DEPENDENCIES:
   - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
   - "CapacitorFirebaseAnalytics (from `../../node_modules/@capacitor-firebase/analytics`)"
   - "CapacitorFirebaseAnalytics/Analytics (from `../../node_modules/@capacitor-firebase/analytics`)"
+  - "CapacitorFirebaseCrashlytics (from `../../node_modules/@capacitor-firebase/crashlytics`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorLocalNotifications (from `../../node_modules/@capacitor/local-notifications`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
@@ -141,12 +172,18 @@ SPEC REPOS:
   trunk:
     - FirebaseAnalytics
     - FirebaseCore
+    - FirebaseCoreExtension
     - FirebaseCoreInternal
+    - FirebaseCrashlytics
     - FirebaseInstallations
+    - FirebaseRemoteConfigInterop
+    - FirebaseSessions
     - GoogleAppMeasurement
+    - GoogleDataTransport
     - GoogleUtilities
     - nanopb
     - PromisesObjC
+    - PromisesSwift
     - PurchasesHybridCommon
     - RevenueCat
 
@@ -165,6 +202,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/filesystem"
   CapacitorFirebaseAnalytics:
     :path: "../../node_modules/@capacitor-firebase/analytics"
+  CapacitorFirebaseCrashlytics:
+    :path: "../../node_modules/@capacitor-firebase/crashlytics"
   CapacitorHaptics:
     :path: "../../node_modules/@capacitor/haptics"
   CapacitorLocalNotifications:
@@ -188,6 +227,7 @@ SPEC CHECKSUMS:
   CapacitorDevice: 4aceb502ce1142ea45a2aece603169d7479cd271
   CapacitorFilesystem: afe2c055f1e379385c80eafdece32751926b2910
   CapacitorFirebaseAnalytics: 1023995c4b63c90e7dcd12f658375df38da1665d
+  CapacitorFirebaseCrashlytics: 9269b6a812fee06bf9ba2c9c72d182f3cc7f6b44
   CapacitorHaptics: acd823c6ed0ec2cd968a09316768144b0495a1e7
   CapacitorLocalNotifications: 73765422be07829b2d0a4c7c22a77ea2252ca210
   CapacitorPreferences: 5331d7a33044d252dcb2f7fee712f0322c04bae7
@@ -196,16 +236,22 @@ SPEC CHECKSUMS:
   CapacitorStatusBar: 8e0a8f213504695505dc8c4f808dffbe03aa0e0f
   FirebaseAnalytics: 23717de130b779aa506e757edb9713d24b6ffeda
   FirebaseCore: 30e9c1cbe3d38f5f5e75f48bfcea87d7c358ec16
+  FirebaseCoreExtension: 705ca5b14bf71d2564a0ddc677df1fc86ffa600f
   FirebaseCoreInternal: df84dd300b561c27d5571684f389bf60b0a5c934
+  FirebaseCrashlytics: 34647b41e18de773717fdd348a22206f2f9bc774
   FirebaseInstallations: 913cf60d0400ebd5d6b63a28b290372ab44590dd
+  FirebaseRemoteConfigInterop: 6efda51fb5e2f15b16585197e26eaa09574e8a4d
+  FirebaseSessions: dbd14adac65ce996228652c1fc3a3f576bdf3ecc
   GoogleAppMeasurement: f9de05ee17401e3355f68e8fc8b5064d429f5918
+  GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   PurchasesHybridCommon: 73f4f2c6e4ec3487b4219bf60e1661100fb85da3
   RevenueCat: 3d934653b7e8b09af88fd47e9e84cfaf5d0a89ba
   RevenuecatPurchasesCapacitor: 70ecf4905bbbce9b6d6bd243504a7001b6054ac0
 
-PODFILE CHECKSUM: 9bdd4dc69fdb02b6bead94f992c32947b1d207ad
+PODFILE CHECKSUM: ce8969d4ab6de63c8062ea94338572882ba02106
 
 COCOAPODS: 1.16.2
