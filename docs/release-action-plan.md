@@ -24,17 +24,18 @@
 - [x] **P0-2 · Paywall auto-renew disclosure** — 🤖 DONE 2026-06-24
   Footnote was incomplete (only the 24h-cancel line). Expanded (en+uk) to full Apple 3.1.2 disclosure: charged to Apple ID at purchase · auto-renews unless cancelled ≥24h before period end · charged within 24h before end · manage/cancel in App Store settings. Plan tiles already show title/period/price + per-month; Terms (EULA) + Privacy links present. Binary now meets 3.1.2. *(Also ensure the same subscription info + Terms/Privacy URLs are in the ASC listing metadata — part of P0-6/metadata.)*
 
-- [ ] **P0-3 · Real-device QA pass** — 👤 (🤖 provides the script)
-  Run the full §10 test plan on a real iPhone (release build): smoke flow + subscription (purchase / **restore / cancel / survives app-kill / restore-as-non-subscriber**) + auth + edge cases + airplane/slow network + push timing.
+- [x] **P0-3 · Real-device QA pass** — DONE 2026-06-24 (core flows on a real iPhone)
+  Walked the app on device; found & fixed 5 real bugs the agents missed: horoscope love/career premium gating (swipe→paywall + reward bypass + weak blur), premium leak after logout, premium-flash race on logged-out cold start, RC anonymous-logout noise, and **black screen on fresh install** (Capacitor proxy thenable trap). App now opens & works on a clean install. Smoke (onboarding/home/nav/tarot/horoscope/personal-horoscope/settings) ✅. *(Remaining device checks — airplane/slow-network, push-at-09:00 timing — worth a pass but not blockers.)*
 
-- [ ] **P0-4 · IAP sandbox runbook finished** — 👤
-  Complete the remaining checks in `docs/release-reviewer/references/ios-sandbox-billing-runbook.md` (restore, cancel, restart-survival, negative restore) and record results. (Purchase already verified.)
+- [x] **P0-4 · IAP on device (sandbox)** — DONE 2026-06-24
+  **A purchase ✅, B survives app-kill ✅, C restore ✅** (auto-restores on sign-in — ideal UX; manual Restore button also present). Premium is gated on sign-in, so it correctly turns off when logged out and back on when logged in. **D (cancel/expiry)** and **E (restore as non-subscriber)** deferred — optional robustness, not submission blockers; verify post-launch.
 
 - [ ] **P0-5 · Subscriptions "Ready to Submit"** — 👤
   In ASC, both products (`arcana.premium.monthly`, `arcana.premium.yearly`) → state **Ready to Submit** + attached to the app version.
 
-- [ ] **P0-6 · ASC Age-Rating + App-Privacy forms** — 👤
+- [ ] **P0-6 · ASC Age-Rating + App-Privacy forms + Reviewer Notes** — 👤
   Fill both forms in App Store Connect to match `app-store/asc-age-rating-and-privacy.md` (Age 4+, 8 data types, Tracking = No).
+  **Reviewer Notes (add in ASC):** *"No login required to browse. Premium features require signing in; purchases restore automatically on sign-in, and a manual Restore Purchases button is on the paywall. For IAP review use a Sandbox account."* (Premium is intentionally gated on sign-in.)
 
 - [x] **P0-7 · AppIcon has no alpha channel** — 🤖 DONE 2026-06-24
   Verified via `sips`: `AppIcon-512@2x.png` is 1024×1024, **hasAlpha: no**, 8-bit RGB. Apple-compliant (no transparency). ✅

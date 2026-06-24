@@ -20,7 +20,10 @@ The reviewer can access the paywall from multiple places, including:
 - Saved Readings
 - Compatibility
 
-Restore Purchases is available on the Premium screen.
+Premium features require signing in (premium is tied to the account). After a
+purchase, premium restores automatically on sign-in; a manual "Restore Purchases"
+button is also available on the Premium screen. To evaluate premium, sign in (or
+create an account in-app), then purchase / restore with a Sandbox account.
 
 Sign in with Apple is supported. A pre-created test account is not required for basic review. If account-level testing is needed, the reviewer can create an account in-app and then open:
 Settings -> Account
