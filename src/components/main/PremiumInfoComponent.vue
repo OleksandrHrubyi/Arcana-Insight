@@ -274,86 +274,25 @@ const featureItems = computed(() => [
 ])
 
 const quickCompareRows = computed(() => {
-  if (locale.value === 'uk') {
-    return [
-      {
-        id: 'tarot-format',
-        feature: 'Розклад таро',
-        free: '1 карта/день',
-        premium: '1, 3 або 5 карт без ліміту',
-      },
-      {
-        id: 'interpretation',
-        feature: 'Розбір',
-        free: 'Короткий висновок',
-        premium: tarotAiEnabled ? 'Глибокий AI-розбір + кроки' : 'Глибокий розбір + кроки',
-      },
-      {
-        id: 'horoscope',
-        feature: 'Теми гороскопу',
-        free: 'Лише енергія',
-        premium: 'Енергія, кохання, карʼєра',
-      },
-      {
-        id: 'compatibility',
-        feature: 'Сумісність',
-        free: 'Лише preview',
-        premium: 'Повний розбір пари',
-      },
-      {
-        id: 'history',
-        feature: 'Історія',
-        free: 'Без історії',
-        premium: 'Усі читання збережені',
-      },
-    ]
-  }
-
+  const c = (k) => tt(`premiumPage.compareTable.${k}`)
   return [
-    {
-      id: 'tarot-format',
-      feature: 'Tarot spread',
-      free: '1 card/day',
-      premium: '1, 3, or 5 cards with no limit',
-    },
+    { id: 'tarot-format', feature: c('tarotFormat.feature'), free: c('tarotFormat.free'), premium: c('tarotFormat.premium') },
     {
       id: 'interpretation',
-      feature: 'Reading depth',
-      free: 'Short takeaway',
-      premium: tarotAiEnabled ? 'Deep AI reading + action steps' : 'Deep reading + action steps',
+      feature: c('interpretation.feature'),
+      free: c('interpretation.free'),
+      premium: tarotAiEnabled ? c('interpretation.premiumAi') : c('interpretation.premiumBasic'),
     },
-    {
-      id: 'horoscope',
-      feature: 'Horoscope themes',
-      free: 'Energy only',
-      premium: 'Energy, love, and career',
-    },
-    {
-      id: 'compatibility',
-      feature: 'Compatibility',
-      free: 'Preview only',
-      premium: 'Full relationship reading',
-    },
-    {
-      id: 'history',
-      feature: 'History',
-      free: 'No history',
-      premium: 'All readings saved',
-    },
+    { id: 'horoscope', feature: c('horoscope.feature'), free: c('horoscope.free'), premium: c('horoscope.premium') },
+    { id: 'compatibility', feature: c('compatibility.feature'), free: c('compatibility.free'), premium: c('compatibility.premium') },
+    { id: 'history', feature: c('history.feature'), free: c('history.free'), premium: c('history.premium') },
   ]
 })
 
-const compareCardCopy = computed(() =>
-  locale.value === 'uk'
-    ? {
-        lead: 'Free підходить для базового щоденного ритуалу. Premium відкриває повний формат роботи з таро, гороскопом і сумісністю.',
-        summary: 'Premium = повний доступ до всіх форматів без денних лімітів.',
-      }
-    : {
-        lead: 'Free works for a basic daily ritual. Premium unlocks the full tarot, horoscope, and compatibility experience.',
-        summary: 'Premium = full access to every format with no daily limits.',
-      },
-)
+const compareCardCopy = computed(() => ({
+  lead: tt('premiumPage.compareTable.lead'),
+  summary: tt('premiumPage.compareTable.summary'),
+}))
 
 const billingPlans = [
   {
@@ -494,29 +433,13 @@ const resolveBillingErrorMessage = (reason, mode = 'purchase') => {
 
 const resolveBillingIssueDetail = (reason) => {
   const normalized = String(reason || '').toLowerCase()
-  if (normalized === 'missing_api_key') {
-    return locale.value === 'uk'
-      ? '\u041d\u0435 \u0437\u0430\u0434\u0430\u043d\u043e VITE_RC_IOS_API_KEY \u0434\u043b\u044f iPhone build.'
-      : 'VITE_RC_IOS_API_KEY is missing for the iPhone build.'
-  }
+  if (normalized === 'missing_api_key') return tt('premiumPage.billingIssues.missingApiKey')
   if (normalized === 'plugin_missing' || normalized === 'configure_failed') {
-    return locale.value === 'uk'
-      ? 'RevenueCat Purchases plugin \u043d\u0435 \u043f\u0456\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0439 \u0443 \u043d\u0430\u0442\u0438\u0432\u043d\u043e\u043c\u0443 iOS build.'
-      : 'The RevenueCat Purchases plugin is not connected in the native iOS build.'
+    return tt('premiumPage.billingIssues.pluginMissing')
   }
-  if (normalized === 'not_native') {
-    return locale.value === 'uk'
-      ? '\u041f\u043e\u043a\u0443\u043f\u043a\u0438 \u043f\u0440\u0430\u0446\u044e\u044e\u0442\u044c \u043b\u0438\u0448\u0435 \u0432 \u043d\u0430\u0442\u0438\u0432\u043d\u043e\u043c\u0443 iPhone build.'
-      : 'Purchases only work in a native iPhone build.'
-  }
-  if (normalized === 'network_error') {
-    return locale.value === 'uk'
-      ? '\u041d\u0435\u043c\u0430\u0454 \u0434\u043e\u0441\u0442\u0443\u043f\u0443 \u0434\u043e Store \u0430\u0431\u043e \u043c\u0435\u0440\u0435\u0436\u0456.'
-      : 'The Store or network is currently unreachable.'
-  }
-  return locale.value === 'uk'
-    ? 'Store billing \u0437\u0430\u0440\u0430\u0437 \u043d\u0435 \u0433\u043e\u0442\u043e\u0432\u0438\u0439.'
-    : 'Store billing is currently unavailable.'
+  if (normalized === 'not_native') return tt('premiumPage.billingIssues.notNative')
+  if (normalized === 'network_error') return tt('premiumPage.billingIssues.networkError')
+  return tt('premiumPage.billingIssues.generic')
 }
 
 const billingUnavailableMessage = computed(() => {

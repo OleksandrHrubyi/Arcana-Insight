@@ -139,9 +139,10 @@ test('premium copy stays aligned on compatibility preview and energy-theme wordi
     'Free все ще дає цінність сьогоднішнього таро, але не зберігає історію розкладів. Premium зберігає кожну сесію таро в єдину стрічку.',
   )
 
-  const premiumPaywall = readSource('src/components/main/PremiumInfoComponent.vue')
-  assert.match(premiumPaywall, /free:\s*'Preview only'/)
-  assert.match(premiumPaywall, /free:\s*'Лише preview'/)
+  // Compare-table copy now lives in i18n (premiumPage.compareTable.*), not hardcoded
+  // in the component. Assert the compatibility-row "free" wording there.
+  assert.equal(messages.en.premiumPage.compareTable.compatibility.free, 'Preview only')
+  assert.equal(messages.uk.premiumPage.compareTable.compatibility.free, 'Лише preview')
   assert.equal(
     messages.en.premiumPage.outcome.title,
     'One deeper daily reflection practice',

@@ -1778,6 +1778,22 @@ export const messages = {
     premiumPage: {
       title: 'Premium',
       subtitle: 'Deeper guidance, unlimited tarot, and every reading saved in one place.',
+      compareTable: {
+        lead: 'Free works for a basic daily ritual. Premium unlocks the full tarot, horoscope, and compatibility experience.',
+        summary: 'Premium = full access to every format with no daily limits.',
+        tarotFormat: { feature: 'Tarot spread', free: '1 card/day', premium: '1, 3, or 5 cards with no limit' },
+        interpretation: { feature: 'Reading depth', free: 'Short takeaway', premiumAi: 'Deep AI reading + action steps', premiumBasic: 'Deep reading + action steps' },
+        horoscope: { feature: 'Horoscope themes', free: 'Energy only', premium: 'Energy, love, and career' },
+        compatibility: { feature: 'Compatibility', free: 'Preview only', premium: 'Full relationship reading' },
+        history: { feature: 'History', free: 'No history', premium: 'All readings saved' },
+      },
+      billingIssues: {
+        missingApiKey: 'VITE_RC_IOS_API_KEY is missing for the iPhone build.',
+        pluginMissing: 'The RevenueCat Purchases plugin is not connected in the native iOS build.',
+        notNative: 'Purchases only work in a native iPhone build.',
+        networkError: 'The Store or network is currently unreachable.',
+        generic: 'Store billing is currently unavailable.',
+      },
       header: {
         kicker: 'Unlock full access',
       },
@@ -3982,6 +3998,22 @@ export const messages = {
     premiumPage: {
       title: 'Преміум',
       subtitle: 'Глибші підказки, безлімітне таро і всі читання в одному місці.',
+      compareTable: {
+        lead: 'Free підходить для базового щоденного ритуалу. Premium відкриває повний формат роботи з таро, гороскопом і сумісністю.',
+        summary: 'Premium = повний доступ до всіх форматів без денних лімітів.',
+        tarotFormat: { feature: 'Розклад таро', free: '1 карта/день', premium: '1, 3 або 5 карт без ліміту' },
+        interpretation: { feature: 'Розбір', free: 'Короткий висновок', premiumAi: 'Глибокий AI-розбір + кроки', premiumBasic: 'Глибокий розбір + кроки' },
+        horoscope: { feature: 'Теми гороскопу', free: 'Лише енергія', premium: 'Енергія, кохання, карʼєра' },
+        compatibility: { feature: 'Сумісність', free: 'Лише preview', premium: 'Повний розбір пари' },
+        history: { feature: 'Історія', free: 'Без історії', premium: 'Усі читання збережені' },
+      },
+      billingIssues: {
+        missingApiKey: 'Не задано VITE_RC_IOS_API_KEY для iPhone build.',
+        pluginMissing: 'RevenueCat Purchases plugin не підключений у нативному iOS build.',
+        notNative: 'Покупки працюють лише в нативному iPhone build.',
+        networkError: 'Немає доступу до Store або мережі.',
+        generic: 'Store billing зараз не готовий.',
+      },
       header: {
         kicker: 'Відкрий повний доступ',
       },
