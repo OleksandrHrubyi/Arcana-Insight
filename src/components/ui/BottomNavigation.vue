@@ -186,7 +186,10 @@ async function onClick(name, idx, event) {
 
 watch(
   () => route.name,
-  (val) => { current.value = route.meta?.tab || val || 'arcana' },
+  // Highlight strictly by the route's declared tab. No fall back to the route name
+  // or to 'arcana' — that wrongly lit Home on pages without a tab. Pages reached
+  // via Menu declare meta.tab:'menu'; pages with no tab highlight nothing.
+  () => { current.value = route.meta?.tab || '' },
   { immediate: true }
 )
 </script>

@@ -14,13 +14,13 @@ const routes = [
 
       { path: 'menu', name: 'menu', component: () => import('src/pages/MenuPage.vue'), meta: { tab: 'menu' } },
       { path: 'daily', name: 'daily', component: () => import('src/pages/DailyCardPage.vue'), meta: { hideBottomNav: true } },
-      { path: 'support', name: 'support', component: () => import('src/pages/FaqSupportPage.vue'), meta: { allowWithoutOnboarding: true } },
-      { path: 'privacy-terms', name: 'privacyTerms', component: () => import('src/pages/PrivacyTermsPage.vue'), meta: { allowWithoutOnboarding: true } },
+      { path: 'support', name: 'support', component: () => import('src/pages/FaqSupportPage.vue'), meta: { allowWithoutOnboarding: true, tab: 'menu' } },
+      { path: 'privacy-terms', name: 'privacyTerms', component: () => import('src/pages/PrivacyTermsPage.vue'), meta: { allowWithoutOnboarding: true, tab: 'menu' } },
       { path: 'onboarding', name: 'onboarding', component: () => import('src/pages/OnboardingPage.vue'), meta: { hideBottomNav: true, allowWithoutOnboarding: true } },
-      { path: 'cards', name: 'cards', component: () => import('src/pages/CardLibraryPage.vue') },
+      { path: 'cards', name: 'cards', component: () => import('src/pages/CardLibraryPage.vue'), meta: { tab: 'menu' } },
       { path: 'zodiac-guide', name: 'zodiacGuide', component: () => import('src/pages/ZodiacGuidePage.vue'), meta: { tab: 'menu' } },
-      { path: 'compatibility', name: 'compatibility', component: () => import('src/pages/CompatibilityPage.vue') },
-      { path: 'readings', name: 'readings', component: () => import('src/pages/SavedReadingsPage.vue') },
+      { path: 'compatibility', name: 'compatibility', component: () => import('src/pages/CompatibilityPage.vue'), meta: { tab: 'menu' } },
+      { path: 'readings', name: 'readings', component: () => import('src/pages/SavedReadingsPage.vue'), meta: { tab: 'menu' } },
       { path: 'premium', name: 'premium', component: () => import('src/pages/PremiumPage.vue'), meta: { tab: 'menu', hideBottomNav: true } },
       { path: 'rewards', name: 'ritualRewards', component: () => import('src/pages/RitualRewardsPage.vue'), meta: { hideBottomNav: true } },
       { path: 'settings', name: 'settings', component: () => import('src/pages/SettingsPage.vue'), meta: { tab: 'menu' } },
@@ -29,7 +29,7 @@ const routes = [
         path: '/account',
         name: 'account',
         component: () => import('src/pages/AccountPage.vue'),
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, tab: 'menu' }
       }
 
     ]
