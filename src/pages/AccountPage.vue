@@ -805,6 +805,13 @@ export default defineComponent({
         ])
       } catch (err) {
         console.error(err)
+        // The update is cached + queued (retries later), so data isn't lost — but
+        // tell the user the save didn't go through right now.
+        this.$q?.notify?.({
+          type: 'warning',
+          position: 'top',
+          message: this.tt('errors.generic'),
+        })
       } finally {
         this.dateSaving = false
       }
