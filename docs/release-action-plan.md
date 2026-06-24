@@ -33,8 +33,8 @@
 - [ ] **P0-6 · ASC Age-Rating + App-Privacy forms** — 👤
   Fill both forms in App Store Connect to match `app-store/asc-age-rating-and-privacy.md` (Age 4+, 8 data types, Tracking = No).
 
-- [ ] **P0-7 · AppIcon has no alpha channel** — 👤 (🤖 can check the file)
-  Confirm `ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png` is 1024×1024, opaque (Apple rejects icons with transparency).
+- [x] **P0-7 · AppIcon has no alpha channel** — 🤖 DONE 2026-06-24
+  Verified via `sips`: `AppIcon-512@2x.png` is 1024×1024, **hasAlpha: no**, 8-bit RGB. Apple-compliant (no transparency). ✅
 
 ---
 
