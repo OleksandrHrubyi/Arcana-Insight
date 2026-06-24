@@ -46,14 +46,15 @@
 - [ ] **P1-2 · Host + verify Support and Privacy URLs** — 👤
   Ensure `support.html` is live and the Privacy Policy URL loads; both must be reachable from App Store + in-app.
 
-- [ ] **P1-3 · `supabase db pull`** — 🤖
-  Snapshot dashboard-only tables (`app_users`, `tarot_readings`, `push_devices`) into migrations to kill schema-drift risk.
+- [ ] **P1-3 · `supabase db pull`** — 👤 (needs Docker, can't run from here)
+  Requires Docker Desktop running (shadow DB). With Docker up, run `supabase db pull` → it generates a migration capturing the dashboard-only tables (`app_users`, `tarot_readings`, `push_devices`). ~2 min once Docker is running.
 
-- [ ] **P1-4 · Smoke automation + healthcheck** — 🤖
-  Add 2–3 Playwright smoke flows (home→tarot, paywall render, horoscope) + a scheduled "tarot-reading returns 200 for premium" healthcheck.
+- [~] **P1-4 · Smoke automation + healthcheck** — 🤖 smoke DONE; healthcheck = infra follow-up
+  **Done:** `tests/visual/smoke.spec.js` — 4 robust assertions (home/horoscope show nav; premium/tarot hide nav). Run `npx playwright test smoke`. Catches the navigation regressions that escaped before.
+  **Remaining (optional, infra):** scheduled live "AI tarot returns 200" healthcheck (would've caught the 503). Needs a runner + alert channel (GitHub Action cron / uptime monitor). For now failures surface via Crashlytics + Supabase logs + RevenueCat. Wire post-launch if you want proactive alerts.
 
-- [ ] **P1-5 · Remove dangling "rewards/points" copy** — 🤖
-  Confirm no remaining UI copy/CTA promises points/rewards after hiding that feature.
+- [x] **P1-5 · Remove dangling "rewards/points" copy** — 🤖 DONE 2026-06-24
+  Audited: no dangling value-prop copy. Ritual tracking is background-only (harmless); "points" in PremiumInfo/TarotInterpretation are sales bullet-points (unrelated); the streak badge is independent retention and still works. Removed the now-orphan `nav.rewards` i18n key (en+uk).
 
 - [ ] **P1-6 · Review + upload screenshots** — 👤
   Review `app-store/screenshots/` (6.5"/6.9"); optionally add captioned marketing frames; upload to ASC.
