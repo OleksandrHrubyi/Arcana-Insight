@@ -663,8 +663,11 @@ export default {
 
     isThemeLocked(tab) {
       if (this.hasPremiumAccess) return false
-      if (tab === FREE_HOROSCOPE_THEME) return false
-      return !this.isThemeUnlockedByReward(tab)
+      // love/career are premium-only. The reward-based 24h unlock is intentionally
+      // not honored: the rewards feature is hidden for launch, so a leftover token
+      // must not bypass the paywall. (Re-enable isThemeUnlockedByReward here if the
+      // rewards feature is restored.)
+      return tab !== FREE_HOROSCOPE_THEME
     },
 
     getThemeLockTitle(tab) {
@@ -1402,10 +1405,10 @@ export default {
 
     async setTheme(tab) {
       if (!tab || this.themeTab === tab) return
-      if (this.isThemeLocked(tab)) {
-        void this.openPremiumPaywall()
-        return
-      }
+      // Locked themes ARE selectable — the panel shows a blurred teaser + an
+      // "Unlock Premium" overlay. Do NOT auto-redirect to the paywall on
+      // swipe/select (that aggressive bounce was the reported bug); the user opens
+      // the paywall by tapping the overlay CTA.
       this.themeTab = tab
       try {
         await Haptics.impact({ style: ImpactStyle.Light })
@@ -2246,8 +2249,8 @@ export default {
 }
 
 .horoscope-info-style--blurred {
-  filter: blur(3.5px);
-  opacity: 0.75;
+  filter: blur(10px);
+  opacity: 0.55;
   pointer-events: none;
   user-select: none;
 }
