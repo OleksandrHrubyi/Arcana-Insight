@@ -73,6 +73,13 @@
       <div v-if="emptyStateText" class="cards-empty">
         {{ emptyStateText }}
       </div>
+
+      <div v-if="loaded && loadError" class="cards-empty">
+        <p>{{ tt('common.loadError') }}</p>
+        <button type="button" class="arcana-btn arcana-btn--secondary" @click="retryLoad">
+          {{ tt('common.retry') }}
+        </button>
+      </div>
     </div>
 
     <q-dialog
@@ -153,6 +160,7 @@ const filters = [
 
 const cards = ref([])
 const loaded = ref(false)
+const loadError = ref(false)
 const activeFilter = ref('all')
 const detailOpen = ref(false)
 const selectedCard = ref(null)
@@ -177,7 +185,7 @@ const getSearchText = (card) => {
 }
 
 const emptyStateText = computed(() => {
-  if (!loaded.value || filteredCards.value.length) return ''
+  if (!loaded.value || loadError.value || filteredCards.value.length) return ''
   if (searchQuery.value.trim()) return tt('cardsPage.emptySearch')
   return tt('cardsPage.emptyAll')
 })
@@ -273,9 +281,11 @@ onBeforeUnmount(() => {
 })
 
 const initializeCardLibrary = async () => {
+  loadError.value = false
   const { cards: nextCards, error } = await loadTarotCardsSnapshot({ loadTarotData })
   cards.value = nextCards
   if (error) {
+    loadError.value = true
     console.warn('[CardLibrary] loadTarotData failed', error)
   }
 }
@@ -285,10 +295,16 @@ const initializeCardLibrarySafe = async () => {
     await initializeCardLibrary()
   } catch (error) {
     cards.value = []
+    loadError.value = true
     console.warn('[CardLibrary] init failed', error)
   } finally {
     loaded.value = true
   }
+}
+
+const retryLoad = async () => {
+  loaded.value = false
+  await initializeCardLibrarySafe()
 }
 
 onMounted(() => {

@@ -2045,6 +2045,8 @@ export const messages = {
     zodiacGuidePage: {
       title: 'Zodiac signs',
       subtitle: 'Guide for all 12 signs',
+      copiedManual: 'Text copied. You can paste it manually.',
+      shareUnavailable: 'Unable to open share menu.',
       introTitle: 'How to use',
       introText:
         'Open your sign and read it as a short self-check: core energy, strengths, and where to keep balance.',
@@ -4247,6 +4249,8 @@ export const messages = {
     zodiacGuidePage: {
       title: 'Знаки зодіаку',
       subtitle: 'Гід по всіх 12 знаках',
+      copiedManual: 'Текст скопійовано. Можна вставити вручну.',
+      shareUnavailable: 'Не вдалося відкрити меню поширення.',
       introTitle: 'Як користуватись',
       introText:
         'Відкрий свій знак і читай як короткий self-check: базова енергія, сильні сторони та де тримати баланс.',

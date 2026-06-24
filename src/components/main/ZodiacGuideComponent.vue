@@ -1209,9 +1209,7 @@ const shareSign = async (sign) => {
   const copied = await copyText(shareText)
   if (copied) {
     $q.notify({
-      message: locale.value === 'uk'
-        ? 'Текст скопійовано. Можна вставити вручну.'
-        : 'Text copied. You can paste it manually.',
+      message: tt('zodiacGuidePage.copiedManual'),
       color: 'dark',
       textColor: 'white',
       position: 'bottom',
@@ -1221,9 +1219,7 @@ const shareSign = async (sign) => {
 
   $q.notify({
     type: 'negative',
-    message: locale.value === 'uk'
-      ? 'Не вдалося відкрити меню поширення.'
-      : 'Unable to open share menu.',
+    message: tt('zodiacGuidePage.shareUnavailable'),
     position: 'bottom',
   })
 }
