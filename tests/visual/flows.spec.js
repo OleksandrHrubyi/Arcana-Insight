@@ -50,6 +50,9 @@ test.describe('flows: auth × premium dead-end guards', () => {
     await expect(page).not.toHaveURL(/premium/)
     // The in-page lock panel is shown.
     await expect(page.locator('.horoscope-lock-overlay').first()).toBeVisible()
+    // Premium content must NOT be rendered behind the blur (extractable via DOM).
+    // The locked panel shows the placeholder skeleton instead of the real text.
+    await expect(page.locator('.horoscope-text-skeleton').first()).toBeAttached()
   })
 
   // Regression: deep-linking to an auth-gated route while logged out must redirect

@@ -144,7 +144,10 @@
                     'horoscope-info-style--loading': !hasThemeText('love'),
                   }"
                 >
-                  <template v-if="hasThemeText('love')">
+                  <!-- Never render the real premium text for a locked theme — it
+                       would sit in the DOM behind the blur and be trivially
+                       extractable. Show the placeholder skeleton instead. -->
+                  <template v-if="hasThemeText('love') && !isThemeLocked('love')">
                     {{ getThemeText('love') }}
                   </template>
                   <div v-else-if="horoscopeLoadError" class="horoscope-error">
@@ -190,7 +193,8 @@
                     'horoscope-info-style--loading': !hasThemeText('career'),
                   }"
                 >
-                  <template v-if="hasThemeText('career')">
+                  <!-- See the love panel: never render real locked text in the DOM. -->
+                  <template v-if="hasThemeText('career') && !isThemeLocked('career')">
                     {{ getThemeText('career') }}
                   </template>
                   <div v-else-if="horoscopeLoadError" class="horoscope-error">

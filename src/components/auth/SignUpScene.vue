@@ -165,7 +165,14 @@ export default {
         this.logAuth('email_otp_requested', { error: error?.message || null })
 
         if (error) {
-          this.errorMessage = error.message || this.tt('errors.generic')
+          // Map known backend errors to localized copy; never surface the raw
+          // (English) Supabase message to a non-English user.
+          const raw = String(error.message || '').toLowerCase()
+          this.errorMessage =
+            raw.includes('invalid') && raw.includes('email')
+              ? this.tt('errors.invalidEmail')
+              : this.tt('errors.generic')
+          this.logAuth('email_otp_error', { raw: error.message })
           return
         }
 

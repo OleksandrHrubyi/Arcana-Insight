@@ -303,8 +303,11 @@ export default {
             error.status === 400
           ) {
             this.errorMessage = this.tt('errors.emailNotRegistered') || 'Email not found. Please sign up first.'
+          } else if (msg.toLowerCase().includes('invalid') && msg.toLowerCase().includes('email')) {
+            this.errorMessage = this.tt('errors.invalidEmail')
           } else {
-            this.errorMessage = msg || this.tt('errors.generic')
+            // Never surface the raw (English) backend message to a non-English user.
+            this.errorMessage = this.tt('errors.generic')
           }
           return
         }
