@@ -64,15 +64,22 @@ const isNativePlatform = () =>
 
 // Dynamic import keeps @capacitor/preferences out of this module's static graph
 // (it's unit-tested under node --test).
+//
+// IMPORTANT: return the plugin wrapped in a plain object — NOT the proxy directly.
+// A Capacitor plugin proxy looks "thenable" (any property access, incl. `.then`,
+// returns a function), so resolving a promise WITH the proxy makes the JS engine
+// call `proxy.then(resolve, reject)` → native `Preferences.then()` → "not
+// implemented", and the promise NEVER settles (await hangs forever → black screen
+// on the onboarding router-guard path). Wrapping it avoids the thenable trap.
 const loadNativePreferences = async () => {
   const mod = await import('@capacitor/preferences')
-  return mod.Preferences
+  return { Preferences: mod.Preferences }
 }
 
 export const writeOnboardingToNative = async (interests) => {
   if (!isNativePlatform()) return
   try {
-    const Preferences = await loadNativePreferences()
+    const { Preferences } = await loadNativePreferences()
     await Preferences.set({ key: ONBOARDING_COMPLETE_KEY, value: 'true' })
     await Preferences.set({
       key: ONBOARDING_INTERESTS_KEY,
@@ -94,7 +101,7 @@ export const hydrateOnboardingFromNative = () => {
     if (!isNativePlatform()) return
     if (isOnboardingComplete()) return
     try {
-      const Preferences = await loadNativePreferences()
+      const { Preferences } = await loadNativePreferences()
       const { value } = await Preferences.get({ key: ONBOARDING_COMPLETE_KEY })
       if (value !== 'true') return
       const { value: rawInterests } = await Preferences.get({ key: ONBOARDING_INTERESTS_KEY })

@@ -14,15 +14,18 @@ export function reminderSupported() {
   return Boolean(Capacitor.isNativePlatform?.())
 }
 
+// Wrap the plugin in a plain object — never resolve a promise WITH a Capacitor
+// proxy: it looks thenable, so `await` calls `proxy.then()` → "not implemented" and
+// the promise hangs forever. (Same trap as onboardingPrefs.loadNativePreferences.)
 async function getPlugin() {
   const mod = await import('@capacitor/local-notifications')
-  return mod.LocalNotifications
+  return { LN: mod.LocalNotifications }
 }
 
 export async function ensureReminderPermission() {
   if (!reminderSupported()) return false
   try {
-    const LN = await getPlugin()
+    const { LN } = await getPlugin()
     const res = await LN.requestPermissions()
     return res?.display === 'granted'
   } catch {
@@ -35,7 +38,7 @@ export async function ensureReminderPermission() {
 export async function scheduleWeeklyReminder({ title, body }) {
   if (!reminderSupported()) return false
   try {
-    const LN = await getPlugin()
+    const { LN } = await getPlugin()
     await LN.cancel({ notifications: [{ id: REMINDER_ID }] }).catch(() => {})
     await LN.schedule({
       notifications: [
@@ -57,7 +60,7 @@ export async function scheduleWeeklyReminder({ title, body }) {
 export async function cancelWeeklyReminder() {
   if (!reminderSupported()) return
   try {
-    const LN = await getPlugin()
+    const { LN } = await getPlugin()
     await LN.cancel({ notifications: [{ id: REMINDER_ID }] })
   } catch (e) {
     console.warn('[relationshipReminder] cancel failed', e)
