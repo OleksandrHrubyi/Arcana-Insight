@@ -12,14 +12,25 @@ import { useRouter } from 'vue-router'
 import { initPushListeners } from 'boot/push'
 import { getBillingPremiumStatus } from 'src/services/premiumBilling'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
+import { useAuthStore } from 'src/stores/authStore'
 import { analytics } from 'src/services/analytics'
 import { RETENTION_EVENTS } from 'src/constants/analyticsEvents'
 
-const { applyPremiumAccessStatus } = usePremiumAccess()
+const { applyPremiumAccessStatus, revokePremiumAccess } = usePremiumAccess()
+const authStore = useAuthStore()
 const router = useRouter()
 let delayedInitTimer = null
 
 const syncPremiumStatus = async () => {
+  // Premium is gated on being logged in. If the session isn't ready yet, do nothing
+  // (a later sync / onUserAuthenticated handles it). If we KNOW the user is logged
+  // out, ensure premium is revoked — never let RevenueCat (which still sees the
+  // device's subscription) grant premium to a logged-out session.
+  if (!authStore.state.sessionLoaded) return
+  if (!authStore.state.user?.id) {
+    revokePremiumAccess()
+    return
+  }
   const status = await getBillingPremiumStatus()
   if (!status.ok || !status.available) return
   applyPremiumAccessStatus({

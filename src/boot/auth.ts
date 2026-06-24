@@ -9,7 +9,7 @@ import { usePremiumAccess } from 'stores/premiumAccess'
 export default boot(() => {
   const authStore = useAuthStore()
   const { markBackground, clearAuthTimeout } = useAppEpoch()
-  const { applyPremiumAccessStatus } = usePremiumAccess()
+  const { applyPremiumAccessStatus, revokePremiumAccess } = usePremiumAccess()
   const runAuthTask = (label: string, task: () => Promise<unknown>) => {
     void task().catch((error) => {
       console.warn(`[AuthBoot] ${label} failed`, error)
@@ -18,7 +18,14 @@ export default boot(() => {
 
   // Refresh the RevenueCat entitlement on resume so premium state isn't stale
   // after a subscription expires/renews/cancels while the app was backgrounded.
+  // Premium is gated on auth: never grant to a logged-out session (RevenueCat still
+  // sees the device's subscription); revoke once we know the user is signed out.
   const syncPremiumOnResume = async () => {
+    if (!authStore.state.sessionLoaded) return
+    if (!authStore.state.user?.id) {
+      revokePremiumAccess()
+      return
+    }
     const status = await getBillingPremiumStatus()
     if (!status?.ok || !status?.available) return
     applyPremiumAccessStatus({ active: status.hasPremium, plan: status.plan, source: 'billing' })

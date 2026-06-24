@@ -468,6 +468,22 @@ export const loginToRevenueCat = async (userId) => {
   }
 }
 
+// Dissociate the RevenueCat user on app logout so a logged-out/anonymous session
+// does NOT inherit the previous account's entitlement. RC reverts to an anonymous
+// id (which has no entitlement until a future logIn/restore). Fail-safe: RC throws
+// if the current user is already anonymous — that's harmless.
+export const logoutFromRevenueCat = async () => {
+  if (!isNative()) return { ok: false, reason: 'not_native' }
+  const configured = await ensureConfigured()
+  if (!configured.ok) return { ok: false, reason: configured.reason }
+  try {
+    await Purchases.logOut()
+    return { ok: true }
+  } catch (error) {
+    return { ok: false, reason: toErrorReason(error), error }
+  }
+}
+
 export const __resetPremiumBillingForTests = () => {
   isConfigured = false
   configureAttempted = false
