@@ -9,8 +9,14 @@
 
 ## 🔴 P0 — BLOCKING (must be done before submission)
 
-- [ ] **P0-1 · Crash reporting** — 🤖 (then 👤 verify on device)
-  Install Firebase Crashlytics (Firebase is already in the project) or Sentry. Wire init in app boot; confirm a test crash appears in the console. *Why: today you had a silent core-feature outage (AI tarot 503) and nothing detected it.*
+- [~] **P0-1 · Crash reporting (Firebase Crashlytics)** — 🤖 code DONE, 👤 native steps pending
+  **Done (🤖, committed):** `@capacitor-firebase/crashlytics` installed; fail-safe `src/services/crashReporting.js`; `boot/error-handler.js` forwards Vue/unhandledrejection/window errors → `recordException` (so WebView JS errors are visible, not just native crashes). eslint/tests/build green.
+  **Remaining (👤, can't be done from here — needs Xcode/Firebase console):**
+  1. `npx cap sync ios` (installs the Crashlytics pod).
+  2. In Xcode → App target → Build Phases → add a **Run Script** for Crashlytics dSYM upload: `"${PODS_ROOT}/FirebaseCrashlytics/run"` with Input Files `${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}` and `$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)`. Set **Debug Information Format = DWARF with dSYM File** for Release.
+  3. Firebase console → Crashlytics → enable (lights up after the first report).
+  4. Build to a device, trigger a test crash (`FirebaseCrashlytics.crash()`), confirm it appears in the console.
+  *(GoogleService-Info.plist already present ✅.)*
 
 - [ ] **P0-2 · Paywall auto-renew disclosure** — 🤖
   Verify/ add the exact subscription disclosure on the paywall: title, length, price-per-period, "auto-renews unless cancelled ≥24h before period end", + functional Terms (EULA) & Privacy links. *Top cause of 3.1.2 rejection.*
