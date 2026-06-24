@@ -59,8 +59,8 @@
 - [ ] **P1-6 · Review + upload screenshots** — 👤
   Review `app-store/screenshots/` (6.5"/6.9"); optionally add captioned marketing frames; upload to ASC.
 
-- [ ] **P1-7 · Privacy Policy names all processors** — 🤝
-  Ensure the policy lists Supabase, Firebase, RevenueCat, OpenAI/OpenRouter, Open-Meteo + DOB/birth-city handling.
+- [~] **P1-7 · Privacy Policy names all processors** — 🤖 edited; 👤 must re-publish
+  `app-store/privacy-policy.html` §4 now lists Supabase, RevenueCat, Firebase, APNs, OpenAI, **OpenRouter**, **Open-Meteo**, Apple; OpenAI/OpenRouter row corrected to state the optional tarot question text is sent (matches the nutrition-label "Other User Content"). DOB already covered. **Remaining (👤):** re-publish the updated HTML to `oleksandrhrubyi.github.io/Arcana-Insight/privacy-policy.html` so the live policy reflects it.
 
 ---
 
