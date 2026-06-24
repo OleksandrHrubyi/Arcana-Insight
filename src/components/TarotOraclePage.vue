@@ -397,6 +397,7 @@ const DEAL_REVEAL_DELAY = 620
 const DEAL_FLIP_DELAY = 620
 const DEAL_FINISH_DELAY = 1100
 const FREE_TAROT_DAILY_KEY = 'arcana_free_tarot_daily_v1'
+const FREE_AI_TAROT_KEY = 'arcana_free_ai_tarot_used_v1'
 const ENTRY_FOCUS_THEME_MAP = Object.freeze({
   love: 'relationships',
   career: 'work',
@@ -490,6 +491,25 @@ const markFreeTarotUsedToday = () => {
     )
   } catch {
     // ignore storage errors
+  }
+}
+
+// One free AI tarot reading per account (the server is the source of truth and
+// grants exactly one — this local flag just avoids re-attempting the AI call once
+// it has been spent on this device). Never block the gift on the flag alone.
+const readFreeAiTarotUsed = () => {
+  try {
+    return localStorage.getItem(FREE_AI_TAROT_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+const markFreeAiTarotUsed = () => {
+  try {
+    localStorage.setItem(FREE_AI_TAROT_KEY, '1')
+  } catch {
+    // ignore storage errors — the server still enforces the single grant
   }
 }
 
@@ -1423,7 +1443,7 @@ const buildPremiumStructuredFallback = (payload, { aiUnavailable = false } = {})
   }
 }
 
-const persistInterpretationAndOpen = async (data, payload) => {
+const persistInterpretationAndOpen = async (data, payload, options = {}) => {
   // Attach each position's explanatory line (theme-aware) so the interpretation
   // screen can show it regardless of source (basic, fallback, or AI).
   if (Array.isArray(data?.cards)) {
@@ -1443,6 +1463,7 @@ const persistInterpretationAndOpen = async (data, payload) => {
           themeLabel: payload.themeLabel || '',
           subThemeLabel: payload.subThemeLabel || '',
           question: payload.question || '',
+          freeAiGift: Boolean(options.freeAiGift),
         },
         visuals: spreadCards.value.map((card) => ({
           file: card.file,
@@ -1959,6 +1980,31 @@ const acceptInterpretation = async () => {
   const payload = buildInterpretationPayload()
   try {
     if (!hasPremiumAccess.value) {
+      // First AI tarot reading per account is a gift. The server grants exactly one
+      // (requires sign-in); we attempt it silently and quietly fall back to the
+      // basic reading on any failure. The local flag only avoids re-attempting once
+      // the gift has been spent on this device — the server stays the source of truth.
+      const isLoggedIn = Boolean(authStore.state.user?.id)
+      if (isLoggedIn && tarotAiEnabled && !readFreeAiTarotUsed()) {
+        try {
+          const giftData = await getTarotReading(payload)
+          if (giftData) {
+            markFreeAiTarotUsed()
+            logInterpretationOutcome(TAROT_SESSION_EVENTS.premiumAiSuccess, payload, {
+              reason: 'free_ai_gift',
+            })
+            await persistInterpretationAndOpen(giftData, payload, {
+              freeAiGift: giftData?.meta?.freeAiGift === true,
+            })
+            return
+          }
+        } catch (giftError) {
+          // premium_required (already spent) or a transient AI error — fall through
+          // to the basic reading. Only the confirmed success above marks it used.
+          console.error('[tarot] free AI gift unavailable, using basic interpretation', giftError)
+        }
+      }
+
       const data = buildBasicInterpretation(payload)
       logInterpretationOutcome(TAROT_SESSION_EVENTS.freeBasicInterpretation, payload, {
         reason: 'free_access',

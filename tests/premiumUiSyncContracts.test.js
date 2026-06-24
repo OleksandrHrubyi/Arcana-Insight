@@ -42,7 +42,12 @@ test('key premium screens keep explicit access gating and sync hooks', () => {
   const tarotOracle = readSource('src/components/TarotOraclePage.vue')
   assert.match(tarotOracle, /if \(spread === 1 && !hasPremiumAccess\.value && hasUsedFreeTarotToday\(\)\)/)
   assert.match(tarotOracle, /if \(!hasPremiumAccess\.value && hasUsedFreeTarotToday\(\)\)/)
-  assert.match(tarotOracle, /if \(!hasPremiumAccess\.value\) \{\s*const data = buildBasicInterpretation\(payload\)/s)
+  // Non-premium still falls back to the deterministic basic interpretation, but the
+  // first AI reading per account is granted (server-enforced) before that fallback.
+  assert.match(tarotOracle, /if \(!hasPremiumAccess\.value\) \{/)
+  assert.match(tarotOracle, /if \(isLoggedIn && tarotAiEnabled && !readFreeAiTarotUsed\(\)\)/)
+  assert.match(tarotOracle, /markFreeAiTarotUsed\(\)/)
+  assert.match(tarotOracle, /const data = buildBasicInterpretation\(payload\)/)
 
   const premiumScreen = readSource('src/components/main/PremiumInfoComponent.vue')
   assert.match(

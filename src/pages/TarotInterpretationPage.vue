@@ -13,6 +13,11 @@
     </header>
 
     <section v-if="reading" class="interpret-body">
+      <div v-if="isFreeGift" class="interpret-gift">
+        <q-icon name="nights_stay" size="16px" class="interpret-gift__icon" />
+        <p class="interpret-gift__text">{{ giftNote }}</p>
+      </div>
+
       <div class="interpret-meta">
         <div class="interpret-meta__item">
           <div class="interpret-meta__label">{{ metaThemeLabel }}</div>
@@ -128,7 +133,7 @@ const STORAGE_KEY = 'tarot-interpretation-v1'
 const router = useRouter()
 const { hasPremiumAccess } = usePremiumAccess()
 const reading = ref(null)
-const meta = ref({ themeLabel: '', subThemeLabel: '', question: '' })
+const meta = ref({ themeLabel: '', subThemeLabel: '', question: '', freeAiGift: false })
 const visuals = ref([])
 const locale = computed(() => (currentLocale.value || 'en').toLowerCase().startsWith('uk') ? 'uk' : 'en')
 const tt = (key, fallback = '') => {
@@ -148,6 +153,10 @@ const newSessionLabel = computed(() => tt('tarotInterpretation.newSessionLabel')
 const overviewLabel = computed(() => tt('tarotInterpretation.overviewLabel'))
 const cardsLabel = computed(() => tt('tarotInterpretation.cardsLabel'))
 const adviceLabel = computed(() => tt('tarotInterpretation.adviceLabel'))
+// The one free AI reading per account arrives here as a gift — the only place the
+// "this was the deep version" message appears (never on the immersive oracle scene).
+const isFreeGift = computed(() => Boolean(reading.value) && Boolean(meta.value.freeAiGift))
+const giftNote = computed(() => tt('tarotInterpretation.freeGift.note'))
 const showPremiumAha = computed(() => Boolean(reading.value) && !hasPremiumAccess.value)
 const premiumBadge = computed(() => tt('tarotInterpretation.premiumBadge'))
 const premiumTitle = computed(() => tt('premiumAccess.tarot.aha.title'))
@@ -194,7 +203,7 @@ const loadReading = () => {
     if (!raw) return
     const parsed = JSON.parse(raw)
     reading.value = parsed?.reading || null
-    meta.value = parsed?.meta || { themeLabel: '', subThemeLabel: '', question: '' }
+    meta.value = parsed?.meta || { themeLabel: '', subThemeLabel: '', question: '', freeAiGift: false }
     visuals.value = parsed?.visuals || []
   } catch (error) {
     console.error(error)
@@ -382,6 +391,33 @@ onMounted(() => {
   overflow-y: auto;
   max-width: 560px;
   margin: 0 auto;
+}
+
+.interpret-gift {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(200, 188, 162, 0.28);
+  background:
+    radial-gradient(120% 140% at 0% 0, rgba(200, 188, 162, 0.12), rgba(200, 188, 162, 0)),
+    linear-gradient(165deg, rgba(10, 14, 22, 0.86), rgba(5, 8, 14, 0.92));
+}
+
+.interpret-gift__icon {
+  margin-top: 2px;
+  color: rgba(214, 200, 168, 0.92);
+  flex-shrink: 0;
+}
+
+.interpret-gift__text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  font-style: italic;
+  color: rgba(228, 222, 206, 0.92);
 }
 
 .interpret-meta {

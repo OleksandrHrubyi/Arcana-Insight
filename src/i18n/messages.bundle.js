@@ -1729,6 +1729,9 @@ export const messages = {
       premiumBadge: 'PREMIUM',
       cardFallback: 'Card',
       saved: 'Saved',
+      freeGift: {
+        note: 'For your first reading, I looked deeper than usual — this is the full interpretation, offered as a gift. Open Premium to keep this depth every time you draw.',
+      },
       positions: {
         one: ['The heart of the matter — the central energy of this reading.'],
         three: [
@@ -3949,6 +3952,9 @@ export const messages = {
       premiumBadge: 'PREMIUM',
       cardFallback: 'Карта',
       saved: 'Збережено',
+      freeGift: {
+        note: 'Для твого першого розкладу я зазирнув глибше, ніж зазвичай — це повне тлумачення, як дар. Відкрий Premium, щоб ця глибина була щоразу, коли тягнеш карти.',
+      },
       positions: {
         one: ['Серцевина питання — центральна енергія цього читання.'],
         three: [
