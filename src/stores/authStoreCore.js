@@ -179,6 +179,15 @@ export function createAuthStore({
               },
             )
           }
+        } else if (typeof revokePremiumAccess === 'function') {
+          // No session → clear any stale persisted premium flag NOW, before gated
+          // screens read it (the router awaits session-ready, so this runs first).
+          // Prevents a brief premium flash on a logged-out cold start.
+          try {
+            revokePremiumAccess()
+          } catch (err) {
+            logger.warn?.('[AuthStore] revokePremiumAccess on no-session failed:', err)
+          }
         }
         return sessionData
       } catch (err) {
