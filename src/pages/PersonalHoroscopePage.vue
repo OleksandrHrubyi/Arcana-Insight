@@ -386,7 +386,12 @@ async function shareReading() {
 }
 
 // --- navigation ---
-function onBack() { router.back() }
+// Focused page (no bottom nav) — fall back to home if there's no history to pop
+// (deep link / first navigation), so the user can never dead-end here.
+function onBack() {
+  if (typeof window !== 'undefined' && window.history.length > 1) router.back()
+  else router.replace({ name: 'arcana' })
+}
 
 function goPremium() {
   const point = PAYWALL_ENTRY_POINTS.personalHoroscopeLock

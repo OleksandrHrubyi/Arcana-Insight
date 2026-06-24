@@ -55,7 +55,13 @@ export default defineRouter(function (/* { store, ssrContext } */) {
 
     // Restore the onboarding flag from native Preferences if the WebView evicted
     // localStorage (cached — only the first navigation pays a native read).
-    await hydrateOnboardingFromNative()
+    // Hard timeout so a stalled native read can NEVER hang the guard / blank the
+    // app (defense-in-depth — the proxy-thenable hang that black-screened the app
+    // lived on exactly this await).
+    await Promise.race([
+      hydrateOnboardingFromNative(),
+      new Promise((resolve) => setTimeout(resolve, 2000)),
+    ])
 
     const onboardingComplete = isDevHomeQaBypassActive({
       isDev: import.meta.env.DEV,

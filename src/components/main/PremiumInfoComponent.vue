@@ -455,7 +455,10 @@ const onBack = async () => {
   paywallCloseReason.value = 'back'
   markPaywallClose('back')
   await hapticTap()
-  router.back()
+  // Focused page (no bottom nav) — home fallback so it can't dead-end if opened
+  // as the first navigation.
+  if (typeof window !== 'undefined' && window.history.length > 1) router.back()
+  else router.replace({ name: 'arcana' })
 }
 
 const onClose = async () => {

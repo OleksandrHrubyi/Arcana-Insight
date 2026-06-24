@@ -220,7 +220,10 @@ const hapticTap = async () => {
 
 const goBack = () => {
   void hapticTap()
-  router.back()
+  // Focused page (no bottom nav) — home fallback if there's nothing to pop, so a
+  // deep link / first navigation can't dead-end.
+  if (typeof window !== 'undefined' && window.history.length > 1) router.back()
+  else router.replace({ name: 'arcana' })
 }
 
 const endSession = () => {
