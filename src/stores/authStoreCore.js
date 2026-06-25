@@ -3,6 +3,21 @@ import { reactive, computed } from 'vue'
 const PROFILE_QUEUE_KEY = 'profile_pending_v1'
 const AUTH_TIMEOUT_MS = 2000
 
+// Account-scoped local flags must not leak to the next account on a shared device
+// (the one-free-AI-reading gift, the daily free-tarot limit, the cached profile).
+// The server stays the source of truth. Cleared on BOTH the async SIGNED_OUT event
+// AND the synchronous clearUser(), so a dropped/slow sign-out event can't strand
+// them across an account switch.
+const clearAccountScopedLocalState = () => {
+  try {
+    localStorage.removeItem('profile_cache_v1')
+    localStorage.removeItem('arcana_free_ai_tarot_used_v1')
+    localStorage.removeItem('arcana_free_tarot_daily_v1')
+  } catch {
+    // ignore if localStorage unavailable
+  }
+}
+
 const normalizeProfileName = (value) => {
   if (typeof value !== 'string') return ''
   return value.trim()
@@ -267,16 +282,7 @@ export function createAuthStore({
         } catch (err) {
           logger.warn?.('[AuthStore] clearStoredSession on SIGNED_OUT failed:', err)
         }
-        try {
-          localStorage.removeItem('profile_cache_v1')
-          // Account-scoped local flags must not leak to the next account on a
-          // shared device (e.g. the one-free-AI-reading gift, the daily free
-          // tarot limit). The server stays the source of truth either way.
-          localStorage.removeItem('arcana_free_ai_tarot_used_v1')
-          localStorage.removeItem('arcana_free_tarot_daily_v1')
-        } catch {
-          // ignore if localStorage unavailable
-        }
+        clearAccountScopedLocalState()
         try {
           if (typeof revokePremiumAccess === 'function') {
             revokePremiumAccess()
@@ -314,6 +320,9 @@ export function createAuthStore({
     clearUser() {
       state.user = null
       state.sessionLoaded = true
+      // Deterministic on logout / delete-account (both call clearUser synchronously),
+      // independent of whether the async SIGNED_OUT event fires in time.
+      clearAccountScopedLocalState()
     },
     __resetForTests() {
       state.user = null
