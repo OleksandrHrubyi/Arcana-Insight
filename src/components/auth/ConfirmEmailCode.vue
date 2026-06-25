@@ -8,6 +8,7 @@ import { t, currentLocale } from 'src/i18n';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
 import { resolveAuthRedirect } from 'src/helpers/authRedirect.js';
+import { mapAuthErrorKey } from 'src/helpers/authErrors.js';
 
 export default {
   name: 'ConfirmEmailCode',
@@ -116,7 +117,7 @@ export default {
         });
 
         if (error) {
-          this.errorMessage = error.message || this.tt('errors.generic');
+          this.errorMessage = this.tt(mapAuthErrorKey(error.message));
           return;
         }
         this.hasResent = true;
@@ -128,7 +129,7 @@ export default {
         if (match) {
           this.startResendCooldown(Number(match[1]));
         }
-        this.errorMessage = e.message || this.tt('errors.generic');
+        this.errorMessage = this.tt(mapAuthErrorKey(e.message));
       } finally {
         this.loading = false;
       }
@@ -160,7 +161,7 @@ export default {
         });
 
         if (error) {
-          this.errorMessage = error.message || this.tt('errors.generic');
+          this.errorMessage = this.tt(mapAuthErrorKey(error.message));
           return;
         }
 

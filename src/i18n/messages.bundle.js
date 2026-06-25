@@ -1000,6 +1000,7 @@ export const messages = {
       signUpHelper:
         'Start with your email. You can add your birth date later for personal horoscope.',
       wrongOrExpiredCode: 'Wrong or expired code. Try again.',
+      tooManyAttempts: 'Too many attempts. Please wait a moment and try again.',
       fillAllFields: 'Please fill all fields correctly.',
     },
     accountPage: {
@@ -3221,6 +3222,7 @@ export const messages = {
       loginHelper: 'Надішлемо 6-значний код на вашу пошту.',
       signUpHelper: 'Почни з email. Дату народження додаси пізніше для персонального гороскопу.',
       wrongOrExpiredCode: 'Код неправильний або прострочений. Спробуйте ще раз.',
+      tooManyAttempts: 'Забагато спроб. Зачекайте трохи й спробуйте ще раз.',
       fillAllFields: 'Будь ласка, заповніть усі поля правильно.',
     },
     accountPage: {
