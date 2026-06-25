@@ -1,3 +1,6 @@
+// The one free horoscope theme. love/career are premium-gated.
+export const FREE_HOROSCOPE_THEME = 'energy'
+
 export const normalizeHoroscopeThemeKey = (value) => {
   const key = String(value || '')
     .trim()
@@ -45,6 +48,30 @@ export const registryToRows = (reg) => {
   return rows
 }
 
+// Defense-in-depth for QA finding #2: a non-entitled user must not retain the
+// premium `detailed` body of love/career — the DOM is already gated, but without
+// this the on-device cache and in-memory registry would still hold the paid text
+// (extractable via devtools / the plaintext Preferences cache). The free teaser
+// `summary` is kept. NOTE: this is the CLIENT layer only; the server still returns
+// `detailed` in the raw network payload — withholding it at source needs an
+// entitlement-aware server read (tracked separately in the launch plan).
+export const stripPremiumDetailedFromRegistry = (registry, { isEntitled = false } = {}) => {
+  if (isEntitled) return registry || {}
+  const out = {}
+  for (const sign of Object.keys(registry || {})) {
+    const themes = registry[sign] || {}
+    out[sign] = {}
+    for (const theme of Object.keys(themes)) {
+      const item = themes[theme] || {}
+      out[sign][theme] =
+        theme === FREE_HOROSCOPE_THEME
+          ? { summary: item.summary, detailed: item.detailed }
+          : { summary: item.summary, detailed: '' }
+    }
+  }
+  return out
+}
+
 export const getNextISODate = (isoDate) => {
   const parsed = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(isoDate || '').trim())
   if (!parsed) return ''
@@ -64,6 +91,7 @@ export const loadHoroscopeRegistry = async ({
   today,
   forceNetwork = false,
   timeoutMs = 8000,
+  isEntitled = false,
   loadLocal,
   saveLocal,
   selectHoroscopes,
@@ -77,7 +105,7 @@ export const loadHoroscopeRegistry = async ({
       local.rows.length
     ) {
       return {
-        registry: rowsToRegistry(local.rows),
+        registry: stripPremiumDetailedFromRegistry(rowsToRegistry(local.rows), { isEntitled }),
         source: 'cache',
       }
     }
@@ -97,7 +125,9 @@ export const loadHoroscopeRegistry = async ({
     }
   }
 
-  const registry = rowsToRegistry(rows)
+  // Strip premium detail for non-entitled users BEFORE caching, so the on-device
+  // cache never holds paid love/career text the user can't access.
+  const registry = stripPremiumDetailedFromRegistry(rowsToRegistry(rows), { isEntitled })
   await saveLocal({
     date: today,
     locale,

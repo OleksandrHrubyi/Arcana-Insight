@@ -145,3 +145,75 @@ test('loadHoroscopeRegistry throws when selectHoroscopes returns an error', asyn
     /network down/,
   )
 })
+
+// QA finding #2: premium love/career `detailed` must not be retained for a
+// non-entitled user — not in the returned registry, not in the on-device cache.
+
+test('stripPremiumDetailedFromRegistry drops premium detail for non-entitled, keeps free + summaries', async () => {
+  const { stripPremiumDetailedFromRegistry } = await importModule('src/helpers/horoscopeContentCore.js')
+  const registry = {
+    aries: {
+      energy: { summary: 'e-sum', detailed: 'e-full' },
+      love: { summary: 'l-sum', detailed: 'l-full' },
+      career: { summary: 'c-sum', detailed: 'c-full' },
+    },
+  }
+  assert.deepEqual(stripPremiumDetailedFromRegistry(registry, { isEntitled: false }), {
+    aries: {
+      energy: { summary: 'e-sum', detailed: 'e-full' },
+      love: { summary: 'l-sum', detailed: '' },
+      career: { summary: 'c-sum', detailed: '' },
+    },
+  })
+})
+
+test('stripPremiumDetailedFromRegistry leaves premium detail intact for entitled users', async () => {
+  const { stripPremiumDetailedFromRegistry } = await importModule('src/helpers/horoscopeContentCore.js')
+  const registry = { aries: { love: { summary: 'l-sum', detailed: 'l-full' } } }
+  assert.deepEqual(stripPremiumDetailedFromRegistry(registry, { isEntitled: true }), registry)
+})
+
+test('loadHoroscopeRegistry (non-entitled) strips premium detail from both the result AND the cache write', async () => {
+  const { loadHoroscopeRegistry } = await importModule('src/helpers/horoscopeContentCore.js')
+  const saveCalls = []
+  const result = await loadHoroscopeRegistry({
+    locale: 'en',
+    today: '2026-03-25',
+    forceNetwork: true,
+    isEntitled: false,
+    loadLocal: async () => null,
+    saveLocal: async (payload) => saveCalls.push(payload),
+    selectHoroscopes: async () => ({
+      data: [
+        { sign: 'leo', theme: 'energy', summary: 'e', detailed: 'e-full' },
+        { sign: 'leo', theme: 'love', summary: 'l', detailed: 'l-full' },
+      ],
+      error: null,
+    }),
+  })
+  // Returned registry: premium detail blanked.
+  assert.equal(result.registry.leo.love.detailed, '')
+  assert.equal(result.registry.leo.energy.detailed, 'e-full')
+  // Cache write: never persists the premium body in plaintext.
+  const loveRow = saveCalls[0].rows.find((r) => r.theme === 'love')
+  assert.equal(loveRow.detailed, '')
+})
+
+test('loadHoroscopeRegistry (entitled) keeps premium detail in result and cache', async () => {
+  const { loadHoroscopeRegistry } = await importModule('src/helpers/horoscopeContentCore.js')
+  const saveCalls = []
+  const result = await loadHoroscopeRegistry({
+    locale: 'en',
+    today: '2026-03-25',
+    forceNetwork: true,
+    isEntitled: true,
+    loadLocal: async () => null,
+    saveLocal: async (payload) => saveCalls.push(payload),
+    selectHoroscopes: async () => ({
+      data: [{ sign: 'leo', theme: 'love', summary: 'l', detailed: 'l-full' }],
+      error: null,
+    }),
+  })
+  assert.equal(result.registry.leo.love.detailed, 'l-full')
+  assert.equal(saveCalls[0].rows.find((r) => r.theme === 'love').detailed, 'l-full')
+})

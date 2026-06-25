@@ -287,6 +287,7 @@ import { localISODate } from 'src/helpers/date.js'
 import {
   loadHoroscopeRegistry,
   normalizeHoroscopeThemeKey,
+  FREE_HOROSCOPE_THEME,
 } from 'src/helpers/horoscopeContentCore.js'
 import { saveLocal, loadLocal } from 'src/helpers/localStorageSaver.js'
 import { t, currentLocale } from 'src/i18n'
@@ -336,7 +337,6 @@ const THEME_META = {
   career: { emoji: '💼', label: 'Кар\u2019єра' },
   energy: { emoji: '⚡', label: 'Енергія' },
 }
-const FREE_HOROSCOPE_THEME = 'energy'
 const THEME_TABS = ['energy', 'love', 'career']
 const ZODIAC_SIGN_CACHE_KEY = 'horoscope_sign_key_v1'
 const PROFILE_CACHE_KEY = 'profile_cache_v1'
@@ -598,6 +598,11 @@ export default {
       if (!next && this.themeTab !== FREE_HOROSCOPE_THEME) {
         this.themeTab = FREE_HOROSCOPE_THEME
       }
+      // Entitlement changed → re-fetch from network so the registry reflects it:
+      // on upgrade, pull the premium love/career detail now allowed; on downgrade,
+      // re-strip so the paid text no longer lingers in memory/cache. (The cache is
+      // entitlement-stripped, so a plain cache read would not carry the new state.)
+      void this.refreshHoroscopesForDay({ forceNetwork: true })
     },
     // The registry is cached per locale, so switching app language while on the
     // Horoscope screen must re-select the text for the new language — otherwise
@@ -980,6 +985,7 @@ export default {
         locale,
         today,
         forceNetwork,
+        isEntitled: this.hasPremiumAccess,
         loadLocal,
         saveLocal,
         selectHoroscopes,
