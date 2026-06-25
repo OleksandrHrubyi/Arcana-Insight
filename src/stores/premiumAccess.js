@@ -87,6 +87,18 @@ const applyPremiumAccessStatus = ({ active = false, plan = 'monthly', source = '
   })
 }
 
+// Decide how a RevenueCat billing status should be applied to local premium,
+// given auth. Premium is gated on auth: RevenueCat still sees the device's
+// subscription even when no user is signed in, so never grant to a logged-out
+// session. 'defer' while the session is unresolved (a later sync handles it),
+// 'revoke' once we know the user is signed out, 'apply' only while logged in.
+// Shared by the paywall mount, app boot, and resume sync.
+export const resolveBillingPremiumAction = ({ sessionLoaded = false, userId = '' } = {}) => {
+  if (!sessionLoaded) return 'defer'
+  if (!String(userId || '').trim()) return 'revoke'
+  return 'apply'
+}
+
 const hasPremiumAccess = computed(() => Boolean(state.value?.active))
 const premiumPlan = computed(() => normalizePlan(state.value?.plan))
 

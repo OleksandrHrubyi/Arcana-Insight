@@ -170,7 +170,7 @@ import { t, currentLocale } from 'src/i18n'
 import { useQuasar } from 'quasar'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
-import { usePremiumAccess } from 'src/stores/premiumAccess'
+import { usePremiumAccess, resolveBillingPremiumAction } from 'src/stores/premiumAccess'
 import { useAuthStore } from 'stores/authStore.js'
 import {
   getBillingPremiumStatus,
@@ -671,11 +671,22 @@ const initializePremiumBillingState = async () => {
   }
 
   if (snapshot.status) {
-    applyPremiumAccessStatus({
-      active: snapshot.status.hasPremium,
-      plan: snapshot.status.plan,
-      source: 'billing',
+    // Premium is gated on auth: a logged-out paywall visitor must NOT be granted
+    // premium just because RevenueCat still sees a device-level subscription.
+    // Mirror the canonical guard used by App boot / resume sync.
+    const action = resolveBillingPremiumAction({
+      sessionLoaded: authStore.state.sessionLoaded,
+      userId: authStore.state.user?.id,
     })
+    if (action === 'apply') {
+      applyPremiumAccessStatus({
+        active: snapshot.status.hasPremium,
+        plan: snapshot.status.plan,
+        source: 'billing',
+      })
+    } else if (action === 'revoke') {
+      revokePremiumAccess()
+    }
   }
 
   if (snapshot.errors.length) {
