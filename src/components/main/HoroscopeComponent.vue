@@ -284,6 +284,7 @@
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Preferences } from '@capacitor/preferences'
 import { localISODate } from 'src/helpers/date.js'
+import { isDayKeyStale } from 'src/helpers/dayRollover.js'
 import {
   loadHoroscopeRegistry,
   normalizeHoroscopeThemeKey,
@@ -468,6 +469,7 @@ export default {
       moonSign: '',
 
       midnightTimer: null,
+      renderedDayKey: '',
       themeTab: FREE_HOROSCOPE_THEME,
       themeSwipeSensitivity: '0.03:1:30',
       rewardAccessTick: 0,
@@ -558,6 +560,7 @@ export default {
     })
 
     this.scheduleMidnightRefresh()
+    document.addEventListener('visibilitychange', this.handleDayRolloverOnResume, { passive: true })
     requestAnimationFrame(() => {
       this.particleTaskHandle = scheduleNonCriticalTask(
         () => {
@@ -580,6 +583,7 @@ export default {
     window.removeEventListener('orientationchange', this.onResize)
     this.stopLoop()
     clearTimeout(this.midnightTimer)
+    document.removeEventListener('visibilitychange', this.handleDayRolloverOnResume)
     cancelScheduledTask(this.particleTaskHandle)
     cancelScheduledTask(this.rewardTaskHandle)
 
@@ -991,6 +995,19 @@ export default {
         selectHoroscopes,
       })
       this.horoscope = registry
+      this.renderedDayKey = today
+    },
+
+    // iOS freezes JS timers while the app is backgrounded, so a midnight rollover
+    // that happens while suspended never fires the scheduled timer. On return to
+    // foreground, re-fetch if the local day changed and re-arm the timer.
+    handleDayRolloverOnResume() {
+      if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return
+      if (isDayKeyStale(this.renderedDayKey, localISODate())) {
+        void this.refreshHoroscopesForDay({ forceNetwork: true })
+      }
+      clearTimeout(this.midnightTimer)
+      this.scheduleMidnightRefresh()
     },
 
     scheduleMidnightRefresh() {

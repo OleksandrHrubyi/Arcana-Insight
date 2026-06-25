@@ -82,6 +82,7 @@ import { Capacitor } from '@capacitor/core'
 import { useAuthStore } from 'stores/authStore.js'
 import { DAILY_ACTIVITY_KEYS, markDailyActivity } from 'src/helpers/dailyRitual'
 import { trackRitualActivityWithGuestFallback } from 'src/helpers/ritualRewardsBackend.js'
+import { isDayKeyStale } from 'src/helpers/dayRollover.js'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
@@ -121,10 +122,12 @@ const initializeDailyCardScreenSafe = async () => {
 
 onMounted(() => {
   void initializeDailyCardScreenSafe()
+  document.addEventListener('visibilitychange', handleDayRolloverOnResume, { passive: true })
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', fitCardToContent)
+  document.removeEventListener('visibilitychange', handleDayRolloverOnResume)
 })
 
 const todayKey = () => {
@@ -133,6 +136,26 @@ const todayKey = () => {
   const month = String(now.getMonth() + 1).padStart(2, '0')
   const day = String(now.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
+}
+
+// Reactive local day key so the card + date label recompute when the day rolls
+// over (their only other deps are cards/user/locale). Updated on resume — iOS
+// freezes JS timers while backgrounded, so a midnight crossing while suspended
+// otherwise strands the screen on yesterday (QA #10).
+const currentDayKey = ref(todayKey())
+
+const handleDayRolloverOnResume = () => {
+  if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return
+  const today = todayKey()
+  if (!isDayKeyStale(currentDayKey.value, today)) return
+  // New local day while the app was suspended: recompute the card/date and record
+  // the new day's activity (markDailyActivity otherwise only fires once on mount).
+  currentDayKey.value = today
+  markDailyActivity(DAILY_ACTIVITY_KEYS.dailyCard)
+  void trackRitualActivityWithGuestFallback(DAILY_ACTIVITY_KEYS.dailyCard, {
+    source: 'daily_card_resume',
+    userId: authStore.state.user?.id || '',
+  })
 }
 
 const getOrCreateAnonSeed = () => {
@@ -154,7 +177,7 @@ const dailySelection = computed(() => {
   const userId = authStore.state.user?.id
   const identity = userId || getOrCreateAnonSeed()
   return getDeterministicDailyCardSelection({
-    dateKey: todayKey(),
+    dateKey: currentDayKey.value,
     identity,
     cardsLength: cards.value.length,
   })
@@ -200,16 +223,17 @@ const orientationLabel = computed(() =>
 )
 
 const todayLabel = computed(() => {
-  const now = new Date()
+  const [year, month, day] = currentDayKey.value.split('-').map(Number)
+  const date = new Date(year, (month || 1) - 1, day || 1)
   try {
     return new Intl.DateTimeFormat(locale.value, {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
-    }).format(now)
+    }).format(date)
   } catch (e) {
     console.error('[DailyCard] date format failed:', e)
-    return now.toDateString()
+    return date.toDateString()
   }
 })
 
