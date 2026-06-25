@@ -93,6 +93,20 @@ test.describe('flows: auth × premium dead-end guards', () => {
     await expect(page.locator('a[href*="/login"]')).toHaveAttribute('href', /login\?redirect=.*premium/)
   })
 
+  // Regression #14: an invalid/expired recovery link left the user on a
+  // permanently-disabled form with no way out (the route hides the bottom nav).
+  // It must surface the error AND a working escape control.
+  test('reset-password invalid/expired link is escapable (no dead-end)', async ({ page }) => {
+    await seedLoggedOut(page)
+    await go(page, 'reset-password')
+    // No recovery tokens → invalid-link state; the only control must lead somewhere.
+    const out = page.locator('.reset-submit-btn')
+    await expect(out).toBeVisible()
+    await out.click()
+    await page.waitForTimeout(600)
+    await expect(page).toHaveURL(/#\/login/)
+  })
+
   // The ritual rewards store is parked pre-launch behind REWARDS_ENABLED=false.
   // A deep link to /rewards must not render the store — it redirects to menu so
   // there's no way to spend points or pick up a paywall-bypassing token.

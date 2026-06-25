@@ -6,13 +6,28 @@
       {{ tt('resetPassword.checking') }}
     </q-banner>
 
-    <q-form @submit.prevent="onUpdate" class="q-gutter-md">
-      <q-input v-model="password" type="password" :label="tt('resetPassword.newPassword')" filled :disable="!sessionReady"/>
-      <q-btn :loading="saving" :disable="!sessionReady" type="submit" no-caps class="reset-submit-btn" :label="tt('common.save')"/>
-    </q-form>
+    <!-- Success: confirm + an explicit way forward (no dead-end — the route hides
+         the bottom nav, so a CTA is the only escape). -->
+    <template v-else-if="ok">
+      <q-banner class="bg-green-2 text-green-10 q-mb-md">{{ tt('resetPassword.updated') }}</q-banner>
+      <q-btn no-caps class="reset-submit-btn" :label="tt('auth.loginAction')" @click="goToLogin"/>
+    </template>
 
-    <q-banner v-if="ok" class="bg-green-2 text-green-10 q-mt-md">{{ tt('resetPassword.updated') }}</q-banner>
-    <q-banner v-if="error" class="bg-red-2 text-red-10 q-mt-md">{{ error }}</q-banner>
+    <!-- Invalid / expired link: the form is unusable, so show the error AND a way
+         out (the banner copy promises "request a new one" — make it actionable). -->
+    <template v-else-if="!sessionReady">
+      <q-banner v-if="error" class="bg-red-2 text-red-10 q-mb-md">{{ error }}</q-banner>
+      <q-btn no-caps class="reset-submit-btn" :label="tt('auth.loginAction')" @click="goToLogin"/>
+    </template>
+
+    <!-- Ready: the actual reset form. -->
+    <template v-else>
+      <q-form @submit.prevent="onUpdate" class="q-gutter-md">
+        <q-input v-model="password" type="password" :label="tt('resetPassword.newPassword')" filled/>
+        <q-btn :loading="saving" type="submit" no-caps class="reset-submit-btn" :label="tt('common.save')"/>
+      </q-form>
+      <q-banner v-if="error" class="bg-red-2 text-red-10 q-mt-md">{{ error }}</q-banner>
+    </template>
   </q-page>
 </template>
 
@@ -58,14 +73,16 @@ export default {
   },
   methods: {
     async initializeResetPassword () {
-      // 1) спроба PKCE (коли у URL ?code=...)
+      // 1) спроба PKCE (коли у URL ?code=...). exchangeCodeForSession РЕЗОЛВИТЬСЯ
+      // з { error } для невалідного/відсутнього коду (не кидає), тож успіхом
+      // вважаємо лише реальну сесію — інакше показували б форму на битому лінку.
       let sessionOk = false
       try {
-        await Promise.race([
+        const { data, error } = await Promise.race([
           supabase.auth.exchangeCodeForSession(window.location.href),
           new Promise((_, reject) => setTimeout(() => reject(new Error('exchange timeout')), 6000))
         ])
-        sessionOk = true
+        sessionOk = !error && Boolean(data?.session)
       } catch {
         sessionOk = false
       }
@@ -108,6 +125,10 @@ export default {
       } finally {
         this.saving = false
       }
+    },
+
+    goToLogin () {
+      this.$router.push('/login')
     }
   }
 }
