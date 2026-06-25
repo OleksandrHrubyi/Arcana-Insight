@@ -76,4 +76,17 @@ test.describe('flows: auth × premium dead-end guards', () => {
     // Left the paywall (anywhere but /premium is fine).
     await expect(page).not.toHaveURL(/#\/premium/)
   })
+
+  // The ritual rewards store is parked pre-launch behind REWARDS_ENABLED=false.
+  // A deep link to /rewards must not render the store — it redirects to menu so
+  // there's no way to spend points or pick up a paywall-bypassing token.
+  test('rewards store is gated: deep-link to /rewards redirects away (store unreachable)', async ({ page }) => {
+    await seedLoggedOut(page)
+    await go(page, 'rewards')
+    // Did NOT land on (or stay on) the rewards store.
+    await expect(page).not.toHaveURL(/#\/rewards/)
+    await expect(page).toHaveURL(/#\/menu/)
+    // None of the store UI rendered.
+    await expect(page.locator('.rewards-filters')).toHaveCount(0)
+  })
 })

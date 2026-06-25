@@ -303,6 +303,7 @@ import {
   trackRitualActivityWithGuestFallback,
 } from 'src/helpers/ritualRewardsBackend.js'
 import { isRitualRewardActive, RITUAL_REWARD_KEYS } from 'src/helpers/ritualRewardInventory'
+import { REWARDS_ENABLED } from 'src/constants/featureFlags'
 
 const DESIGN_W = 440
 const DESIGN_TOP_INSET = 30
@@ -624,6 +625,8 @@ export default {
     },
 
     async refreshRitualRewardAccess(force = false) {
+      // Rewards store parked pre-launch — skip the inventory sync entirely.
+      if (!REWARDS_ENABLED) return
       const userId = this.rewardAccessUserId()
       await ensureRitualRewardInventory({
         userId,

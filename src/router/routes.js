@@ -1,3 +1,5 @@
+import { REWARDS_ENABLED } from '../constants/featureFlags.js'
+
 const routes = [
   {
     path: '/',
@@ -22,7 +24,7 @@ const routes = [
       { path: 'compatibility', name: 'compatibility', component: () => import('src/pages/CompatibilityPage.vue'), meta: { tab: 'menu' } },
       { path: 'readings', name: 'readings', component: () => import('src/pages/SavedReadingsPage.vue'), meta: { tab: 'menu' } },
       { path: 'premium', name: 'premium', component: () => import('src/pages/PremiumPage.vue'), meta: { tab: 'menu', hideBottomNav: true } },
-      { path: 'rewards', name: 'ritualRewards', component: () => import('src/pages/RitualRewardsPage.vue'), meta: { hideBottomNav: true } },
+      { path: 'rewards', name: 'ritualRewards', component: () => import('src/pages/RitualRewardsPage.vue'), meta: { hideBottomNav: true }, beforeEnter: (to, from, next) => next(REWARDS_ENABLED ? true : { name: 'menu' }) },
       { path: 'settings', name: 'settings', component: () => import('src/pages/SettingsPage.vue'), meta: { tab: 'menu' } },
       { path: 'reset-password', component: () => import('src/pages/ResetPasswordPage.vue'), meta: { allowWithoutOnboarding: true, hideBottomNav: true } },
       {

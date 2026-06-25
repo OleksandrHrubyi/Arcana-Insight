@@ -212,6 +212,7 @@ import { useAppEpoch } from 'stores/appEpoch'
 import { resolveAccountBootstrapUser } from 'src/helpers/accountBootstrapCore.js'
 import { ensureRitualRewardInventory } from 'src/helpers/ritualRewardsBackend.js'
 import { isRitualRewardActive, RITUAL_REWARD_KEYS } from 'src/helpers/ritualRewardInventory'
+import { REWARDS_ENABLED } from 'src/constants/featureFlags'
 
 export default defineComponent({
   name: 'AccountPage',
@@ -372,6 +373,8 @@ export default defineComponent({
 
   methods: {
     async refreshRitualRewardAccess(force = false) {
+      // Rewards store parked pre-launch — skip the inventory sync entirely.
+      if (!REWARDS_ENABLED) return
       const userId = String(this.userId || this.authStore.state.user?.id || '').trim()
       await ensureRitualRewardInventory({
         userId,

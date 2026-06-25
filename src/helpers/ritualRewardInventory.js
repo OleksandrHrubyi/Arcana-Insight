@@ -1,3 +1,5 @@
+import { REWARDS_ENABLED } from '../constants/featureFlags.js'
+
 const GUEST_REWARD_INVENTORY_KEY = 'arcana_guest_reward_inventory_v1'
 const GUEST_REWARD_MIGRATION_STATE_KEY = 'arcana_guest_reward_inventory_migration_v1'
 const GUEST_REWARD_CLAIMS_KEY = 'arcana_guest_reward_claims_v1'
@@ -486,6 +488,9 @@ export const consumeGuestReward = ({ rewardKey, now = new Date() } = {}) => {
 }
 
 export const isRitualRewardActive = ({ rewardKey, userId = '', now = new Date() } = {}) => {
+  // Rewards store parked pre-launch: any leftover token/badge in inventory must
+  // not unlock anything (keeps premium gating clean). See constants/featureFlags.
+  if (!REWARDS_ENABLED) return false
   const key = normalizeRewardKey(rewardKey)
   if (!key) return false
   const normalizedUserId = String(userId || '').trim()
@@ -511,6 +516,9 @@ export const isRitualRewardActive = ({ rewardKey, userId = '', now = new Date() 
 }
 
 export const getRitualRewardQuantity = ({ rewardKey, userId = '' } = {}) => {
+  // Rewards store parked pre-launch — report zero held tokens regardless of what
+  // is cached in inventory. See constants/featureFlags.
+  if (!REWARDS_ENABLED) return 0
   const key = normalizeRewardKey(rewardKey)
   if (!key) return 0
   const normalizedUserId = String(userId || '').trim()
