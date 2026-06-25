@@ -30,6 +30,13 @@ export default {
       return currentLocale.value || 'en'
     },
 
+    // Carry the "sign in first" destination across the login <-> sign-up link so
+    // the cohort that tapped Buy on the paywall isn't dropped on Home after auth.
+    redirectQuery() {
+      const redirect = this.$route.query.redirect
+      return redirect ? { redirect: String(redirect) } : {}
+    },
+
     tt() {
       return (key) => t(this.locale, key)
     },
@@ -385,7 +392,7 @@ export default {
 
         <p class="bottom-text">
           {{ tt('auth.newToArcana') }}
-          <router-link to="/sign-up" class="link">{{ tt('auth.signUpAction') }}</router-link>
+          <router-link :to="{ path: '/sign-up', query: redirectQuery }" class="link">{{ tt('auth.signUpAction') }}</router-link>
         </p>
 
         <div class="divider">

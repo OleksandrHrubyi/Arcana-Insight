@@ -6,6 +6,7 @@ import { t, currentLocale } from 'src/i18n'
 import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { analytics } from 'src/services/analytics'
+import { resolveAuthRedirect } from 'src/helpers/authRedirect.js'
 
 export default {
   name: 'SignUpScene',
@@ -26,6 +27,14 @@ export default {
   computed: {
     locale() {
       return currentLocale.value || 'en'
+    },
+
+    // Carry the "sign in first" destination across the sign-up <-> login link and
+    // through to /confirm-code, so a paywall-cohort newcomer returns to where they
+    // were headed after verifying instead of landing on Home.
+    redirectQuery() {
+      const redirect = this.$route.query.redirect
+      return redirect ? { redirect: String(redirect) } : {}
     },
 
     tt() {
@@ -185,6 +194,7 @@ export default {
             email: this.trimmedEmail,
             name: this.trimmedName,
             mode: 'signup',
+            ...this.redirectQuery,
           },
         })
       } catch (e) {
@@ -291,7 +301,7 @@ export default {
         this.logAuth('apple_before_redirect')
         analytics.logSignUp('apple')
         this.logAuth('apple_success_redirect')
-        this.$router.push('/')
+        this.$router.push(resolveAuthRedirect(this.$route.query.redirect, '/'))
       } catch (err) {
         this.errorMessage = `Apple signup failed: ${err.message || err.toString()}`
         console.error('Apple login failed', err)
@@ -411,7 +421,7 @@ export default {
 
         <p class="bottom-text">
           {{ tt('auth.alreadyHaveAccount') }}
-          <router-link to="/login" class="link">{{ tt('auth.loginAction') }}</router-link>
+          <router-link :to="{ path: '/login', query: redirectQuery }" class="link">{{ tt('auth.loginAction') }}</router-link>
         </p>
 
         <div class="divider">

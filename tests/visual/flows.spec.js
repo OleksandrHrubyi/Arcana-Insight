@@ -77,6 +77,22 @@ test.describe('flows: auth × premium dead-end guards', () => {
     await expect(page).not.toHaveURL(/#\/premium/)
   })
 
+  // Regression #5: the sign-up branch dropped the auth redirect, dumping a
+  // paywall-cohort newcomer on Home after verifying. The login <-> sign-up links
+  // must carry `redirect` so the destination survives choosing "Sign up".
+  test('sign-up link preserves the auth redirect (no paid-conversion dead-end)', async ({ page }) => {
+    await seedLoggedOut(page)
+    await go(page, 'login?redirect=%2Fpremium')
+    // Encoding-agnostic: hash-mode router renders the query value un-escaped.
+    const toSignUp = page.locator('a[href*="/sign-up"]')
+    await expect(toSignUp).toHaveAttribute('href', /sign-up\?redirect=.*premium/)
+    await toSignUp.click()
+    await page.waitForTimeout(400)
+    await expect(page).toHaveURL(/sign-up\?redirect=.*premium/)
+    // The reverse link back to login keeps it too (no loss on round-trip).
+    await expect(page.locator('a[href*="/login"]')).toHaveAttribute('href', /login\?redirect=.*premium/)
+  })
+
   // The ritual rewards store is parked pre-launch behind REWARDS_ENABLED=false.
   // A deep link to /rewards must not render the store — it redirects to menu so
   // there's no way to spend points or pick up a paywall-bypassing token.
