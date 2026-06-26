@@ -288,6 +288,10 @@ test('invokeFunction maps non-OK status to error and url-missing fast-fail works
   })
   const fail = await h.service.invokeFunction('tarot-reading', { q: 'x' })
   assert.equal(fail.error.message, 'functions tarot-reading failed: 400')
+  // Status + structured body are surfaced so callers can branch (QA #12/#13).
+  assert.equal(fail.error.status, 400)
+  assert.equal(fail.status, 400)
+  assert.equal(fail.error.code, 'bad')
 })
 
 test('service uses nativeFetch transport when shouldUseNativeFetch=true', async () => {

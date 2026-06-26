@@ -453,6 +453,7 @@ import { usePremiumAccess } from 'src/stores/premiumAccess'
 import { analytics } from 'src/services/analytics'
 import { PAYWALL_ENTRY_POINTS, CONTENT_SHARE_EVENTS } from 'src/constants/analyticsEvents'
 import { selectAppUser, invokeFunction } from 'src/services/supabaseNative'
+import { isPremiumRequiredError } from 'src/helpers/functionErrors.js'
 import { useAuthStore } from 'stores/authStore.js'
 import { computeChart, computeCompatibility, computeWeather } from 'src/helpers/compatibilityCore.js'
 import { localISODate } from 'src/helpers/date.ts'
@@ -462,7 +463,7 @@ import { searchCities } from 'src/services/geocode.js'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const { hasPremiumAccess } = usePremiumAccess()
+const { hasPremiumAccess, revokePremiumAccess } = usePremiumAccess()
 
 const locale = computed(() =>
   (currentLocale.value || 'en').toLowerCase().startsWith('uk') ? 'uk' : 'en',
@@ -870,11 +871,20 @@ async function requestAiReading(res) {
     }
     const { data, error } = await invokeFunction('compatibility', payload, 30000)
     if (reqId !== aiRequestId) return
-    if (error || !data?.ok) throw new Error(data?.error || 'request_failed')
+    if (error) throw error // carries .status/.code from invokeFunction
+    if (!data?.ok) throw new Error(data?.error || 'request_failed')
     aiReading.value = data.reading
   } catch (e) {
     if (reqId !== aiRequestId) return
-    aiError.value = true
+    if (isPremiumRequiredError(e)) {
+      // Server says this user isn't entitled — reconcile the stale local premium
+      // flag so the unlock panel shows instead of a generic error whose retry just
+      // re-hits the same 403.
+      revokePremiumAccess()
+      aiError.value = false
+    } else {
+      aiError.value = true
+    }
     console.warn('[compatibility] AI reading failed', e)
   } finally {
     if (reqId === aiRequestId) aiLoading.value = false

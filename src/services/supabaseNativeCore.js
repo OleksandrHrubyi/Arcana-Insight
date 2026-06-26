@@ -288,10 +288,17 @@ export const createSupabaseNativeService = ({
     const { res, data } = await requestWithRetry(makeRequest, timeoutMs, `functions.${name}`)
 
     if (!res.ok) {
-      return { data: null, error: new Error(`functions ${name} failed: ${res.status}`) }
+      // Surface the HTTP status and the server's structured error body so callers
+      // can tell a 403 premium_required apart from a transient failure (QA #12/#13)
+      // — otherwise every non-2xx collapses into a generic "load error + retry".
+      const error = new Error(`functions ${name} failed: ${res.status}`)
+      error.status = res.status
+      error.code = (data && (data.code || data.error)) || ''
+      error.body = data ?? null
+      return { data: null, error, status: res.status }
     }
 
-    return { data, error: null }
+    return { data, error: null, status: res.status }
   }
 
   return {

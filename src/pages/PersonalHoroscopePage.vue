@@ -121,6 +121,7 @@ import { Preferences } from '@capacitor/preferences'
 import { Share } from '@capacitor/share'
 import { t, currentLocale } from 'src/i18n'
 import { invokeFunction, selectAppUser } from 'src/services/supabaseNative'
+import { isPremiumRequiredError } from 'src/helpers/functionErrors.js'
 import { useAuthStore } from 'stores/authStore.js'
 import { localISODate } from 'src/helpers/date.ts'
 import { analytics } from 'src/services/analytics'
@@ -131,7 +132,7 @@ import * as Astronomy from 'astronomy-engine'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const { hasPremiumAccess } = usePremiumAccess()
+const { hasPremiumAccess, revokePremiumAccess } = usePremiumAccess()
 const PROFILE_CACHE_KEY = 'profile_cache_v1'
 
 
@@ -334,14 +335,20 @@ async function generate() {
       date: todayISO(),
     }, 30000)
 
-    if (err || !data?.ok) {
-      throw new Error(data?.error || 'Request failed')
-    }
+    if (err) throw err // carries .status/.code from invokeFunction
+    if (!data?.ok) throw new Error(data?.error || 'Request failed')
 
     reading.value = data.reading
     await saveToCache(data.reading)
   } catch (e) {
-    error.value = tt('personalHoroscope.errorGeneric')
+    if (isPremiumRequiredError(e)) {
+      // Stale local premium flag; the server says not-entitled. Reconcile so the
+      // lock panel + upgrade CTA show instead of a generic error whose retry just
+      // re-POSTs into the same 403.
+      revokePremiumAccess()
+    } else {
+      error.value = tt('personalHoroscope.errorGeneric')
+    }
     console.error('personal-horoscope failed', e)
   } finally {
     loading.value = false
