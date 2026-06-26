@@ -885,26 +885,34 @@ export default defineComponent({
       setSavedTime(hhmm)
       this.selectedTimeValue = hhmm || DEFAULT_TIME
       this.pushSyncError = false
+      // Drive the spinner + disabled state and make the `if (this.busy) return`
+      // guard above effective during the up-to-8s register-device call, so a
+      // double-tap can't fire parallel syncs with no feedback (QA #19).
+      this.busy = true
 
-      if (this.dailyPush) {
-        const res = await syncRegisterDevice({
-          enabled: true,
-          timeHHMM: hhmm,
-          locale: this.locale
-        })
-        if (!res.ok) {
-          console.error(res.error)
-          this.pushSyncError = true
-          this.selectedTimeValue = prevTime
-          setSavedTime(prevTime)
-          this.$q.notify({ type: 'negative', message: this.tt('notifications.syncFailed') })
-          return
+      try {
+        if (this.dailyPush) {
+          const res = await syncRegisterDevice({
+            enabled: true,
+            timeHHMM: hhmm,
+            locale: this.locale
+          })
+          if (!res.ok) {
+            console.error(res.error)
+            this.pushSyncError = true
+            this.selectedTimeValue = prevTime
+            setSavedTime(prevTime)
+            this.$q.notify({ type: 'negative', message: this.tt('notifications.syncFailed') })
+            return
+          }
         }
-      }
 
-      this.timeSheet = false
-      this.hapticSelect()
-      this.hapticSelectionEnd()
+        this.timeSheet = false
+        this.hapticSelect()
+        this.hapticSelectionEnd()
+      } finally {
+        this.busy = false
+      }
     },
 
     async hapticSelectionStart () {
