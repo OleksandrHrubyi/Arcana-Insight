@@ -1,6 +1,12 @@
 // src/i18n/index.js
 
 import { ref } from 'vue'
+// Statically bundled so every translation is present on the very first paint.
+// Lazy-loading the bundle on idle flashed raw keys (nav.home, appName,
+// dailyPage.title, the landing hero) above the fold on cold start until the chunk
+// resolved (~260ms–1.2s); the copy is needed immediately, so there was nothing to
+// defer (QA findings #20/#21).
+import { messages as bundledMessages } from './messages.bundle.js'
 
 const DEFAULT_LOCALE = 'en'
 export const currentLocale = ref((typeof localStorage !== 'undefined' && localStorage.getItem('locale')) || DEFAULT_LOCALE)
@@ -10,48 +16,15 @@ export function setLocale(locale) {
   currentLocale.value = next
   localStorage.setItem('locale', next)
   window.dispatchEvent(new CustomEvent('locale-changed', { detail: next }))
-  void ensureMessagesLoaded()
 }
 
 export function getLocale() {
   return currentLocale.value || DEFAULT_LOCALE
 }
 
-export const messages = {}
-
-const loaded = { value: false }
-const messagesVersion = ref(0)
-
-async function ensureMessagesLoaded() {
-  if (loaded.value) return
-  const mod = await import('./messages.bundle.js')
-  Object.assign(messages, mod.messages || {})
-  loaded.value = true
-  messagesVersion.value += 1
-}
-
-function scheduleMessagesPreload() {
-  if (typeof window === 'undefined') return
-
-  const load = () => {
-    void ensureMessagesLoaded()
-  }
-
-  if (typeof window.requestIdleCallback === 'function') {
-    window.requestIdleCallback(load, { timeout: 2000 })
-    return
-  }
-
-  setTimeout(load, 700)
-}
-
+export const messages = bundledMessages
 
 export function t(locale, key) {
-  // reactive dependency for re-render when messages load
-  messagesVersion.value
-  if (!loaded.value) {
-    void ensureMessagesLoaded()
-  }
   if (key == null && typeof locale === 'string') {
     key = locale
     locale = undefined
@@ -79,6 +52,3 @@ export function t(locale, key) {
 
   return value ?? key;
 }
-
-// preload in background
-scheduleMessagesPreload()

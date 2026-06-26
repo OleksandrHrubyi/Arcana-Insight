@@ -45,3 +45,22 @@ test('i18n translation resolves value, supports fallback and returns key for unk
     env.restore()
   }
 })
+
+// QA findings #20/#21: messages were lazy-loaded on idle, so t() returned raw keys
+// (nav.home, appName, dailyPage.title, …) on first paint until the chunk resolved.
+// They are now statically bundled — t() must resolve on the very FIRST call with no
+// async wait. A regression to lazy-loading returns the raw key here.
+test('messages resolve synchronously on import (no cold-start raw-key flash)', async () => {
+  const env = installBrowserEnv({ locale: 'uk' })
+  try {
+    const mod = await importFresh('src/i18n/index.js')
+    // No waitFor — these must already be real copy, not the literal key.
+    assert.equal(mod.t('en', 'appName'), 'Arcana Insight')
+    assert.notEqual(mod.t('uk', 'appName'), 'appName')
+    assert.notEqual(mod.t('uk', 'nav.home'), 'nav.home')
+    assert.notEqual(mod.t('en', 'nav.menu'), 'nav.menu')
+    assert.notEqual(mod.t('uk', 'dailyPage.title'), 'dailyPage.title')
+  } finally {
+    env.restore()
+  }
+})
