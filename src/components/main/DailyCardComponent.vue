@@ -83,6 +83,8 @@ import { useAuthStore } from 'stores/authStore.js'
 import { DAILY_ACTIVITY_KEYS, markDailyActivity } from 'src/helpers/dailyRitual'
 import { trackRitualActivityWithGuestFallback } from 'src/helpers/ritualRewardsBackend.js'
 import { isDayKeyStale } from 'src/helpers/dayRollover.js'
+import { analytics } from 'src/services/analytics'
+import { ONBOARDING_EVENTS } from 'src/constants/analyticsEvents'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
@@ -105,6 +107,16 @@ const initializeDailyCardScreen = async () => {
   cards.value = nextCards
   if (error) {
     console.warn('[DailyCard] loadTarotData failed', error)
+  }
+  // Close the onboarding first-action funnel: first_action_click fires from the
+  // Menu daily launcher; completing it here (only for that source, only on a real
+  // card render) was missing, so completion read 0% forever (QA #18).
+  const query = router.currentRoute.value?.query || {}
+  if (query.source === 'menu_daily_launcher' && nextCards.length) {
+    void analytics.logEvent(ONBOARDING_EVENTS.firstActionComplete, {
+      source: 'menu_daily_launcher',
+      entry: String(query.entry || ''),
+    })
   }
   await nextTick()
   await fitCardToContent()

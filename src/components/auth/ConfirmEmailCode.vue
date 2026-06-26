@@ -9,6 +9,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
 import { resolveAuthRedirect } from 'src/helpers/authRedirect.js';
 import { mapAuthErrorKey } from 'src/helpers/authErrors.js';
+import { analytics } from 'src/services/analytics';
 
 export default {
   name: 'ConfirmEmailCode',
@@ -188,6 +189,15 @@ export default {
             console.error('[ConfirmCode] Failed to create profile:', profileError)
             // Не блокуємо — authStore.ensureUserProfile підхопить при наступній сесії
           }
+        }
+
+        // Fire the canonical GA4 login/sign_up on actual completion. The email
+        // path previously only logged an ad-hoc *_email_sent on code SEND, so the
+        // most common method never registered a real login/sign_up (QA #19).
+        if (this.isSignUp) {
+          void analytics.logSignUp('email')
+        } else {
+          void analytics.logLogin('email')
         }
 
         this.$router.push(resolveAuthRedirect(this.$route.query.redirect, '/'))
