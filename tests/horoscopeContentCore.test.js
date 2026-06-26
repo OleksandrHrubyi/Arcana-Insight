@@ -217,3 +217,37 @@ test('loadHoroscopeRegistry (entitled) keeps premium detail in result and cache'
   assert.equal(result.registry.leo.love.detailed, 'l-full')
   assert.equal(saveCalls[0].rows.find((r) => r.theme === 'love').detailed, 'l-full')
 })
+
+// QA finding #11: a successful-but-empty response (cron gap for today AND next
+// day) must be distinguishable from "still loading" so the screen can show an
+// explicit empty/retry state instead of an endless skeleton.
+
+test('loadHoroscopeRegistry flags isEmpty when today and next day return no rows', async () => {
+  const { loadHoroscopeRegistry } = await importModule('src/helpers/horoscopeContentCore.js')
+  const result = await loadHoroscopeRegistry({
+    locale: 'en',
+    today: '2026-03-25',
+    forceNetwork: true,
+    loadLocal: async () => null,
+    saveLocal: async () => {},
+    selectHoroscopes: async () => ({ data: [], error: null }),
+  })
+  assert.equal(result.isEmpty, true)
+  assert.deepEqual(result.registry, {})
+})
+
+test('loadHoroscopeRegistry does not flag isEmpty when rows exist', async () => {
+  const { loadHoroscopeRegistry } = await importModule('src/helpers/horoscopeContentCore.js')
+  const result = await loadHoroscopeRegistry({
+    locale: 'en',
+    today: '2026-03-25',
+    forceNetwork: true,
+    loadLocal: async () => null,
+    saveLocal: async () => {},
+    selectHoroscopes: async () => ({
+      data: [{ sign: 'leo', theme: 'energy', summary: 's', detailed: 'd' }],
+      error: null,
+    }),
+  })
+  assert.equal(result.isEmpty, false)
+})

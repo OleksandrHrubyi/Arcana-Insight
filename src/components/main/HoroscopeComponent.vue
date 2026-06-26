@@ -985,7 +985,7 @@ export default {
     async loadHoroscopesForDay({ forceNetwork = false } = {}) {
       const locale = this.locale
       const today = localISODate()
-      const { registry } = await loadHoroscopeRegistry({
+      const { registry, isEmpty } = await loadHoroscopeRegistry({
         locale,
         today,
         forceNetwork,
@@ -996,6 +996,10 @@ export default {
       })
       this.horoscope = registry
       this.renderedDayKey = today
+      // A successful-but-empty response means there's genuinely nothing to show
+      // (cron gap). Treat it as an error so refreshHoroscopesForDay surfaces the
+      // retry state instead of leaving an endless loading skeleton.
+      if (isEmpty) throw new Error('horoscope_unavailable')
     },
 
     // iOS freezes JS timers while the app is backgrounded, so a midnight rollover

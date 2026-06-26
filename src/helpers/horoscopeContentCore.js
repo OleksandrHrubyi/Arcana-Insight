@@ -107,6 +107,7 @@ export const loadHoroscopeRegistry = async ({
       return {
         registry: stripPremiumDetailedFromRegistry(rowsToRegistry(local.rows), { isEntitled }),
         source: 'cache',
+        isEmpty: false,
       }
     }
   }
@@ -136,5 +137,9 @@ export const loadHoroscopeRegistry = async ({
   return {
     registry,
     source: 'network',
+    // A 200-with-empty-array (cron gap for today AND tomorrow) is a success, not a
+    // load error — flag it so the screen shows an explicit empty/retry state
+    // instead of an indefinite shimmer skeleton (QA #11).
+    isEmpty: rows.length === 0,
   }
 }
