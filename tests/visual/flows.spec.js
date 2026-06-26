@@ -107,6 +107,28 @@ test.describe('flows: auth × premium dead-end guards', () => {
     await expect(page).toHaveURL(/#\/login/)
   })
 
+  // Regression #8: tapping a saved compatibility connection did nothing when the
+  // user's own ("You") birth date wasn't set — a visible, tappable dead element.
+  // It must instead prompt for the missing birth date.
+  test('saved connection tap prompts for "You" birth date when missing (no inert tap)', async ({ page }) => {
+    await seedLoggedOut(page)
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'CapacitorStorage.arcana_compatibility_connections_v1',
+        JSON.stringify([
+          { id: 'c0_1990-05-15_romantic', name: 'Test', emoji: '❤️', dob: '1990-05-15', birth: null, relationshipType: 'romantic' },
+        ]),
+      )
+    })
+    await go(page, 'compatibility')
+    const card = page.locator('.compat-savedconn__open').first()
+    await expect(card).toBeVisible()
+    // No "You" chart yet → the tap must open the birth-date sheet, not no-op.
+    await card.click()
+    await page.waitForTimeout(500)
+    await expect(page.locator('.q-dialog').first()).toBeVisible()
+  })
+
   // The ritual rewards store is parked pre-launch behind REWARDS_ENABLED=false.
   // A deep link to /rewards must not render the store — it redirects to menu so
   // there's no way to spend points or pick up a paywall-bypassing token.

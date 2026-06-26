@@ -490,6 +490,10 @@ const REL_EMOJI = { romantic: '❤️', friend: '🤝', family: '🏡', colleagu
 const SAVE_EMOJI = ['❤️', '🤍', '🔥', '🌙', '⭐', '🌸', '🤝', '🏡']
 
 const dobA = ref('')
+// Set when a saved connection was tapped before the user's own birth date existed:
+// after they fill "You" in the DOB sheet, auto-reveal the pending pairing instead
+// of leaving them to find the reveal button (QA #8).
+const pendingRevealAfterDobA = ref(false)
 const dobB = ref('')
 // Optional birth time + place per person (for rising sign / houses).
 // Shape: { time:'HH:MM', lat, lon, tz, place } | null
@@ -755,6 +759,9 @@ function onWheelTap(which, index) {
 }
 
 function openDob(which) {
+  // A fresh manual open is not a pending-connection reveal — reset the flag so it
+  // only auto-reveals on the openConnection path that set it.
+  pendingRevealAfterDobA.value = false
   activeDob.value = which
   buildDateOptions()
   syncSelectionFromISO(which === 'a' ? dobA.value : dobB.value)
@@ -787,6 +794,11 @@ function confirmDob() {
   else { dobB.value = iso; birthB.value = birth }
   dobSheet.value = false
   void hapticSelect()
+  // Complete the pairing the user tapped before "You" existed (QA #8).
+  if (pendingRevealAfterDobA.value) {
+    pendingRevealAfterDobA.value = false
+    if (canReveal.value) reveal()
+  }
 }
 
 function onCitySearch() {
@@ -928,7 +940,14 @@ function openConnection(conn) {
   birthB.value = conn.birth || null
   relationshipType.value = conn.relationshipType || 'romantic'
   void hapticSelect()
-  if (canReveal.value) reveal()
+  if (canReveal.value) {
+    reveal()
+  } else if (!chartA.value) {
+    // Partner loaded but the user's own chart isn't set — prompt for "You" instead
+    // of a dead no-op tap, and auto-reveal once it's filled.
+    openDob('a')
+    pendingRevealAfterDobA.value = true
+  }
 }
 
 // Is the currently-revealed partner already saved?
