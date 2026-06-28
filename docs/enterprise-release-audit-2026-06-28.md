@@ -31,7 +31,7 @@
 | 2 | Відвантажується варіант FirebaseAnalytics AdIdSupport (IDFA) | P1 | Compliance | S | [x] |
 | 3 | Преміум `detailed` гороскоп надсилається безкоштовним клієнтам (сервер) | P1 | Монетизація | M | ⏭️ v1.1 |
 | 4 | Мертва i18n: en.json/uk.json не використовуються; CLAUDE.md вказує хибно | P1 | Підтримуваність | S–M | [~] |
-| 5 | RLS не підтверджено на push_devices/app_users/tarot_readings | P1→P0 | Безпека | Перевірити | [~] |
+| 5 | RLS не підтверджено на push_devices/app_users/tarot_readings | P1→P0 | Безпека | Перевірити | [x] |
 | 6 | Кнопки назад/закрити < 44pt на ~14 екранах (paywall = 34px) | P2 | A11y/HIG | ~1.5 год | [x] |
 | 7 | register-device приймає неавтентифіковані upserts | P2 | Безпека | ~1 год | ⏭️ v1.1 |
 | 8 | Session/refresh токени в UserDefaults, не Keychain | P2 | Безпека | 2–4 год | ⏭️ v1.1 |
@@ -78,7 +78,16 @@
 - ⏳ **ЛИШИЛОСЬ (рішення owner):** `en.json`/`uk.json` ще використовує ai-ops `code-scan.js:175-237` (`detectI18nParity`) — перевіряє en/uk-parity на МЕРТВИХ файлах (фальшивий сигнал; реальний bundle не перевіряється). Щоб видалити JSON, треба перенацілити сканер на `messages.bundle.js` + переписати `tests/ai-ops/codeScan.test.js` + `tests/ai-ops/outputContracts.test.js`. Це зміна QA-тулінгу — потребує згоди.
 - **Жива i18n здорова:** 1306/1306 EN-UK, 0 неперекладених.
 
-### [~] #5 — RLS на немігрованих таблицях (P1→P0, Безпека) 🟡 МІГРАЦІЯ ГОТОВА, ПОТРЕБУЄ ВЕРИФІКАЦІЇ+ДЕПЛОЮ
+### [x] #5 — RLS на немігрованих таблицях (P1→P0, Безпека) ✅ ЗАКРИТО (перевірено в дашборді 2026-06-29)
+- **Результат діагностики:** RLS увімкнено на всіх 3 таблицях; усі політики owner-scoped до `auth.uid()`, лише для `authenticated`.
+  - `push_devices`: insert/select/update_own з `qual`/`with_check = (user_id = auth.uid())` (NULL там, де норма). Device-токени захищені — P0 НЕ справдився.
+  - `app_users`: insert/select/update **self** (authenticated).
+  - `tarot_readings`: select/insert/update/delete own ({public} + auth.uid()-чек → anon отримує 0 рядків).
+  - Гранти anon/authenticated у `role_table_grants` — нормальний дефолт Supabase, гейтиться RLS.
+- ✅ Hand-written міграцію видалено (коміт `revert(db)`) — жива БД вже коректна.
+- ⏳ Опційно (закрити дрейф): `supabase db pull`, щоб версіонувати реальні живі політики.
+
+#### (історичне) первинний план до перевірки:
 - **Аналіз доступу (з коду):** `push_devices` — клієнт НЕ чіпає (лише edge через service_role) → замкнути повністю. `app_users` (PII) — клієнт читає/upsert свій рядок по `id` → owner-scope `id=auth.uid()`. `tarot_readings` — клієнт read/insert/delete свої по `user_id` → owner-scope. `app_users`-міграція (`202606241300`) додала лише FK, БЕЗ RLS.
 - ✅ Створено ідемпотентну міграцію `supabase/migrations/202606281600_rls_user_tables.sql`.
 - ⏳ **ПОТРЕБУЄ OWNER:**
