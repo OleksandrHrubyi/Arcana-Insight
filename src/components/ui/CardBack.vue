@@ -76,10 +76,20 @@ import logo from 'src/assets/images/logo.svg'
   justify-content: center;
 }
 
-.card-back__core {
-  width: 52%;
-  aspect-ratio: 1 / 1;
+/* Core + ring are both absolutely centered (concentric behind the logo), exactly
+   like the home card — NOT in-flow, or they'd sit beside the logo. */
+.card-back__core,
+.card-back__core-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   border-radius: 999px;
+  aspect-ratio: 1 / 1;
+}
+
+.card-back__core {
+  width: 36%;
   border: 1px solid rgba(184, 214, 242, 0.16);
   background:
     radial-gradient(circle at 50% 30%, rgba(223, 236, 250, 0.12), rgba(223, 236, 250, 0) 46%),
@@ -97,13 +107,7 @@ import logo from 'src/assets/images/logo.svg'
 }
 
 .card-back__core-ring {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 38%;
-  aspect-ratio: 1 / 1;
-  border-radius: 999px;
-  transform: translate(-50%, -50%);
+  width: 26%;
   border: 1px solid rgba(183, 210, 238, 0.12);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.012);
 }
@@ -111,7 +115,7 @@ import logo from 'src/assets/images/logo.svg'
 .card-back__logo {
   position: relative;
   z-index: 2;
-  width: 62%;
+  width: 66%;
   height: auto;
   opacity: 0.96;
 }
