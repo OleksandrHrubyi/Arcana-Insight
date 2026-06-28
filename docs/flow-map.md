@@ -29,7 +29,6 @@ Expected entry sources:
 - cold launch after onboarding
 - onboarding completion fallback
 - bottom navigation
-- redirects from `/my-day`
 
 ## Daily Card Flow
 
@@ -209,10 +208,6 @@ Current gating:
 - Type: feature destination
 - Active page: `src/pages/CompatibilityPage.vue`
 
-Important rule:
-
-- `src/pages/CompatibilityPage 2.vue` is not the route target and should not be treated as canonical
-
 ## Rewards Flow
 
 - Entry route: `/rewards`
@@ -226,7 +221,6 @@ Related logic:
 
 ## Redirects And Special Cases
 
-- `/my-day` is redirect-only and currently resolves to home
 - `/account` requires auth
 - some screens set `hideBottomNav` and should not be treated as bottom-nav destinations
 

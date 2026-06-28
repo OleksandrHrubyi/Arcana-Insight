@@ -31,16 +31,15 @@ Status legend: 🟢 solid · 🟡 needs UX/polish review · 🔴 known regressio
 | Zodiac Guide | `/zodiac-guide` | `components/main/ZodiacGuideComponent.vue` (1707) | console:10 | 🟡 | Heavy debug logging. |
 | Card Library | `/cards` | `pages/CardLibraryPage.vue` (755) | none:1 console:3 | 🟡 | Browse/search review. |
 | Ritual Rewards | `/rewards` | `pages/RitualRewardsPage.vue` (1490) | none:1 | 🟡 | Tie into daily-ritual loop. |
-| Account | `/account` | `pages/AccountPage.vue` (1448) | none:1 console:14 | 🔴 | Email editing not implemented (per CLAUDE.md). 14 debug logs — highest in app. |
+| Account | `/account` | `pages/AccountPage.vue` (1448) | none:1 | 🟢 | Email intentionally read-only with explanatory hint (`accountPage.emailNote`). Prod console.* stripped at build (quasar.config esbuild.drop). |
 | Settings | `/settings` | `pages/SettingsPage.vue` (16, ⚪ wrapper) | — | 🟡 | Confirm component target + content completeness. |
 | FAQ / Support | `/support` | `pages/FaqSupportPage.vue` (12, ⚪ wrapper) | — | 🟡 | Confirm component + live content. |
 | Privacy / Terms | `/privacy-terms` | `pages/PrivacyTermsPage.vue` (12, ⚪ wrapper) | — | 🔴 | App Store **requires** live, accurate privacy + terms. Verify content + URLs. |
 | Auth (login/signup/confirm/reset) | `/login` `/sign-up` `/confirm-code` `/reset-password` | `components/auth/*` | — | 🟡 | Sign-up keeps birth date out of step 1 (contract-tested). Review full auth flow. |
 
 ## Cross-cutting cleanup (not per-screen)
-- **Dead component:** `components/main/DailyRitualProgressComponent.vue` — 0 references. Wire into home daily-progress, or delete.
-- **Debug logs:** ~65 `console.*` across `src/`. Strip before release; keep deliberate error logging only.
-- **Tests:** 194/194 green as of 2026-06-15. Run `npm test` after each screen change; many screens have contract tests.
+- **Debug logs:** ✅ Resolved — `quasar.config.js` strips `console.*`/`debugger` from production builds (esbuild `drop`, prod-only). Dev logs remain.
+- **Tests:** 241/241 green as of 2026-06-28. Run `npm test` after each screen change; many screens have contract tests.
 
 ## Per-screen work process (do this for each row)
 1. Read its contract in `docs/screen-contracts.md` (if missing, that screen has no contract yet — add one first).
