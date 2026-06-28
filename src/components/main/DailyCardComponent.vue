@@ -8,7 +8,7 @@
       :style="{ '--card-scale': cardScale }"
     >
       <header class="daily-hero daily-hero--with-back">
-        <button type="button" class="daily-back" @click="onBack">
+        <button type="button" class="daily-back hit-44" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
         <div class="daily-hero__text">
@@ -17,7 +17,22 @@
         </div>
       </header>
 
-      <div ref="dailyMainRef" class="daily-main">
+      <div v-if="loadState === 'loading'" class="daily-state">
+        <q-spinner color="white" size="32px" />
+      </div>
+
+      <div v-else-if="loadState === 'error'" class="daily-state">
+        <div class="daily-state__title">{{ tt('common.loadError') }}</div>
+        <button
+          type="button"
+          class="arcana-btn arcana-btn--primary"
+          @click="retryDailyCard"
+        >
+          {{ tt('common.retry') }}
+        </button>
+      </div>
+
+      <div v-else ref="dailyMainRef" class="daily-main">
         <section class="daily-card">
           <div class="daily-card__body">
             <div class="daily-card__media">
@@ -95,19 +110,24 @@ const oracleActionsRef = ref(null)
 const dailyMainRef = ref(null)
 const cardScale = ref(1)
 const cards = ref([])
+// 'loading' | 'ready' | 'error' — drives the spinner / retry fallback so a failed
+// or empty tarot-data load shows a recoverable state instead of a broken <img>.
+const loadState = ref('loading')
 const ANON_DAILY_SEED_KEY = 'arcana_daily_seed_v1'
 
 const initializeDailyCardScreen = async () => {
+  loadState.value = 'loading'
   markDailyActivity(DAILY_ACTIVITY_KEYS.dailyCard)
   void trackRitualActivityWithGuestFallback(DAILY_ACTIVITY_KEYS.dailyCard, {
     source: 'daily_card_screen',
     userId: authStore.state.user?.id || '',
   })
   const { cards: nextCards, error } = await loadDailyCardsSnapshot({ loadTarotData })
-  cards.value = nextCards
-  if (error) {
-    console.warn('[DailyCard] loadTarotData failed', error)
+  if (error || !nextCards.length) {
+    throw error || new Error('daily_cards_empty')
   }
+  cards.value = nextCards
+  loadState.value = 'ready'
   // Close the onboarding first-action funnel: first_action_click fires from the
   // Menu daily launcher; completing it here (only for that source, only on a real
   // card render) was missing, so completion read 0% forever (QA #18).
@@ -128,8 +148,13 @@ const initializeDailyCardScreenSafe = async () => {
     await initializeDailyCardScreen()
   } catch (error) {
     cards.value = []
+    loadState.value = 'error'
     console.warn('[DailyCard] init failed', error)
   }
+}
+
+const retryDailyCard = () => {
+  void initializeDailyCardScreenSafe()
 }
 
 onMounted(() => {
@@ -392,6 +417,25 @@ watch(
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+}
+
+.daily-state {
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.daily-state__title {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 15px;
+  line-height: 1.45;
+  max-width: 280px;
 }
 
 .daily-card {
