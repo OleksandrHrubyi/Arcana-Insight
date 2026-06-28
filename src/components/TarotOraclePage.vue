@@ -962,6 +962,29 @@ const askThemePrimary = () => {
   revealControlsWithDelay(1400)
 }
 
+// Free user who already spent today's reading: the oracle says so up front
+// (come back tomorrow / go Premium) instead of walking them through theme →
+// question only to hit the daily limit at the end.
+const showDailySpent = () => {
+  selectedTheme.value = ''
+  selectedSubTheme.value = ''
+  stage.value = 'daily_spent'
+  currentPrompt.value = t.value.dailySpentPrompt
+  void analytics.logEvent(TAROT_SESSION_EVENTS.upsellShown, {
+    ...buildTarotFunnelPayload(),
+    source: PAYWALL_ENTRY_POINTS.tarotDailyLimit.source,
+  })
+  revealControlsWithDelay(900)
+}
+
+const proceedAfterIntro = () => {
+  if (!hasPremiumAccess.value && hasUsedFreeTarotToday()) {
+    showDailySpent()
+    return
+  }
+  askThemePrimary()
+}
+
 const openCustomQuestionInput = ({ resetDraft = true } = {}) => {
   stage.value = 'question_input'
   setPrompt('questionMode')
@@ -1757,6 +1780,14 @@ const showInterpretationFinishActions = computed(
 )
 
 const choices = computed(() => {
+  if (stage.value === 'daily_spent') {
+    return withLeaveSession([
+      {
+        label: i18nT(currentLang.value, 'premiumAccess.cta'),
+        action: () => openPremiumFromUpsell(PAYWALL_ENTRY_POINTS.tarotDailyLimit),
+      },
+    ])
+  }
   if (stage.value === 'theme') {
     return withLeaveSession([
       { label: t.value.themeLabels.relationships, action: () => pickTheme('relationships') },
@@ -1859,7 +1890,7 @@ const choices = computed(() => {
     return []
   }
 
-  return withLeaveSession([{ label: t.value.choices.start, action: askThemePrimary }])
+  return withLeaveSession([{ label: t.value.choices.start, action: proceedAfterIntro }])
 })
 
 const showQuestionInput = computed(() => stage.value === 'question_input')
@@ -2301,7 +2332,7 @@ onMounted(() => {
   // Already saw the intro this session (e.g. returning from interpretation) —
   // go straight to theme selection, no narration replay.
   if (hasSeenIntroThisSession()) {
-    askThemePrimary()
+    proceedAfterIntro()
     return
   }
   markIntroSeenThisSession()
@@ -2312,7 +2343,7 @@ onMounted(() => {
     : []
 
   if (!introLines.length) {
-    askThemePrimary()
+    proceedAfterIntro()
     return
   }
 
@@ -2326,7 +2357,7 @@ onMounted(() => {
     INTRO_LINE_START_DELAY + introLines.length * INTRO_LINE_STEP_DELAY + INTRO_TO_THEME_DELAY
   schedule(introEndDelay, () => {
     narrationLine.value = ''
-    askThemePrimary()
+    proceedAfterIntro()
   })
 })
 

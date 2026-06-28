@@ -46,6 +46,8 @@ export const messages = {
         aiFallbackNotify: 'AI interpretation is temporarily unavailable. Showing the extended Premium interpretation.',
       },
       actionsSheetTitle: 'Options',
+      dailySpentPrompt:
+        "Today's reading is already drawn — the cards rest until tomorrow. Open Premium for unlimited sessions.",
       questionInputLabel: 'Your question',
       questionPlaceholder: 'Type your question in one sentence...',
       questionValidation: {
@@ -2285,6 +2287,8 @@ export const messages = {
         aiFallbackNotify: 'AI-інтерпретація тимчасово недоступна. Показую розширене Premium-тлумачення.',
       },
       actionsSheetTitle: 'Варіанти',
+      dailySpentPrompt:
+        'Сьогоднішній розклад уже зроблено — карти відпочивають до завтра. Відкрий Premium для необмежених сесій.',
       questionInputLabel: 'Твоє питання',
       questionPlaceholder: 'Введи своє питання одним реченням...',
       questionValidation: {

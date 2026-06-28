@@ -141,4 +141,22 @@ test.describe('flows: auth × premium dead-end guards', () => {
     // None of the store UI rendered.
     await expect(page.locator('.rewards-filters')).toHaveCount(0)
   })
+
+  // A free user who already drew today's card is told up front (oracle: "come back
+  // tomorrow / Premium") instead of being walked through theme → question only to
+  // hit the daily limit at the spread chooser.
+  test('free daily-spent user is gated at the intro, not the spread chooser', async ({ page }) => {
+    await seedLoggedOut(page)
+    await page.addInitScript(() => {
+      const d = new Date()
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+      localStorage.setItem('arcana_free_tarot_daily_v1', JSON.stringify({ date: key }))
+      // Skip the (long) intro so proceedAfterIntro runs immediately.
+      sessionStorage.setItem('arcana_oracle_intro_seen_v1', '1')
+    })
+    await go(page, 'tarot')
+    await page.waitForTimeout(600)
+    // The oracle gates up front with the daily-spent prompt (uk copy mentions "завтра").
+    await expect(page.locator('.oracle-bubble')).toContainText('завтра')
+  })
 })
