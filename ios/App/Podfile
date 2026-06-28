@@ -27,7 +27,9 @@ end
 target 'App' do
   capacitor_pods
   # Add your Pods here
-  pod 'CapacitorFirebaseAnalytics/Analytics', :path => '../../node_modules/@capacitor-firebase/analytics'
+  # Use the WithoutAdIdSupport variant: app declares NSPrivacyTracking=false and shows
+  # no ATT prompt, so the IDFA-collecting GoogleAppMeasurement variant must not ship.
+  pod 'CapacitorFirebaseAnalytics/AnalyticsWithoutAdIdSupport', :path => '../../node_modules/@capacitor-firebase/analytics'
 end
 
 post_install do |installer|

@@ -13,9 +13,9 @@ PODS:
   - CapacitorFirebaseAnalytics (5.4.1):
     - Capacitor
     - CapacitorFirebaseAnalytics/Lite (= 5.4.1)
-  - CapacitorFirebaseAnalytics/Analytics (5.4.1):
+  - CapacitorFirebaseAnalytics/AnalyticsWithoutAdIdSupport (5.4.1):
     - Capacitor
-    - FirebaseAnalytics (~> 10.8)
+    - FirebaseAnalytics/WithoutAdIdSupport (~> 10.8)
   - CapacitorFirebaseAnalytics/Lite (5.4.1):
     - Capacitor
   - CapacitorFirebaseCrashlytics (5.4.1):
@@ -33,19 +33,10 @@ PODS:
     - Capacitor
   - CapacitorStatusBar (5.0.8):
     - Capacitor
-  - FirebaseAnalytics (10.29.0):
-    - FirebaseAnalytics/AdIdSupport (= 10.29.0)
+  - FirebaseAnalytics/WithoutAdIdSupport (10.29.0):
     - FirebaseCore (~> 10.0)
     - FirebaseInstallations (~> 10.0)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
-    - GoogleUtilities/MethodSwizzler (~> 7.11)
-    - GoogleUtilities/Network (~> 7.11)
-    - "GoogleUtilities/NSData+zlib (~> 7.11)"
-    - nanopb (< 2.30911.0, >= 2.30908.0)
-  - FirebaseAnalytics/AdIdSupport (10.29.0):
-    - FirebaseCore (~> 10.0)
-    - FirebaseInstallations (~> 10.0)
-    - GoogleAppMeasurement (= 10.29.0)
+    - GoogleAppMeasurement/WithoutAdIdSupport (= 10.29.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
     - GoogleUtilities/MethodSwizzler (~> 7.11)
     - GoogleUtilities/Network (~> 7.11)
@@ -83,20 +74,6 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 7.13)
     - nanopb (< 2.30911.0, >= 2.30908.0)
     - PromisesSwift (~> 2.1)
-  - GoogleAppMeasurement (10.29.0):
-    - GoogleAppMeasurement/AdIdSupport (= 10.29.0)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
-    - GoogleUtilities/MethodSwizzler (~> 7.11)
-    - GoogleUtilities/Network (~> 7.11)
-    - "GoogleUtilities/NSData+zlib (~> 7.11)"
-    - nanopb (< 2.30911.0, >= 2.30908.0)
-  - GoogleAppMeasurement/AdIdSupport (10.29.0):
-    - GoogleAppMeasurement/WithoutAdIdSupport (= 10.29.0)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
-    - GoogleUtilities/MethodSwizzler (~> 7.11)
-    - GoogleUtilities/Network (~> 7.11)
-    - "GoogleUtilities/NSData+zlib (~> 7.11)"
-    - nanopb (< 2.30911.0, >= 2.30908.0)
   - GoogleAppMeasurement/WithoutAdIdSupport (10.29.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
     - GoogleUtilities/MethodSwizzler (~> 7.11)
@@ -158,7 +135,7 @@ DEPENDENCIES:
   - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
   - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
   - "CapacitorFirebaseAnalytics (from `../../node_modules/@capacitor-firebase/analytics`)"
-  - "CapacitorFirebaseAnalytics/Analytics (from `../../node_modules/@capacitor-firebase/analytics`)"
+  - "CapacitorFirebaseAnalytics/AnalyticsWithoutAdIdSupport (from `../../node_modules/@capacitor-firebase/analytics`)"
   - "CapacitorFirebaseCrashlytics (from `../../node_modules/@capacitor-firebase/crashlytics`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorLocalNotifications (from `../../node_modules/@capacitor/local-notifications`)"
@@ -252,6 +229,6 @@ SPEC CHECKSUMS:
   RevenueCat: 3d934653b7e8b09af88fd47e9e84cfaf5d0a89ba
   RevenuecatPurchasesCapacitor: 70ecf4905bbbce9b6d6bd243504a7001b6054ac0
 
-PODFILE CHECKSUM: ce8969d4ab6de63c8062ea94338572882ba02106
+PODFILE CHECKSUM: ecbd31fe3f507741d20a691adb67e8be277c2c1d
 
 COCOAPODS: 1.16.2
