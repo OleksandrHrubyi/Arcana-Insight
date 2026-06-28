@@ -1,4 +1,5 @@
 // supabase/functions/send-broadcast/index.ts
+import { notifyError, notifyInfo } from '../_shared/notify.ts'
 
 type ReqBody = {
   title?: string
@@ -495,6 +496,7 @@ Deno.serve(async (req) => {
       })
     }
 
+    notifyInfo('send-broadcast: done', `sent ${totalSent} · failed ${totalFailed} · disabled ${totalDisabled} · ${locale ?? 'ALL'}/${platform ?? 'ALL'}`)
     return json({
       ok: true,
       envs,
@@ -508,6 +510,7 @@ Deno.serve(async (req) => {
       sampleFailures,
     })
   } catch (e) {
+    notifyError('send-broadcast: failed', String(e?.message ?? e).slice(0, 400))
     return json({ error: String(e?.message ?? e) }, 500)
   }
 })

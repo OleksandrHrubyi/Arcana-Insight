@@ -3,6 +3,7 @@
 // state. RC app_user_id == Supabase auth user id (app calls Purchases.logIn).
 // Auth: RevenueCat sends the configured value in the Authorization header.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { notifyError } from '../_shared/notify.ts'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -97,6 +98,7 @@ Deno.serve(async (req) => {
   const failed = results.find((r) => r.error)
   if (failed) {
     console.error('[rc-webhook] apply_entitlement_event failed', failed.error.message)
+    notifyError('revenuecat-webhook: persist failed', String(failed.error.message).slice(0, 400))
     return json({ error: 'persist_failed' }, 500)
   }
 

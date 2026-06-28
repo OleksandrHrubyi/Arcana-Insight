@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { createHmac, timingSafeEqual } from 'node:crypto'
+import { notifyError } from '../_shared/notify.ts'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -177,6 +178,7 @@ Deno.serve(async (req: Request) => {
 
   } catch (err) {
     console.error('[TelegramAuth] Unexpected error:', err)
+    notifyError('telegram-auth: unexpected error', String(err?.message ?? err).slice(0, 400))
     return json({ error: 'Internal server error' }, 500)
   }
 })

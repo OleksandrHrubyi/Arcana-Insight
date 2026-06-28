@@ -1,3 +1,5 @@
+import { notifyError } from "../_shared/notify.ts";
+
 type ReqBody = {
   action?: "upsert" | "resolve_account_preference";
   token?: string;
@@ -239,6 +241,7 @@ Deno.serve(async (req) => {
     return json({ ok: true, saved_count: saved?.length ?? 0, linked_user: !!authUserId });
   } catch (e) {
     console.error('[register-device] failed', e?.message ?? e);
+    notifyError('register-device: failed', String(e?.message ?? e).slice(0, 400));
     return json({ error: 'internal_error' }, 500);
   }
 });

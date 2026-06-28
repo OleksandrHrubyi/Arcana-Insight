@@ -1,4 +1,6 @@
 // @ts-nocheck
+import { notifyError } from '../_shared/notify.ts'
+
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -91,6 +93,7 @@ Deno.serve(async (req: Request) => {
   const { error: authError } = await admin.auth.admin.deleteUser(user.id)
   if (authError) {
     console.error('[DeleteAccount] Failed to delete auth user:', authError)
+    notifyError('delete-account: delete user failed', String(authError?.message ?? authError).slice(0, 400))
     return json({ error: 'delete_failed' }, 400)
   }
 

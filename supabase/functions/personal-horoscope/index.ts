@@ -1,6 +1,7 @@
 // supabase/functions/personal-horoscope/index.ts
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { isUserPremium, premiumEnforcementEnabled } from "../_shared/premium.ts";
+import { notifyError } from "../_shared/notify.ts";
 
 const SIGNS = [
   "aries","taurus","gemini","cancer","leo","virgo",
@@ -489,6 +490,7 @@ Deno.serve(async (req) => {
     const reason = String(e?.message ?? e ?? "error");
     console.error("[personal-horoscope] failed:", e?.stack ?? e);
     const aiDown = reason.startsWith("AI_UNAVAILABLE");
+    notifyError(`personal-horoscope: ${aiDown ? "AI unavailable" : "server error"}`, reason.slice(0, 400));
     return json(
       {
         ok: false,

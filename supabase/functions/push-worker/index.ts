@@ -1,3 +1,5 @@
+import { notifyError, notifyInfo } from '../_shared/notify.ts'
+
 type DueRow = {
   token: string
   apns_env: 'sandbox' | 'production'
@@ -692,6 +694,11 @@ Deno.serve(async (req) => {
       for (const f of failures.slice(0, 3)) sampleFailures.push({ env, locale: loc, ...f })
     }
 
+    // Only ping on a run that actually did something — this worker runs often and
+    // most runs have nothing due, which would otherwise flood the group.
+    if (totalSent > 0 || totalDisabled > 0) {
+      notifyInfo('push-worker: sent', `sent ${totalSent} · disabled ${totalDisabled} · due ${due.length}`)
+    }
     return json({
       ok: true,
       due: due.length,
@@ -702,6 +709,7 @@ Deno.serve(async (req) => {
       sampleFailures,
     })
   } catch (e) {
+    notifyError('push-worker: failed', String(e?.message ?? e).slice(0, 400))
     return json({ error: String(e?.message ?? e) }, 500)
   }
 })

@@ -1,3 +1,5 @@
+import { notifyError } from './notify.ts'
+
 export const RITUAL_ACTIVITY_KEYS = ['daily_card', 'horoscope', 'tarot'] as const
 export type RitualActivityKey = (typeof RITUAL_ACTIVITY_KEYS)[number]
 
@@ -218,6 +220,7 @@ export const restRequest = async ({
     body: body == null ? undefined : JSON.stringify(body),
   })
   const data = await readJsonSafe(res)
+  if (res.status >= 500) notifyError(`ritual: REST ${path} ${res.status}`, JSON.stringify(data).slice(0, 400))
   return { ok: res.ok, status: res.status, data }
 }
 
@@ -243,5 +246,6 @@ export const rpcRequest = async ({
     body: JSON.stringify(body || {}),
   })
   const data = await readJsonSafe(res)
+  if (res.status >= 500) notifyError(`ritual: RPC ${name} ${res.status}`, JSON.stringify(data).slice(0, 400))
   return { ok: res.ok, status: res.status, data }
 }

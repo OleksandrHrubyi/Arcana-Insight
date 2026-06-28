@@ -9,6 +9,7 @@
 // @ts-nocheck
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { isUserPremium, premiumEnforcementEnabled } from "../_shared/premium.ts";
+import { notifyError } from "../_shared/notify.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -412,6 +413,7 @@ Deno.serve(async (req) => {
     }
     if (!parsed) {
       console.error("[compatibility] AI unavailable:", providerErrors.join(" | "));
+      notifyError("compatibility: AI providers down", providerErrors.join(" | ").slice(0, 400));
       return json({ ok: false, code: "AI_UNAVAILABLE", error: "AI reading is temporarily unavailable" }, 503);
     }
 
@@ -442,6 +444,7 @@ Deno.serve(async (req) => {
     return json({ ok: true, cached: false, relationshipType: facts.relationshipType, locale: facts.locale, reading });
   } catch (e: any) {
     console.error("[compatibility] failed:", e?.stack ?? e);
+    notifyError("compatibility: server error", String(e?.message ?? e).slice(0, 400));
     return json({ ok: false, code: "server_error", error: "Something went wrong" }, 500);
   }
 });
