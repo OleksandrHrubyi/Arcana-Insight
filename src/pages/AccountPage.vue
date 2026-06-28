@@ -2,7 +2,7 @@
   <div class="account-wrap">
     <div class="account-container">
       <header class="auth-hero auth-hero--with-back">
-        <button type="button" class="account-back" @click="onBack">
+        <button type="button" class="account-back hit-44" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
         <div class="auth-hero__text">

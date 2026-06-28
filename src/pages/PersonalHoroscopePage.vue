@@ -4,7 +4,7 @@
 
     <section class="readings-content personal-wrap">
       <header class="readings-hero readings-hero--with-back">
-        <button type="button" class="readings-back" @click="onBack">
+        <button type="button" class="readings-back hit-44" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
         <div class="readings-hero__text">

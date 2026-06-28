@@ -4,7 +4,7 @@
 
     <div class="readings-content">
       <header class="readings-hero readings-hero--with-back">
-        <button type="button" class="readings-back" @click="onBack">
+        <button type="button" class="readings-back hit-44" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
         <div class="readings-hero__text">
@@ -118,7 +118,7 @@
     >
       <section class="oracle-actions oracle-actions--full">
         <div class="readings-sheet-header">
-          <button type="button" class="readings-sheet-back" @click="closeDetail">
+          <button type="button" class="readings-sheet-back hit-44" @click="closeDetail">
             <q-icon name="chevron_left" size="18px" />
           </button>
           <div class="sheet-title">{{ tt('readingsPage.detailTitle') }}</div>

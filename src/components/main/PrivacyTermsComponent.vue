@@ -4,7 +4,7 @@
 
     <div class="policy-content">
       <header class="policy-hero policy-hero--with-back">
-        <button type="button" class="policy-back" @click="onBack">
+        <button type="button" class="policy-back hit-44" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
         <div class="policy-hero__text">

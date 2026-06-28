@@ -2,7 +2,7 @@
   <q-page class="rewards-page">
     <div class="rewards-shell">
       <header class="rewards-hero rewards-hero--with-back">
-        <button type="button" class="rewards-back" @click="onBackClick">
+        <button type="button" class="rewards-back hit-44" @click="onBackClick">
           <q-icon name="chevron_left" size="18px" />
         </button>
         <div class="rewards-hero__text">

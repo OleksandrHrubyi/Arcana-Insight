@@ -4,7 +4,7 @@
 
     <div class="zodiac-content">
       <header class="zodiac-hero zodiac-hero--with-back">
-        <button type="button" class="zodiac-back" @click="onBack">
+        <button type="button" class="zodiac-back hit-44" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
         <div class="zodiac-hero__text">
@@ -89,7 +89,7 @@
               <div class="sign-head__dates">{{ sign.dates }}</div>
               <div class="sign-head__archetype">{{ sign.archetype }}</div>
             </div>
-            <button type="button" class="head-fav-btn" @click="toggleFavorite(sign.key)">
+            <button type="button" class="head-fav-btn hit-44" @click="toggleFavorite(sign.key)">
               <q-icon :name="isFavorite(sign.key) ? 'favorite' : 'favorite_border'" size="18px" />
             </button>
           </header>

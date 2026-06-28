@@ -4,7 +4,7 @@
 
     <div class="cards-content">
       <header class="cards-hero cards-hero--with-back">
-        <button type="button" class="cards-back" @click="onBack">
+        <button type="button" class="cards-back hit-44" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
         <div class="cards-hero__text">
@@ -92,7 +92,7 @@
     >
       <section class="oracle-actions oracle-actions--full">
         <div class="cards-sheet-header">
-          <button type="button" class="cards-sheet-back" @click="closeDetail">
+          <button type="button" class="cards-sheet-back hit-44" @click="closeDetail">
             <q-icon name="chevron_left" size="18px" />
           </button>
           <div class="sheet-title">{{ tt('cardsPage.detailTitle') }}</div>

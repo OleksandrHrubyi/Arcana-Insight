@@ -4,7 +4,7 @@
 
     <section class="compat-content">
       <header class="compat-hero">
-        <button type="button" class="compat-back" :aria-label="tt('common.close')" @click="onBack">
+        <button type="button" class="compat-back hit-44" :aria-label="tt('common.close')" @click="onBack">
           <q-icon name="chevron_left" size="20px" />
         </button>
         <div class="compat-hero__text">

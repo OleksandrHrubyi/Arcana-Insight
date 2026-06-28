@@ -4,7 +4,7 @@
 
     <div class="faq-content">
       <header class="faq-hero faq-hero--with-back">
-        <button type="button" class="faq-back" @click="onBack">
+        <button type="button" class="faq-back hit-44" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
         <div class="faq-hero__text">

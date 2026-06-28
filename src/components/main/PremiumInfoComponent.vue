@@ -4,7 +4,7 @@
 
     <div class="premium-content">
       <div class="premium-nav">
-        <button type="button" class="premium-back" @click="onBack">
+        <button type="button" class="premium-back hit-44" @click="onBack">
           <q-icon name="chevron_left" size="18px" />
         </button>
       </div>
