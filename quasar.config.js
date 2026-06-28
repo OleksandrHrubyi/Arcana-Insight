@@ -9,7 +9,7 @@ if (typeof crypto.hash !== 'function') {
     crypto.createHash(algorithm).update(data).digest(outputEncoding)
 }
 
-export default defineConfig((/* ctx */) => {
+export default defineConfig((ctx) => {
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -67,7 +67,14 @@ export default defineConfig((/* ctx */) => {
       // polyfillModulePreload: true,
       // distDir
 
-      // extendViteConf (viteConf) {},
+      // Strip console.* and debugger from production builds (Crashlytics handles
+      // crash reporting; avoids leaking auth/billing diagnostics to device console).
+      extendViteConf(viteConf) {
+        if (ctx.prod) {
+          viteConf.esbuild = viteConf.esbuild || {}
+          viteConf.esbuild.drop = ['console', 'debugger']
+        }
+      },
       // viteVuePluginOptions: {},
       vitePlugins: [
         [
