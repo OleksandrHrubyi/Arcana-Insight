@@ -10,12 +10,11 @@
         playsinline
         preload="auto"
         @loadedmetadata="applyPlaybackRate"
-        @loadeddata="handleVideoReady"
         @canplay="ensureVideoPlayback"
         @playing="handleVideoPlaying"
-        @pause="handleVideoStall"
-        @waiting="handleVideoStall"
-        @stalled="handleVideoStall"
+        @pause="handleVideoPause"
+        @waiting="handleVideoPause"
+        @stalled="handleVideoPause"
       >
         <source src="/oracle-media/oracle-loop.mp4" type="video/mp4" />
       </video>
@@ -907,23 +906,13 @@ const ensureVideoPlayback = () => {
   }
 }
 
-const handleVideoReady = () => {
-  // A decodable frame exists — reveal the background even if autoplay is still
-  // blocked (a frozen first frame beats a black screen), then nudge playback.
-  isVideoPlaying.value = true
-  ensureVideoPlayback()
-}
-
 const handleVideoPlaying = () => {
   isVideoPlaying.value = true
   updateDeckHotspotPosition()
 }
 
-const handleVideoStall = () => {
-  // Transient pause/buffer/stall (decode hiccup, app resume, memory pressure):
-  // keep the last frame on screen instead of flashing the whole background to
-  // black, and nudge playback back. Visibility is only ever turned ON (on a ready
-  // frame / playing) and never off mid-session, so a hiccup can't blank the page.
+const handleVideoPause = () => {
+  isVideoPlaying.value = false
   ensureVideoPlayback()
 }
 
@@ -2310,35 +2299,18 @@ onMounted(() => {
   window.addEventListener('focus', ensureVideoPlayback)
   window.addEventListener('resize', updateDeckHotspotPosition)
   window.addEventListener('orientationchange', updateDeckHotspotPosition)
-  let videoStuckCycles = 0
   videoPlaybackWatchdog = window.setInterval(() => {
     const video = videoRef.value
     if (!video) {
       return
     }
-    // Advancing with frames → make sure it's revealed and clear the recovery count.
-    if (video.readyState >= 2 && video.currentTime > 0) {
-      isVideoPlaying.value = true
-      videoStuckCycles = 0
-      if (video.paused) {
-        ensureVideoPlayback()
-      }
+    if (video.paused || video.readyState < 2) {
+      ensureVideoPlayback()
       return
     }
-    // Not advancing (autoplay rejected / stalled at launch — e.g. the page rendered
-    // while the app was still backgrounding in from a push tap). Retry play, and if
-    // it stays stuck, hard-reset the element: re-calling play() alone does not
-    // recover a WKWebView <video> that rejected autoplay in the background.
-    videoStuckCycles += 1
-    if (videoStuckCycles >= 4) {
-      videoStuckCycles = 0
-      try {
-        video.load()
-      } catch {
-        /* ignore */
-      }
+    if (video.currentTime > 0) {
+      isVideoPlaying.value = true
     }
-    ensureVideoPlayback()
   }, 1200)
 
   // Already saw the intro this session (e.g. returning from interpretation) —
