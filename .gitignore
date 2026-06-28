@@ -42,3 +42,6 @@ ai-ops/output/latest/*
 !ai-ops/output/latest/.gitkeep
 ai-ops/output/history/*
 !ai-ops/output/history/.gitkeep
+
+# Supabase CLI scratch state
+/supabase/.temp/
