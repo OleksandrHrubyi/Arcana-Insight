@@ -1,0 +1,11 @@
+-- Fix the Supabase security advisor "Security Definer View" on
+-- public.ritual_full_days. By default a view runs with its owner's rights, so it
+-- bypasses RLS on the underlying ritual_activity_events table — a user querying
+-- the view directly could see other users' completed ritual days (their user_id +
+-- dates). Run it with the querying user's permissions instead, so the existing
+-- per-user RLS (ritual_activity_events_select_own: auth.uid() = user_id) applies.
+--
+-- Safe: the only reader, the ritual-dashboard edge function, queries it with the
+-- service role + an explicit user_id=eq.<uid> filter, which is unaffected.
+-- Requires Postgres 15+ (Supabase is on 15+).
+alter view public.ritual_full_days set (security_invoker = on);
