@@ -605,11 +605,14 @@ export default defineComponent({
       if (this.busy) {
         return this.tt('notifications.syncing')
       }
-      if (this.pushSyncError) {
-        return this.tt('notifications.syncFailed')
-      }
+      // A failed enable reverts the toggle to OFF (and a toast already announced the
+      // failure), so the resting caption must read "off", not a stale "sync failed"
+      // (QA NICE #19). The sync error only applies while push is ON.
       if (!this.dailyPush) {
         return this.tt('notifications.off')
+      }
+      if (this.pushSyncError) {
+        return this.tt('notifications.syncFailed')
       }
       return `${this.tt('notifications.onAt')} ${this.optimalTimeLabel}`
     },

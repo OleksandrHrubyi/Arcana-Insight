@@ -952,7 +952,11 @@ function openConnection(conn) {
 
 // Is the currently-revealed partner already saved?
 const isCurrentSaved = computed(() =>
-  Boolean(result.value) && connections.value.some((c) => c.dob === dobB.value),
+  Boolean(result.value) &&
+  // Saves de-dupe by (dob + relationshipType), so the "Saved" state must match on
+  // both — otherwise the same person under a different relationship type wrongly
+  // shows as already saved (QA NICE #3).
+  connections.value.some((c) => c.dob === dobB.value && c.relationshipType === relationshipType.value),
 )
 
 function openSaveSheet() {

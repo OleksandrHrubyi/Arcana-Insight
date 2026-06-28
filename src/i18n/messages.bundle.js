@@ -837,7 +837,6 @@ export const messages = {
       },
       focusToday: {
         title: 'Focus today',
-        compactCta: 'Open horoscope',
         fallbackKnownSign: "Open your horoscope to see today's focus.",
         fallbackMissingSign: "Open Horoscope and choose your sign to see today's focus.",
       },
@@ -3062,7 +3061,6 @@ export const messages = {
       },
       focusToday: {
         title: 'Фокус дня',
-        compactCta: 'Відкрити гороскоп',
         fallbackKnownSign: 'Відкрий гороскоп, щоб побачити фокус цього дня.',
         fallbackMissingSign: 'Відкрий Гороскоп і обери свій знак, щоб бачити фокус дня.',
       },
