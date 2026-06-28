@@ -8,6 +8,7 @@ export const messages = {
     tarotOracle: {
       ui: {
         ariaTouchDeck: 'Touch the deck',
+        changeAnswers: 'Change answers',
         ariaExit: 'Exit',
         ariaBack: 'Back',
         sheetCard: 'Card',
@@ -2249,6 +2250,7 @@ export const messages = {
     tarotOracle: {
       ui: {
         ariaTouchDeck: 'Торкнутися колоди',
+        changeAnswers: 'Змінити відповіді',
         ariaExit: 'Вийти',
         ariaBack: 'Назад',
         sheetCard: 'Карта',

@@ -34,7 +34,9 @@
         :style="deckHitStyle"
         :aria-label="t.ui.ariaTouchDeck"
         @click.stop="touchDeck"
-      ></button>
+      >
+        <q-icon name="touch_app" class="oracle-deck-hit__icon" />
+      </button>
     </div>
 
     <div class="oracle-ui">
@@ -45,6 +47,15 @@
         @click="onExit"
       >
         ←
+      </button>
+      <!-- Ready step: a discreet way to edit the answers without leaving the page. -->
+      <button
+        v-if="showDeckHotspot"
+        type="button"
+        class="oracle-edit-answers"
+        @click="toQuestionMode"
+      >
+        {{ t.ui.changeAnswers }}
       </button>
       <transition name="oracle-dim-fade">
         <div v-if="isReadingActive" class="oracle-scene-dim" aria-hidden="true"></div>
@@ -1883,14 +1894,7 @@ const choices = computed(() => {
   }
 
   if (stage.value === 'ready') {
-    // Was empty — the only way forward was the easy-to-miss deck hotspot, and the
-    // only way out was leaving the whole page. Give explicit, discoverable actions:
-    // draw the card, or edit the answers (question / spread), plus leave.
-    return withLeaveSession([
-      { label: t.value.choices.touchDeck, action: touchDeck },
-      { label: t.value.choices.newQuestion, action: toQuestionMode },
-      { label: t.value.choices.changeSpread, action: proceedToSpread },
-    ])
+    return []
   }
 
   if (stage.value === 'started') {
@@ -2163,10 +2167,6 @@ watch(showDeckHotspot, (visible) => {
       return
     }
     isDeckHotspotActive.value = true
-    // Reveal the ready-stage actions (Touch the deck / New question / Change spread)
-    // alongside the now-active deck, so the draw is discoverable and the answers are
-    // editable without leaving the page.
-    controlsUnlocked.value = true
     triggerDeckReadyHaptic()
   })
 })
@@ -2547,6 +2547,61 @@ onBeforeUnmount(() => {
   transform: translate(-50%, -50%) scale(0.98);
 }
 
+/* Visible "tap here" affordance inside the (otherwise invisible) hit button, so
+   it reads as a tap target rather than just a decorative glow. */
+.oracle-deck-hit__icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 28px;
+  color: rgba(244, 249, 255, 0.95);
+  filter: drop-shadow(0 1px 6px rgba(6, 10, 18, 0.9));
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+
+.oracle-deck-hit--lit .oracle-deck-hit__icon {
+  opacity: 0.92;
+  animation: oracle-deck-tap-pulse 1900ms ease-in-out infinite;
+}
+
+@keyframes oracle-deck-tap-pulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.72;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.16);
+    opacity: 1;
+  }
+}
+
+/* Ready step: edit answers without leaving the page (companion to the exit). */
+.oracle-edit-answers {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 40px);
+  z-index: 30;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(8, 12, 18, 0.52);
+  color: rgba(214, 225, 242, 0.82);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  padding: 11px 20px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: auto;
+}
+
+.oracle-edit-answers:active {
+  transform: translateX(-50%) scale(0.97);
+}
+
 .oracle-deck-aura::before,
 .oracle-deck-aura::after {
   content: '';
@@ -2621,7 +2676,8 @@ onBeforeUnmount(() => {
   .oracle-smoke--two,
   .oracle-deck-aura--revealed,
   .oracle-deck-aura--revealed::before,
-  .oracle-deck-aura--revealed::after {
+  .oracle-deck-aura--revealed::after,
+  .oracle-deck-hit--lit .oracle-deck-hit__icon {
     animation: none;
   }
   /* Card flip and bubble fade resolve instantly instead of animating. */
