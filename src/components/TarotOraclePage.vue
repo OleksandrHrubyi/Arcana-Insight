@@ -1835,8 +1835,16 @@ const choices = computed(() => {
       return `${label} · ${premiumLabel}`
     }
 
+    // The free 1-card is once/day. Once spent, badge it ("· Tomorrow") so the user
+    // sees it's not available NOW instead of tapping and only then hitting the
+    // daily-limit notice (the tap still opens that notice + Premium upsell).
+    const dailyFreeUsed = !hasPremiumAccess.value && hasUsedFreeTarotToday()
+    const spread1Label = dailyFreeUsed
+      ? `${t.value.choices.spread1} · ${t.value.ui.dailyUsedBadge}`
+      : t.value.choices.spread1
+
     return withLeaveSession([
-      { label: t.value.choices.spread1, action: () => selectSpreadWithAccess(1) },
+      { label: spread1Label, action: () => selectSpreadWithAccess(1) },
       { label: multiSpreadLabel(t.value.choices.spread3), action: () => selectSpreadWithAccess(3) },
       { label: multiSpreadLabel(t.value.choices.spread5), action: () => selectSpreadWithAccess(5) },
       { label: t.value.choices.back, action: toQuestionMode },
