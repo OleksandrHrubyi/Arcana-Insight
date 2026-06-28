@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { notifyError } from './notify.ts'
 // Shared server-side premium check. Source-of-truth ordering:
 //   1) user_entitlements cache (populated by the revenuecat-webhook) — fast path.
 //   2) RevenueCat REST API — AUTHORITATIVE, real-time. Closes the webhook-lag gap so
@@ -45,6 +46,7 @@ async function isPremiumViaRevenueCat(userId) {
   const key = Deno.env.get('RC_SECRET_API_KEY')
   if (!key) {
     console.error('[premium] RC_SECRET_API_KEY is not set — cannot verify premium via RevenueCat')
+    notifyError('premium: RC_SECRET_API_KEY not set', 'Enforcement is on but no RevenueCat key — premium relies on the cache only.')
     return false // not configured to verify → conservative (trust the cache's "no")
   }
 
@@ -57,6 +59,7 @@ async function isPremiumViaRevenueCat(userId) {
     )
   } catch (e) {
     console.error('[premium] RevenueCat request failed (network/timeout) — failing open:', e?.message ?? e)
+    notifyError('premium: RevenueCat unreachable', `Network/timeout calling RC — failing open. ${e?.message ?? e}`)
     return true
   }
 
@@ -69,6 +72,10 @@ async function isPremiumViaRevenueCat(userId) {
     }
     console.error(
       `[premium] RevenueCat API error ${res.status} — failing open. Check RC_SECRET_API_KEY (must be a v1 secret key). ${detail}`,
+    )
+    notifyError(
+      `premium: RevenueCat API ${res.status}`,
+      `Failing open. Check RC_SECRET_API_KEY (must be a v1 secret key). ${detail}`,
     )
     return true
   }

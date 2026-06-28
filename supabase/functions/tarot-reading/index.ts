@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { isUserPremium, premiumEnforcementEnabled } from '../_shared/premium.ts'
+import { notifyError } from '../_shared/notify.ts'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -123,11 +124,13 @@ Deno.serve(async (req: Request) => {
     }
 
     console.error('[tarot-reading] all providers failed', providerErrors)
+    notifyError('tarot-reading: all AI providers failed', JSON.stringify(providerErrors).slice(0, 800))
     // The AI failed — don't burn the user's one free reading on a failure.
     if (freeAiGift && admin) await refundFreeAiGrant(admin, user.id, 'tarot')
     return aiError('AI interpretation is unavailable', 503, 'all_providers_failed')
   } catch (error) {
     console.error('[tarot-reading] unhandled error', error)
+    notifyError('tarot-reading: unhandled error', String(error?.message ?? error))
     if (freeAiGift && admin) await refundFreeAiGrant(admin, user.id, 'tarot')
     return aiError('AI interpretation is unavailable', 503, 'provider_flow_exception')
   }
