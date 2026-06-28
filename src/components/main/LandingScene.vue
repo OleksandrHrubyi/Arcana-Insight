@@ -842,7 +842,7 @@ export default {
 
       this.dailyCardData = {
         title: copy.dailyCardTitle,
-        image: '/images/cards/majorArcana/TheHermit.png',
+        image: '/images/cards/majorArcana/TheHermit.webp',
         orientation: 'upright',
         keywords: [],
         teaser: copy.dailyCardTeaser,
@@ -1728,7 +1728,7 @@ export default {
 }
 
 .bg-container {
-  background-image: url('assets/images/landing-stars-bg.png');
+  background-image: url('assets/images/landing-stars-bg.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
