@@ -99,7 +99,7 @@
         >
           <span class="oracle-card__inner">
             <span class="oracle-card__face oracle-card__face--back">
-              <span class="oracle-card__sigil">✦</span>
+              <CardBack />
             </span>
 
             <span class="oracle-card__face oracle-card__face--front">
@@ -295,6 +295,7 @@
 
 <script setup>
 import { computed, onActivated, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import CardBack from 'src/components/ui/CardBack.vue'
 import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { useRoute, useRouter } from 'vue-router'
