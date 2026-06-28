@@ -62,4 +62,14 @@ test.describe('smoke: key routes mount + bottom-nav contract', () => {
     await go(page, 'tarot')
     await expect(page.locator('.oracle-video')).toHaveClass(/oracle-video--visible/, { timeout: 8000 })
   })
+
+  // The intro narration must render real copy (it depends on i18n being ready at
+  // mount). A blank/skipped bubble means the intro broke.
+  test('tarot intro narration renders text', async ({ page }) => {
+    await seed(page)
+    await go(page, 'tarot')
+    const bubble = page.locator('.oracle-bubble')
+    await expect(bubble).toBeVisible({ timeout: 5000 })
+    await expect(bubble).not.toHaveText('')
+  })
 })

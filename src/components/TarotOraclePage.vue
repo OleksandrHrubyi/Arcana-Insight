@@ -367,10 +367,16 @@ const WHEEL_ITEM_HEIGHT = 44
 const ACTIONS_READ_DELAY = 980
 const ACTIONS_HIDE_TO_NEXT_PROMPT_DELAY = 520
 const INTRO_LINE_START_DELAY = 900
-const INTRO_LINE_STEP_DELAY = 3400
+// Each intro line holds this long before the next replaces it. The ~0.66s
+// enter/leave fade eats into it, so 3.4s left only ~2.7s of readable time — too
+// quick to finish a contemplative line. 5s gives a comfortable read.
+const INTRO_LINE_STEP_DELAY = 5000
 const INTRO_LINES_TO_SHOW = 2
-const INTRO_TO_THEME_DELAY = 1000
-const THEME_CONFIRM_HOLD_DELAY = INTRO_LINE_STEP_DELAY
+// Let the final line linger a touch longer before the theme prompt takes over.
+const INTRO_TO_THEME_DELAY = 1600
+// Decoupled from the intro pacing (was = INTRO_LINE_STEP_DELAY): the theme-confirm
+// message is a quick acknowledgement, so keep it snappy rather than 5s.
+const THEME_CONFIRM_HOLD_DELAY = 3400
 
 // The cinematic intro plays once per app session. Returning to /tarot (e.g. back
 // from the interpretation screen) then skips straight to theme selection instead
