@@ -54,4 +54,12 @@ test.describe('smoke: key routes mount + bottom-nav contract', () => {
     await expect(page.locator('.q-page')).toBeVisible()
     await expect(page.locator('.bottom-nav-wrap')).toBeHidden()
   })
+
+  // The tarot background video must reveal itself (opacity gate). If isVideoPlaying
+  // never flips on, the page shows a black background instead of the video.
+  test('tarot background video becomes visible', async ({ page }) => {
+    await seed(page)
+    await go(page, 'tarot')
+    await expect(page.locator('.oracle-video')).toHaveClass(/oracle-video--visible/, { timeout: 8000 })
+  })
 })
