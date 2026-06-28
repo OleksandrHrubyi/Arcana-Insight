@@ -85,7 +85,7 @@
   - `tarot_readings`: select/insert/update/delete own ({public} + auth.uid()-чек → anon отримує 0 рядків).
   - Гранти anon/authenticated у `role_table_grants` — нормальний дефолт Supabase, гейтиться RLS.
 - ✅ Hand-written міграцію видалено (коміт `revert(db)`) — жива БД вже коректна.
-- ⏳ Опційно (закрити дрейф): `supabase db pull`, щоб версіонувати реальні живі політики.
+- ⏭️ `supabase db pull` ВІДКЛАДЕНО (опційне): потребує запущеного Docker Desktop (створює shadow-БД). Не блокер — RLS уже перевірено коректним у дашборді. Зробити при створенні нового середовища з нуля.
 
 #### (історичне) первинний план до перевірки:
 - **Аналіз доступу (з коду):** `push_devices` — клієнт НЕ чіпає (лише edge через service_role) → замкнути повністю. `app_users` (PII) — клієнт читає/upsert свій рядок по `id` → owner-scope `id=auth.uid()`. `tarot_readings` — клієнт read/insert/delete свої по `user_id` → owner-scope. `app_users`-міграція (`202606241300`) додала лише FK, БЕЗ RLS.
