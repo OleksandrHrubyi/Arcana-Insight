@@ -124,7 +124,7 @@ Deno.serve(async (req: Request) => {
 
       if (authError) {
         console.error('[TelegramAuth] Failed to create auth user:', authError)
-        return json({ error: authError.message || 'Failed to create user' }, 400)
+        return json({ error: 'create_user_failed' }, 400)
       }
 
       userId = authData.user.id

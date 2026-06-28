@@ -411,7 +411,8 @@ Deno.serve(async (req) => {
       }
     }
     if (!parsed) {
-      return json({ ok: false, code: "AI_UNAVAILABLE", error: "AI reading is temporarily unavailable", reason: providerErrors.join(" | ") }, 503);
+      console.error("[compatibility] AI unavailable:", providerErrors.join(" | "));
+      return json({ ok: false, code: "AI_UNAVAILABLE", error: "AI reading is temporarily unavailable" }, 503);
     }
 
     let reading: Reading;

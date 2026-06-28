@@ -238,6 +238,7 @@ Deno.serve(async (req) => {
 
     return json({ ok: true, saved_count: saved?.length ?? 0, linked_user: !!authUserId });
   } catch (e) {
-    return json({ error: String(e?.message ?? e) }, 500);
+    console.error('[register-device] failed', e?.message ?? e);
+    return json({ error: 'internal_error' }, 500);
   }
 });

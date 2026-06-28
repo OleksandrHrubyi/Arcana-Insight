@@ -55,6 +55,9 @@ Deno.serve(async (req: Request) => {
     .insert({ user_id: user.id, seed, cards: picked })
     .select('*').single()
 
-  if (error) return new Response(JSON.stringify({ error: error.message }), { status: 400, headers: CORS })
+  if (error) {
+    console.error('[tarot-draw] insert failed', error.message)
+    return new Response(JSON.stringify({ error: 'db_error' }), { status: 400, headers: CORS })
+  }
   return new Response(JSON.stringify(data), { headers: { ...CORS, 'content-type': 'application/json' } })
 })

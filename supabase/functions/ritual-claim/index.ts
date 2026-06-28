@@ -59,15 +59,8 @@ Deno.serve(async (req) => {
       },
     })
     if (!claimRes.ok) {
-      return json(
-        {
-          ok: false,
-          error: 'claim_rpc_failed',
-          status: claimRes.status,
-          details: claimRes.data,
-        },
-        500,
-      )
+      console.error('[ritual-claim] claim rpc failed', claimRes.status, claimRes.data)
+      return json({ ok: false, error: 'claim_rpc_failed', status: claimRes.status }, 500)
     }
 
     const claimRow = readSingleRow<{

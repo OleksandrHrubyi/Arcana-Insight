@@ -13,6 +13,17 @@ const CORS = {
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { ...CORS, 'content-type': 'application/json' } })
 
+// Constant-time compare so the webhook-secret check doesn't leak via timing.
+function timingSafeEqualStr(a, b) {
+  const enc = new TextEncoder()
+  const ab = enc.encode(String(a || ''))
+  const bb = enc.encode(String(b || ''))
+  if (ab.length !== bb.length) return false
+  let diff = 0
+  for (let i = 0; i < ab.length; i++) diff |= ab[i] ^ bb[i]
+  return diff === 0
+}
+
 const REVOKE_TYPES = new Set(['EXPIRATION', 'REFUND', 'SUBSCRIPTION_PAUSED'])
 const isAnon = (id) => !id || String(id).startsWith('$RCAnonymousID:')
 
@@ -31,7 +42,7 @@ Deno.serve(async (req) => {
     console.error('[rc-webhook] RC_WEBHOOK_SECRET not set; refusing to run')
     return json({ error: 'Server misconfigured' }, 500)
   }
-  if (req.headers.get('Authorization') !== secret) {
+  if (!timingSafeEqualStr(req.headers.get('Authorization'), secret)) {
     return json({ error: 'Unauthorized' }, 401)
   }
 

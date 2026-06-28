@@ -91,7 +91,7 @@ Deno.serve(async (req: Request) => {
   const { error: authError } = await admin.auth.admin.deleteUser(user.id)
   if (authError) {
     console.error('[DeleteAccount] Failed to delete auth user:', authError)
-    return json({ error: authError.message || 'Failed to delete user' }, 400)
+    return json({ error: 'delete_failed' }, 400)
   }
 
   // Belt-and-suspenders: best-effort cleanup for any environment whose schema is
