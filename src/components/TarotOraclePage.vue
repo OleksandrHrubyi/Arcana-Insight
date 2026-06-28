@@ -2409,7 +2409,12 @@ onBeforeUnmount(() => {
   height: 100dvh;
   overflow: hidden;
   overflow-x: clip;
-  background: #000;
+  /* Static still of the scene behind the video. iOS blocks muted autoplay in Low
+     Power Mode (and briefly on cold start), so the video can stay paused — without
+     this the page would be plain black. The poster matches the video's framing
+     (object-fit: contain), and the video fades in over it once/if it plays. */
+  background:
+    #000 center center / contain no-repeat url('/oracle-media/oracle-poster.jpg');
 }
 
 .oracle-video {
