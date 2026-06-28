@@ -14,6 +14,7 @@
 // @ts-nocheck
 import { createClient } from "npm:@supabase/supabase-js@2";
 import * as Astronomy from "npm:astronomy-engine";
+import { notifyError, notifyInfo } from "../_shared/notify.ts";
 
 /* ─── Types ──────────────────────────────────────────────────────────── */
 
@@ -411,6 +412,12 @@ Deno.serve(async (req: Request) => {
     const skipped = results.filter(r => r.status === "skipped").length;
     const errors  = results.filter(r => r.status === "error").length;
 
+    if (errors > 0) {
+      const failed = results.filter(r => r.status === "error").map(r => `${r.date}: ${r.error}`).join("; ");
+      notifyError("build-astro-context: some dates failed", `built ${built} · skipped ${skipped} · errors ${errors} — ${failed}`.slice(0, 900));
+    } else {
+      notifyInfo("build-astro-context: done", `built ${built} · skipped ${skipped}`);
+    }
     return new Response(
       JSON.stringify({ ok: errors === 0, built, skipped, errors, results }),
       { status: errors > 0 ? 207 : 200, headers: { "Content-Type": "application/json" } },
@@ -419,6 +426,7 @@ Deno.serve(async (req: Request) => {
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error("[build-astro-context] fatal:", msg);
+    notifyError("build-astro-context: fatal", msg);
     return new Response(
       JSON.stringify({ ok: false, error: msg }),
       { status: 500, headers: { "Content-Type": "application/json" } },

@@ -1,5 +1,6 @@
 // supabase/functions/generate-horoscopes/index.ts
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { notifyError, notifyInfo } from "../_shared/notify.ts";
 
 const SIGNS = [
   "aries",
@@ -822,6 +823,7 @@ Deno.serve(async (req) => {
       const [enCountRes, ukCountRes] = await Promise.all([makeCountQuery("en"), makeCountQuery("uk")]);
 
       if (enCountRes.error || ukCountRes.error) {
+        notifyError("generate-horoscopes: count query failed", `date ${date} — ${serializeError(enCountRes.error ?? ukCountRes.error)}`);
         return new Response(
           JSON.stringify({ ok: false, step: "count", date, error: serializeError(enCountRes.error ?? ukCountRes.error) }),
           { status: 500, headers: { "Content-Type": "application/json" } },
@@ -829,6 +831,7 @@ Deno.serve(async (req) => {
       }
 
       if ((enCountRes.count ?? 0) >= expectedPerLocale && (ukCountRes.count ?? 0) >= expectedPerLocale) {
+        notifyInfo("generate-horoscopes: already generated", `date ${date} · en ${enCountRes.count} · uk ${ukCountRes.count} — skipped`);
         return new Response(
           JSON.stringify({
             ok: true,
@@ -939,6 +942,7 @@ Deno.serve(async (req) => {
 
     if (safeRows.length === 0) {
       console.error(`[generate-horoscopes] all items failed the content guard for ${date}; nothing written`);
+      notifyError("generate-horoscopes: content guard dropped everything", `date ${date} — nothing written. dropped: ${[...disallowedKeys].join(", ")}`);
       return new Response(
         JSON.stringify({ ok: false, step: "content_guard", date, dropped: [...disallowedKeys] }),
         { status: 502, headers: { "Content-Type": "application/json" } },
@@ -950,12 +954,18 @@ Deno.serve(async (req) => {
     });
 
     if (upsertErr) {
+      notifyError("generate-horoscopes: DB upsert failed", `date ${date} — ${serializeError(upsertErr)}`);
       return new Response(JSON.stringify({ ok: false, step: "upsert", date, error: serializeError(upsertErr) }), {
         status: 500,
         headers: { "Content-Type": "application/json" },
       });
     }
 
+    const droppedCount = disallowedKeys.size;
+    notifyInfo(
+      "generate-horoscopes: done",
+      `date ${date} · inserted ${safeRows.length} (en+uk) · dropped ${droppedCount} · astro ${astroFull ? "yes" : "no"}`,
+    );
     return new Response(
       JSON.stringify({
         ok: true,
@@ -971,6 +981,7 @@ Deno.serve(async (req) => {
     );
   } catch (e: any) {
     console.error("generate-horoscopes failed:", e?.stack ?? e);
+    notifyError("generate-horoscopes: failed", String(e?.message ?? e));
     return new Response(JSON.stringify({ ok: false, error: String(e?.message ?? e) }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

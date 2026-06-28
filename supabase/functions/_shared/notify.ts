@@ -41,22 +41,32 @@ async function send(token, chatId, text) {
   }
 }
 
-// label: short stable string (used for dedup + the alert title), e.g. "tarot-reading: AI down".
-// detail: human context (status, reason) — keep it free of secrets/PII.
-export function notifyError(label, detail = '') {
+function dispatch(emoji, label, detail) {
   const token = Deno.env.get('TELEGRAM_ALERT_BOT_TOKEN')
   const chatId = Deno.env.get('TELEGRAM_ALERT_CHAT_ID')
   if (!token || !chatId) return // not configured → no-op
 
   const msg = String(detail ?? '').slice(0, 1000)
-  if (!shouldSend(`${label}|${msg}`.slice(0, 220))) return
+  if (!shouldSend(`${emoji}${label}|${msg}`.slice(0, 220))) return
 
-  const text = `🔴 ${label}\n${msg}`.slice(0, 3500)
+  const text = `${emoji} ${label}${msg ? `\n${msg}` : ''}`.slice(0, 3500)
   const job = send(token, chatId, text)
-  // Keep the isolate alive until the alert is delivered, without blocking the response.
+  // Keep the isolate alive until the message is delivered, without blocking the response.
   try {
     EdgeRuntime.waitUntil(job)
   } catch (_e) {
     // EdgeRuntime not available here — let it run best-effort.
   }
+}
+
+// UNEXPECTED failures only (5xx / exceptions / provider-down) — never expected 4xx.
+// label: short stable string (used for dedup + the title). detail: free of secrets/PII.
+export function notifyError(label, detail = '') {
+  dispatch('🔴', label, detail)
+}
+
+// Success / heartbeat for INFREQUENT jobs (crons, batch, admin) so you can see the
+// daily pipeline actually ran. Do NOT call from per-user/high-frequency paths.
+export function notifyInfo(label, detail = '') {
+  dispatch('✅', label, detail)
 }
