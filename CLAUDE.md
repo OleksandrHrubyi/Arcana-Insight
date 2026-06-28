@@ -52,7 +52,7 @@
 | Premium-модель | `src/constants/premiumModel.js` |
 | Аналітика | `src/constants/analyticsEvents.js`, `src/services/analytics.js` |
 | Нативний сервіс (auth/db) | `src/services/supabaseNative.ts` |
-| Локалі | `src/i18n/en.json`, `src/i18n/uk.json` |
+| Локалі (LIVE) | `src/i18n/messages.bundle.js` ← редагуй копі ТУТ (єдине, що шипиться). `en.json`/`uk.json` — legacy-фікстура лише для ai-ops сканера |
 
 **Головний екран** — `src/components/main/LandingScene.vue` (компонент у `MainLayout`, не окрема сторінка).
 
@@ -67,7 +67,7 @@ src/
   helpers/       — бізнес-логіка без UI (source-of-truth, див. таблицю вище)
   services/      — supabaseNative, analytics, premium billing
   stores/        — Pinia (auth, premium, appEpoch)
-  i18n/          — uk.json (основна), en.json, messages.bundle.js
+  i18n/          — messages.bundle.js (LIVE, єдине джерело) + index.js; en.json/uk.json = legacy-фікстура ai-ops
   constants/     — premiumModel, premiumBilling, analyticsEvents
 supabase/functions/ — Deno Edge Functions (див. нижче)
 tests/         — node --test (44 файли); запуск `npm test`
@@ -113,7 +113,7 @@ ios/           — Xcode/Capacitor проект
 
 - **Спочатку** прочитай `AGENTS.md` + релевантний `docs/`-контракт, потім дій.
 - File hygiene: **ніколи** не створюй файли з суфіксами ` 2`, `copy`, `final`, `new`. Редагуй канонічний (`docs/canonical-files.md`).
-- i18n: міняєш копі — онови **і** `en.json`, **і** `uk.json`; рендер через ключі, не `locale === 'uk' ? …`.
+- i18n: міняєш копі — редагуй `src/i18n/messages.bundle.js` (онови **і** `en`, **і** `uk` блоки); рендер через ключі/`t()`, не `locale === 'uk' ? …`. (`en.json`/`uk.json` не шипляться — не редагуй для UI.)
 - Не видаляй файли без явного дозволу в поточному треді.
 - Не використовуй "AI-шні" іконки (`auto_awesome`, `✨`), якщо користувач не просив.
 - Знайшов нову проблему чи завершив фічу — онови відповідний `docs/`-контракт, а не цей індекс.

@@ -9,10 +9,9 @@ Use this skill for any text change that touches localization.
 
 ## Source Files
 
-- English locale: `src/i18n/en.json`
-- Ukrainian locale: `src/i18n/uk.json`
-- i18n entrypoint: `src/boot/i18n.js`
-- bundled messages: `src/i18n/messages.bundle.js`
+- **LIVE / canonical runtime source: `src/i18n/messages.bundle.js`** ← edit copy HERE. `src/i18n/index.js` imports only this bundle; every component renders via its `t()` helper (no `$t(` usage exists).
+- i18n entrypoint: `src/i18n/index.js` (exports `t`, `currentLocale`)
+- Legacy / NOT shipped: `src/i18n/en.json`, `src/i18n/uk.json` — kept only as the ai-ops `code-scan` parity fixture; editing them does NOT change the app. `src/boot/i18n.js` was removed (was never registered in quasar.config boot array).
 
 ## Rules
 
