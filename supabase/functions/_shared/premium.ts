@@ -35,10 +35,18 @@ async function fetchWithTimeout(url, init, timeoutMs) {
   }
 }
 
-// Authoritative real-time check against RevenueCat.
+// Authoritative real-time check against RevenueCat. The ONLY way this denies
+// premium is a successful (2xx) response that shows no active entitlement. Every
+// other outcome — bad/expired key (401/403), rate limit (429), RC outage (5xx),
+// network/timeout — means WE could not verify, so we fail OPEN and never block a
+// paying user for our own problem. Each failure is logged loudly so it's instantly
+// diagnosable (e.g. a v2 key returns 7723 — must be a v1 secret key).
 async function isPremiumViaRevenueCat(userId) {
   const key = Deno.env.get('RC_SECRET_API_KEY')
-  if (!key) return false // not configured → can't verify → trust the cache's "no"
+  if (!key) {
+    console.error('[premium] RC_SECRET_API_KEY is not set — cannot verify premium via RevenueCat')
+    return false // not configured to verify → conservative (trust the cache's "no")
+  }
 
   let res
   try {
@@ -47,18 +55,30 @@ async function isPremiumViaRevenueCat(userId) {
       { headers: { Authorization: `Bearer ${key}`, Accept: 'application/json' } },
       RC_API_TIMEOUT_MS,
     )
-  } catch (_e) {
-    return true // RC unreachable / timeout → fail OPEN (never block a payer on our outage)
+  } catch (e) {
+    console.error('[premium] RevenueCat request failed (network/timeout) — failing open:', e?.message ?? e)
+    return true
   }
 
-  if (res.status >= 500) return true // RC server error → fail OPEN
-  if (!res.ok) return false // 404 unknown subscriber / 401 etc → authoritative "not premium"
+  if (!res.ok) {
+    let detail = ''
+    try {
+      detail = (await res.text()).slice(0, 200)
+    } catch (_e) {
+      /* ignore */
+    }
+    console.error(
+      `[premium] RevenueCat API error ${res.status} — failing open. Check RC_SECRET_API_KEY (must be a v1 secret key). ${detail}`,
+    )
+    return true
+  }
 
   let body
   try {
     body = await res.json()
-  } catch (_e) {
-    return true // malformed response → fail OPEN
+  } catch (e) {
+    console.error('[premium] RevenueCat response was not JSON — failing open:', e?.message ?? e)
+    return true
   }
   return hasActiveRcEntitlement(body)
 }
