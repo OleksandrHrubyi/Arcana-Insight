@@ -2462,6 +2462,18 @@ onBeforeUnmount(() => {
   opacity: 1;
 }
 
+/* Hide the native iOS overlay play button that WKWebView shows on a not-yet-playing
+   video (visible on first entry before autoplay kicks in). This is a decorative
+   background loop with no user controls. */
+.oracle-video::-webkit-media-controls-start-playback-button,
+.oracle-video::-webkit-media-controls-play-button,
+.oracle-video::-webkit-media-controls-panel,
+.oracle-video::-webkit-media-controls {
+  display: none !important;
+  -webkit-appearance: none;
+  opacity: 0;
+}
+
 .oracle-smoke {
   position: absolute;
   inset: -18%;
