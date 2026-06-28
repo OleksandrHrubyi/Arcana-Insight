@@ -59,22 +59,36 @@ Deno.serve(async (req) => {
 
   if (!updates.length) return json({ ok: true, ignored: 'no_mappable_user' })
 
-  const rows = updates.map((u) => ({
-    user_id: u.id,
-    is_premium: u.premium,
-    product_id: event.product_id ?? null,
-    store: event.store ?? null,
-    expires_at: u.premium ? expiresAt : (expiresAt ?? new Date().toISOString()),
-    event_type: event.type,
-    updated_at: new Date().toISOString(),
-    raw: event,
-  }))
+  // Ordering + idempotency keys. RC delivers these on every event; fall back to
+  // "now" only if a timestamp is somehow absent.
+  const eventId = event.id != null ? String(event.id) : ''
+  const eventTsMs = Number(event.event_timestamp_ms) || Date.now()
 
-  const { error } = await supabase.from('user_entitlements').upsert(rows, { onConflict: 'user_id' })
-  if (error) {
-    console.error('[rc-webhook] upsert failed', error.message)
+  // Apply each user's change through the conditional upsert RPC, so an out-of-order
+  // or replayed event can't clobber a newer state (QA #26/#27). last-writer-wins is
+  // gone — the DB drops anything not strictly newer / a duplicate event id.
+  const results = await Promise.all(
+    updates.map((u) =>
+      supabase.rpc('apply_entitlement_event', {
+        p_user_id: u.id,
+        p_is_premium: u.premium,
+        p_product_id: event.product_id ?? null,
+        p_store: event.store ?? null,
+        p_expires_at: u.premium ? expiresAt : (expiresAt ?? new Date().toISOString()),
+        p_event_type: event.type,
+        p_event_id: eventId,
+        p_event_ts_ms: eventTsMs,
+        p_raw: event,
+      }),
+    ),
+  )
+
+  const failed = results.find((r) => r.error)
+  if (failed) {
+    console.error('[rc-webhook] apply_entitlement_event failed', failed.error.message)
     return json({ error: 'persist_failed' }, 500)
   }
 
-  return json({ ok: true, updated: rows.length, type: event.type })
+  const applied = results.filter((r) => r.data === true).length
+  return json({ ok: true, applied, received: updates.length, type: event.type })
 })
