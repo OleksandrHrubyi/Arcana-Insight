@@ -1883,7 +1883,14 @@ const choices = computed(() => {
   }
 
   if (stage.value === 'ready') {
-    return []
+    // Was empty — the only way forward was the easy-to-miss deck hotspot, and the
+    // only way out was leaving the whole page. Give explicit, discoverable actions:
+    // draw the card, or edit the answers (question / spread), plus leave.
+    return withLeaveSession([
+      { label: t.value.choices.touchDeck, action: touchDeck },
+      { label: t.value.choices.newQuestion, action: toQuestionMode },
+      { label: t.value.choices.changeSpread, action: proceedToSpread },
+    ])
   }
 
   if (stage.value === 'started') {
@@ -2156,6 +2163,10 @@ watch(showDeckHotspot, (visible) => {
       return
     }
     isDeckHotspotActive.value = true
+    // Reveal the ready-stage actions (Touch the deck / New question / Change spread)
+    // alongside the now-active deck, so the draw is discoverable and the answers are
+    // editable without leaving the page.
+    controlsUnlocked.value = true
     triggerDeckReadyHaptic()
   })
 })
