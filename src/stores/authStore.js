@@ -5,13 +5,31 @@ import { createAuthStore } from './authStoreCore'
 import { syncGuestRitualState } from 'src/helpers/ritualRewardsBackend.js'
 import { loginToRevenueCat, logoutFromRevenueCat, getBillingPremiumStatus } from 'src/services/premiumBilling.js'
 import { usePremiumAccess } from './premiumAccess.js'
+import { crashReporting } from 'src/services/crashReporting.js'
+
+// Production auth failures used to be fully silent (warn no-op, error DEV-only),
+// so session-restore / profile-upsert / RC-login failures were undiagnosable in the
+// field. Forward warn+error to Crashlytics breadcrumbs in prod (fail-safe, native-
+// only, never throws) while keeping the dev console. A-7.
+const toBreadcrumb = (level, args) =>
+  `[auth][${level}] ${args
+    .map((a) => (a instanceof Error ? `${a.name}: ${a.message}` : String(a)))
+    .join(' ')}`
 
 const authLogger = {
   log: () => {},
-  warn: () => {},
+  warn: (...args) => {
+    if (import.meta.env.DEV) {
+      console.warn(...args)
+    } else {
+      void crashReporting.log(toBreadcrumb('warn', args))
+    }
+  },
   error: (...args) => {
     if (import.meta.env.DEV) {
       console.error(...args)
+    } else {
+      void crashReporting.log(toBreadcrumb('error', args))
     }
   },
 }
