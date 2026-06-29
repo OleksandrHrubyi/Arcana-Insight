@@ -175,7 +175,11 @@ function emitSparkles(tabEl) {
 async function onClick(name, idx, event) {
   if (isNavTapLocked()) return
   void hapticLight()
-  if (name === current.value) return
+  // Skip only when already ON that tab's root route — NOT merely when the tab is
+  // highlighted. Menu sub-pages (compatibility, cards, …) set meta.tab:'menu', so
+  // current.value is 'menu' there; guarding on current.value trapped the user
+  // (tapping Menu did nothing). Guarding on route.name lets them reach /menu.
+  if (name === route.name) return
   current.value = name
   emit('change', name)
   // Sparkle feedback on tap
