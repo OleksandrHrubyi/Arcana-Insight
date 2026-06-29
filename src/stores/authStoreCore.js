@@ -51,6 +51,21 @@ export function createAuthStore({
     listenerReady: false,
   })
 
+  // The profile cache is persisted to NATIVE Preferences (AccountPage writes
+  // `profile_cache_v1` via Preferences.set), but clearAccountScopedLocalState only
+  // touches localStorage — so on a device plain logout never cleared it and the
+  // next account hydrated from the previous user's name/birth date (PII bleed).
+  // Clear the native copy too. Guarded + fire-and-forget: `preferences` is optional
+  // (tests call createAuthStore({}) without it) and clearUser() is synchronous.
+  const clearNativeProfileCache = () => {
+    try {
+      const result = preferences?.remove?.({ key: 'profile_cache_v1' })
+      if (result && typeof result.catch === 'function') result.catch(() => {})
+    } catch {
+      // preferences unavailable — ignore
+    }
+  }
+
   let syncInFlight = null
   let sessionReadyPromise = null
 
@@ -283,6 +298,7 @@ export function createAuthStore({
           logger.warn?.('[AuthStore] clearStoredSession on SIGNED_OUT failed:', err)
         }
         clearAccountScopedLocalState()
+        clearNativeProfileCache()
         try {
           if (typeof revokePremiumAccess === 'function') {
             revokePremiumAccess()
@@ -323,6 +339,7 @@ export function createAuthStore({
       // Deterministic on logout / delete-account (both call clearUser synchronously),
       // independent of whether the async SIGNED_OUT event fires in time.
       clearAccountScopedLocalState()
+      clearNativeProfileCache()
     },
     __resetForTests() {
       state.user = null

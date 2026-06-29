@@ -11,6 +11,9 @@ const createPreferencesMock = (seed = {}) => {
     async set({ key, value }) {
       map.set(key, value)
     },
+    async remove({ key }) {
+      map.delete(key)
+    },
     __read(key) {
       return map.has(key) ? map.get(key) : null
     },
@@ -421,4 +424,20 @@ test('syncSession handles withAuthLock failure and __resetForTests clears intern
   assert.equal(store.state.user, null)
   assert.equal(store.state.sessionLoaded, false)
   assert.equal(store.state.listenerReady, false)
+})
+
+test('clearUser() clears the native profile cache (A-1 cross-account PII)', async () => {
+  const { createAuthStore } = await importModule('src/stores/authStoreCore.js')
+  const ctx = createDeps({ preferencesSeed: { profile_cache_v1: '{"id":"account-a"}' } })
+  const store = createAuthStore(ctx.deps)
+  assert.equal(ctx.deps.preferences.__read('profile_cache_v1'), '{"id":"account-a"}')
+
+  store.clearUser()
+  await nextTick()
+
+  assert.equal(
+    ctx.deps.preferences.__read('profile_cache_v1'),
+    null,
+    'native profile cache must be removed on logout so the next account cannot read it',
+  )
 })
