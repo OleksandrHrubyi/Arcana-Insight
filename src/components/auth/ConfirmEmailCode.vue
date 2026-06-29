@@ -99,6 +99,7 @@ export default {
       try {
         await this.hapticTap();
         this.loading = true;
+        this.errorMessage = '';
         this.startResendCooldown(60);
         const otpOptions = {
           shouldCreateUser: this.isSignUp,
@@ -162,11 +163,16 @@ export default {
         });
 
         if (error) {
+          // Clear the entered code so the user can simply retype to retry — the
+          // length-6 watcher won't re-fire on an unchanged value, so without this
+          // a wrong/expired code leaves them stuck (UX-2).
+          this.code = '';
           this.errorMessage = this.tt(mapAuthErrorKey(error.message));
           return;
         }
 
         if (!data?.session) {
+          this.code = '';
           this.errorMessage = this.tt('errors.noSession');
           return;
         }
@@ -203,6 +209,7 @@ export default {
         this.$router.push(resolveAuthRedirect(this.$route.query.redirect, '/'))
       } catch (e) {
         console.error(e);
+        this.code = '';
         this.errorMessage = this.tt('auth.wrongOrExpiredCode');
       } finally {
         this.loading = false;
@@ -257,6 +264,10 @@ export default {
         </div>
 
         <CodeInput v-model="code" />
+
+        <p v-if="errorMessage" class="auth-error" role="alert" aria-live="assertive">
+          {{ errorMessage }}
+        </p>
 
         <q-separator class="separator-color"/>
 
@@ -392,6 +403,14 @@ export default {
 
 .email-edit {
   opacity: 0.7;
+}
+
+.auth-error {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #ff9b9b;
 }
 
 .separator-color {
