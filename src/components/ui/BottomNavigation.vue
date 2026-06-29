@@ -2,8 +2,9 @@
   <nav ref="navEl" class="nav-pill" aria-label="Main navigation">
     <!-- Sliding active indicator -->
     <span
+      v-show="activeIndex >= 0"
       class="nav-indicator"
-      :style="{ transform: `translateX(${activeIndex * 100}%)`, width: `calc(${100 / items.length}% - 2px)` }"
+      :style="{ transform: `translateX(${Math.max(activeIndex, 0) * 100}%)`, width: `calc(${100 / items.length}% - 2px)` }"
       aria-hidden="true"
     ></span>
 
@@ -131,10 +132,10 @@ const items = [
 const uid = Math.random().toString(36).slice(2, 8)
 const gradId = (key) => `nav-grad-${key}-${uid}`
 
-const activeIndex = computed(() => {
-  const i = items.findIndex(it => it.name === current.value)
-  return i >= 0 ? i : 0
-})
+// -1 when no tab is active (e.g. on a sub-page). The indicator is v-show-hidden in
+// that case — previously this fell back to 0, parking the pill under Home so Home
+// looked selected on pages that should highlight nothing.
+const activeIndex = computed(() => items.findIndex((it) => it.name === current.value))
 
 const tt = (key) => t(selectedLocale.value, key)
 
