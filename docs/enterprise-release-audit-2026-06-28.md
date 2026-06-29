@@ -151,6 +151,7 @@
 - [ ] Hosted URL (Privacy/Support) повертають 200.
 - [ ] Підтвердити `RC_ENFORCE_PREMIUM=true` у prod (інакше преміум-гейтинг обходиться).
 - [ ] Підтвердити серверні секрети встановлені (CRON_SECRET, ADMIN_PUSH_SECRET, RC_WEBHOOK_SECRET, RC_SECRET_API_KEY, TELEGRAM_BOT_TOKEN, OPENAI/OPENROUTER ключі).
+- [x] **RC webhook 100% error rate ВИРІШЕНО (2026-06-29):** `RC_WEBHOOK_SECRET` у Supabase не збігався зі значенням «Authorization header value» у дашборді RevenueCat → функція відхиляла кожен вебхук (401). Скинуто секрет з обох боків на однакове значення; «Send test event» → 200, помилки зникли. (Передбачав аудит — пункт безпеки про ротацію RC_WEBHOOK_SECRET.)
 - [ ] Перевірити free-trial реально налаштований в ASC/RC (код готовий; важіль конверсії простоює).
 
 ---
