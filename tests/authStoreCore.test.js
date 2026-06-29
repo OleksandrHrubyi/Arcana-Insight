@@ -441,3 +441,16 @@ test('clearUser() clears the native profile cache (A-1 cross-account PII)', asyn
     'native profile cache must be removed on logout so the next account cannot read it',
   )
 })
+
+test('clearUser() revokes premium (A-6 invariant: no user ⇒ no premium)', async () => {
+  const { createAuthStore } = await importModule('src/stores/authStoreCore.js')
+  const ctx = createDeps({})
+  let revoked = 0
+  const store = createAuthStore({ ...ctx.deps, revokePremiumAccess: () => { revoked += 1 } })
+
+  store.state.user = { id: 'u1' }
+  store.clearUser()
+
+  assert.equal(store.state.user, null)
+  assert.equal(revoked, 1, 'clearUser must revoke premium so a logged-out session keeps no entitlement')
+})

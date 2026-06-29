@@ -340,6 +340,16 @@ export function createAuthStore({
       // independent of whether the async SIGNED_OUT event fires in time.
       clearAccountScopedLocalState()
       clearNativeProfileCache()
+      // Enforce the "no user ⇒ no premium" invariant in the synchronous path too,
+      // matching SIGNED_OUT — so the store guarantees it regardless of which logout
+      // path runs (revoke is idempotent; callers may also revoke, harmlessly).
+      try {
+        if (typeof revokePremiumAccess === 'function') {
+          revokePremiumAccess()
+        }
+      } catch (err) {
+        logger.warn?.('[AuthStore] revokePremiumAccess on clearUser failed:', err)
+      }
     },
     __resetForTests() {
       state.user = null
