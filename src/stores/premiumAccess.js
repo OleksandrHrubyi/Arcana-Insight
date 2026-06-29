@@ -34,6 +34,11 @@ const readFromStorage = () => {
 
 const state = ref(readFromStorage())
 let listenersAttached = false
+// Keep handler refs so they can be removed (A-10) — otherwise the test reset
+// flipped listenersAttached=false without removeEventListener, so each
+// usePremiumAccess() in a suite stacked another pair of listeners.
+let storageHandler = null
+let premiumChangedHandler = null
 
 const writeToStorage = (next) => {
   state.value = next
@@ -54,12 +59,13 @@ const ensureListeners = () => {
   }
   listenersAttached = true
 
-  window.addEventListener('storage', (event) => {
+  storageHandler = (event) => {
     if (event.key !== STORAGE_KEY) return
     state.value = readFromStorage()
-  })
+  }
+  window.addEventListener('storage', storageHandler)
 
-  window.addEventListener(PREMIUM_CHANGED_EVENT, (event) => {
+  premiumChangedHandler = (event) => {
     // Same-document writes already set `state` directly and pass the new value as
     // detail — trust it. Re-reading storage here would clobber the just-applied
     // in-memory value with a STALE read if the localStorage write had failed
@@ -69,7 +75,8 @@ const ensureListeners = () => {
       return
     }
     state.value = readFromStorage()
-  })
+  }
+  window.addEventListener(PREMIUM_CHANGED_EVENT, premiumChangedHandler)
 }
 
 const revokePremiumAccess = () => {
@@ -123,6 +130,12 @@ export function usePremiumAccess() {
 }
 
 export const __resetPremiumAccessForTests = () => {
+  if (typeof window !== 'undefined') {
+    if (storageHandler) window.removeEventListener('storage', storageHandler)
+    if (premiumChangedHandler) window.removeEventListener(PREMIUM_CHANGED_EVENT, premiumChangedHandler)
+  }
+  storageHandler = null
+  premiumChangedHandler = null
   listenersAttached = false
   state.value = readFromStorage()
 }
