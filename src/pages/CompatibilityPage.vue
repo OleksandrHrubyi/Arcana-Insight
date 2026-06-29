@@ -441,7 +441,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, nextTick, ref } from 'vue'
+import { computed, onMounted, nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
@@ -1292,20 +1292,10 @@ async function loadProfileDob() {
   if (/^\d{4}-\d{2}-\d{2}$/.test(dob) && !dobA.value) dobA.value = dob
 }
 
-function setHideBottomNav(enabled) {
-  if (typeof document === 'undefined') return
-  document.body.classList.toggle('hide-bottom-nav', enabled)
-}
-
 onMounted(() => {
-  setHideBottomNav(true)
   void loadConnections()
   void loadReminderPref()
   void loadProfileDob()
-})
-
-onBeforeUnmount(() => {
-  setHideBottomNav(false)
 })
 </script>
 
@@ -1337,7 +1327,9 @@ onBeforeUnmount(() => {
   z-index: 1;
   max-width: 520px;
   margin: 0 auto;
-  padding: calc(90px + env(safe-area-inset-top)) 18px calc(40px + env(safe-area-inset-bottom));
+  /* +84px clears the fixed bottom nav (matches ZodiacGuide / CardLibrary) so the
+     last content isn't hidden behind it now that the nav stays visible here. */
+  padding: calc(90px + env(safe-area-inset-top)) 18px calc(40px + env(safe-area-inset-bottom) + 84px);
 }
 
 /* ── hero (centered, with an absolutely-placed back button — matches Daily) ── */
