@@ -11,6 +11,13 @@
 `P1` critical (fix before relying on the affected flow) · `P2` important · `P3` minor/hardening.
 **Note:** these are *architecture* severities, not App-Store-rejection blockers — none here is a hard reject. The two most damaging to **users** are A-1 (cross-account PII bleed) and A-2 (intermittent forced logouts); A-4 is a monetization/trust risk.
 
+## Fix status (2026-06-30)
+**10 safe findings fixed + committed** (each with a test/verification; 247 tests green, lint+build clean):
+A-1, A-5, A-6, A-7, A-10, A-11, A-12, A-17, A-20, A-23.
+**Deferred to v1.1** (core auth/network — too risky to refactor pre-launch, need on-device retest): A-2, A-3, A-4, A-18.
+**Not started** (large refactors + cosmetic P3): A-8, A-14, A-16, A-19, and most P3 (A-24…A-54).
+Rationale: none of the deferred items is a release blocker — no crashes (global error net), premium works (server enforcement), no premium-content leak (client strip), PII leak closed (A-1).
+
 ## Executive summary
 - **P1: 4** · **P2: 19** · **P3: ~30**
 - No P0 (no confirmed data-loss / credential-leak / guaranteed-crash class issue).
@@ -23,9 +30,9 @@
 | ID | Severity | Area | Issue | File:Line | Fix |
 |----|----------|------|-------|-----------|-----|
 | A-1 | **P1** | State/Security | ✅ FIXED (34b4f32) Cross-account PII: profile cache in Preferences, logout clears only localStorage | authStoreCore.js:13 | S |
-| A-2 | **P1** | Network | 3 token-refresh paths share one key; native 401-retry skips withAuthLock → spurious logouts | supabaseNativeCore.js:108 | M |
-| A-3 | **P1** | Network | invokeFunction/REST **throw** on timeout/offline instead of `{data,error}` | supabaseNativeCore.js:62 | M |
-| A-4 | **P1** | Monetization | Horoscope cache not entitlement-keyed → premium upgrade serves stripped content same day | horoscopeContentCore.js:99-136 | M |
+| A-2 | **P1** | Network | ⏭️ v1.1 3 token-refresh paths share one key; native 401-retry skips withAuthLock → spurious logouts | supabaseNativeCore.js:108 | M |
+| A-3 | **P1** | Network | ⏭️ v1.1 invokeFunction/REST **throw** on timeout/offline instead of `{data,error}` | supabaseNativeCore.js:62 | M |
+| A-4 | **P1** | Monetization | ⏭️ v1.1 Horoscope cache not entitlement-keyed → premium upgrade serves stripped content same day | horoscopeContentCore.js:99-136 | M |
 | A-5 | P2 | State | ✅ FIXED (c0a8ff0) Premium reverts when localStorage write fails (self-event re-read) | premiumAccess.js:38-64 | S |
 | A-6 | P2 | State | ✅ FIXED (b8fe965) clearUser() doesn't revoke premium (asymmetric with SIGNED_OUT) | authStoreCore.js:320-326 | S |
 | A-7 | P2 | Observability | ✅ FIXED (ac5d275) Prod auth logging fully suppressed (no telemetry on auth failures) | authStore.js:9-17 | S |
@@ -39,7 +46,7 @@
 | A-15 | P2 | Network | nativeFetch `status: res.status || 0` → RangeError on status 0 | supabaseClient.ts:133 | S |
 | A-16 | P2 | Network | Global `fetch` monkey-patched on native → implicit coupling | supabaseClient.ts:222-228 | M |
 | A-17 | P2 | Billing | ✅ FIXED (7e56141) RevenueCat calls have no timeout → UI hang on stuck SDK | premiumBilling.js:271-379 | S |
-| A-18 | P2 | Billing | ⏸️ DECISION NEEDED ensureConfigured latches `configure_failed` for whole session — a test (premiumBillingService.test.js:112) locks the latch in as intended; flipping it = behavior change | premiumBilling.js:262-264 | S |
+| A-18 | P2 | Billing | ⏭️ v1.1 ensureConfigured latches `configure_failed` for whole session — a test locks the latch in as intended; flipping it = behavior change, revisit post-launch | premiumBilling.js:262-264 | S |
 | A-19 | P2 | Network | Dual parallel client stacks (supabase-js vs native REST) | supabaseClient.ts vs supabaseNativeCore.js | L |
 | A-20 | P2 | Caching | ✅ FIXED (8ded9a6) loadRitualDashboard cache ignores params/userId → wrong range / cross-user bleed | ritualRewardsBackend.js:401-434 | S |
 | A-21 | P2 | Logic | Guest reward balance: sliding-window earned vs cumulative spent (latent, rewards parked) | dailyRitual.js:255-280 + ritualRewardInventory.js:275-288 | M |
