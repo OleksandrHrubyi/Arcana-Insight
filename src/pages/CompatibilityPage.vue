@@ -441,7 +441,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, nextTick, ref } from 'vue'
+import { computed, onMounted, onBeforeUnmount, nextTick, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
@@ -1296,6 +1296,23 @@ onMounted(() => {
   void loadConnections()
   void loadReminderPref()
   void loadProfileDob()
+})
+
+// The bottom-nav wrap sits above q-dialogs in this app, so a visible nav overlaps
+// the bottom DOB / save sheets. Hide it ONLY while a sheet is open (not page-wide,
+// which previously cost the page its navigation). Cleared on unmount so leaving the
+// page mid-sheet can't strand the hidden state.
+function setHideBottomNav(enabled) {
+  if (typeof document === 'undefined') return
+  document.body.classList.toggle('hide-bottom-nav', enabled)
+}
+
+watch([dobSheet, saveSheet], ([dob, save]) => {
+  setHideBottomNav(Boolean(dob || save))
+})
+
+onBeforeUnmount(() => {
+  setHideBottomNav(false)
 })
 </script>
 
