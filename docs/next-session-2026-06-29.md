@@ -35,7 +35,9 @@
 - Прибрано беззумовне `setHideBottomNav(true)` + `onBeforeUnmount` + невикористаний імпорт; додано `+84px` нижній padding для кліренсу нав-бару (як у ZodiacGuide/CardLibrary).
 - q-dialog шити (DOB/save) меню не ховали й не потребували body-класу.
 - Перевірено: lint 0, build OK, 241 тестів. ⏳ Опційно: візуальна перевірка на пристрої/в браузері.
-- ✅ **Бонус-фікс (коміт faf8366):** виявлено, що підсвічена вкладка не натискалась — `onClick` гардив на `current.value` (=route.meta.tab), тож на всіх menu-підсторінках тап Menu нічого не робив (пастка). Виправлено на `route.name`. Стосувалось compatibility/cards/zodiac/readings/settings/account/premium + horoscope/tarot підсторінок.
+- ✅ **Бонус-фікси навігації (коміти faf8366 + 53c1bca):**
+  - `faf8366` — підсвічена вкладка не натискалась (`onClick` гардив на `current.value`); тепер гард на `route.name`, тож тап веде на корінь розділу.
+  - `53c1bca` — вкладка більше НЕ світиться на чужих роутах: `current` = підсвічувати лише коли `route.name` збігається з коренем вкладки. На `/compatibility`, `/cards`, `/readings`, підсторінках гороскопу/таро тощо — нічого не світиться; Menu лише на `/menu`.
 
 ### B) Сумісність — уточнити, що таке «Weekly reminder»
 - **Де:** `src/pages/CompatibilityPage.vue:102-112` — тогл `compat-reminder` (`reminderAvailable` / `reminderEnabled` / `toggleReminder`).
