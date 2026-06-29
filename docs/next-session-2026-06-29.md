@@ -31,10 +31,10 @@
 
 ## 🆕 НОВІ ЗАДАЧІ (знайдено 2026-06-29, по сторінці Сумісність)
 
-### A) Сумісність — немає нижнього меню, а воно потрібне
-- **Де:** `src/pages/CompatibilityPage.vue` — на mount викликає `setHideBottomNav(true)` (рядок ~1301), на unmount `setHideBottomNav(false)` (~1308) → додає `body.hide-bottom-nav`, тому bottom-nav прихований.
-- **Хоча** маршрут має `meta: { tab: 'menu' }` (`src/router/routes.js:24`) — тобто меню МАЄ бути видиме й підсвічувати вкладку «menu».
-- **Зробити:** прибрати/зробити умовним приховування bottom-nav на цій сторінці. Спершу зрозуміти, ЧОМУ його ховали (ймовірно через sticky-CTA/overlay внизу — перевірити, що меню не перекриває кнопку дії і навпаки). Звірити з `docs/screen-contracts.md` + `arcana-routing-and-flow-guardrails`.
+### A) ✅ ЗРОБЛЕНО (2026-06-29, коміт b789513) — Сумісність тепер показує нижнє меню
+- Прибрано беззумовне `setHideBottomNav(true)` + `onBeforeUnmount` + невикористаний імпорт; додано `+84px` нижній padding для кліренсу нав-бару (як у ZodiacGuide/CardLibrary).
+- q-dialog шити (DOB/save) меню не ховали й не потребували body-класу.
+- Перевірено: lint 0, build OK, 241 тестів. ⏳ Опційно: візуальна перевірка на пристрої/в браузері.
 
 ### B) Сумісність — уточнити, що таке «Weekly reminder»
 - **Де:** `src/pages/CompatibilityPage.vue:102-112` — тогл `compat-reminder` (`reminderAvailable` / `reminderEnabled` / `toggleReminder`).
