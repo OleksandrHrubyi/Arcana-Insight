@@ -91,6 +91,7 @@ import { loadTarotData } from 'src/helpers/tarotData'
 import {
   getDeterministicDailyCardSelection,
   loadDailyCardsSnapshot,
+  getOrCreateAnonDailySeed,
 } from 'src/helpers/dailyCardCore.js'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
@@ -113,7 +114,6 @@ const cards = ref([])
 // 'loading' | 'ready' | 'error' — drives the spinner / retry fallback so a failed
 // or empty tarot-data load shows a recoverable state instead of a broken <img>.
 const loadState = ref('loading')
-const ANON_DAILY_SEED_KEY = 'arcana_daily_seed_v1'
 
 const initializeDailyCardScreen = async () => {
   loadState.value = 'loading'
@@ -195,24 +195,9 @@ const handleDayRolloverOnResume = () => {
   })
 }
 
-const getOrCreateAnonSeed = () => {
-  if (typeof window === 'undefined') return 'anon'
-  const stored = localStorage.getItem(ANON_DAILY_SEED_KEY)
-  if (stored) return stored
-
-  const next =
-    (window.crypto &&
-      typeof window.crypto.randomUUID === 'function' &&
-      window.crypto.randomUUID()) ||
-    `${Date.now()}-${Math.random().toString(36).slice(2)}`
-
-  localStorage.setItem(ANON_DAILY_SEED_KEY, next)
-  return next
-}
-
 const dailySelection = computed(() => {
   const userId = authStore.state.user?.id
-  const identity = userId || getOrCreateAnonSeed()
+  const identity = userId || getOrCreateAnonDailySeed()
   return getDeterministicDailyCardSelection({
     dateKey: currentDayKey.value,
     identity,

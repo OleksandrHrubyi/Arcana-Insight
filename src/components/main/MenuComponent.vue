@@ -239,6 +239,7 @@ import { useAuthStore } from 'stores/authStore'
 import {
   getDeterministicDailyCardSelection,
   loadDailyCardsSnapshot,
+  getOrCreateAnonDailySeed,
 } from 'src/helpers/dailyCardCore'
 import { loadTarotData } from 'src/helpers/tarotData'
 import { DAILY_ACTIVITY_KEYS, hasDailyActivityToday, getLocalDateKey } from 'src/helpers/dailyRitual'
@@ -254,7 +255,6 @@ export default defineComponent({
     const selectedLocale = computed(() => currentLocale.value || 'en')
     const tt = (key) => t(selectedLocale.value, key)
     const menuDailyBackLogo = logo
-    const ANON_DAILY_SEED_KEY = 'arcana_daily_seed_v1'
     const hasDailyCardToday = ref(false)
     const dailyCards = ref([])
     const personalizedInterests = ref(readOnboardingInterests())
@@ -385,24 +385,9 @@ export default defineComponent({
       await router.push({ name: item.routeName })
     }
 
-    const getOrCreateAnonSeed = () => {
-      if (typeof window === 'undefined') return 'anon'
-      const stored = localStorage.getItem(ANON_DAILY_SEED_KEY)
-      if (stored) return stored
-
-      const next =
-        (window.crypto &&
-          typeof window.crypto.randomUUID === 'function' &&
-          window.crypto.randomUUID()) ||
-        `${Date.now()}-${Math.random().toString(36).slice(2)}`
-
-      localStorage.setItem(ANON_DAILY_SEED_KEY, next)
-      return next
-    }
-
     const dailySelection = computed(() => {
       const userId = authStore.state.user?.id
-      const identity = userId || getOrCreateAnonSeed()
+      const identity = userId || getOrCreateAnonDailySeed()
       return getDeterministicDailyCardSelection({
         dateKey: getLocalDateKey(),
         identity,

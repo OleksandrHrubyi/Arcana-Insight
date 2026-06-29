@@ -263,6 +263,7 @@ import {
 import {
   getDeterministicDailyCardSelection,
   loadDailyCardsSnapshot,
+  getOrCreateAnonDailySeed,
 } from 'src/helpers/dailyCardCore.js'
 import { loadTarotData } from 'src/helpers/tarotData'
 import { loadHoroscopeRegistry } from 'src/helpers/horoscopeContentCore.js'
@@ -1323,13 +1324,9 @@ export default {
     },
 
     _getAnonSeed() {
-      if (typeof window === 'undefined') return 'anon'
-      const stored = localStorage.getItem('arcana_daily_seed_v1')
-      if (stored) return stored
-      const next =
-        window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`
-      localStorage.setItem('arcana_daily_seed_v1', next)
-      return next
+      // Storage-guarded shared helper (A-11/A-12) — same anon seed key as the daily
+      // card so the home preview stays consistent with /daily and the menu.
+      return getOrCreateAnonDailySeed()
     },
 
     _zodiacFromDate(rawDate) {
