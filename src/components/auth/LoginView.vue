@@ -359,13 +359,13 @@ export default {
           <router-link :to="{ path: '/sign-up', query: redirectQuery }" class="link">{{ tt('auth.signUpAction') }}</router-link>
         </p>
 
-        <div class="divider">
+        <div v-if="isIOSNative" class="divider">
           <span class="divider-line"></span>
           <span class="divider-text">{{ tt('auth.orContinueWith') }}</span>
           <span class="divider-line"></span>
         </div>
 
-        <div class="social-buttons">
+        <div v-if="isIOSNative" class="social-buttons">
           <q-btn
             v-if="isIOSNative"
             class="social-btn apple-btn"
