@@ -59,17 +59,18 @@ DeleteAccount confirm (persistent ✓), Account edit-name + DOB sheets (handle-o
 ---
 
 ## P1 — Blocking / invisible failure
+**ALL FIXED 2026-06-30:** UX-1 + UX-2 (28422f1), UX-3 (e2648d5). 247 tests green, lint+build clean.
 
-### UX-1 · OTP confirm screen never shows errors
+### UX-1 ✅ FIXED · OTP confirm screen never shows errors
 - **File:** `src/components/auth/ConfirmEmailCode.vue` — `errorMessage` assigned at 121/133/165/170/206 but **no template element renders it** (template 236-279).
 - **Why:** wrong code, expired code, "no session", and rate-limited resend all produce **zero visible feedback** on the most-used auth path. Looks like nothing happened. Conversion killer; only shows on device.
 - **Fix:** render `errorMessage` under `CodeInput`; surface resend success/failure too.
 
-### UX-2 · OTP confirm has no retry after a failed auto-submit (stuck)
+### UX-2 ✅ FIXED · OTP confirm has no retry after a failed auto-submit (stuck)
 - **File:** `ConfirmEmailCode.vue:29-35` — only trigger is the watcher `code.length === 6 → confirm()`. After a failure the 6 digits remain, the watcher doesn't re-fire, and there's no submit button → user appears stuck (must delete + retype).
 - **Fix:** on failure clear the code + refocus, and/or add an explicit "Verify" button.
 
-### UX-3 · Account deletion failure is silent
+### UX-3 ✅ FIXED · Account deletion failure is silent
 - **File:** `AccountPage.vue:688-756` — failure paths `return` with no UI; outer `catch {}` empty; `finally` closes the dialog. The string `accountPage.deleteAccountFailed` exists but is **never referenced**.
 - **Why:** on a server/network failure the confirm dialog just vanishes with the account intact and no feedback — the user can't tell if deletion succeeded. Trust- and App-Store-sensitive.
 - **Fix:** on any failure show a negative toast (wire the existing `deleteAccountFailed` key) and keep the dialog open / re-enable the button.
