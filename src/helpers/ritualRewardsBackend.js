@@ -24,6 +24,10 @@ const GUEST_QUEUE_MAX_ITEMS = 180
 const DASHBOARD_TTL_MS = 45000
 let dashboardCache = null
 let dashboardCacheAt = 0
+// Cache must be scoped to (userId, days, dateKey): a single global blob otherwise
+// served a 7-day payload to a 30-day request and (worse) one account's dashboard to
+// the next account on a fast switch within the TTL. A-20.
+let dashboardCacheKey = ''
 let guestSyncInFlight = null
 let guestInventorySyncInFlight = null
 let guestStateSyncInFlight = null
@@ -401,24 +405,26 @@ export const syncGuestRitualState = async (options = {}) => {
 export const loadRitualDashboard = async (options = {}) => {
   const force = Boolean(options.force)
   const now = Date.now()
-  if (!force && dashboardCache && now - dashboardCacheAt < DASHBOARD_TTL_MS) {
+  const userId = normalizeUserId(options.userId)
+  const days = options.days || 7
+  const dateKey = normalizeDateKey(options.dateKey)
+  const requestKey = `${userId}|${days}|${dateKey}`
+  if (
+    !force &&
+    dashboardCache &&
+    dashboardCacheKey === requestKey &&
+    now - dashboardCacheAt < DASHBOARD_TTL_MS
+  ) {
     return { ok: true, data: dashboardCache, error: null, cached: true }
   }
 
   try {
-    const { data, error } = await invokeFunction(
-      'ritual-dashboard',
-      {
-        days: options.days || 7,
-        dateKey: normalizeDateKey(options.dateKey),
-      },
-      8000,
-    )
+    const { data, error } = await invokeFunction('ritual-dashboard', { days, dateKey }, 8000)
     const out = toResult(data, error)
     if (out.ok && data) {
       dashboardCache = data
       dashboardCacheAt = now
-      const userId = normalizeUserId(options.userId)
+      dashboardCacheKey = requestKey
       const inventoryRows = extractInventoryRows(data)
       if (userId && inventoryRows.length) {
         applyAuthInventoryRowsToCache({
@@ -596,4 +602,5 @@ export const ensureRitualRewardInventory = async (options = {}) => {
 export const invalidateRitualDashboardCache = () => {
   dashboardCache = null
   dashboardCacheAt = 0
+  dashboardCacheKey = ''
 }
