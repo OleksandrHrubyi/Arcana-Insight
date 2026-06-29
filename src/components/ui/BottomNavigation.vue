@@ -190,10 +190,12 @@ async function onClick(name, idx, event) {
 
 watch(
   () => route.name,
-  // Highlight strictly by the route's declared tab. No fall back to the route name
-  // or to 'arcana' — that wrongly lit Home on pages without a tab. Pages reached
-  // via Menu declare meta.tab:'menu'; pages with no tab highlight nothing.
-  () => { current.value = route.meta?.tab || '' },
+  // Highlight a tab ONLY when you're actually on that tab's own root route — not on
+  // sub-pages that merely belong to its section. (Tab names match the four top-level
+  // route names.) So /compatibility, /cards, /readings, … light nothing; Menu lights
+  // only on /menu itself. Pairs with onClick guarding on route.name so the tap still
+  // navigates to the section root.
+  () => { current.value = items.some((it) => it.name === route.name) ? route.name : '' },
   { immediate: true }
 )
 </script>
