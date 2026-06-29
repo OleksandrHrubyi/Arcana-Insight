@@ -7,6 +7,19 @@ import {
 
 const Purchases = registerPlugin('Purchases')
 
+// Bound the non-interactive RevenueCat bridge calls so a wedged native SDK / dead
+// network can't hang the paywall or premium-status spinner forever (A-17). NOT
+// applied to purchasePackage — that is user-interactive (Face ID / password sheet)
+// and must be allowed to take as long as the user needs.
+const RC_TIMEOUT_MS = 15000
+const withTimeout = (promise, label = 'revenuecat', ms = RC_TIMEOUT_MS) => {
+  let timer
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Timeout after ${ms}ms: ${label}`)), ms)
+  })
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer))
+}
+
 let isConfigured = false
 let configureAttempted = false
 
@@ -268,7 +281,7 @@ const ensureConfigured = async () => {
   }
 
   try {
-    await Purchases.configure({ apiKey })
+    await withTimeout(Purchases.configure({ apiKey }), 'configure')
     isConfigured = true
     return { ok: true }
   } catch (error) {
@@ -289,7 +302,7 @@ export const getBillingPremiumStatus = async () => {
   }
 
   try {
-    const response = await Purchases.getCustomerInfo()
+    const response = await withTimeout(Purchases.getCustomerInfo(), 'getCustomerInfo')
     const customerInfo = extractCustomerInfo(response)
     const status = resolvePremiumStatus(customerInfo)
     return {
@@ -326,7 +339,7 @@ export const purchasePremiumPlan = async (planId) => {
   }
 
   try {
-    const offeringsResponse = await Purchases.getOfferings()
+    const offeringsResponse = await withTimeout(Purchases.getOfferings(), 'getOfferings')
     const aPackage = findPackageByPlan(offeringsResponse, normalizedPlan)
     if (!aPackage) {
       return {
@@ -376,7 +389,7 @@ export const restorePremiumPurchases = async () => {
   }
 
   try {
-    const response = await Purchases.restorePurchases()
+    const response = await withTimeout(Purchases.restorePurchases(), 'restorePurchases')
     const customerInfo = extractCustomerInfo(response)
     const status = resolvePremiumStatus(customerInfo)
     return {
