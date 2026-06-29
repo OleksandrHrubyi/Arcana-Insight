@@ -711,10 +711,14 @@ export default defineComponent({
 
         const result = await attemptDelete(0)
 
-        if (result.error) {
-          return
-        }
-        if (result.data?.error) {
+        if (result.error || result.data?.error) {
+          // Surface the failure and keep the dialog open so the user knows the
+          // account was NOT deleted and can retry — was silently swallowed (UX-3).
+          this.$q?.notify?.({
+            type: 'negative',
+            position: 'top',
+            message: this.tt('accountPage.deleteAccountFailed'),
+          })
           return
         }
 
@@ -748,10 +752,15 @@ export default defineComponent({
         // Let cleanup continue in background.
         void runCleanup()
       } catch {
-        // ignore delete errors (UI is already handled)
+        // Network/server failure after retries — tell the user it didn't work and
+        // leave the dialog open so they can retry (UX-3). Was silently swallowed.
+        this.$q?.notify?.({
+          type: 'negative',
+          position: 'top',
+          message: this.tt('accountPage.deleteAccountFailed'),
+        })
       } finally {
         this.deletingAccount = false
-        this.deleteDialog = false
       }
     },
 
