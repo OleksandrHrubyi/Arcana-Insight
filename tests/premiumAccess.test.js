@@ -218,3 +218,25 @@ test('premiumAccess is safe in non-browser runtime', async () => {
     else globalThis.CustomEvent = originalCustomEvent
   }
 })
+
+test('premiumAccess keeps a fresh grant in memory when the storage write fails (A-5)', async () => {
+  const env = installBrowserEnv()
+  try {
+    const store = await loadStore() // attaches the PREMIUM_CHANGED_EVENT listener
+    // Simulate storage pressure / private mode: the write throws after state is set.
+    env.localStorage.setItem = () => {
+      throw new Error('quota exceeded')
+    }
+
+    store.applyPremiumAccessStatus({ active: true, plan: 'yearly', source: 'billing' })
+
+    assert.equal(
+      store.hasPremiumAccess.value,
+      true,
+      'a successful purchase must not silently revert to false because the storage write failed',
+    )
+    assert.equal(store.premiumPlan.value, 'yearly')
+  } finally {
+    env.restore()
+  }
+})

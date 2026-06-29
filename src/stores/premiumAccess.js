@@ -59,7 +59,15 @@ const ensureListeners = () => {
     state.value = readFromStorage()
   })
 
-  window.addEventListener(PREMIUM_CHANGED_EVENT, () => {
+  window.addEventListener(PREMIUM_CHANGED_EVENT, (event) => {
+    // Same-document writes already set `state` directly and pass the new value as
+    // detail — trust it. Re-reading storage here would clobber the just-applied
+    // in-memory value with a STALE read if the localStorage write had failed
+    // (storage pressure / private mode), silently reverting a fresh purchase. A-5.
+    if (event && event.detail) {
+      state.value = event.detail
+      return
+    }
     state.value = readFromStorage()
   })
 }
