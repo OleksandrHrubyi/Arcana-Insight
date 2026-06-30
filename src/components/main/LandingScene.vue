@@ -1006,6 +1006,13 @@ export default {
 
     async handleHeroCardClick() {
       if (this.isAstroSheetActionLocked()) return
+      // If the daily card failed to load, don't "reveal" an empty skeleton — send
+      // the user straight to /daily, which has its own loading + error/retry (UX-12).
+      if (!this.dailyCardData) {
+        await this.triggerImpact(ImpactStyle.Light)
+        this.openMyDay()
+        return
+      }
       if (!this.isHeroCardRevealed) {
         await this.triggerImpact(ImpactStyle.Medium)
         this.persistHomeDailyCardRevealState(true)

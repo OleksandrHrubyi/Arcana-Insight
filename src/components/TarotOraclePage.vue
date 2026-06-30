@@ -1624,6 +1624,23 @@ const touchDeck = async () => {
     return
   }
 
+  // Bundled tarot data missing/failed — re-load once; if still empty, tell the user
+  // and abort BEFORE consuming a free draw, instead of proceeding to a "cards ready"
+  // scene with zero cards and no recovery (UX-13).
+  if (!cardPool.value.length) {
+    await loadCardPoolSafe()
+    if (!cardPool.value.length) {
+      $q.notify({
+        message: i18nT(currentLang.value, 'common.loadError'),
+        color: 'dark',
+        textColor: 'white',
+        position: 'bottom',
+        timeout: 2600,
+      })
+      return
+    }
+  }
+
   // Captured before consumeRitualReward clears pendingSpreadRewardKey below.
   const usesReward = !hasPremiumAccess.value && Boolean(pendingSpreadRewardKey.value)
 
