@@ -14,7 +14,8 @@
 ## Fix status (2026-06-30)
 **10 safe findings fixed + committed** (each with a test/verification; 247 tests green, lint+build clean):
 A-1, A-5, A-6, A-7, A-10, A-11, A-12, A-17, A-20, A-23.
-**Deferred to v1.1** (core auth/network — too risky to refactor pre-launch, need on-device retest): A-2, A-3, A-4, A-18.
+**Deferred to v1.1** (core auth/network — too risky to refactor pre-launch, need on-device retest): A-2, A-3, A-18.
+**A-4 escalated + FIXED 2026-06-30** — it manifested in the field (premium horoscope showed only the free "energy" theme; love/career stuck on skeleton). The cache is now entitlement-keyed.
 **Not started** (large refactors + cosmetic P3): A-8, A-14, A-16, A-19, and most P3 (A-24…A-54).
 Rationale: none of the deferred items is a release blocker — no crashes (global error net), premium works (server enforcement), no premium-content leak (client strip), PII leak closed (A-1).
 
@@ -32,7 +33,7 @@ Rationale: none of the deferred items is a release blocker — no crashes (globa
 | A-1 | **P1** | State/Security | ✅ FIXED (34b4f32) Cross-account PII: profile cache in Preferences, logout clears only localStorage | authStoreCore.js:13 | S |
 | A-2 | **P1** | Network | ⏭️ v1.1 3 token-refresh paths share one key; native 401-retry skips withAuthLock → spurious logouts | supabaseNativeCore.js:108 | M |
 | A-3 | **P1** | Network | ⏭️ v1.1 invokeFunction/REST **throw** on timeout/offline instead of `{data,error}` | supabaseNativeCore.js:62 | M |
-| A-4 | **P1** | Monetization | ⏭️ v1.1 Horoscope cache not entitlement-keyed → premium upgrade serves stripped content same day | horoscopeContentCore.js:99-136 | M |
+| A-4 | **P1** | Monetization | ✅ FIXED (escalated from v1.1 — hit in the field: premium saw only "energy", love/career skeleton) Horoscope cache not entitlement-keyed | horoscopeContentCore.js:99-136 | M |
 | A-5 | P2 | State | ✅ FIXED (c0a8ff0) Premium reverts when localStorage write fails (self-event re-read) | premiumAccess.js:38-64 | S |
 | A-6 | P2 | State | ✅ FIXED (b8fe965) clearUser() doesn't revoke premium (asymmetric with SIGNED_OUT) | authStoreCore.js:320-326 | S |
 | A-7 | P2 | Observability | ✅ FIXED (ac5d275) Prod auth logging fully suppressed (no telemetry on auth failures) | authStore.js:9-17 | S |
