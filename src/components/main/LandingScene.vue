@@ -162,45 +162,28 @@
 
       <section
         class="focus-today"
-        :class="{
-          'focus-today--visible': showHomeActions,
-          'focus-today--compact': isFocusTodayCompact,
-        }"
+        :class="{ 'focus-today--visible': showHomeActions }"
       >
         <button
           type="button"
           class="focus-today__card"
-          :class="{ 'focus-today__card--compact': isFocusTodayCompact }"
           :aria-label="focusTodayAriaLabel"
           @click="openFocusToday"
         >
-          <div v-if="isFocusTodayCompact" class="focus-today__compact-row">
-            <div class="focus-today__compact-copy">
-              <span class="focus-today__eyebrow">{{ focusTodayTitle }}</span>
-              <p class="focus-today__body focus-today__body--compact">
-                {{ focusTodayLine }}
-              </p>
-            </div>
+          <div class="focus-today__top">
+            <span class="focus-today__eyebrow">{{ focusTodayTitle }}</span>
+          </div>
+          <div v-if="focusTodaySignLabel" class="focus-today__meta">
+            <span class="focus-today__sign-chip">{{ focusTodaySignLabel }}</span>
+          </div>
+          <p class="focus-today__body" :class="{ 'focus-today__body--prompt': !focusTodayHasFocus }">
+            {{ focusTodayLine }}
+          </p>
+          <div class="focus-today__footer">
             <span class="focus-today__cta">
               {{ focusTodayCtaLabel }}
             </span>
           </div>
-          <template v-else>
-            <div class="focus-today__top">
-              <span class="focus-today__eyebrow">{{ focusTodayTitle }}</span>
-            </div>
-            <div v-if="focusTodaySignLabel" class="focus-today__meta">
-              <span class="focus-today__sign-chip">{{ focusTodaySignLabel }}</span>
-            </div>
-            <p class="focus-today__body">
-              {{ focusTodayLine }}
-            </p>
-            <div class="focus-today__footer">
-              <span class="focus-today__cta">
-                {{ focusTodayCtaLabel }}
-              </span>
-            </div>
-          </template>
         </button>
       </section>
 
@@ -486,8 +469,11 @@ export default {
       )
     },
 
-    isFocusTodayCompact() {
-      return !this.focusTodayResolvedSignKey
+    focusTodayHasFocus() {
+      // True only when we have a real horoscope teaser for a resolved sign. The
+      // fallback states (no sign / sign but no text) are instructions, so they
+      // render in full instead of being clamped like the teaser.
+      return !!(String(this.horoscopeData?.preview || '').trim() && this.focusTodayResolvedSignKey)
     },
 
     focusTodayTitle() {
@@ -1909,10 +1895,6 @@ export default {
   opacity: 1;
 }
 
-.focus-today--compact {
-  width: min(344px, calc(100vw - 28px));
-}
-
 .focus-today__card {
   width: 100%;
   min-height: 104px;
@@ -1937,21 +1919,6 @@ export default {
   pointer-events: auto;
 }
 
-.focus-today__card--compact {
-  min-height: 70px;
-  padding: 10px 14px 10px;
-  gap: 0;
-  border-color: rgba(132, 159, 194, 0.1);
-  background:
-    linear-gradient(180deg, rgba(17, 28, 46, 0.34), rgba(10, 17, 29, 0.76)),
-    radial-gradient(circle at top right, rgba(124, 166, 226, 0.06), rgba(124, 166, 226, 0) 44%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.025),
-    0 8px 18px rgba(2, 7, 15, 0.07);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
 .focus-today__top {
   width: 100%;
   min-width: 0;
@@ -1965,22 +1932,6 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.focus-today__compact-row {
-  width: 100%;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.focus-today__compact-copy {
-  min-width: 0;
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
 }
 
 .focus-today__sign-chip {
@@ -2017,11 +1968,11 @@ export default {
   text-wrap: pretty;
 }
 
-.focus-today__body--compact {
-  font-size: 14px;
-  line-height: 1.3;
-  -webkit-line-clamp: 2;
-  color: rgba(235, 241, 249, 0.78);
+.focus-today__body--prompt {
+  /* Fallback prompts are instructions — never clamp them mid-word. */
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
 }
 
 .focus-today__footer {
@@ -2032,15 +1983,6 @@ export default {
   gap: 12px;
   padding-top: 6px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.focus-today__card--compact .focus-today__footer {
-  display: none;
-}
-
-.focus-today__card--compact .focus-today__cta {
-  white-space: nowrap;
-  align-self: center;
 }
 
 .focus-today__cta {
@@ -2937,22 +2879,12 @@ export default {
     bottom: calc(env(safe-area-inset-bottom, 0px) + 134px);
     width: min(336px, calc(100vw - 24px));
   }
-  .focus-today--compact {
-    width: min(332px, calc(100vw - 24px));
-  }
   .focus-today__card {
     min-height: 98px;
     padding: 10px 12px 10px;
   }
-  .focus-today__card--compact {
-    min-height: 66px;
-    padding: 9px 12px 9px;
-  }
   .focus-today__body {
     font-size: 13px;
-  }
-  .focus-today__body--compact {
-    font-size: 14px;
   }
   .focus-today__sign-chip {
     font-size: 11px;
@@ -2979,25 +2911,18 @@ export default {
     bottom: calc(env(safe-area-inset-bottom, 0px) + 112px);
     width: min(332px, calc(100vw - 24px));
   }
-  .focus-today--compact {
-    width: min(324px, calc(100vw - 24px));
-  }
   .focus-today__card {
     min-height: 76px;
     gap: 4px;
     padding: 8px 11px 9px;
   }
-  .focus-today__card--compact {
-    min-height: 58px;
-    padding: 8px 11px;
-  }
   .focus-today__body {
     -webkit-line-clamp: 1;
     font-size: 12px;
   }
-  .focus-today__body--compact {
-    -webkit-line-clamp: 2;
-    font-size: 14px;
+  .focus-today__body--prompt {
+    -webkit-line-clamp: unset;
+    font-size: 13px;
   }
   .focus-today__footer {
     padding-top: 4px;

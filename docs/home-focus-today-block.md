@@ -149,16 +149,24 @@ Conditions:
 
 Show:
 
-- no `Focus today` block on home
+- `Focus today`
+- a short prompt inviting the user to open `Horoscope` and choose a sign
+  (`landing.focusToday.fallbackMissingSign`)
 
 Tap:
 
-- no home action in this state
+- open `Horoscope`
 
 UI note:
 
-- do not show a pseudo-content card with no real value
-- choosing a sign belongs to the `Horoscope` flow, not to a fallback home card
+- this prompt is an instruction, not pseudo-content — it must render **in full**,
+  never clamped/truncated mid-word. Use the stacked layout (full-width text + CTA
+  below), not the inline-CTA compact card.
+- keep the copy short so it reads as a setup nudge, not a fake reading
+- decided 2026-07-01: an earlier version hid the block entirely here; field
+  testing showed new users had no on-home hint to set up their sign, so we show a
+  clear prompt instead. Only the real-focus state (sign known) keeps the clamped
+  one-line teaser.
 
 ## UI Rules
 
