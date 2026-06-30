@@ -72,7 +72,10 @@
               { 'oracle-bubble--clarify': isClarifyBubble },
             ]"
           >
-            {{ bubbleText }}
+            {{ bubbleText
+            }}<span v-if="isInterpretationLoading" class="oracle-loading-dots" aria-hidden="true"
+              ><span></span><span></span><span></span
+            ></span>
           </p>
         </transition>
       </section>
@@ -367,8 +370,6 @@ const interpretationLoading = ref(false)
 const interpretationError = ref('')
 const interpretationData = ref(null)
 const entryFocusApplied = ref(false)
-const loadingDots = ref(1)
-let loadingDotsTimer = null
 const tarotAiEnabled = import.meta.env.VITE_ENABLE_TAROT_AI === 'true'
 
 const timers = []
@@ -673,9 +674,10 @@ const cardPool = ref([])
 const yesTitle = computed(() => i18nT(currentLang.value, 'yesTitle'))
 const noTitle = computed(() => i18nT(currentLang.value, 'noTitle'))
 const interpretationLoadingBase = computed(() => t.value.ui.loadingBase)
-const interpretationLoadingLine = computed(
-  () => `${interpretationLoadingBase.value}${'.'.repeat(loadingDots.value)}`,
-)
+// The animated trailing dots are now a fixed-width CSS element in the template, so
+// the loading text itself is static — its width never changes, so the last word no
+// longer jumps between lines as the dots cycle. (UX: oracle-bubble loading jitter.)
+const interpretationLoadingLine = computed(() => interpretationLoadingBase.value)
 const interpretationUnavailableLine = computed(() => i18nT(currentLang.value, 'errors.generic'))
 
 // Fill {placeholder} tokens in a localized template string (src/i18n tarotOracle.ui.*).
@@ -1939,6 +1941,13 @@ const bubbleText = computed(() => {
   return activeBubbleText.value
 })
 const bubbleKey = computed(() => (stage.value === 'started' ? 'started-list' : bubbleText.value))
+// True while the bubble shows the "shaping the interpretation" loading line — drives
+// the fixed-width animated dots appended in the template.
+const isInterpretationLoading = computed(
+  () =>
+    isReadingComplete.value &&
+    (interpretationLoading.value || interpretationDecision.value === 'yes'),
+)
 const isSummaryBubble = computed(() => stage.value === 'ready')
 const isClarifyBubble = computed(() => stage.value === 'clarify')
 const showDeckHotspot = computed(() => stage.value === 'ready')
@@ -1965,25 +1974,6 @@ watch(isReadingComplete, (ready) => {
   interpretationChoicesVisible.value = true
   void impact(ImpactStyle.Light)
   void analytics.logEvent(TAROT_SESSION_EVENTS.interpretationPromptShown, buildTarotFunnelPayload())
-})
-
-watch(interpretationLoading, (loading) => {
-  if (loading) {
-    loadingDots.value = 1
-    if (loadingDotsTimer) {
-      window.clearInterval(loadingDotsTimer)
-    }
-    loadingDotsTimer = window.setInterval(() => {
-      loadingDots.value = loadingDots.value >= 3 ? 1 : loadingDots.value + 1
-    }, 700)
-    return
-  }
-
-  if (loadingDotsTimer) {
-    window.clearInterval(loadingDotsTimer)
-    loadingDotsTimer = null
-  }
-  loadingDots.value = 1
 })
 
 const saveReadingToDatabase = async (interpretationData, payload) => {
@@ -2381,10 +2371,6 @@ onBeforeUnmount(() => {
   if (videoPlaybackWatchdog !== null) {
     window.clearInterval(videoPlaybackWatchdog)
     videoPlaybackWatchdog = null
-  }
-  if (loadingDotsTimer) {
-    window.clearInterval(loadingDotsTimer)
-    loadingDotsTimer = null
   }
   if (Capacitor.isNativePlatform()) {
     void Haptics.selectionEnd().catch(() => {})
@@ -2948,6 +2934,50 @@ onBeforeUnmount(() => {
 
 .oracle-bubble--normal {
   margin-top: 98px;
+}
+
+/* Fixed-width animated loading dots: all three dots are always in the layout
+   (constant width) and only their opacity cycles, so the preceding text never
+   reflows / jumps a word between lines as it did with variable '.'.repeat(). */
+.oracle-loading-dots {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.oracle-loading-dots > span {
+  display: inline-block;
+  opacity: 0.25;
+  animation: oracle-loading-dot 1.2s infinite ease-in-out;
+}
+
+.oracle-loading-dots > span::before {
+  content: '.';
+}
+
+.oracle-loading-dots > span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.oracle-loading-dots > span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes oracle-loading-dot {
+  0%,
+  70%,
+  100% {
+    opacity: 0.25;
+  }
+  35% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oracle-loading-dots > span {
+    animation: none;
+    opacity: 0.55;
+  }
 }
 
 .oracle-bubble {
