@@ -684,7 +684,7 @@ export const messages = {
 
     notifications: {
       defaultTime: 'Default (08:00 UTC)',
-      noPermission: 'No permission / no token',
+      noPermission: 'Notifications are off. Enable them for Arcana Insight in iOS Settings to get daily reminders.',
       syncFailed: 'Push sync failed',
       syncing: 'Syncing notifications…',
       off: 'Daily reminders are off',
@@ -1792,8 +1792,8 @@ export const messages = {
         history: { feature: 'History', free: 'No history', premium: 'All readings saved' },
       },
       billingIssues: {
-        missingApiKey: 'VITE_RC_IOS_API_KEY is missing for the iPhone build.',
-        pluginMissing: 'The RevenueCat Purchases plugin is not connected in the native iOS build.',
+        missingApiKey: 'The store is temporarily unavailable. Please try again later.',
+        pluginMissing: 'The store is temporarily unavailable. Please try again later.',
         notNative: 'Purchases only work in a native iPhone build.',
         networkError: 'The Store or network is currently unreachable.',
         generic: 'Store billing is currently unavailable.',
@@ -2912,7 +2912,7 @@ export const messages = {
 
     notifications: {
       defaultTime: 'За замовчуванням (08:00 UTC)',
-      noPermission: 'Немає дозволу / немає токена',
+      noPermission: 'Сповіщення вимкнені. Увімкни їх для Arcana Insight у Налаштуваннях iOS, щоб отримувати щоденні нагадування.',
       syncFailed: 'Синхронізація push не вдалася',
       syncing: 'Синхронізуємо сповіщення…',
       off: 'Щоденні нагадування вимкнені',
@@ -4017,8 +4017,8 @@ export const messages = {
         history: { feature: 'Історія', free: 'Без історії', premium: 'Усі читання збережені' },
       },
       billingIssues: {
-        missingApiKey: 'Не задано VITE_RC_IOS_API_KEY для iPhone build.',
-        pluginMissing: 'RevenueCat Purchases plugin не підключений у нативному iOS build.',
+        missingApiKey: 'Магазин тимчасово недоступний. Спробуй пізніше.',
+        pluginMissing: 'Магазин тимчасово недоступний. Спробуй пізніше.',
         notNative: 'Покупки працюють лише в нативному iPhone build.',
         networkError: 'Немає доступу до Store або мережі.',
         generic: 'Store billing зараз не готовий.',
