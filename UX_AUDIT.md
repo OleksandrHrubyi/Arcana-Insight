@@ -82,10 +82,10 @@ DeleteAccount confirm (persistent ✓), Account edit-name + DOB sheets (handle-o
 ### UX-4 · Tarot tab hides the bottom nav (broken tab model)
 `routes.js:14` (`tarot` → `hideBottomNav:true`). 1 of 4 primary tabs removes the tab bar; to leave Tarot the user must hit the in-page exit (goes *back*), and the Tarot tab can never show its active state. HIG expects the tab bar to persist on top-level destinations. **Fix:** keep nav on the Tarot landing/idle state, hide only once an immersive reading session starts (or demote Tarot from a tab).
 
-### UX-5 · Auth "back" always dumps to /menu
+### UX-5 ✅ FIXED · Auth "back" always dumps to /menu
 `LoginView.vue:235-237`, `SignUpScene.vue:311`, `ConfirmEmailCode.vue:140` — close/back unconditionally `push('/menu')`, ignoring origin, real history, and the `redirect` query. A user sent to login from the paywall taps back → lands in Menu (somewhere they never were). **Fix:** guarded `router.back()` with home fallback, or honor `redirect`/`from`.
 
-### UX-6 · Five back buttons have no fallback (bare `router.back()`)
+### UX-6 ✅ FIXED · Five back buttons have no fallback (bare `router.back()`)
 `SavedReadingsPage.vue:392`, `CompatibilityPage.vue:1162`, `CardLibraryPage.vue:271`, `ZodiacGuideComponent.vue:1259`, `FaqSupportComponent.vue:89`. Every other focused screen guards `history.length>1 ? back() : home`. On a deep-link/first-nav entry these silently no-op (back looks broken). Not a hard dead-end (these keep the nav) but inconsistent. **Fix:** one shared guarded-back helper everywhere.
 
 ### UX-7 · OTP edit-email pencil → /login even during signup (typo dead-end)
@@ -94,13 +94,13 @@ DeleteAccount confirm (persistent ✓), Account edit-name + DOB sheets (handle-o
 ### UX-8 · Onboarding lets you pick more than the framed max ("6/3", progress 200%)
 `OnboardingComponent.vue` counter `selectedCount/3`, `progressWidth=(selectedCount/3)*100`, `toggleInterest` has no cap; Settings shows the same interests with no "/3" framing. **Fix:** enforce a 3-item cap OR drop the "/3" framing + 3-based progress so the two screens agree.
 
-### UX-9 · Apple Sign-In errors are raw, untranslated, developer copy
+### UX-9 ✅ FIXED · Apple Sign-In errors are raw, untranslated, developer copy
 `LoginView.vue:149/185/189/226`, `SignUpScene.vue:226/247/264/290/301` — e.g. "No identity token from Apple", "Profile error: …". Apple is a primary v1 method; failures show hardcoded English debug strings (breaks i18n for uk). **Fix:** map to localized keys (`errors.generic` + a dedicated `auth.appleFailed`); never interpolate raw provider strings.
 
-### UX-10 · Paywall leaks env-var internals into user copy
+### UX-10 ✅ FIXED · Paywall leaks env-var internals into user copy
 `PremiumInfoComponent.vue:79` renders `billingUnavailableMessage` built at `:465-468` from keys `premiumPage.billingIssues.missingApiKey`/`.pluginMissing` — literally "VITE_RC_IOS_API_KEY is missing for the iPhone build." / "RevenueCat Purchases plugin is not connected…". Reads as a crash to a buyer at purchase intent. **Fix:** show the friendly `billing.errors.config` ("Store configuration unavailable. Try again later."); keep env text in console only.
 
-### UX-11 · Settings shows raw "No permission / no token" toast
+### UX-11 ✅ FIXED · Settings shows raw "No permission / no token" toast
 `SettingsComponent.vue:656`, key `notifications.noPermission`. "no token" is meaningless. **Fix:** "Notifications are off. Enable them for Arcana Insight in iOS Settings to get daily reminders."
 
 ### UX-12 · Home hero can sit as an empty skeleton with a working CTA
