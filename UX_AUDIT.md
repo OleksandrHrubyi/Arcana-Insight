@@ -79,7 +79,8 @@ DeleteAccount confirm (persistent ✓), Account edit-name + DOB sheets (handle-o
 
 ## P2 — Real defect / disorientation / honesty
 
-### UX-4 · Tarot tab hides the bottom nav (broken tab model)
+### UX-4 · ⛔ BY DESIGN (not a bug) · Tarot tab hides the bottom nav
+**Owner decision (2026-06-30): intentional** — the nav is hidden on Tarot on purpose, to keep the immersive reading distraction-free. No change. Original analysis below.
 `routes.js:14` (`tarot` → `hideBottomNav:true`). 1 of 4 primary tabs removes the tab bar; to leave Tarot the user must hit the in-page exit (goes *back*), and the Tarot tab can never show its active state. HIG expects the tab bar to persist on top-level destinations. **Fix:** keep nav on the Tarot landing/idle state, hide only once an immersive reading session starts (or demote Tarot from a tab).
 
 ### UX-5 ✅ FIXED · Auth "back" always dumps to /menu
