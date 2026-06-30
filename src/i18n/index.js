@@ -9,7 +9,37 @@ import { ref } from 'vue'
 import { messages as bundledMessages } from './messages.bundle.js'
 
 const DEFAULT_LOCALE = 'en'
-export const currentLocale = ref((typeof localStorage !== 'undefined' && localStorage.getItem('locale')) || DEFAULT_LOCALE)
+const SUPPORTED_LOCALES = ['en', 'uk']
+
+// First launch has no stored locale. Fall back to the device's preferred
+// language so a Ukrainian-locale phone opens in Ukrainian instead of English
+// (the user can still override it on onboarding or in Settings). navigator.languages
+// is available synchronously in the WKWebView, so there is no en→uk flash on the
+// first paint — unlike async @capacitor/device. The detected default is NOT
+// persisted: only an explicit setLocale() writes localStorage, so the app keeps
+// following the device until the user makes a real choice.
+function detectDeviceLocale() {
+  if (typeof navigator === 'undefined') return null
+  const prefs = Array.isArray(navigator.languages) && navigator.languages.length
+    ? navigator.languages
+    : [navigator.language]
+  for (const tag of prefs) {
+    if (!tag) continue
+    const base = String(tag).toLowerCase().split('-')[0]
+    if (SUPPORTED_LOCALES.includes(base)) return base
+  }
+  return null
+}
+
+function resolveInitialLocale() {
+  if (typeof localStorage !== 'undefined') {
+    const stored = localStorage.getItem('locale')
+    if (stored && SUPPORTED_LOCALES.includes(stored)) return stored
+  }
+  return detectDeviceLocale() || DEFAULT_LOCALE
+}
+
+export const currentLocale = ref(resolveInitialLocale())
 
 export function setLocale(locale) {
   const next = locale || DEFAULT_LOCALE

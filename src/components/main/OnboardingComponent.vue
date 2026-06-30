@@ -68,15 +68,61 @@
             {{ tt('onboardingPage.skip') }}
           </button>
         </div>
+
+        <button type="button" class="arcana-btn arcana-btn--secondary onboarding-langrow" @click="onOpenLanguage">
+          <q-icon name="language" size="18px" class="onboarding-langrow__icon" />
+          <span class="onboarding-langrow__label">{{ tt('language') }}</span>
+          <span class="onboarding-langrow__value">{{ languageLabel }}</span>
+          <q-icon name="expand_more" size="18px" class="onboarding-langrow__chevron" />
+        </button>
       </div>
     </div>
+
+    <!-- Language bottom sheet (mirrors Settings) -->
+    <q-dialog
+      v-model="languageSheet"
+      position="bottom"
+      transition-show="slide-up"
+      transition-hide="slide-down"
+      :transition-duration="440"
+      class="oracle-actions-dialog oracle-actions-dialog--opaque"
+    >
+      <section class="oracle-actions">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title">{{ tt('language') }}</div>
+
+        <div class="oracle-wheel">
+          <div class="oracle-wheel__window" aria-hidden="true"></div>
+          <div ref="languageWheelRef" class="oracle-wheel__scroll" @scroll.passive="onLanguageWheelScroll">
+            <div class="oracle-wheel__spacer"></div>
+            <button
+              v-for="(opt, index) in languageOptions"
+              :key="opt.value"
+              type="button"
+              class="oracle-wheel__item"
+              :class="{ 'oracle-wheel__item--active': index === selectedLanguageIndex }"
+              @click="onLanguageWheelItemTap(index)"
+            >
+              {{ opt.label }}
+            </button>
+            <div class="oracle-wheel__spacer"></div>
+          </div>
+        </div>
+
+        <div class="oracle-actions__footer">
+          <button type="button" class="arcana-btn arcana-btn--primary" @click="confirmLanguageWheel">
+            {{ tt('common.apply') }}
+          </button>
+        </div>
+      </section>
+    </q-dialog>
   </q-page>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { t, currentLocale } from 'src/i18n'
+import { t, currentLocale, setLocale } from 'src/i18n'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
 import { analytics } from 'src/services/analytics'
@@ -117,6 +163,64 @@ const displayInterestItems = computed(() => {
     isSelected: selectedSet.has(item.key),
   }))
 })
+
+// Language picker — mirrors the Settings wheel sheet so first-launch users can
+// switch language right on onboarding (the default is device-detected in i18n).
+const WHEEL_ITEM_HEIGHT = 44
+const languageSheet = ref(false)
+const selectedLanguageIndex = ref(0)
+const languageWheelRef = ref(null)
+let lastLanguageHapticAt = 0
+
+const languageOptions = computed(() => [
+  { value: 'en', label: tt('languages.en') },
+  { value: 'uk', label: tt('languages.uk') },
+])
+const languageLabel = computed(() => tt(`languages.${locale.value}`) || tt('languages.en'))
+
+const scrollLanguageWheelTo = (index, smooth) => {
+  const wheel = languageWheelRef.value
+  if (!wheel) return
+  wheel.scrollTo({ top: index * WHEEL_ITEM_HEIGHT, behavior: smooth ? 'smooth' : 'auto' })
+}
+
+const onOpenLanguage = () => {
+  void haptic()
+  selectedLanguageIndex.value = Math.max(
+    0,
+    languageOptions.value.findIndex((opt) => opt.value === locale.value),
+  )
+  languageSheet.value = true
+  void nextTick(() => scrollLanguageWheelTo(selectedLanguageIndex.value, false))
+}
+
+const onLanguageWheelScroll = () => {
+  const wheel = languageWheelRef.value
+  if (!wheel) return
+  const rawIndex = Math.round(wheel.scrollTop / WHEEL_ITEM_HEIGHT)
+  const nextIndex = Math.min(languageOptions.value.length - 1, Math.max(0, rawIndex))
+  if (nextIndex === selectedLanguageIndex.value) return
+  selectedLanguageIndex.value = nextIndex
+  const now = Date.now()
+  if (now - lastLanguageHapticAt > 80) {
+    void haptic()
+    lastLanguageHapticAt = now
+  }
+}
+
+const onLanguageWheelItemTap = (index) => {
+  selectedLanguageIndex.value = index
+  scrollLanguageWheelTo(index, true)
+  void haptic()
+}
+
+const confirmLanguageWheel = () => {
+  const opt = languageOptions.value[selectedLanguageIndex.value]
+  if (!opt) return
+  void haptic()
+  setLocale(opt.value)
+  languageSheet.value = false
+}
 
 const haptic = async (style = ImpactStyle.Light) => {
   if (!Capacitor.isNativePlatform()) return
@@ -586,6 +690,162 @@ onMounted(() => {
     min-height: 98px;
     gap: 14px;
   }
+}
+
+/* Language picker — same button shape as Continue/Skip; opens the wheel sheet. */
+.onboarding-langrow__icon {
+  color: rgba(180, 203, 229, 0.78);
+}
+
+.onboarding-langrow__label {
+  color: rgba(199, 217, 237, 0.62);
+  font-weight: 500;
+}
+
+.onboarding-langrow__value {
+  font-weight: 600;
+  color: #eef5ff;
+}
+
+.onboarding-langrow__chevron {
+  margin-left: -2px;
+  color: rgba(168, 191, 217, 0.6);
+}
+
+/* Bottom-sheet wheel — mirrored from SettingsComponent so the picker matches the app. */
+/*noinspection CssUnusedSymbol*/
+:deep(.oracle-actions-dialog .q-dialog__backdrop) {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/*noinspection CssUnusedSymbol*/
+:deep(.oracle-actions-dialog .q-dialog__inner) {
+  padding: 0;
+  align-items: flex-end;
+}
+
+:global(.oracle-actions-dialog--opaque .oracle-actions) {
+  background: #050d15;
+}
+
+.oracle-actions {
+  width: 100vw;
+  max-width: 100vw;
+  margin: 0 auto;
+  border-radius: 22px 22px 0 0;
+  padding: 8px 12px calc(env(safe-area-inset-bottom, 0px) + 24px);
+  box-shadow: 0 -16px 46px rgba(0, 0, 0, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  pointer-events: auto;
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  margin: 0 auto 10px;
+}
+
+.sheet-title {
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.74);
+  margin-bottom: 6px;
+}
+
+.oracle-wheel {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.oracle-wheel::before,
+.oracle-wheel::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 40px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.oracle-wheel::before {
+  top: 0;
+}
+
+.oracle-wheel::after {
+  bottom: 0;
+}
+
+.oracle-wheel__window {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 50%;
+  height: 44px;
+  transform: translateY(-50%);
+  border-radius: 9px;
+  border: 1px solid rgba(138, 161, 204, 0.16);
+  background: black;
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.46),
+    inset 0 1px 0 rgba(198, 218, 255, 0.13),
+    inset 0 -1px 0 rgba(68, 96, 141, 0.13),
+    inset 0 0 14px rgba(56, 82, 124, 0.1);
+  backdrop-filter: blur(6px) saturate(118%);
+  -webkit-backdrop-filter: blur(6px) saturate(118%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.oracle-wheel__scroll {
+  position: relative;
+  height: 152px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: y mandatory;
+  z-index: 3;
+  scrollbar-width: none;
+  touch-action: pan-y;
+  overscroll-behavior-y: contain;
+}
+
+.oracle-wheel__spacer {
+  height: 54px;
+}
+
+.oracle-wheel__item {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  height: 44px;
+  padding: 0 10px;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(231, 225, 211, 0.7);
+  font-size: 15px;
+  line-height: 1.2;
+  scroll-snap-align: center;
+  transition: color 140ms ease, transform 140ms ease;
+}
+
+.oracle-wheel__item--active {
+  color: rgba(244, 238, 227, 0.97);
+  transform: scale(1.01);
+}
+
+.oracle-wheel__scroll::-webkit-scrollbar {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
