@@ -98,6 +98,7 @@ test('loadHoroscopeRegistry bypasses cache when forceNetwork is true', async () 
   assert.deepEqual(saveCalls[0], {
     date: '2026-03-25',
     locale: 'en',
+    isEntitled: false,
     rows: [{ sign: 'leo', theme: 'energy', summary: 'network', detailed: 'network-full' }],
   })
 })
@@ -250,4 +251,40 @@ test('loadHoroscopeRegistry does not flag isEmpty when rows exist', async () => 
     }),
   })
   assert.equal(result.isEmpty, false)
+})
+
+test('loadHoroscopeRegistry re-fetches when a now-premium user has a stripped cache (A-4)', async () => {
+  const { loadHoroscopeRegistry } = await importModule('src/helpers/horoscopeContentCore.js')
+
+  // Cache written earlier while NON-entitled → premium love detail was stripped.
+  const strippedCache = {
+    date: '2026-03-25',
+    locale: 'uk',
+    isEntitled: false,
+    rows: [
+      { sign: 'aries', theme: 'energy', summary: 'E', detailed: 'Edetail' },
+      { sign: 'aries', theme: 'love', summary: 'L', detailed: '' },
+    ],
+  }
+  const selectCalls = []
+  const networkRows = [
+    { sign: 'aries', theme: 'energy', summary: 'E', detailed: 'Edetail' },
+    { sign: 'aries', theme: 'love', summary: 'L', detailed: 'Ldetail' },
+  ]
+
+  const result = await loadHoroscopeRegistry({
+    locale: 'uk',
+    today: '2026-03-25',
+    isEntitled: true, // now premium
+    loadLocal: async () => strippedCache,
+    saveLocal: async () => {},
+    selectHoroscopes: async (...args) => {
+      selectCalls.push(args)
+      return { data: networkRows, error: null }
+    },
+  })
+
+  assert.equal(result.source, 'network', 'must bypass the stripped cache and re-fetch')
+  assert.equal(selectCalls.length, 1)
+  assert.equal(result.registry.aries.love.detailed, 'Ldetail', 'premium love detail restored')
 })

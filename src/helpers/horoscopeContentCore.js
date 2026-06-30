@@ -101,6 +101,13 @@ export const loadHoroscopeRegistry = async ({
     if (
       local?.date === today &&
       local?.locale === locale &&
+      // Entitlement must match: a cache written while NON-entitled has the premium
+      // love/career detail stripped, and strip-on-read can only remove — never
+      // restore — it. So a now-premium user reading that cache would see empty paid
+      // themes forever (skeleton). Force a network re-fetch on mismatch. Old caches
+      // lack the field → Boolean(undefined)=false, so a premium user re-fetches once
+      // and a free user still hits. A-4.
+      Boolean(local?.isEntitled) === Boolean(isEntitled) &&
       Array.isArray(local?.rows) &&
       local.rows.length
     ) {
@@ -132,6 +139,7 @@ export const loadHoroscopeRegistry = async ({
   await saveLocal({
     date: today,
     locale,
+    isEntitled: Boolean(isEntitled),
     rows: registryToRows(registry),
   })
   return {
