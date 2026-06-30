@@ -142,7 +142,7 @@ test('premium copy stays aligned on compatibility preview and energy-theme wordi
   // Compare-table copy now lives in i18n (premiumPage.compareTable.*), not hardcoded
   // in the component. Assert the compatibility-row "free" wording there.
   assert.equal(messages.en.premiumPage.compareTable.compatibility.free, 'Preview only')
-  assert.equal(messages.uk.premiumPage.compareTable.compatibility.free, 'Лише preview')
+  assert.equal(messages.uk.premiumPage.compareTable.compatibility.free, 'Лише превʼю')
   assert.equal(
     messages.en.premiumPage.outcome.title,
     'One deeper daily reflection practice',

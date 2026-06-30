@@ -21,7 +21,7 @@ test('home focus today exposes source-backed and fallback states', () => {
 
   assert.match(source, /focusTodayResolvedSignKey\(\)\s*\{/)
   assert.match(source, /this\.normalizeZodiacKey\(this\.homeSignKey\) \|\|\s*this\.normalizeZodiacKey\(this\.horoscopeData\?\.signKey\)/s)
-  assert.match(source, /isFocusTodayCompact\(\)\s*\{/)
+  assert.match(source, /focusTodayHasFocus\(\)\s*\{/)
   assert.match(source, /focusTodayLine\(\)\s*\{/)
   assert.match(source, /if \(preview && this\.focusTodayResolvedSignKey\) \{\s*return this\.compactPreview\(this\.firstSentence\(preview\), 72\)/s)
   assert.match(source, /if \(!this\.focusTodayResolvedSignKey\) \{\s*return this\.tt\('landing\.focusToday\.fallbackMissingSign'\)/s)
