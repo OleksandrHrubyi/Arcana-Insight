@@ -1159,7 +1159,9 @@ async function shareResult() {
 
 function onBack() {
   void hapticSelect()
-  router.back()
+  // Guard shallow history (deep-link / push entry) so back never no-ops (UX-6).
+  if (typeof window !== 'undefined' && window.history.length > 1) router.back()
+  else router.replace({ name: 'arcana' })
 }
 
 /* saved connections persistence (local-first, on-device) */

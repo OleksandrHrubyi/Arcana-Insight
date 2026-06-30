@@ -234,7 +234,10 @@ export default {
 
     async goToMenu() {
       await this.hapticTap()
-      this.$router.push('/menu')
+      // Return to wherever the user came from (e.g. the paywall) instead of always
+      // dumping them in Menu; fall back to Menu only on a fresh/deep-link entry (UX-5).
+      if (typeof window !== 'undefined' && window.history.length > 1) this.$router.back()
+      else this.$router.push('/menu')
     },
 
     async onLogin() {

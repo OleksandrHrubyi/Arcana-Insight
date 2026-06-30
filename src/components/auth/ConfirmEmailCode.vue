@@ -138,7 +138,9 @@ export default {
     },
     goToMenu() {
       this.hapticTap();
-      this.$router.push('/menu');
+      // Return to origin instead of always dumping to Menu; Menu only as fallback (UX-5).
+      if (typeof window !== 'undefined' && window.history.length > 1) this.$router.back();
+      else this.$router.push('/menu');
     },
 
     async hapticTap() {
