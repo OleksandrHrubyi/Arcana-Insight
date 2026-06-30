@@ -146,7 +146,7 @@ export default {
         const idToken = result?.response?.identityToken
 
         if (!idToken) {
-          this.errorMessage = 'No identity token from Apple'
+          this.errorMessage = this.tt('errors.appleFailed')
           console.error('No identity token from Apple', result)
           this.logAuth('apple_missing_id_token')
           return
@@ -182,11 +182,11 @@ export default {
           if (nativeUser) {
             user = nativeUser
           } else if (error) {
-            this.errorMessage = `Apple login error: ${error.message || error.error_description || 'Unknown error'}`
+            this.errorMessage = this.tt('errors.appleFailed')
             console.error('Supabase Apple login error', error)
             return
           } else {
-            this.errorMessage = 'No session created after Apple login. Please try again.'
+            this.errorMessage = this.tt('errors.appleFailed')
             console.error('[LoginView] No session created after Apple login')
             this.logAuth('apple_no_session')
             return
@@ -223,7 +223,7 @@ export default {
         this.logAuth('apple_success_redirect')
         this.$router.push(resolveAuthRedirect(this.$route.query.redirect, '/'))
       } catch (err) {
-        this.errorMessage = `Apple login failed: ${err.message || err.toString()}`
+        this.errorMessage = this.tt('errors.appleFailed')
         console.error('Apple login failed', err)
         this.logAuth('apple_exception', err?.message || err?.toString())
       } finally {

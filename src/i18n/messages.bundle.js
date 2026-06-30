@@ -1080,6 +1080,7 @@ export const messages = {
 
     errors: {
       generic: 'Something went wrong. Please try again.',
+      appleFailed: 'Apple Sign-In didn’t work. Please try again.',
       invalidEmail: 'Enter a valid email address.',
       invalidName: 'Enter at least 2 characters for your name.',
       invalidDate: 'Enter a valid date (DD.MM.YYYY).',
@@ -3305,6 +3306,7 @@ export const messages = {
 
     errors: {
       generic: 'Щось пішло не так. Спробуйте ще раз.',
+      appleFailed: 'Вхід через Apple не вдався. Спробуйте ще раз.',
       invalidEmail: 'Введіть коректний email.',
       invalidName: "Введіть ім'я (мінімум 2 символи).",
       invalidDate: 'Введіть коректну дату (ДД.ММ.РРРР).',
