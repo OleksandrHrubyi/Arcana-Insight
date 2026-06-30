@@ -92,7 +92,7 @@
                   :class="`compat-savedconn__score--${conn.tier}`"
                 >{{ conn.score }}</span>
               </button>
-              <button type="button" class="compat-savedconn__del" :aria-label="tt('common.close')" @click="deleteConnection(conn.id)">
+              <button type="button" class="compat-savedconn__del" :aria-label="tt('common.close')" @click="askDeleteConnection(conn.id)">
                 <q-icon name="close" size="13px" />
               </button>
             </div>
@@ -437,6 +437,18 @@
         </button>
       </div>
     </q-dialog>
+
+    <!-- Confirm before permanently removing a saved person (UX-14) -->
+    <q-dialog v-model="deleteConnDialog">
+      <div class="compat-confirm">
+        <div class="compat-confirm__title">{{ tt('compatibilityPage.deleteConnectionTitle') }}</div>
+        <p class="compat-confirm__text">{{ tt('compatibilityPage.deleteConnectionText') }}</p>
+        <div class="compat-confirm__actions">
+          <q-btn flat no-caps class="compat-confirm__btn" :label="tt('common.cancel')" @click="deleteConnDialog = false" />
+          <q-btn flat no-caps class="compat-confirm__btn compat-confirm__btn--delete" :label="tt('common.delete')" @click="confirmDeleteConnection" />
+        </div>
+      </div>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -506,6 +518,10 @@ const result = ref(null)
 const connections = ref([])
 const displayScore = ref(0)
 const weather = ref([])
+
+// Delete-connection confirm (UX-14): deleting a saved person was instant + unguarded.
+const deleteConnDialog = ref(false)
+const pendingDeleteConnId = ref('')
 
 // Save-connection sheet state.
 const saveSheet = ref(false)
@@ -987,7 +1003,17 @@ async function confirmSaveConnection() {
   void hapticSelect()
 }
 
-async function deleteConnection(id) {
+function askDeleteConnection(id) {
+  pendingDeleteConnId.value = id
+  deleteConnDialog.value = true
+  void hapticSelect()
+}
+
+async function confirmDeleteConnection() {
+  const id = pendingDeleteConnId.value
+  deleteConnDialog.value = false
+  pendingDeleteConnId.value = ''
+  if (!id) return
   connections.value = connections.value.filter((c) => c.id !== id)
   await persistConnections()
   await refreshReminderIfOn()
@@ -2337,6 +2363,48 @@ onBeforeUnmount(() => {
   flex-direction: column;
   align-items: center;
   gap: 12px;
+}
+
+/* Delete-connection confirm (UX-14). pointer-events:auto so taps on the custom
+   (non-QCard) dialog content don't fall through to the backdrop. */
+.compat-confirm {
+  width: min(340px, 88vw);
+  background: #0a131d;
+  border-radius: 18px;
+  padding: 20px;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.compat-confirm__title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.compat-confirm__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(214, 225, 242, 0.78);
+}
+
+.compat-confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.compat-confirm__btn {
+  color: rgba(214, 225, 242, 0.86);
+}
+
+.compat-confirm__btn--delete {
+  color: #ff9b9b;
 }
 
 .compat-dobsheet__handle {
