@@ -166,7 +166,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { t, currentLocale } from 'src/i18n'
+import { t, currentLocale, pluralForm } from 'src/i18n'
 import { useQuasar } from 'quasar'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
@@ -342,7 +342,9 @@ const getPlanOfferLabel = (planId) => {
   const trial = entry?.freeTrial
   if (trial) {
     return trial.days
-      ? tt('premiumPage.billing.freeTrialDays').replace('{days}', String(trial.days))
+      ? tt('premiumPage.billing.freeTrialDays')
+          .replace('{days}', String(trial.days))
+          .replace('{noun}', pluralForm(locale.value, trial.days, tt('landing.dayForms')))
       : tt('premiumPage.billing.freeTrial')
   }
   return String(entry?.offerLabel || '').trim()

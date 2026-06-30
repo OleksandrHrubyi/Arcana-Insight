@@ -46,6 +46,31 @@ test('i18n translation resolves value, supports fallback and returns key for unk
   }
 })
 
+test('pluralForm picks the correct Ukrainian (one/few/many) and English forms', async () => {
+  const env = installBrowserEnv({ locale: 'uk' })
+  try {
+    const mod = await importFresh('src/i18n/index.js')
+    const uk = { one: 'карта', few: 'карти', many: 'карт', other: 'карт' }
+
+    // Ukrainian three-form rule.
+    for (const n of [1, 21, 31, 101]) assert.equal(mod.pluralForm('uk', n, uk), 'карта')
+    for (const n of [2, 3, 4, 22, 34]) assert.equal(mod.pluralForm('uk', n, uk), 'карти')
+    for (const n of [0, 5, 11, 12, 13, 14, 15, 25, 100]) assert.equal(mod.pluralForm('uk', n, uk), 'карт')
+
+    // English (and unknown locales) fall back to one/other.
+    const en = { one: 'card', few: 'cards', many: 'cards', other: 'cards' }
+    assert.equal(mod.pluralForm('en', 1, en), 'card')
+    for (const n of [0, 2, 5, 21]) assert.equal(mod.pluralForm('en', n, en), 'cards')
+    assert.equal(mod.pluralForm('zz', 1, en), 'card')
+
+    // Real bundle key sets resolve to non-empty forms.
+    assert.equal(mod.pluralForm('uk', 1, mod.t('uk', 'cardsPage.cardForms')), 'карта')
+    assert.equal(mod.pluralForm('uk', 3, mod.t('uk', 'landing.dayForms')), 'дні')
+  } finally {
+    env.restore()
+  }
+})
+
 // QA findings #20/#21: messages were lazy-loaded on idle, so t() returned raw keys
 // (nav.home, appName, dailyPage.title, …) on first paint until the chunk resolved.
 // They are now statically bundled — t() must resolve on the very FIRST call with no

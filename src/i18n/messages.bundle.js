@@ -1160,7 +1160,8 @@ export const messages = {
     cardsPage: {
       title: 'Card library',
       subtitle: 'Tap a card to open its meaning',
-      count: 'Showing {count} cards',
+      count: 'Showing {count} {noun}',
+      cardForms: { one: 'card', few: 'cards', many: 'cards', other: 'cards' },
       searchPlaceholder: 'Search cards',
       clearSearch: 'Clear search',
       detailTitle: 'Card meaning',
@@ -3387,7 +3388,8 @@ export const messages = {
     cardsPage: {
       title: 'Бібліотека карт',
       subtitle: 'Натисни на карту, щоб відкрити значення',
-      count: 'Показано {count} карт',
+      count: 'Показано {count} {noun}',
+      cardForms: { one: 'карта', few: 'карти', many: 'карт', other: 'карт' },
       searchPlaceholder: 'Пошук карт',
       clearSearch: 'Очистити пошук',
       detailTitle: 'Значення карти',
@@ -4247,7 +4249,7 @@ export const messages = {
         pricePending: 'Ціна з App Store.',
         perMonth: '≈ {price}/міс',
         freeTrial: 'Безкоштовний період',
-        freeTrialDays: '{days} днів безкоштовно',
+        freeTrialDays: '{days} {noun} безкоштовно',
         unavailableHint: 'Покупки недоступні на цьому пристрої.',
         footnote:
           'Оплата списується з твого Apple ID при підтвердженні покупки. Підписка поновлюється автоматично, якщо не скасувати щонайменше за 24 години до кінця поточного періоду; кошти за поновлення списуються протягом 24 годин до завершення періоду. Керувати чи скасувати можна будь-коли в налаштуваннях App Store.',

@@ -139,7 +139,7 @@
 <script setup>
 import { computed, ref, watch, onBeforeUnmount, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { t, currentLocale } from 'src/i18n'
+import { t, currentLocale, pluralForm } from 'src/i18n'
 import { loadTarotData } from 'src/helpers/tarotData'
 import { loadTarotCardsSnapshot } from 'src/helpers/tarotDataSnapshotCore.js'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
@@ -206,7 +206,11 @@ const getCardText = (source) => {
   return text.split('\n\n').filter(Boolean)
 }
 
-const cardsCountLabel = computed(() => formatText(tt('cardsPage.count'), { count: filteredCards.value.length }))
+const cardsCountLabel = computed(() => {
+  const count = filteredCards.value.length
+  const noun = pluralForm(locale.value, count, tt('cardsPage.cardForms'))
+  return formatText(tt('cardsPage.count'), { count, noun })
+})
 
 const formatText = (template, vars) => {
   if (!template) return ''

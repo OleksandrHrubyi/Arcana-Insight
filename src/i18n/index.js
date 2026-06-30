@@ -52,6 +52,24 @@ export function getLocale() {
   return currentLocale.value || DEFAULT_LOCALE
 }
 
+// Picks the correct plural form of a noun for a count. Ukrainian needs three
+// forms — one / few / many — chosen by the Slavic CLDR rule (e.g. 1 карта,
+// 2 карти, 5 карт); English and any other locale fall back to one/other.
+// `forms` is a {one, few, many, other} object such as the dayForms/cardForms
+// key sets in messages.bundle.js.
+export function pluralForm(locale, n, forms) {
+  forms = forms || {}
+  const num = Math.abs(Number(n) || 0)
+  if (locale === 'uk') {
+    const mod10 = num % 10
+    const mod100 = num % 100
+    if (mod10 === 1 && mod100 !== 11) return forms.one || forms.many || ''
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return forms.few || forms.many || ''
+    return forms.many || ''
+  }
+  return num === 1 ? forms.one || '' : forms.other || forms.many || ''
+}
+
 export const messages = bundledMessages
 
 export function t(locale, key) {
