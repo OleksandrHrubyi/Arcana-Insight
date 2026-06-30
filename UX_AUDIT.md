@@ -103,13 +103,13 @@ DeleteAccount confirm (persistent ✓), Account edit-name + DOB sheets (handle-o
 ### UX-11 ✅ FIXED · Settings shows raw "No permission / no token" toast
 `SettingsComponent.vue:656`, key `notifications.noPermission`. "no token" is meaningless. **Fix:** "Notifications are off. Enable them for Arcana Insight in iOS Settings to get daily reminders."
 
-### UX-12 · Home hero can sit as an empty skeleton with a working CTA
+### UX-12 ✅ FIXED · Home hero can sit as an empty skeleton with a working CTA
 `LandingScene.vue:1361-1382` — daily-card load failure only `console.warn`s; `dailyCardData` stays null → hero shows an unlabeled skeleton, and the reveal CTA still flips to it. No retry/error on Home. **Fix:** inline retry (reuse `common.retry`) or suppress the reveal until data exists. (Recovery only via tapping through to `/daily`.)
 
-### UX-13 · Tarot empty card pool → stuck "cards ready" scene with no cards
+### UX-13 ✅ FIXED · Tarot empty card pool → stuck "cards ready" scene with no cards
 `TarotOraclePage.vue` — `loadCardPoolSafe` (701) only warns; no guard in `touchDeck`/`startSpreadScene`/`drawCards` for an empty pool → "reading ready" prompt with zero cards and `isReadingComplete` never true → interpretation never appears, only the exit arrow. Low probability (local bundle) but severe/silent. **Fix:** if pool empty, block draw + show error+retry (`loadCardPoolSafe`) or route home.
 
-### UX-14 · Compatibility: delete a saved person — instant, no confirm, sub-44px target
+### UX-14 ✅ FIXED · Compatibility: delete a saved person — instant, no confirm, sub-44px target
 `CompatibilityPage.vue:990` (`deleteConnection`) fires directly from a 38px `×` flush against the open button. A mis-tap permanently erases a saved person (name + birth data), no undo — inconsistent with Saved Readings (which confirms). **Fix:** confirm dialog or undo toast + 44px hit target.
 
 ### UX-15 · UK ти/ви register is inconsistent (machine-translated feel)
