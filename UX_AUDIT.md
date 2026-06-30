@@ -88,10 +88,10 @@ DeleteAccount confirm (persistent ✓), Account edit-name + DOB sheets (handle-o
 ### UX-6 ✅ FIXED · Five back buttons have no fallback (bare `router.back()`)
 `SavedReadingsPage.vue:392`, `CompatibilityPage.vue:1162`, `CardLibraryPage.vue:271`, `ZodiacGuideComponent.vue:1259`, `FaqSupportComponent.vue:89`. Every other focused screen guards `history.length>1 ? back() : home`. On a deep-link/first-nav entry these silently no-op (back looks broken). Not a hard dead-end (these keep the nav) but inconsistent. **Fix:** one shared guarded-back helper everywhere.
 
-### UX-7 · OTP edit-email pencil → /login even during signup (typo dead-end)
+### UX-7 ✅ FIXED · OTP edit-email pencil → /login even during signup (typo dead-end)
 `ConfirmEmailCode.vue:239` always links to `/login`. A new user fixing a mistyped email lands on Login, loses name + signup intent; re-entering there → `shouldCreateUser:false` → "not registered" loop. **Fix:** route edit by mode (`/sign-up` when signing up), preserving `name`/`redirect`.
 
-### UX-8 · Onboarding lets you pick more than the framed max ("6/3", progress 200%)
+### UX-8 ✅ FIXED · Onboarding lets you pick more than the framed max ("6/3", progress 200%)
 `OnboardingComponent.vue` counter `selectedCount/3`, `progressWidth=(selectedCount/3)*100`, `toggleInterest` has no cap; Settings shows the same interests with no "/3" framing. **Fix:** enforce a 3-item cap OR drop the "/3" framing + 3-based progress so the two screens agree.
 
 ### UX-9 ✅ FIXED · Apple Sign-In errors are raw, untranslated, developer copy
