@@ -75,6 +75,21 @@ export default {
       return (this.$route.query.mode || '').toString() === 'signup';
     },
 
+    // Edit-email link must return to the ORIGINATING screen (sign-up vs login),
+    // preserving the entered fields — routing a sign-up to /login dead-ended typo
+    // correction (shouldCreateUser:false → "not registered" loop). UX-7.
+    editEmailTarget() {
+      const query = {};
+      if (this.email) query.email = this.email;
+      if (this.name) query.name = this.name;
+      if (this.dateOfBirth) query.dateOfBirth = this.dateOfBirth;
+      if (this.cityOfBirth) query.cityOfBirth = this.cityOfBirth;
+      if (this.country) query.country = this.country;
+      const redirect = this.$route.query.redirect;
+      if (redirect) query.redirect = String(redirect);
+      return { path: this.isSignUp ? '/sign-up' : '/login', query };
+    },
+
 
   },
 
@@ -245,7 +260,7 @@ export default {
       <div class="login-panel">
         <div class="email">
           {{ email }}
-          <router-link to="/login" class="row items-center q-ml-md email-edit" @click="hapticTap">
+          <router-link :to="editEmailTarget" class="row items-center q-ml-md email-edit" @click="hapticTap">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13"

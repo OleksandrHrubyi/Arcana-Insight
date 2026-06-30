@@ -104,11 +104,12 @@ const interestItems = [
   { key: 'future', icon: 'travel_explore', labelKey: 'onboardingPage.interests.future' },
 ]
 
+const MAX_INTERESTS = 3
 const selectedInterests = ref([])
 const isNavigating = ref(false)
 const continueFeedback = ref(false)
 const selectedCount = computed(() => selectedInterests.value.length)
-const progressWidth = computed(() => (selectedCount.value / 3) * 100)
+const progressWidth = computed(() => (selectedCount.value / MAX_INTERESTS) * 100)
 const displayInterestItems = computed(() => {
   const selectedSet = new Set(selectedInterests.value)
   return interestItems.map((item) => ({
@@ -134,6 +135,12 @@ const toggleInterest = async (key) => {
     selectedInterests.value.splice(index, 1)
     action = 'deselect'
   } else {
+    // Respect the "X/3" framing — block the 4th+ selection so the counter and the
+    // progress bar can't overflow (was "6/3" at 200% fill). UX-8.
+    if (selectedInterests.value.length >= MAX_INTERESTS) {
+      void haptic()
+      return
+    }
     selectedInterests.value.push(key)
   }
 
