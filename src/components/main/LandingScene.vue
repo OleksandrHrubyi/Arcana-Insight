@@ -176,7 +176,7 @@
           <div v-if="focusTodaySignLabel" class="focus-today__meta">
             <span class="focus-today__sign-chip">{{ focusTodaySignLabel }}</span>
           </div>
-          <p class="focus-today__body" :class="{ 'focus-today__body--prompt': !focusTodayHasFocus }">
+          <p class="focus-today__body">
             {{ focusTodayLine }}
           </p>
           <div class="focus-today__footer">
@@ -469,13 +469,6 @@ export default {
       )
     },
 
-    focusTodayHasFocus() {
-      // True only when we have a real horoscope teaser for a resolved sign. The
-      // fallback states (no sign / sign but no text) are instructions, so they
-      // render in full instead of being clamped like the teaser.
-      return !!(String(this.horoscopeData?.preview || '').trim() && this.focusTodayResolvedSignKey)
-    },
-
     focusTodayTitle() {
       return this.tt('landing.focusToday.title')
     },
@@ -488,7 +481,9 @@ export default {
     focusTodayLine() {
       const preview = String(this.horoscopeData?.preview || '').trim()
       if (preview && this.focusTodayResolvedSignKey) {
-        return this.compactPreview(this.firstSentence(preview), 72)
+        // Show the full first sentence as the teaser — no mid-word char cut.
+        // The card is a preview of the horoscope's full detailed reading.
+        return this.firstSentence(preview)
       }
 
       if (!this.focusTodayResolvedSignKey) {
@@ -1963,16 +1958,12 @@ export default {
   color: rgba(240, 245, 252, 0.9);
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  /* Generous safety clamp so a real first-sentence teaser (or the fallback
+     prompt) always shows in full; only pathologically long text is trimmed,
+     and then cleanly at a line end rather than mid-word. */
+  -webkit-line-clamp: 4;
   overflow: hidden;
   text-wrap: pretty;
-}
-
-.focus-today__body--prompt {
-  /* Fallback prompts are instructions — never clamp them mid-word. */
-  display: block;
-  -webkit-line-clamp: unset;
-  overflow: visible;
 }
 
 .focus-today__footer {
@@ -2917,12 +2908,7 @@ export default {
     padding: 8px 11px 9px;
   }
   .focus-today__body {
-    -webkit-line-clamp: 1;
     font-size: 12px;
-  }
-  .focus-today__body--prompt {
-    -webkit-line-clamp: unset;
-    font-size: 13px;
   }
   .focus-today__footer {
     padding-top: 4px;

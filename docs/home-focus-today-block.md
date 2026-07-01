@@ -80,9 +80,15 @@ For the chosen theme:
 1. use `summary`
 2. if `summary` is empty, use `detailed`
 3. take the first sentence
-4. compress it to a mobile-safe single line
+4. show that first sentence in FULL — do not char-clamp it mid-word
 
-The home block shows a teaser, not a full reading.
+The home block shows a teaser (one full sentence), not a full reading. The full
+multi-paragraph reading still lives on the Horoscope screen (`detailed`).
+
+Decided 2026-07-01 (field-reported): an earlier version cut the teaser to 72
+chars, which truncated mid-word ("…у власному те…") and read as broken. The
+sentence is short enough to show whole; a generous CSS line-clamp (4 lines) is
+the only safety net, and it trims cleanly at a line end, never mid-word.
 
 ## Copy Shape
 

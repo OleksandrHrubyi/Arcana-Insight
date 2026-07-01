@@ -21,9 +21,10 @@ test('home focus today exposes source-backed and fallback states', () => {
 
   assert.match(source, /focusTodayResolvedSignKey\(\)\s*\{/)
   assert.match(source, /this\.normalizeZodiacKey\(this\.homeSignKey\) \|\|\s*this\.normalizeZodiacKey\(this\.horoscopeData\?\.signKey\)/s)
-  assert.match(source, /focusTodayHasFocus\(\)\s*\{/)
   assert.match(source, /focusTodayLine\(\)\s*\{/)
-  assert.match(source, /if \(preview && this\.focusTodayResolvedSignKey\) \{\s*return this\.compactPreview\(this\.firstSentence\(preview\), 72\)/s)
+  // Teaser shows the full first sentence (no mid-word char cut); fallbacks show
+  // the full instruction. The body is never clamped mid-word (see focus-today__body).
+  assert.match(source, /if \(preview && this\.focusTodayResolvedSignKey\) \{[\s\S]*?return this\.firstSentence\(preview\)/)
   assert.match(source, /if \(!this\.focusTodayResolvedSignKey\) \{\s*return this\.tt\('landing\.focusToday\.fallbackMissingSign'\)/s)
   assert.match(source, /return this\.tt\('landing\.focusToday\.fallbackKnownSign'\)/)
 })
