@@ -176,6 +176,8 @@
           </div>
         </article>
       </transition-group>
+
+      <p class="zodiac-disclaimer">{{ tt('common.disclaimer') }}</p>
     </div>
   </q-page>
 </template>
@@ -1854,6 +1856,16 @@ onMounted(() => {
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin-top: 2px;
+}
+
+.zodiac-disclaimer {
+  margin: 16px auto calc(env(safe-area-inset-bottom) + 8px);
+  max-width: 320px;
+  padding: 0 16px;
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.4;
+  color: rgba(200, 206, 220, 0.48);
 }
 
 .action-btn {

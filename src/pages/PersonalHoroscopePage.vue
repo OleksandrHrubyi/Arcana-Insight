@@ -62,6 +62,7 @@
             <div class="personal-section__label">{{ section.label }}</div>
             <div class="personal-section__text">{{ section.text }}</div>
           </article>
+          <p class="personal-disclaimer">{{ tt('common.disclaimer') }}</p>
         </div>
 
         <div v-else class="personal-panel personal-panel--center personal-start">
@@ -691,6 +692,15 @@ onMounted(async () => {
 .personal-reading {
   display: grid;
   gap: 14px;
+}
+
+.personal-disclaimer {
+  margin: 4px 0 0;
+  padding: 0 8px;
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.4;
+  color: rgba(200, 206, 220, 0.5);
 }
 
 .personal-section--intro {

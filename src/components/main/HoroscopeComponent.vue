@@ -231,6 +231,8 @@
             </q-tab-panel>
           </q-tab-panels>
 
+          <div class="horoscope-disclaimer">{{ tt('common.disclaimer') }}</div>
+
           <div class="horoscope-controls">
             <div class="dots">
               <button
@@ -2548,6 +2550,16 @@ export default {
   align-items: center;
   justify-content: center;
   padding-top: 4px;
+}
+
+.horoscope-disclaimer {
+  margin: 10px auto 2px;
+  max-width: 300px;
+  padding: 0 16px;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1.35;
+  color: rgba(200, 206, 220, 0.42);
 }
 
 .horoscope-controls-actions {

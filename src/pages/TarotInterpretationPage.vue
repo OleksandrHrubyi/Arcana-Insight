@@ -103,6 +103,8 @@
           {{ premiumCta }}
         </button>
       </section>
+
+      <p class="interpret-disclaimer">{{ tt('common.disclaimer') }}</p>
     </section>
 
     <section v-else class="interpret-empty">
@@ -593,6 +595,14 @@ onMounted(() => {
   font-size: 14px;
   line-height: 1.6;
   color: rgba(236, 238, 244, 0.92);
+}
+
+.interpret-disclaimer {
+  margin: 18px 0 0;
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: center;
+  color: rgba(200, 206, 220, 0.5);
 }
 
 .interpret-upgrade {
