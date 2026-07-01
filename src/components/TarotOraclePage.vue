@@ -2176,7 +2176,7 @@ watch(actionsSheetOpen, (open) => {
       void Haptics.selectionStart().catch(() => {})
     }
     schedule(40, () => {
-      alignWheelToIndex(getFirstEnabledIndex(), 'auto')
+      alignWheelToIndex(getDefaultWheelIndex(), 'auto')
     })
     return
   }
@@ -2193,7 +2193,7 @@ watch(choices, (items) => {
   }
 
   const next = Math.min(selectedWheelIndex.value, items.length - 1)
-  const fallback = items[next] && !items[next].disabled ? next : getFirstEnabledIndex()
+  const fallback = items[next] && !items[next].disabled ? next : getDefaultWheelIndex()
   selectedWheelIndex.value = fallback
 
   if (actionsSheetOpen.value) {
@@ -2230,6 +2230,12 @@ const getFirstEnabledIndex = () => {
   const index = choices.value.findIndex((item) => !item.disabled)
   return index === -1 ? 0 : index
 }
+
+// On the question step the wheel should park on "Confirm question" (index 0) by
+// default and stay visibly disabled until the question is long enough — instead
+// of skipping ahead to the first ENABLED row ("Back").
+const getDefaultWheelIndex = () =>
+  stage.value === 'question_input' ? 0 : getFirstEnabledIndex()
 
 const alignWheelToIndex = (index, behavior = 'smooth') => {
   const target = wheelRef.value
@@ -3083,13 +3089,30 @@ onBeforeUnmount(() => {
 .oracle-question {
   width: 100%;
   margin: 0 0 6px;
-  border: 1px solid var(--oracle-border-strong);
+  min-height: 60px;
+  border: 1px solid rgba(214, 192, 146, 0.44);
   border-radius: 12px;
-  padding: 10px 11px;
-  background: linear-gradient(180deg, var(--oracle-surface-top), var(--oracle-surface-bottom));
+  padding: 12px;
+  background: rgba(24, 22, 28, 0.82);
   color: var(--oracle-text-main);
-  box-shadow: inset 0 0 0 1px rgba(245, 216, 150, 0.05);
+  font-size: 15px;
+  line-height: 1.35;
+  caret-color: rgba(232, 208, 150, 0.95);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 3px 12px rgba(0, 0, 0, 0.3);
   resize: none;
+  -webkit-appearance: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.oracle-question:focus {
+  outline: none;
+  border-color: rgba(232, 208, 150, 0.85);
+  background: rgba(30, 27, 34, 0.9);
+  box-shadow:
+    0 0 0 3px rgba(210, 180, 120, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .oracle-question-wrap {
