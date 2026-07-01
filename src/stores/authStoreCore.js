@@ -13,6 +13,13 @@ const clearAccountScopedLocalState = () => {
     localStorage.removeItem('profile_cache_v1')
     localStorage.removeItem('arcana_free_ai_tarot_used_v1')
     localStorage.removeItem('arcana_free_tarot_daily_v1')
+    // Saved compatibility connections hold OTHER PEOPLE's names + birth dates +
+    // cities. The key is global (not user-scoped), so on a shared device the next
+    // account would see the previous user's saved people (PII bleed + an Apple
+    // data-handling concern). Clear it on sign-out too.
+    localStorage.removeItem('arcana_compatibility_connections_v1')
+    // Reward inventory is the signed-in user's own entitlement/reward state.
+    localStorage.removeItem('arcana_auth_reward_inventory_cache_v1')
   } catch {
     // ignore if localStorage unavailable
   }

@@ -13,6 +13,8 @@ test('clearUser clears account-scoped local flags but leaves unrelated state', a
     profile_cache_v1: '{"id":"account-a"}',
     arcana_free_ai_tarot_used_v1: '1',
     arcana_free_tarot_daily_v1: '2026-06-25',
+    arcana_compatibility_connections_v1: '[{"name":"Alex","dob":"1990-01-01"}]',
+    arcana_auth_reward_inventory_cache_v1: '{"tokens":0}',
     locale: 'uk',
     'arcana-onboarding-complete': 'true',
   })
@@ -25,6 +27,10 @@ test('clearUser clears account-scoped local flags but leaves unrelated state', a
     assert.equal(env.localStorage.getItem('arcana_free_ai_tarot_used_v1'), null)
     assert.equal(env.localStorage.getItem('arcana_free_tarot_daily_v1'), null)
     assert.equal(env.localStorage.getItem('profile_cache_v1'), null)
+    // A1: saved compatibility connections (other people's PII) + reward inventory
+    // must not survive a sign-out on a shared device.
+    assert.equal(env.localStorage.getItem('arcana_compatibility_connections_v1'), null)
+    assert.equal(env.localStorage.getItem('arcana_auth_reward_inventory_cache_v1'), null)
     // Unrelated, non-account-scoped keys must survive a sign-out.
     assert.equal(env.localStorage.getItem('locale'), 'uk')
     assert.equal(env.localStorage.getItem('arcana-onboarding-complete'), 'true')
