@@ -360,6 +360,10 @@ export const purchasePremiumPlan = async (planId) => {
       available: true,
       reason: '',
       cancelled: false,
+      // The StoreKit transaction completed (no throw). `purchased` stays true even
+      // when no entitlement resolves (product/entitlement-id mismatch or slow RC
+      // sync) so the UI can avoid a misleading "purchase failed" after a charge.
+      purchased: true,
       ...status,
       customerInfo,
     }

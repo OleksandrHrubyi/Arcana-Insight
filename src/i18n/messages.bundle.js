@@ -2049,6 +2049,7 @@ export const messages = {
           cancelled: 'Purchase cancelled.',
           restored: 'Purchase restored.',
           noActive: 'No active purchases found.',
+          pendingEntitlement: 'Payment went through, but Premium isn’t active yet. Tap “Restore Purchases” in a moment — if it still doesn’t unlock, contact support.',
         },
         monthly: {
           title: 'Monthly plan',
@@ -4279,6 +4280,7 @@ export const messages = {
           cancelled: 'Покупку скасовано.',
           restored: 'Покупку відновлено.',
           noActive: 'Активних покупок не знайдено.',
+          pendingEntitlement: 'Оплата пройшла, але Premium ще не активний. За хвилину натисни «Відновити покупки» — якщо не відкриється, звернись у підтримку.',
         },
         monthly: {
           title: 'Місячний план',

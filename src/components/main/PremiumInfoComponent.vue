@@ -559,6 +559,23 @@ const onPurchase = async () => {
       return
     }
 
+    // B1: the StoreKit transaction completed but no entitlement resolved
+    // (product/entitlement-id mismatch or a slow RC sync). Never show a generic
+    // "purchase failed" after a charge — tell the user it may already be active and
+    // to Restore, so they don't feel silently charged with nothing.
+    if (result.purchased && !result.hasPremium) {
+      markBillingReady()
+      logPaywallEvent(PAYWALL_FUNNEL_EVENTS.purchaseError, { reason: 'no_entitlement' })
+      $q.notify({
+        message: tt('premiumPage.billing.results.pendingEntitlement'),
+        color: 'dark',
+        textColor: 'white',
+        position: 'bottom',
+        timeout: 7000,
+      })
+      return
+    }
+
     markBillingReady()
     logPaywallEvent(PAYWALL_FUNNEL_EVENTS.purchaseError, {
       reason: String(result.reason || 'unknown'),
