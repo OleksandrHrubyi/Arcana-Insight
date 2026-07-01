@@ -40,6 +40,9 @@ const routes = [
   {
     path: '/:catchAll(.*)*',
     component: () => import('src/pages/ErrorNotFound.vue'),
+    // A bad URL must land on 404, not bounce a not-yet-onboarded user into the
+    // onboarding gate (N3).
+    meta: { allowWithoutOnboarding: true },
   },
 ];
 
