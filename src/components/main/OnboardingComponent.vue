@@ -58,7 +58,7 @@
           type="button"
           class="onboarding-continue"
           :class="{ 'onboarding-continue--feedback': continueFeedback }"
-          :disabled="isNavigating"
+          :disabled="isNavigating || selectedCount === 0"
           @click="continueNext"
         >
           {{ tt('onboardingPage.continue') }}
