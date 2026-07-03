@@ -312,6 +312,10 @@ export default {
       isPreloaded: false,
       astroToday: null,
       dailyStreak: 0,
+      // N1: bumped on foreground so time-based greeting/date computeds recompute;
+      // homeDayKey detects a midnight rollover while backgrounded.
+      resumeTick: 0,
+      homeDayKey: '',
       authStore: null,
       cycleTimeout: null,
       phraseQueue: [],
@@ -401,6 +405,7 @@ export default {
     },
 
     todayDateLabel() {
+      void this.resumeTick // recompute on foreground (N1)
       try {
         const d = this.qaNow || new Date()
         const fmt = new Intl.DateTimeFormat(this.locale === 'uk' ? 'uk-UA' : 'en-US', {
@@ -415,6 +420,7 @@ export default {
     },
 
     greetingLabel() {
+      void this.resumeTick // recompute on foreground (N1)
       const hour = (this.qaNow || new Date()).getHours()
       if (hour < 5) return this.tt('landing.greetings.night')
       if (hour < 12) return this.tt('landing.greetings.morning')
@@ -726,6 +732,11 @@ export default {
       this.introSequenceComplete = true
     }
 
+    this.homeDayKey = today
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', this.onHomeResume, { passive: true })
+    }
+
     const scheduleStartupWork = () => {
       this.landingContentFrameId = null
       void this.loadLandingContent()
@@ -746,6 +757,9 @@ export default {
   },
 
   beforeUnmount() {
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.onHomeResume)
+    }
     clearInterval(this.lettersTimer)
     clearInterval(this.hideTimer)
     clearTimeout(this.revealTimeout)
@@ -1344,6 +1358,25 @@ export default {
       if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return 'aquarius'
       if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) return 'pisces'
       return ''
+    },
+
+    // N1: home was only computed on mount, so after a long background / past
+    // midnight it showed yesterday's greeting, date, streak and daily progress
+    // until a remount. Refresh on foreground (Menu already does this).
+    onHomeResume() {
+      if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return
+      if (this.qaHomeConfig) return
+      this.resumeTick += 1
+      this.dailyStreak = Math.max(
+        readDailyStreak(DAILY_ACTIVITY_KEYS.dailyCard).current,
+        readDailyStreak(DAILY_ACTIVITY_KEYS.horoscope).current,
+        readDailyStreak(DAILY_ACTIVITY_KEYS.tarot).current,
+      )
+      const today = typeof window !== 'undefined' ? localISODate() : ''
+      const dayRolled = Boolean(today) && today !== this.homeDayKey
+      if (dayRolled) this.homeDayKey = today
+      void this.loadLandingContent()
+      if (dayRolled) void this.computeAstro()
     },
 
     async loadLandingContent() {
