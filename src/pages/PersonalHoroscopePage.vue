@@ -418,10 +418,16 @@ function goToBirthDateSetup() {
 // The AI reading body is locale-specific. If the user switches app language
 // while on this screen, regenerate so the text matches the new language
 // (mirrors the daily horoscope screen's locale watcher).
-watch(locale, () => {
-  if (hasPremiumAccess.value && hasBirthDate.value && !loading.value) {
-    void generate()
+watch(locale, async () => {
+  if (!hasPremiumAccess.value || !hasBirthDate.value || loading.value) return
+  // H3: switching language shouldn't burn a fresh 30s AI generation if a reading
+  // for the new locale is already cached (cacheKey is per-locale). Try cache first.
+  const cached = await loadFromCache()
+  if (cached?.intro) {
+    reading.value = cached
+    return
   }
+  void generate()
 })
 
 // --- init ---
