@@ -123,6 +123,25 @@ Deno.serve(async (req: Request) => {
     }
   }
 
+  // Best-effort: delete the RevenueCat subscriber for this app_user_id so a still
+  // auto-renewing (especially sandbox) subscription stops sending webhook events
+  // for a now-ghost user id. Never fails the request — the account is already gone.
+  // Needs RC_SECRET_API_KEY (v1 legacy key, same as _shared/premium.ts).
+  const rcKey = Deno.env.get('RC_SECRET_API_KEY')
+  if (rcKey) {
+    try {
+      const rcRes = await fetch(
+        `https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(user.id)}`,
+        { method: 'DELETE', headers: { Authorization: `Bearer ${rcKey}` }, signal: AbortSignal.timeout(8000) },
+      )
+      if (!rcRes.ok && rcRes.status !== 404) {
+        console.error('[DeleteAccount] RevenueCat subscriber delete failed:', rcRes.status)
+      }
+    } catch (rcErr) {
+      console.error('[DeleteAccount] RevenueCat subscriber delete threw:', rcErr)
+    }
+  }
+
   console.log(`[DeleteAccount] Successfully deleted user: ${user.id}`)
   return json({ ok: true })
 })

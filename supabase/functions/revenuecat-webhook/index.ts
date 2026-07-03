@@ -97,6 +97,16 @@ Deno.serve(async (req) => {
 
   const failed = results.find((r) => r.error)
   if (failed) {
+    // A stale RC subscriber can carry an app_user_id whose auth.users row was
+    // deleted (deleted account whose sandbox/store sub keeps auto-renewing). The
+    // guarded RPC now no-ops for unknown users, but if this runs before that
+    // migration is applied the INSERT still hits the FK (Postgres 23503). Treat it
+    // as an ignorable no-op and return 200 so RevenueCat stops retrying forever;
+    // don't page on it. Premium is unaffected (entitlement is verified live via RC).
+    if (String(failed.error.code) === '23503') {
+      console.warn('[rc-webhook] skipping event for unknown/deleted user (FK)', String(failed.error.message).slice(0, 200))
+      return json({ ok: true, ignored: 'unknown_user' }, 200)
+    }
     console.error('[rc-webhook] apply_entitlement_event failed', failed.error.message)
     notifyError('revenuecat-webhook: persist failed', String(failed.error.message).slice(0, 400))
     return json({ error: 'persist_failed' }, 500)
