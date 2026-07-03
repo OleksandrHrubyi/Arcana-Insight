@@ -193,25 +193,6 @@ test('setSessionFromTokens writes session, fetches user, and returns final store
   assert.match(h.calls[0].url, /\/auth\/v1\/user$/)
 })
 
-test('updateUserPasswordNative builds PUT request and maps non-OK status to error', async () => {
-  const okHarness = await createHarness({
-    initialSession: { access_token: 'access_1' },
-    responses: [{ status: 200, data: { ok: true } }],
-  })
-  const ok = await okHarness.service.updateUserPasswordNative('secret')
-  assert.equal(ok.error, null)
-  assert.equal(okHarness.calls[0].init.method, 'PUT')
-  assert.equal(okHarness.calls[0].init.body, JSON.stringify({ password: 'secret' }))
-
-  const failHarness = await createHarness({
-    initialSession: { access_token: 'access_1' },
-    responses: [{ status: 500, data: { msg: 'boom' } }],
-  })
-  const fail = await failHarness.service.updateUserPasswordNative('secret')
-  assert.equal(fail.data, null)
-  assert.equal(fail.error.message, 'update user failed: 500')
-})
-
 test('upsertAppUser sanitizes name and sends merge-duplicates header', async () => {
   const h = await createHarness({
     initialSession: { access_token: 'token' },

@@ -21,7 +21,6 @@ const BLOCKED_FROM_PATHS = Object.freeze([
   '/login',
   '/sign-up',
   '/confirm-code',
-  '/reset-password',
   '/premium', // paywall — don't dump a brand-new user straight onto it
   '/settings',
   '/account', // requiresAuth

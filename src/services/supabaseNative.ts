@@ -23,7 +23,6 @@ const service = createSupabaseNativeService({
 export const refreshAccessTokenNative = (...args) => service.refreshAccessTokenNative(...args)
 export const getUserNative = (...args) => service.getUserNative(...args)
 export const setSessionFromTokens = (...args) => service.setSessionFromTokens(...args)
-export const updateUserPasswordNative = (...args) => service.updateUserPasswordNative(...args)
 export const selectAppUser = (...args) => service.selectAppUser(...args)
 export const upsertAppUser = (...args) => service.upsertAppUser(...args)
 export const selectTarotReadingsByUser = (...args) => service.selectTarotReadingsByUser(...args)

@@ -153,23 +153,6 @@ export const createSupabaseNativeService = ({
     return { data: await readStoredSession(), error: null }
   }
 
-  const updateUserPasswordNative = async (password, timeoutMs = 8000) => {
-    if (!supabaseUrl) return { data: null, error: new Error('Supabase URL missing') }
-    const makeRequest = async () => {
-      const headers = await buildAuthHeaders({ 'Content-Type': 'application/json' })
-      const url = `${supabaseUrl}/auth/v1/user`
-      return {
-        url,
-        init: { method: 'PUT', headers, body: JSON.stringify({ password }) },
-      }
-    }
-    const { res, data } = await requestWithRetry(makeRequest, timeoutMs, 'auth.update_user')
-    if (!res.ok) {
-      return { data: null, error: new Error(`update user failed: ${res.status}`) }
-    }
-    return { data, error: null }
-  }
-
   const selectAppUser = async (userId, timeoutMs = 6000, fields = 'name,email,date_of_birth') => {
     if (!restBase) return { data: null, error: new Error('Supabase URL missing') }
     const makeRequest = async () => {
@@ -305,7 +288,6 @@ export const createSupabaseNativeService = ({
     refreshAccessTokenNative,
     getUserNative,
     setSessionFromTokens,
-    updateUserPasswordNative,
     selectAppUser,
     upsertAppUser,
     selectTarotReadingsByUser,

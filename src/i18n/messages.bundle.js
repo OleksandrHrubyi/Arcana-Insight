@@ -987,7 +987,6 @@ export const messages = {
       loginAction: 'Login',
       signUpAction: 'Sign up',
       confirmCode: 'Confirm code',
-      forgotPassword: 'Forgot password?',
       welcomeBack: 'Welcome back to Arcana',
       welcomeTo: 'Welcome to Arcana',
       newToArcana: 'New to Arcana?',
@@ -1033,14 +1032,6 @@ export const messages = {
     tarotResult: {
       cardNotFound: 'Card not found',
       shareCard: 'Share card',
-    },
-
-    resetPassword: {
-      title: 'New password',
-      checking: 'Checking link…',
-      newPassword: 'New password',
-      updated: 'Password updated',
-      invalidLink: 'Link is invalid or expired. Request a new one.',
     },
 
     accountEdit: {
@@ -3221,7 +3212,6 @@ export const messages = {
       loginAction: 'Увійти',
       signUpAction: 'Зареєструватися',
       confirmCode: 'Підтвердіть код',
-      forgotPassword: 'Забули пароль?',
       welcomeBack: 'З поверненням до Arcana',
       welcomeTo: 'Ласкаво просимо до Arcana',
       newToArcana: 'Вперше в Arcana?',
@@ -3266,14 +3256,6 @@ export const messages = {
     tarotResult: {
       cardNotFound: 'Карту не знайдено',
       shareCard: 'Поділитися картою',
-    },
-
-    resetPassword: {
-      title: 'Новий пароль',
-      checking: 'Перевіряю посилання…',
-      newPassword: 'Новий пароль',
-      updated: 'Пароль оновлено',
-      invalidLink: 'Посилання недійсне або прострочене. Запросіть нове.',
     },
 
     accountEdit: {
