@@ -4,11 +4,13 @@
       <component :is="Component" :key="route.matched[0]?.path || route.path" />
     </transition>
   </router-view>
+  <OfflineBanner />
 </template>
 
 <script setup>
 import { onBeforeUnmount, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import OfflineBanner from 'components/ui/OfflineBanner.vue'
 import { initPushListeners } from 'boot/push'
 import { getBillingPremiumStatus } from 'src/services/premiumBilling'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
