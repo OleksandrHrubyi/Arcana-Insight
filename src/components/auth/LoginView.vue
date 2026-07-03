@@ -279,6 +279,13 @@ export default {
             this.errorMessage = this.tt('errors.emailNotRegistered') || 'Email not found. Please sign up first.'
           } else if (msg.toLowerCase().includes('invalid') && msg.toLowerCase().includes('email')) {
             this.errorMessage = this.tt('errors.invalidEmail')
+          } else if (
+            error.status === 429 ||
+            /rate limit|too many|after\s+\d+\s+second|security purposes/i.test(msg)
+          ) {
+            // A3: rate-limit on the OTP *send* → localized "too many attempts",
+            // not the generic message.
+            this.errorMessage = this.tt('auth.tooManyAttempts')
           } else {
             // Never surface the raw (English) backend message to a non-English user.
             this.errorMessage = this.tt('errors.generic')

@@ -172,10 +172,17 @@ export default {
           // Map known backend errors to localized copy; never surface the raw
           // (English) Supabase message to a non-English user.
           const raw = String(error.message || '').toLowerCase()
-          this.errorMessage =
-            raw.includes('invalid') && raw.includes('email')
-              ? this.tt('errors.invalidEmail')
-              : this.tt('errors.generic')
+          if (raw.includes('invalid') && raw.includes('email')) {
+            this.errorMessage = this.tt('errors.invalidEmail')
+          } else if (
+            error.status === 429 ||
+            /rate limit|too many|after\s+\d+\s+second|security purposes/i.test(raw)
+          ) {
+            // A3: rate-limit on the OTP send → localized "too many attempts".
+            this.errorMessage = this.tt('auth.tooManyAttempts')
+          } else {
+            this.errorMessage = this.tt('errors.generic')
+          }
           this.logAuth('email_otp_error', { raw: error.message })
           return
         }
