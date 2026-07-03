@@ -1621,76 +1621,91 @@ const startSpreadScene = () => {
   })
 }
 
+let isDrawStarting = false
+
 const touchDeck = async () => {
-  if (stage.value !== 'ready' || !isDeckHotspotActive.value) {
+  // T2: top-level re-entrancy lock. isDeckHotspotActive is only cleared AFTER the
+  // awaits below, so without this a rapid double-tap would run the whole draw
+  // (daily-mark, reward-consume, scene) twice — double token spend / double reveal.
+  if (stage.value !== 'ready' || !isDeckHotspotActive.value || isDrawStarting) {
     return
   }
-
-  // Bundled tarot data missing/failed — re-load once; if still empty, tell the user
-  // and abort BEFORE consuming a free draw, instead of proceeding to a "cards ready"
-  // scene with zero cards and no recovery (UX-13).
-  if (!cardPool.value.length) {
-    await loadCardPoolSafe()
+  isDrawStarting = true
+  try {
+    // Bundled tarot data missing/failed — re-load once; if still empty, tell the user
+    // and abort BEFORE consuming a free draw, instead of proceeding to a "cards ready"
+    // scene with zero cards and no recovery (UX-13).
     if (!cardPool.value.length) {
-      $q.notify({
-        message: i18nT(currentLang.value, 'common.loadError'),
-        color: 'dark',
-        textColor: 'white',
-        position: 'bottom',
-        timeout: 2600,
+      await loadCardPoolSafe()
+      if (!cardPool.value.length) {
+        $q.notify({
+          message: i18nT(currentLang.value, 'common.loadError'),
+          color: 'dark',
+          textColor: 'white',
+          position: 'bottom',
+          timeout: 2600,
+        })
+        return
+      }
+    }
+
+    // Captured before consumeRitualReward clears pendingSpreadRewardKey below.
+    const usesReward = !hasPremiumAccess.value && Boolean(pendingSpreadRewardKey.value)
+
+    if (!hasPremiumAccess.value && hasUsedFreeTarotToday()) {
+      notifyFreeTarotDailyLimit()
+      return
+    }
+
+    if (!hasPremiumAccess.value && (selectedSpread.value || 1) === 1) {
+      markFreeTarotUsedToday()
+    }
+
+    if (!hasPremiumAccess.value && pendingSpreadRewardKey.value) {
+      const consumeResult = await consumeRitualReward(pendingSpreadRewardKey.value, {
+        source: 'tarot_spread_start',
+        userId: getRitualRewardUserId(),
       })
-      return
-    }
-  }
-
-  // Captured before consumeRitualReward clears pendingSpreadRewardKey below.
-  const usesReward = !hasPremiumAccess.value && Boolean(pendingSpreadRewardKey.value)
-
-  if (!hasPremiumAccess.value && hasUsedFreeTarotToday()) {
-    notifyFreeTarotDailyLimit()
-    return
-  }
-
-  if (!hasPremiumAccess.value && (selectedSpread.value || 1) === 1) {
-    markFreeTarotUsedToday()
-  }
-
-  if (!hasPremiumAccess.value && pendingSpreadRewardKey.value) {
-    const consumeResult = await consumeRitualReward(pendingSpreadRewardKey.value, {
-      source: 'tarot_spread_start',
-      userId: getRitualRewardUserId(),
-    })
-    if (!consumeResult.ok) {
+      if (!consumeResult.ok) {
+        // T1: the token was NOT spent, so the multi-card spread is not unlocked.
+        // Reset the selection and send the user back to spread choice — otherwise the
+        // next deck tap draws the 3/5 spread free (key cleared, spread≠1 skips both
+        // the daily-mark and the consume block).
+        pendingSpreadRewardKey.value = ''
+        selectedSpread.value = 0
+        notifyPremiumSpreadLock()
+        proceedToSpread()
+        await refreshRitualRewardAccess(true)
+        return
+      }
       pendingSpreadRewardKey.value = ''
-      notifyPremiumSpreadLock()
-      await refreshRitualRewardAccess(true)
-      return
+      await refreshRitualRewardAccess(false)
     }
-    pendingSpreadRewardKey.value = ''
-    await refreshRitualRewardAccess(false)
+
+    markDailyActivity(DAILY_ACTIVITY_KEYS.tarot)
+    void trackRitualActivityWithGuestFallback(DAILY_ACTIVITY_KEYS.tarot, {
+      source: 'tarot_oracle',
+      userId: authStore.state.user?.id || '',
+    })
+
+    void analytics.logEvent(TAROT_SESSION_EVENTS.drawStart, {
+      ...buildTarotFunnelPayload(),
+      uses_reward: usesReward ? 'true' : 'false',
+    })
+
+    void impact(ImpactStyle.Light)
+    stage.value = 'started'
+    currentPrompt.value = ''
+    controlsUnlocked.value = false
+    actionsSheetOpen.value = false
+    isDeckHotspotActive.value = false
+    cardPreviewOpen.value = false
+    cardPreviewIndex.value = -1
+    resetInterpretationState()
+    startSpreadScene()
+  } finally {
+    isDrawStarting = false
   }
-
-  markDailyActivity(DAILY_ACTIVITY_KEYS.tarot)
-  void trackRitualActivityWithGuestFallback(DAILY_ACTIVITY_KEYS.tarot, {
-    source: 'tarot_oracle',
-    userId: authStore.state.user?.id || '',
-  })
-
-  void analytics.logEvent(TAROT_SESSION_EVENTS.drawStart, {
-    ...buildTarotFunnelPayload(),
-    uses_reward: usesReward ? 'true' : 'false',
-  })
-
-  void impact(ImpactStyle.Light)
-  stage.value = 'started'
-  currentPrompt.value = ''
-  controlsUnlocked.value = false
-  actionsSheetOpen.value = false
-  isDeckHotspotActive.value = false
-  cardPreviewOpen.value = false
-  cardPreviewIndex.value = -1
-  resetInterpretationState()
-  startSpreadScene()
 }
 
 const onCardTap = (index) => {
