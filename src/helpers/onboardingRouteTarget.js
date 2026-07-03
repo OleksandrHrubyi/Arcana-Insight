@@ -1,12 +1,19 @@
 export const ONBOARDING_HOME_ROUTE = Object.freeze({ name: 'arcana' })
 export const ONBOARDING_HOME_PATH = '/'
 
+// After the onboarding gate, return the user to their original destination (e.g. a
+// push / marketing deep-link) when it is a self-sufficient screen that renders fine
+// for a brand-new user. Gated/stateful screens stay blocked so a first run never
+// lands on an empty/locked/auth surface (N2).
 const ALLOWED_FROM_PATHS = Object.freeze([
   '/',
   '/menu',
   '/horoscope',
   '/tarot',
   '/daily',
+  '/compatibility',
+  '/cards',
+  '/zodiac-guide',
 ])
 
 const BLOCKED_FROM_PATHS = Object.freeze([
@@ -15,15 +22,12 @@ const BLOCKED_FROM_PATHS = Object.freeze([
   '/sign-up',
   '/confirm-code',
   '/reset-password',
-  '/premium',
+  '/premium', // paywall — don't dump a brand-new user straight onto it
   '/settings',
-  '/account',
-  '/tarot-interpretation',
-  '/cards',
-  '/zodiac-guide',
-  '/compatibility',
-  '/readings',
-  '/rewards',
+  '/account', // requiresAuth
+  '/tarot-interpretation', // needs a live sessionStorage reading → empty on deep-link
+  '/readings', // premium-gated
+  '/rewards', // parked (redirects to menu)
 ])
 
 const ALLOWED_FROM_SET = new Set(ALLOWED_FROM_PATHS)

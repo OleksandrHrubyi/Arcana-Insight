@@ -60,11 +60,32 @@ test('resolveOnboardingRouteTarget rejects external and malformed from values', 
   assert.equal(malformed.resolvedTarget, '/')
 })
 
-test('onboarding route whitelist exports strict first-run allowlist', async () => {
+test('onboarding route whitelist exports first-run allowlist', async () => {
   const { onboardingRouteWhitelist } = await importModule('src/helpers/onboardingRouteTarget.js')
 
-  assert.deepEqual(onboardingRouteWhitelist.allowed, ['/', '/menu', '/horoscope', '/tarot', '/daily'])
+  // N2: self-sufficient content screens are preserved through the onboarding gate;
+  // gated/stateful/auth screens stay blocked.
+  assert.deepEqual(onboardingRouteWhitelist.allowed, [
+    '/',
+    '/menu',
+    '/horoscope',
+    '/tarot',
+    '/daily',
+    '/compatibility',
+    '/cards',
+    '/zodiac-guide',
+  ])
   assert.ok(onboardingRouteWhitelist.blocked.includes('/premium'))
   assert.ok(onboardingRouteWhitelist.blocked.includes('/settings'))
   assert.ok(onboardingRouteWhitelist.blocked.includes('/account'))
+  assert.ok(onboardingRouteWhitelist.blocked.includes('/tarot-interpretation'))
+})
+
+test('resolveOnboardingRouteTarget preserves a self-sufficient content deep-link (N2)', async () => {
+  const { resolveOnboardingRouteTarget } = await importModule('src/helpers/onboardingRouteTarget.js')
+
+  const deep = resolveOnboardingRouteTarget('/compatibility')
+  assert.equal(deep.navigationMode, 'push')
+  assert.equal(deep.hadValidFrom, true)
+  assert.equal(deep.resolvedTarget, '/compatibility')
 })
