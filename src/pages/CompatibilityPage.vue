@@ -466,7 +466,7 @@ import { usePremiumAccess } from 'src/stores/premiumAccess'
 import { analytics } from 'src/services/analytics'
 import { PAYWALL_ENTRY_POINTS, CONTENT_SHARE_EVENTS } from 'src/constants/analyticsEvents'
 import { selectAppUser, invokeFunction } from 'src/services/supabaseNative'
-import { isPremiumRequiredError } from 'src/helpers/functionErrors.js'
+import { isPremiumRequiredError, isUnauthorizedError } from 'src/helpers/functionErrors.js'
 import { useAuthStore } from 'stores/authStore.js'
 import { computeChart, computeCompatibility, computeWeather } from 'src/helpers/compatibilityCore.js'
 import { localISODate } from 'src/helpers/date.ts'
@@ -906,10 +906,10 @@ async function requestAiReading(res) {
     aiReading.value = data.reading
   } catch (e) {
     if (reqId !== aiRequestId) return
-    if (isPremiumRequiredError(e)) {
-      // Server says this user isn't entitled — reconcile the stale local premium
-      // flag so the unlock panel shows instead of a generic error whose retry just
-      // re-hits the same 403.
+    if (isPremiumRequiredError(e) || isUnauthorizedError(e)) {
+      // Server says not-entitled (403) or the session is gone (401) — reconcile the
+      // stale local premium flag so the unlock/sign-in panel shows instead of a
+      // generic error whose retry just re-hits the same 403/401 (C3).
       revokePremiumAccess()
       aiError.value = false
     } else {

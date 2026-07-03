@@ -18,3 +18,16 @@ test('isPremiumRequiredError detects 403 / premium_required, ignores other failu
   assert.equal(isPremiumRequiredError(null), false)
   assert.equal(isPremiumRequiredError({}), false)
 })
+
+// H4/C3: a 401 (missing/expired session) must also be reconciled, not looped on.
+test('isUnauthorizedError detects 401, ignores 403 and other failures', async () => {
+  const { isUnauthorizedError } = await importModule('src/helpers/functionErrors.js')
+  assert.equal(isUnauthorizedError({ status: 401 }), true)
+  assert.equal(isUnauthorizedError({ code: 'unauthorized' }), true)
+  assert.equal(isUnauthorizedError({ message: 'functions compatibility failed: 401' }), true)
+
+  assert.equal(isUnauthorizedError({ status: 403 }), false)
+  assert.equal(isUnauthorizedError({ status: 500 }), false)
+  assert.equal(isUnauthorizedError(null), false)
+  assert.equal(isUnauthorizedError({}), false)
+})

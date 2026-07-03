@@ -122,7 +122,7 @@ import { Preferences } from '@capacitor/preferences'
 import { Share } from '@capacitor/share'
 import { t, currentLocale } from 'src/i18n'
 import { invokeFunction, selectAppUser } from 'src/services/supabaseNative'
-import { isPremiumRequiredError } from 'src/helpers/functionErrors.js'
+import { isPremiumRequiredError, isUnauthorizedError } from 'src/helpers/functionErrors.js'
 import { useAuthStore } from 'stores/authStore.js'
 import { localISODate } from 'src/helpers/date.ts'
 import { analytics } from 'src/services/analytics'
@@ -342,10 +342,10 @@ async function generate() {
     reading.value = data.reading
     await saveToCache(data.reading)
   } catch (e) {
-    if (isPremiumRequiredError(e)) {
-      // Stale local premium flag; the server says not-entitled. Reconcile so the
-      // lock panel + upgrade CTA show instead of a generic error whose retry just
-      // re-POSTs into the same 403.
+    if (isPremiumRequiredError(e) || isUnauthorizedError(e)) {
+      // Stale local premium flag with a not-entitled (403) or missing/expired
+      // session (401). Reconcile so the lock + sign-in/upgrade CTA show instead of a
+      // generic error whose retry just re-POSTs into the same 403/401 (H4).
       revokePremiumAccess()
     } else {
       error.value = tt('personalHoroscope.errorGeneric')
