@@ -128,6 +128,7 @@
                       class="horoscope-text-skeleton__line"
                     ></span>
                   </div>
+                  <p v-if="hasThemeText('energy')" class="horoscope-disclaimer">{{ tt('common.disclaimer') }}</p>
                 </div>
               </div>
             </q-tab-panel>
@@ -163,6 +164,7 @@
                       class="horoscope-text-skeleton__line"
                     ></span>
                   </div>
+                  <p v-if="hasThemeText('love') && !isThemeLocked('love')" class="horoscope-disclaimer">{{ tt('common.disclaimer') }}</p>
                 </div>
                 <button
                   v-if="isThemeLocked('love')"
@@ -210,6 +212,7 @@
                       class="horoscope-text-skeleton__line"
                     ></span>
                   </div>
+                  <p v-if="hasThemeText('career') && !isThemeLocked('career')" class="horoscope-disclaimer">{{ tt('common.disclaimer') }}</p>
                 </div>
                 <button
                   v-if="isThemeLocked('career')"
@@ -2548,6 +2551,17 @@ export default {
   align-items: center;
   justify-content: center;
   padding-top: 4px;
+}
+
+/* Appended to the end of the scrollable reading text (not the disc controls), so
+   it scrolls with the horoscope and never overlaps the theme dots / share. */
+.horoscope-disclaimer {
+  margin: 16px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(180, 196, 220, 0.14);
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(206, 214, 228, 0.62);
 }
 
 .horoscope-controls-actions {

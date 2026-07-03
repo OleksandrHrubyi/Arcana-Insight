@@ -6,7 +6,7 @@ Validation after the batch: `eslint src` clean · **251 tests** · `quasar build
 ## HIGH priority — all done
 | ID | Fix | Commit |
 |----|-----|--------|
-| T4/H2 | Reflection/entertainment disclaimer on tarot, personal horoscope, zodiac, compatibility (shared `common.disclaimer`). **Daily-horoscope disc: reverted** — it overlapped the disc controls (09f4494); needs a device-verified placement inside the reading panel. | d530f15, 09f4494 |
+| T4/H2 | Reflection/entertainment disclaimer on tarot, personal horoscope, zodiac, compatibility (shared `common.disclaimer`). Daily-horoscope: first placement overlapped the disc controls (reverted 09f4494), then re-added at the END of the scrollable reading text (footnote under a hairline) so it never touches the dots/share — visually confirmed. | d530f15, 09f4494, +horoscope |
 | A1 | Clear compatibility connections (others' PII) + reward inventory on sign-out | 548ee1d |
 | N3 | 404 reachable for not-onboarded users (`allowWithoutOnboarding` on catchAll) | 8526651 |
 | B1 | No misleading "purchase failed" after a real StoreKit charge → "tap Restore" message | a5a03e5 |
