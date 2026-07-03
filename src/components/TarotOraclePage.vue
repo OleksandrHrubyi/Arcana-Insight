@@ -318,6 +318,7 @@ import { getTarotReading, getTarotClarify } from 'src/services/tarotOracle'
 import { getUserNative, insertTarotReading } from 'src/services/supabaseNative'
 import { analytics } from 'src/services/analytics'
 import { PAYWALL_ENTRY_POINTS, TAROT_SESSION_EVENTS } from 'src/constants/analyticsEvents'
+import { isPremiumRequiredError } from 'src/helpers/functionErrors.js'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
 import { useAuthStore } from 'stores/authStore.js'
 
@@ -530,6 +531,32 @@ const markFreeAiTarotUsed = () => {
   } catch {
     // ignore storage errors — the server still enforces the single grant
   }
+}
+
+// T3: the logged-out "sign in for a free AI reading" promise can't be honored when
+// the account already spent its one free AI grant (server 403). Say so honestly
+// (upsell) instead of silently downgrading to the basic reading.
+const notifyFreeAiGiftSpent = () => {
+  void analytics.logEvent(TAROT_SESSION_EVENTS.upsellShown, {
+    ...buildTarotFunnelPayload(),
+    source: PAYWALL_ENTRY_POINTS.tarotPostSession.source,
+  })
+  $q.notify({
+    message: i18nT(currentLang.value, 'tarotOracle.freeAiSpent'),
+    color: 'dark',
+    textColor: 'white',
+    position: 'bottom',
+    timeout: 5000,
+    actions: [
+      {
+        label: i18nT(currentLang.value, 'premiumAccess.cta'),
+        color: 'primary',
+        handler: () => {
+          void openPremiumFromUpsell(PAYWALL_ENTRY_POINTS.tarotPostSession)
+        },
+      },
+    ],
+  })
 }
 
 const notifyFreeTarotDailyLimit = () => {
@@ -2087,6 +2114,12 @@ const acceptInterpretation = async () => {
           // premium_required (already spent) or a transient AI error — fall through
           // to the basic reading. Only the confirmed success above marks it used.
           console.error('[tarot] free AI gift unavailable, using basic interpretation', giftError)
+          // T3: if the grant was already spent, the "free AI gift" promise can't be
+          // kept — tell the user honestly (upsell) rather than silently downgrading.
+          // A transient AI error is NOT the user's fault, so stay silent there.
+          if (isPremiumRequiredError(giftError)) {
+            notifyFreeAiGiftSpent()
+          }
         }
       }
 
