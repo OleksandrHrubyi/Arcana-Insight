@@ -455,6 +455,7 @@
 <script setup>
 import { computed, onMounted, onBeforeUnmount, nextTick, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
 import { t, currentLocale } from 'src/i18n'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
@@ -474,6 +475,7 @@ import { computeAscendant, wholeSignHouse, localToUTC } from 'src/helpers/ascend
 import { searchCities } from 'src/services/geocode.js'
 
 const router = useRouter()
+const $q = useQuasar()
 const authStore = useAuthStore()
 const { hasPremiumAccess, revokePremiumAccess } = usePremiumAccess()
 
@@ -1230,7 +1232,12 @@ const rankedConnections = computed(() => {
 
 /* weekly local reminder (on-device, no server) */
 function reminderTexts() {
-  const name = connections.value[0]?.name || tt('compatibilityPage.partnerLabel')
+  // C2: name the connection the user actually sees on top (ranked by score), not
+  // the newest-saved one, so the notification subject matches the displayed list.
+  const name =
+    rankedConnections.value[0]?.name ||
+    connections.value[0]?.name ||
+    tt('compatibilityPage.partnerLabel')
   return {
     title: tt('compatibilityPage.reminderTitle'),
     body: tt('compatibilityPage.reminderBody').replace('{name}', name),
@@ -1254,6 +1261,11 @@ async function loadReminderPref() {
   }
 }
 
+function notifyReminder(message) {
+  if (!message) return
+  $q.notify({ message, color: 'dark', textColor: 'white', position: 'bottom', timeout: 3200 })
+}
+
 async function toggleReminder() {
   if (reminderBusy.value) return
   reminderBusy.value = true
@@ -1267,11 +1279,17 @@ async function toggleReminder() {
     }
     if (!connections.value.length) return // needs a saved connection to remind about
     const granted = await ensureReminderPermission()
-    if (!granted) return
+    if (!granted) {
+      // C1: don't fail silently — the switch didn't move; tell the user why.
+      notifyReminder(tt('compatibilityPage.reminderDenied'))
+      return
+    }
     const ok = await scheduleWeeklyReminder(reminderTexts())
     if (ok) {
       reminderEnabled.value = true
       await persistReminderPref()
+    } else {
+      notifyReminder(tt('compatibilityPage.reminderFailed'))
     }
   } finally {
     reminderBusy.value = false
