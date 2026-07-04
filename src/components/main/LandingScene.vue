@@ -242,7 +242,9 @@ import {
   readDailyStreak,
   DAILY_ACTIVITY_KEYS,
   hasDailyActivityToday,
+  markDailyActivity,
 } from 'src/helpers/dailyRitual.js'
+import { trackRitualActivityWithGuestFallback } from 'src/helpers/ritualRewardsBackend.js'
 import {
   getDeterministicDailyCardSelection,
   loadDailyCardsSnapshot,
@@ -1012,6 +1014,15 @@ export default {
         await this.triggerImpact(ImpactStyle.Medium)
         this.persistHomeDailyCardRevealState(true)
         this.hasRevealedDailyCardOnHomeToday = true
+        // Revealing the day's card on Home IS completing the daily-card ritual —
+        // mark it (same as opening /daily) so the streak, home progress and the Menu
+        // launcher all reflect it, instead of Menu still saying "reveal your card".
+        this.hasDailyCardToday = true
+        markDailyActivity(DAILY_ACTIVITY_KEYS.dailyCard)
+        void trackRitualActivityWithGuestFallback(DAILY_ACTIVITY_KEYS.dailyCard, {
+          source: 'home_daily_card',
+          userId: this.authStore?.state?.user?.id || '',
+        })
         return
       }
 

@@ -8,13 +8,17 @@ const readSource = (relativePath) => {
   return fs.readFileSync(absolutePath, 'utf8')
 }
 
-test('home daily hero keeps reveal state separate from daily_card completion', () => {
+test('home daily hero reveal completes the daily-card ritual (streak + menu reflect it)', () => {
   const source = readSource('src/components/main/LandingScene.vue')
 
   assert.match(source, /hasRevealedDailyCardOnHomeToday: false/)
   assert.match(source, /isHeroCardRevealed\(\)\s*\{\s*return this\.hasDailyCardToday \|\| this\.hasRevealedDailyCardOnHomeToday/s)
   assert.match(source, /persistHomeDailyCardRevealState\(true\)/)
-  assert.doesNotMatch(source, /markDailyActivity\(DAILY_ACTIVITY_KEYS\.dailyCard\)/)
+  // Revealing on Home now marks the daily-card ritual done (so the streak, home
+  // progress and the Menu launcher all reflect it) — the old peek-vs-complete
+  // separation was reported as confusing.
+  assert.match(source, /markDailyActivity\(DAILY_ACTIVITY_KEYS\.dailyCard\)/)
+  assert.match(source, /trackRitualActivityWithGuestFallback\(DAILY_ACTIVITY_KEYS\.dailyCard, \{\s*source: 'home_daily_card'/s)
   assert.match(source, /done: this\.hasDailyCardToday/)
 })
 
