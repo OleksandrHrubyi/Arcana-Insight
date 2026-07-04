@@ -49,7 +49,7 @@ Model details:
 | Tarot spread depth | 1 card | Up to 5 cards | Do not overpromise beyond model |
 | Card library | Yes | Yes | Free value remains real |
 | Zodiac guide | Yes | Yes | Free value remains real |
-| Compatibility | No | Yes | Premium-specific capability |
+| Compatibility | Overall score + strongest sphere | Full sphere-by-sphere breakdown + AI dynamic/advice + weekly weather + houses | Free is a real taste (the % + top sphere); premium is the depth. Do NOT give the full sphere score-breakdown away free. |
 | Saved reading history | No | Yes | Premium-specific capability |
 | Deeper interpretation | Limited/basic | Yes | Exact wording must reflect current AI/basic mode |
 

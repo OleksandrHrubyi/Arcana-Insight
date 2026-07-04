@@ -111,11 +111,11 @@ test('premium copy stays aligned on compatibility preview and energy-theme wordi
 
   assert.equal(
     messages.en.premiumAccess.model.compatibility.free,
-    'Preview only. Full compatibility report is in Premium.',
+    'Overall match score + your strongest sphere.',
   )
   assert.equal(
     messages.en.premiumAccess.compatibility.text,
-    'Free includes only a compatibility preview. Premium unlocks the full pair analysis with score breakdown and clear guidance.',
+    'Free shows your overall match and strongest sphere. Premium scores and explains every sphere, adds the full AI reading of your dynamic with practical advice, and your weekly relationship weather.',
   )
   assert.equal(messages.uk.premiumAccess.model.horoscopeLove.free, 'Доступна лише щоденна тема енергії.')
   assert.equal(messages.uk.premiumAccess.model.horoscopeCareer.free, 'Доступна лише щоденна тема енергії.')
@@ -141,8 +141,8 @@ test('premium copy stays aligned on compatibility preview and energy-theme wordi
 
   // Compare-table copy now lives in i18n (premiumPage.compareTable.*), not hardcoded
   // in the component. Assert the compatibility-row "free" wording there.
-  assert.equal(messages.en.premiumPage.compareTable.compatibility.free, 'Preview only')
-  assert.equal(messages.uk.premiumPage.compareTable.compatibility.free, 'Лише превʼю')
+  assert.equal(messages.en.premiumPage.compareTable.compatibility.free, 'Score + 1 sphere')
+  assert.equal(messages.uk.premiumPage.compareTable.compatibility.free, 'Бал + 1 сфера')
   assert.equal(
     messages.en.premiumPage.outcome.title,
     'One deeper daily reflection practice',

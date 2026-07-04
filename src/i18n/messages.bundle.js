@@ -1571,9 +1571,9 @@ export const messages = {
           purchase: 'Premium subscription with history and unlimited access features.',
         },
         compatibility: {
-          free: 'Preview only. Full compatibility report is in Premium.',
-          premium: 'Full pair analysis with score breakdown and practical guidance.',
-          purchase: 'Premium subscription with compatibility insights and advanced breakdown.',
+          free: 'Overall match score + your strongest sphere.',
+          premium: 'Every sphere scored and explained, the full AI dynamic + advice, and weekly weather.',
+          purchase: 'Premium subscription — the complete sphere-by-sphere compatibility read.',
         },
         horoscopeLove: {
           free: 'Only daily energy theme.',
@@ -1597,8 +1597,8 @@ export const messages = {
         },
       },
       compatibility: {
-        title: 'Full compatibility report is in Premium',
-        text: 'Free includes only a compatibility preview. Premium unlocks the full pair analysis with score breakdown and clear guidance.',
+        title: 'The full compatibility read is in Premium',
+        text: 'Free shows your overall match and strongest sphere. Premium scores and explains every sphere, adds the full AI reading of your dynamic with practical advice, and your weekly relationship weather.',
         bullets: {
           report: 'Detailed report for any sign pair, with clear strengths and tension points.',
           scores: 'All spheres and score breakdown: emotion, communication, and stability.',
@@ -1788,7 +1788,7 @@ export const messages = {
         tarotFormat: { feature: 'Tarot spread', free: '1 card/day', premium: '1, 3, or 5 cards with no limit' },
         interpretation: { feature: 'Reading depth', free: 'Short takeaway', premiumAi: 'Deep AI reading + action steps', premiumBasic: 'Deep reading + action steps' },
         horoscope: { feature: 'Horoscope themes', free: 'Energy only', premium: 'Energy, love, and career' },
-        compatibility: { feature: 'Compatibility', free: 'Preview only', premium: 'Full relationship reading' },
+        compatibility: { feature: 'Compatibility', free: 'Score + 1 sphere', premium: 'Full relationship reading' },
         history: { feature: 'History', free: 'No history', premium: 'All readings saved' },
       },
       billingIssues: {
@@ -3797,9 +3797,9 @@ export const messages = {
           purchase: 'Підписка Premium з історією розкладів і розширеним доступом.',
         },
         compatibility: {
-          free: 'Лише превʼю. Повний звіт сумісності доступний у Premium.',
-          premium: 'Повний аналіз пари з розбивкою балів і практичними підказками.',
-          purchase: 'Підписка Premium з інсайтами сумісності і розширеним розбором.',
+          free: 'Загальний бал сумісності + твоя найсильніша сфера.',
+          premium: 'Оцінка й пояснення кожної сфери, повна AI-динаміка + порада, і погода тижня.',
+          purchase: 'Підписка Premium — повний розбір пари сфера за сферою.',
         },
         horoscopeLove: {
           free: 'Доступна лише щоденна тема енергії.',
@@ -3823,8 +3823,8 @@ export const messages = {
         },
       },
       compatibility: {
-        title: 'Повний звіт сумісності доступний у Premium',
-        text: 'У безкоштовній версії доступний лише попередній перегляд сумісності. Premium відкриває повний аналіз пари з розбивкою балів і практичним напрямом.',
+        title: 'Повний розбір сумісності — у Premium',
+        text: 'Безкоштовно ти бачиш загальний бал і найсильнішу сферу. Premium оцінює й пояснює кожну сферу, додає повний AI-розбір вашої динаміки з практичною порадою і погоду стосунків на тиждень.',
         bullets: {
           report: 'Детальний звіт для будь-якої пари знаків з сильними і слабкими зонами.',
           scores: 'Повний розклад за сферами: емоції, комунікація та стабільність.',
@@ -4014,7 +4014,7 @@ export const messages = {
         tarotFormat: { feature: 'Розклад таро', free: '1 карта/день', premium: '1, 3 або 5 карт без ліміту' },
         interpretation: { feature: 'Розбір', free: 'Короткий висновок', premiumAi: 'Глибокий AI-розбір + кроки', premiumBasic: 'Глибокий розбір + кроки' },
         horoscope: { feature: 'Теми гороскопу', free: 'Лише енергія', premium: 'Енергія, кохання, карʼєра' },
-        compatibility: { feature: 'Сумісність', free: 'Лише превʼю', premium: 'Повний розбір пари' },
+        compatibility: { feature: 'Сумісність', free: 'Бал + 1 сфера', premium: 'Повний розбір пари' },
         history: { feature: 'Історія', free: 'Без історії', premium: 'Усі читання збережені' },
       },
       billingIssues: {

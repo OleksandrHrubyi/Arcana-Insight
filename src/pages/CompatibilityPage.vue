@@ -163,7 +163,7 @@
           <div class="compat-tier__headline">{{ tt(`compatibilityPage.tiers.${result.tier}.headline`) }}</div>
         </div>
 
-        <div v-if="weather.length" class="compat-weather">
+        <div v-if="hasPremiumAccess && weather.length" class="compat-weather">
           <div class="compat-section-title">{{ tt('compatibilityPage.weatherTitle') }}</div>
           <div class="compat-section-hint">{{ tt('compatibilityPage.weatherHint') }}</div>
           <div
@@ -200,7 +200,7 @@
           </div>
         </div>
 
-        <div v-if="result.keyConnections && result.keyConnections.length" class="compat-connections">
+        <div v-if="hasPremiumAccess && result.keyConnections && result.keyConnections.length" class="compat-connections">
           <div class="compat-section-title">{{ tt('compatibilityPage.connectionsTitle') }}</div>
           <div class="compat-section-hint">{{ tt('compatibilityPage.connectionsHint') }}</div>
           <div
@@ -221,7 +221,7 @@
           </div>
         </div>
 
-        <div v-if="houseOverlays.length" class="compat-houses">
+        <div v-if="hasPremiumAccess && houseOverlays.length" class="compat-houses">
           <div class="compat-section-title">{{ tt('compatibilityPage.housesTitle') }}</div>
           <div class="compat-section-hint">{{ tt('compatibilityPage.housesHint') }}</div>
           <div v-for="(o, i) in houseOverlays" :key="`h-${i}`" class="compat-house">
@@ -249,10 +249,10 @@
               <span class="compat-dim__label">{{ tt(`compatibilityPage.dim.${dim.key}.label`) }}</span>
               <span v-if="!isDimLocked(dim)" class="compat-dim__aspect">{{ aspectLabel(dim.aspect) }}</span>
               <q-icon v-else name="lock" size="13px" class="compat-dim__lock" />
-              <span class="compat-dim__score">{{ dim.score }}</span>
+              <span v-if="!isDimLocked(dim)" class="compat-dim__score">{{ dim.score }}</span>
             </div>
             <div class="compat-dim__bar">
-              <span class="compat-dim__bar-fill" :class="`compat-dim__bar-fill--${dim.level}`" :style="{ width: dim.score + '%' }"></span>
+              <span v-if="!isDimLocked(dim)" class="compat-dim__bar-fill" :class="`compat-dim__bar-fill--${dim.level}`" :style="{ width: dim.score + '%' }"></span>
             </div>
             <p v-if="!isDimLocked(dim)" class="compat-dim__text">
               {{ dimText(dim) }}
