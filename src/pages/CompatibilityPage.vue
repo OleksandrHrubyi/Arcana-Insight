@@ -260,7 +260,7 @@
           </div>
         </div>
 
-        <div v-if="aiReading" class="compat-ai-extra">
+        <div v-if="hasPremiumAccess && aiReading" class="compat-ai-extra">
           <div class="compat-ai-block">
             <div class="compat-ai-block__label">{{ tt('compatibilityPage.dynamicLabel') }}</div>
             <p class="compat-ai-block__text">{{ aiReading.dynamic }}</p>
