@@ -597,7 +597,9 @@ onMounted(() => {
   margin-top: auto;
   display: grid;
   gap: 10px;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
+  /* Extra bottom clearance so the last (language) button's bottom corners clear
+     the iPhone's rounded screen corners instead of being clipped by them. */
+  padding-bottom: calc(env(safe-area-inset-bottom) + 26px);
 }
 
 /* .arcana-btn has width:100% + padding but no box-sizing, and there is no global
