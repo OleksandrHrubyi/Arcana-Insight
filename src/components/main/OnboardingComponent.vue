@@ -600,6 +600,14 @@ onMounted(() => {
   padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
 }
 
+/* .arcana-btn has width:100% + padding but no box-sizing, and there is no global
+   border-box reset — so on a container flush with the screen padding (here) the
+   button overflowed and clipped left/right on device. Contain it. */
+.onboarding-actions-shell .arcana-btn {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
 .onboarding-continue {
   position: relative;
   overflow: hidden;
