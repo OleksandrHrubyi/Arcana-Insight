@@ -32,3 +32,19 @@ jobs:
 
       - name: Unit tests
         run: npm test
+
+  edge_function_tests:
+    name: Edge Function Tests (Deno)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Deno tests (money paths - premium gate, RC webhook, AI quota)
+        run: deno test --allow-env --allow-net supabase/functions/tests/

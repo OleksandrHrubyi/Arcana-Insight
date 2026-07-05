@@ -1,0 +1,83 @@
+{
+  "version": "5",
+  "specifiers": {
+    "jsr:@std/assert@*": "1.0.19",
+    "jsr:@std/internal@^1.0.12": "1.0.14"
+  },
+  "jsr": {
+    "@std/assert@1.0.19": {
+      "integrity": "eaada96ee120cb980bc47e040f82814d786fe8162ecc53c91d8df60b8755991e",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/internal@1.0.14": {
+      "integrity": "291516b3d4c35024d6ffbc0a9df5bf4c64116e05b50012cf846710152d2ffdf7"
+    }
+  },
+  "redirects": {
+    "https://esm.sh/@supabase/supabase-js@2": "https://esm.sh/@supabase/supabase-js@2.110.0",
+    "https://esm.sh/iceberg-js@^0.8.1?target=denonext": "https://esm.sh/iceberg-js@0.8.1?target=denonext"
+  },
+  "remote": {
+    "https://esm.sh/@supabase/auth-js@2.110.0/denonext/auth-js.mjs": "9343a81cff9b86e6c51f173c9d6bd775791755648553520722a85ba59099f38f",
+    "https://esm.sh/@supabase/functions-js@2.110.0/denonext/functions-js.mjs": "e34b2f3b958ab4b0339bc0e58781bb264d5387162e1094fad63b35b8746c835d",
+    "https://esm.sh/@supabase/phoenix@0.4.4/denonext/phoenix.mjs": "2c4954292d10fd9137d66a1b7abd73bf24f9771a444c3d4e267b12e1e2b132c8",
+    "https://esm.sh/@supabase/postgrest-js@2.110.0/denonext/postgrest-js.mjs": "6ab3b6d6194d199b1319fd523142ccefc443be29e8280f1007c9917d83ba00e2",
+    "https://esm.sh/@supabase/realtime-js@2.110.0/denonext/realtime-js.mjs": "300a4129865ad69c45d79e89963e357d003847fb707a5c88cfebf63030db2f2b",
+    "https://esm.sh/@supabase/storage-js@2.110.0/denonext/storage-js.mjs": "1bf5f1363d7e019fb4e7ba41b3f00e4e338acec2379835591f8d4f5590e96a3a",
+    "https://esm.sh/@supabase/supabase-js@2.110.0": "b99c0ce7729f9de7797f836b93ab9ec94f1cfe079b4f937fa4144fe13525e979",
+    "https://esm.sh/@supabase/supabase-js@2.110.0/denonext/supabase-js.mjs": "eb573f7b15e0522ac34f4fa0a02011bc237dade5b71946aafb19d375ed8f278b",
+    "https://esm.sh/iceberg-js@0.8.1/denonext/iceberg-js.mjs": "d839d81a2e3966500ca2cdd0c1cb458e9608bacfc91f7bb67a69b2e878dcdb4f",
+    "https://esm.sh/iceberg-js@0.8.1?target=denonext": "58c849d7fe2bf4eca4a84eb501e83c161a7d8c34ca1bec15a962b3bec3062633",
+    "https://esm.sh/tslib@2.8.1/denonext/tslib.mjs": "c38da5dd6da6281964435002ce204cd586634fe3bdfb24a0ee116f48cf3292e9"
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@capacitor-community/apple-sign-in@5",
+        "npm:@capacitor-firebase/analytics@^5.4.1",
+        "npm:@capacitor-firebase/crashlytics@^5.4.1",
+        "npm:@capacitor/app@^5.0.8",
+        "npm:@capacitor/cli@^5.7.8",
+        "npm:@capacitor/core@^5.7.8",
+        "npm:@capacitor/device@^5.0.8",
+        "npm:@capacitor/filesystem@^5.2.2",
+        "npm:@capacitor/haptics@^5.0.8",
+        "npm:@capacitor/ios@^5.7.8",
+        "npm:@capacitor/local-notifications@^5.0.8",
+        "npm:@capacitor/preferences@^5.0.8",
+        "npm:@capacitor/push-notifications@^5.1.2",
+        "npm:@capacitor/share@^5.0.8",
+        "npm:@capacitor/status-bar@^5.0.8",
+        "npm:@eslint/js@^9.14.0",
+        "npm:@fontsource/nunito@^5.2.7",
+        "npm:@playwright/test@^1.59.1",
+        "npm:@quasar/app-vite@^2.1.0",
+        "npm:@quasar/cli@^5.0.1",
+        "npm:@quasar/extras@^1.16.4",
+        "npm:@revenuecat/purchases-capacitor@^7.7.1",
+        "npm:@supabase/supabase-js@^2.89.0",
+        "npm:@vue/eslint-config-prettier@^10.1.0",
+        "npm:astronomy-engine@^2.1.19",
+        "npm:autoprefixer@^10.4.2",
+        "npm:dotenv@^17.2.3",
+        "npm:eslint-plugin-vue@^10.4.0",
+        "npm:eslint@^9.14.0",
+        "npm:firebase@^10.14.1",
+        "npm:globals@^16.4.0",
+        "npm:gsap@^3.13.0",
+        "npm:jsonwebtoken@^9.0.2",
+        "npm:postcss@^8.4.14",
+        "npm:prettier@^3.3.3",
+        "npm:quasar@^2.16.0",
+        "npm:sharp@~0.35.2",
+        "npm:vite-plugin-checker@~0.10.3",
+        "npm:vue-eslint-parser@^10.2.0",
+        "npm:vue-i18n@^9.14.5",
+        "npm:vue-router@4",
+        "npm:vue@3.5.20"
+      ]
+    }
+  }
+}
