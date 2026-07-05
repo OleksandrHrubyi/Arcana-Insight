@@ -28,3 +28,23 @@ test('home focus today exposes source-backed and fallback states', () => {
   assert.match(source, /if \(!this\.focusTodayResolvedSignKey\) \{\s*return this\.tt\('landing\.focusToday\.fallbackMissingSign'\)/s)
   assert.match(source, /return this\.tt\('landing\.focusToday\.fallbackKnownSign'\)/)
 })
+
+test('home focus today DB fallback reads selectAppUser row as object, not array', () => {
+  const source = readSource('src/components/main/LandingScene.vue')
+
+  // selectAppUser unwraps the row (supabaseNativeCore returns data[0] already);
+  // reading data?.[0] silently yields '' and kills DB-based sign resolution.
+  assert.match(source, /selectAppUser\(userId, 6000, 'date_of_birth'\)\s*return data\?\.date_of_birth \|\| ''/s)
+  assert.doesNotMatch(source, /selectAppUser[\s\S]{0,120}?data\?\.\[0\]/)
+})
+
+// B6 (launch audit): the home preview must load the horoscope registry with the
+// same entitlement flag as the Horoscope screen. Omitting isEntitled writes the
+// day-cache in the stripped shape, so a premium user's every Home↔Horoscope
+// switch invalidates the cache and refetches over the network.
+test('home horoscope preview passes the real entitlement into the registry load', () => {
+  const source = readSource('src/components/main/LandingScene.vue')
+  const preview = source.match(/async loadHomeHoroscopePreview\(\{[\s\S]*?\n    \},/)?.[0] || ''
+  assert.ok(preview, 'loadHomeHoroscopePreview must exist')
+  assert.match(preview, /isEntitled: premiumAccessStore\.hasPremiumAccess\.value/)
+})

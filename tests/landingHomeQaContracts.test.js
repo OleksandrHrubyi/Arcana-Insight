@@ -26,3 +26,19 @@ test('home qa mode exposes fresh and revealed deterministic states', () => {
   assert.match(source, /this\.horoscopeData =\s*qaConfig\.view === 'generic'\s*\?\s*null/s)
   assert.match(source, /if \(qaConfig\.view === 'revealed'\)/)
 })
+
+// B5 (launch audit): onHomeResume fires on EVERY visibilitychange→visible. It must
+// not blank focus-today and refetch the same day's cached content on a plain
+// app-switch — content reload is allowed only on a day rollover (the original N1
+// fix) or when the previous load never completed (recovery). Local progress flags
+// stay refreshed on every foreground.
+test('home resume reloads content only on day-roll or failed previous load', () => {
+  const source = readSource('src/components/main/LandingScene.vue')
+
+  const resume = source.match(/onHomeResume\(\)\s*\{[\s\S]*?\n    \},/)?.[0] || ''
+  assert.ok(resume, 'onHomeResume must exist')
+  assert.match(resume, /if \(dayRolled \|\| !this\.dailyCardData\) void this\.loadLandingContent\(\)/)
+  assert.doesNotMatch(resume, /^\s*void this\.loadLandingContent\(\)$/m, 'content reload must not be unconditional')
+  assert.match(resume, /this\.refreshHomeProgressState\(\)/)
+  assert.match(resume, /if \(dayRolled\) void this\.computeAstro\(\)/)
+})

@@ -237,6 +237,7 @@
 <script>
 import logo from 'src/assets/images/logo.svg'
 import { useAuthStore } from 'src/stores/authStore.js'
+import { usePremiumAccess } from 'src/stores/premiumAccess.js'
 import { t, currentLocale } from 'src/i18n/index.js'
 import {
   readDailyStreak,
@@ -297,6 +298,9 @@ const cancelScheduledTask = (handle) => {
     window.clearTimeout(handle.id)
   }
 }
+
+// Module-level store handle, same pattern as HoroscopeComponent.
+const premiumAccessStore = usePremiumAccess()
 
 export default {
   name: 'LandingScene',
@@ -1386,7 +1390,14 @@ export default {
       const today = typeof window !== 'undefined' ? localISODate() : ''
       const dayRolled = Boolean(today) && today !== this.homeDayKey
       if (dayRolled) this.homeDayKey = today
-      void this.loadLandingContent()
+      // Local ritual/progress flags are cheap reads — refresh on every foreground.
+      this.refreshHomeProgressState()
+      // Content reload only when the day actually rolled (the N1 case) or the
+      // previous load produced nothing (e.g. offline at mount — dailyCardData is
+      // local-only, so its absence means the load never completed). A plain
+      // app-switch must NOT blank focus-today and refetch the same day's cached
+      // content on every foreground (B5).
+      if (dayRolled || !this.dailyCardData) void this.loadLandingContent()
       if (dayRolled) void this.computeAstro()
     },
 
@@ -1450,7 +1461,7 @@ export default {
         getCurrentUserId: () => this.authStore?.state?.user?.id || '',
         fetchUserDateOfBirthById: async (userId) => {
           const { data } = await selectAppUser(userId, 6000, 'date_of_birth')
-          return data?.[0]?.date_of_birth || ''
+          return data?.date_of_birth || ''
         },
         zodiacFromRawDate: (d) => this._zodiacFromDate(d),
       })
@@ -1462,6 +1473,11 @@ export default {
       const result = await loadHoroscopeRegistry({
         locale,
         today,
+        // Must match what the Horoscope screen passes: without it the home preview
+        // writes the day-cache in the stripped (non-entitled) shape and a premium
+        // user's Horoscope visit force-refetches on every Home↔Horoscope switch
+        // (B6). Home itself renders only the free summary either way.
+        isEntitled: premiumAccessStore.hasPremiumAccess.value,
         loadLocal,
         saveLocal,
         selectHoroscopes,
