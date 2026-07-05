@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { isUserPremium, premiumEnforcementEnabled } from '../_shared/premium.ts'
+import { consumeAiQuota, refundAiQuota } from '../_shared/aiQuota.ts'
 import { notifyError } from '../_shared/notify.ts'
 
 const CORS = {
@@ -51,38 +52,53 @@ Deno.serve(async (req: Request) => {
 
   let user = null
   let admin = null
+  // Premium gating stays keyed on the flag (enforce), but the admin client is
+  // created unconditionally: the daily AI quota below must apply even while
+  // RC enforcement is off.
+  const enforce = premiumEnforcementEnabled()
   try {
     const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2')
     const supabase = createClient(SUPA_URL, ANON_KEY, { global: { headers: { Authorization: auth } } })
     const res = await supabase.auth.getUser()
     user = res?.data?.user || null
     if (!user) return json({ error: 'Unauthorized' }, 401)
-    if (premiumEnforcementEnabled()) {
-      admin = createClient(SUPA_URL, SERVICE_KEY, { auth: { persistSession: false } })
-    }
+    admin = createClient(SUPA_URL, SERVICE_KEY, { auth: { persistSession: false } })
   } catch (error) {
     console.error('[tarot-reading] auth check failed', error)
     return json({ error: 'Unauthorized' }, 401)
   }
 
   const body = await req.json().catch(() => null)
-  const isPremium = admin ? await isUserPremium(admin, user.id) : true
+  const isPremium = enforce ? await isUserPremium(admin, user.id) : true
 
   // Clarify mode: premium-only (not part of the free first-reading gift).
   if (body?.mode === 'clarify') {
-    if (admin && !isPremium) return json({ error: 'premium_required' }, 403)
-    return await handleClarify(body)
+    if (enforce && !isPremium) return json({ error: 'premium_required' }, 403)
+    const quota = await consumeAiQuota(admin, user.id, 'tarot')
+    if (!quota.allowed) return json({ error: 'daily_limit_reached' }, 429)
+    const clarifyRes = await handleClarify(body)
+    // Provider failure must not burn the user's allowance.
+    if (clarifyRes.status >= 500) await refundAiQuota(admin, user.id, 'tarot')
+    return clarifyRes
   }
 
   if (!body?.cards?.length) {
     return json({ error: 'Missing cards payload' }, 400)
   }
 
+  // Daily ceiling (independent of the premium gate): bounds worst-case AI spend
+  // per account, including while RC enforcement is off or failing open.
+  const quota = await consumeAiQuota(admin, user.id, 'tarot')
+  if (!quota.allowed) return json({ error: 'daily_limit_reached' }, 429)
+
   // Reading: premium → always; otherwise consume the one free AI reading (the gift).
   let freeAiGift = false
-  if (admin && !isPremium) {
+  if (enforce && !isPremium) {
     const granted = await consumeFreeAiGrant(admin, user.id, 'tarot')
-    if (!granted) return json({ error: 'premium_required' }, 403)
+    if (!granted) {
+      await refundAiQuota(admin, user.id, 'tarot')
+      return json({ error: 'premium_required' }, 403)
+    }
     freeAiGift = true
   }
 
@@ -125,13 +141,15 @@ Deno.serve(async (req: Request) => {
 
     console.error('[tarot-reading] all providers failed', providerErrors)
     notifyError('tarot-reading: all AI providers failed', JSON.stringify(providerErrors).slice(0, 800))
-    // The AI failed — don't burn the user's one free reading on a failure.
+    // The AI failed — don't burn the user's one free reading (or quota unit) on a failure.
     if (freeAiGift && admin) await refundFreeAiGrant(admin, user.id, 'tarot')
+    if (admin) await refundAiQuota(admin, user.id, 'tarot')
     return aiError('AI interpretation is unavailable', 503, 'all_providers_failed')
   } catch (error) {
     console.error('[tarot-reading] unhandled error', error)
     notifyError('tarot-reading: unhandled error', String(error?.message ?? error))
     if (freeAiGift && admin) await refundFreeAiGrant(admin, user.id, 'tarot')
+    if (admin) await refundAiQuota(admin, user.id, 'tarot')
     return aiError('AI interpretation is unavailable', 503, 'provider_flow_exception')
   }
 })

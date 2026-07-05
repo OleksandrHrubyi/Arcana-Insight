@@ -9,6 +9,7 @@
 // @ts-nocheck
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { isUserPremium, premiumEnforcementEnabled } from "../_shared/premium.ts";
+import { consumeAiQuota, refundAiQuota } from "../_shared/aiQuota.ts";
 import { notifyError } from "../_shared/notify.ts";
 
 const CORS = {
@@ -391,6 +392,11 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Daily AI ceiling (after the cache: cache hits cost nothing). Bounds
+    // worst-case OpenAI spend per account, independent of RC_ENFORCE_PREMIUM.
+    const quota = await consumeAiQuota(adminClient, user.id, "compatibility");
+    if (!quota.allowed) return json({ ok: false, error: "daily_limit_reached" }, 429);
+
     const system = buildSystem(facts.locale, dimensionKeys);
     const userPrompt = `${describeFacts(facts)}\n\nWrite the compatibility reading as specified.`;
     const schema = buildSchema(dimensionKeys);
@@ -414,6 +420,11 @@ Deno.serve(async (req) => {
     if (!parsed) {
       console.error("[compatibility] AI unavailable:", providerErrors.join(" | "));
       notifyError("compatibility: AI providers down", providerErrors.join(" | ").slice(0, 400));
+      // Providers failed (nothing usable was billed) — give the quota unit back.
+      // Deliberately NOT refunded on the invalid-payload/content-guard paths below:
+      // those completions were billed, and refunding there would let a crafted
+      // input burn unlimited spend through free retries.
+      await refundAiQuota(adminClient, user.id, "compatibility");
       return json({ ok: false, code: "AI_UNAVAILABLE", error: "AI reading is temporarily unavailable" }, 503);
     }
 

@@ -1,6 +1,7 @@
 // supabase/functions/personal-horoscope/index.ts
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { isUserPremium, premiumEnforcementEnabled } from "../_shared/premium.ts";
+import { consumeAiQuota, refundAiQuota } from "../_shared/aiQuota.ts";
 import { notifyError } from "../_shared/notify.ts";
 
 const SIGNS = [
@@ -462,8 +463,20 @@ Deno.serve(async (req) => {
       }
     }
 
+    // --- daily AI ceiling (after the cache: cache hits cost nothing) ---
+    // Bounds worst-case OpenAI spend per account, independent of RC_ENFORCE_PREMIUM.
+    const quota = await consumeAiQuota(adminClient, user.id, "personal_horoscope");
+    if (!quota.allowed) return json({ ok: false, error: "daily_limit_reached" }, 429);
+
     // --- generate ---
-    const reading = await generatePersonalReading({ sign, moonSign, date, astroCompact, interests, locale });
+    let reading;
+    try {
+      reading = await generatePersonalReading({ sign, moonSign, date, astroCompact, interests, locale });
+    } catch (err) {
+      // Provider failure must not burn the user's allowance.
+      await refundAiQuota(adminClient, user.id, "personal_horoscope");
+      throw err;
+    }
 
     // --- persist to cache (best-effort) ---
     try {
