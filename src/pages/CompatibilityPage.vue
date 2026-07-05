@@ -92,7 +92,7 @@
                   :class="`compat-savedconn__score--${conn.tier}`"
                 >{{ conn.score }}</span>
               </button>
-              <button type="button" class="compat-savedconn__del" :aria-label="tt('common.close')" @click="askDeleteConnection(conn.id)">
+              <button type="button" class="compat-savedconn__del hit-44" :aria-label="tt('common.close')" @click="askDeleteConnection(conn.id)">
                 <q-icon name="close" size="13px" />
               </button>
             </div>

@@ -37,7 +37,7 @@
         <button
           v-if="searchQuery"
           type="button"
-          class="cards-search__clear"
+          class="cards-search__clear hit-44"
           :aria-label="tt('cardsPage.clearSearch')"
           @click="clearSearch"
         >
@@ -415,6 +415,18 @@ onMounted(() => {
 .cards-filter {
   border-radius: 999px;
   padding: 6px 4px;
+  /* The chips render ~28px tall — under HIG's 44pt. Neighbors are horizontal
+     (8px gaps), so expanding the tap target VERTICALLY only is safe. ::after is
+     taken by the active underline, hence ::before. */
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 44px;
+    transform: translateY(-50%);
+  }
   border: none;
   background: transparent;
   color: rgba(214, 225, 242, 0.7);

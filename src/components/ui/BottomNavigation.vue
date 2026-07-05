@@ -319,7 +319,9 @@ watch(
   touch-action: manipulation;
   user-select: none;
 
-  color: rgba(194, 206, 224, 0.42);
+  /* 0.62 alpha ≈ 5.1:1 contrast over the #0b1220 glass (AA needs 4.5:1 for the
+     11px labels; the previous 0.42 measured ~3.0:1 — unreadable in daylight). */
+  color: rgba(194, 206, 224, 0.62);
   transition:
     color 220ms ease,
     transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -370,7 +372,7 @@ watch(
 /* ─── Label ─── */
 .nav-tab__label {
   position: relative;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1;
   font-weight: 500;
   letter-spacing: 0.1px;
@@ -420,7 +422,7 @@ watch(
   .nav-indicator { border-radius: 16px; top: 7px; height: calc(100% - 14px); }
   .nav-tab { min-height: 50px; }
   .nav-tab__icon { width: 22px; height: 22px; }
-  .nav-tab__label { font-size: 9px; }
+  .nav-tab__label { font-size: 10px; }
 }
 
 /* Respect reduced motion */
