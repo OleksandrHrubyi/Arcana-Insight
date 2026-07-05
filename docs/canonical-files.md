@@ -69,8 +69,8 @@ These are the active page files wired into `src/router/routes.js`:
 ## Canonical Data And Locale Files
 
 - Tarot content: `src/data/cardsV2/tarot_full.json`
-- English locale: `src/i18n/en.json`
-- Ukrainian locale: `src/i18n/uk.json`
+- Locales (LIVE, the only file that ships): `src/i18n/messages.bundle.js` — edit BOTH the `en` and `uk` blocks
+- `src/i18n/en.json` / `src/i18n/uk.json` — DEAD fixtures kept only for the ai-ops scanner; never edit for UI copy
 
 ## Canonical Native Service Entry
 

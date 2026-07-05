@@ -42,7 +42,7 @@
 - Content rule: tarot and horoscope copy should sound reflective and grounded, not sensational, manipulative, or fear-based.
 - Content rule: do not write deterministic spiritual guidance or imply medical, legal, financial, fertility, or emergency predictions.
 - i18n rule: never hardcode user-facing strings if the screen or flow already uses i18n.
-- i18n rule: when adding or changing UI copy, update both `src/i18n/en.json` and `src/i18n/uk.json` unless explicitly told otherwise.
+- i18n rule: when adding or changing UI copy, edit `src/i18n/messages.bundle.js` (the ONLY locale file that ships) and update BOTH its `en` and `uk` blocks. `src/i18n/en.json`/`uk.json` are dead ai-ops fixtures — never edit them for UI copy.
 - i18n rule: do not create translation keys that duplicate an existing phrase with only minor wording differences.
 - i18n rule: in Vue templates, render user-facing copy through translation keys, not inline locale ternaries such as `locale === 'uk' ? ... : ...`.
 - Navigation rule: bottom navigation destinations are product-level anchors; do not create alternative parallel entry flows to the same outcome without strong product value.
