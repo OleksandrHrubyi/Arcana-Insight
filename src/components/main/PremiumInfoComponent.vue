@@ -509,7 +509,10 @@ const onPurchase = async () => {
   isPurchasing.value = true
   const wasActive = hasPremiumAccess.value
   try {
-    const result = await purchasePremiumPlan(selectedPlanId.value)
+    // Pass the signed-in user id so billing re-asserts the RevenueCat identity
+    // right before the transaction (guards against a failed login-time logIn
+    // leaving RC anonymous — money in, no access).
+    const result = await purchasePremiumPlan(selectedPlanId.value, authStore.state.user?.id || '')
     if (result.ok && result.hasPremium) {
       markBillingReady()
       purchaseCompleted.value = true
@@ -614,7 +617,7 @@ const onRestore = async () => {
   await hapticTap()
   isRestoring.value = true
   try {
-    const result = await restorePremiumPurchases()
+    const result = await restorePremiumPurchases(authStore.state.user?.id || '')
     if (!result.available) {
       setBillingUnavailable(result.reason)
       $q.notify({

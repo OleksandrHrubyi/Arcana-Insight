@@ -9,6 +9,8 @@ const PURCHASES_METHODS = [
   { name: 'purchasePackage', rtype: 'promise' },
   { name: 'getOfferings', rtype: 'promise' },
   { name: 'restorePurchases', rtype: 'promise' },
+  { name: 'getAppUserID', rtype: 'promise' },
+  { name: 'logIn', rtype: 'promise' },
 ]
 
 const withBillingMock = async (handlers, run) => {
@@ -77,6 +79,7 @@ test('monetization integration: purchase/restore/status flows keep premium store
     await withBillingMock(
       {
         configure: async () => ({}),
+        getAppUserID: async () => ({ appUserID: 'user-integration' }),
         getCustomerInfo: async () => ({ customerInfo: toCustomerInfo() }),
         getOfferings: async () => ({
           offerings: {
@@ -160,7 +163,7 @@ test('monetization integration: purchase/restore/status flows keep premium store
         assert.equal(mirrorStore.hasPremiumAccess.value, false)
         assert.equal(primaryStore.premiumPlan.value, 'monthly')
 
-        const purchaseSuccess = await billing.purchasePremiumPlan('yearly')
+        const purchaseSuccess = await billing.purchasePremiumPlan('yearly', 'user-integration')
         assert.equal(purchaseSuccess.ok, true)
         assert.equal(purchaseSuccess.hasPremium, true)
         assert.equal(purchaseSuccess.plan, 'yearly')
@@ -175,7 +178,7 @@ test('monetization integration: purchase/restore/status flows keep premium store
         assert.equal(persistedAfterSuccess.plan, 'yearly')
         assert.equal(persistedAfterSuccess.source, 'billing')
 
-        const cancelled = await billing.purchasePremiumPlan('monthly')
+        const cancelled = await billing.purchasePremiumPlan('monthly', 'user-integration')
         assert.equal(cancelled.ok, false)
         assert.equal(cancelled.cancelled, true)
         assert.equal(cancelled.reason, 'unknown')
@@ -183,7 +186,7 @@ test('monetization integration: purchase/restore/status flows keep premium store
         assert.equal(mirrorStore.hasPremiumAccess.value, true)
         assert.equal(primaryStore.premiumPlan.value, 'yearly')
 
-        const failed = await billing.purchasePremiumPlan('monthly')
+        const failed = await billing.purchasePremiumPlan('monthly', 'user-integration')
         assert.equal(failed.ok, false)
         assert.equal(failed.cancelled, false)
         assert.equal(failed.reason, 'network_error')
@@ -201,7 +204,7 @@ test('monetization integration: purchase/restore/status flows keep premium store
         assert.equal(mirrorStore.hasPremiumAccess.value, false)
         assert.equal(primaryStore.premiumPlan.value, 'monthly')
 
-        const restored = await billing.restorePremiumPurchases()
+        const restored = await billing.restorePremiumPurchases('user-integration')
         assert.equal(restored.ok, true)
         assert.equal(restored.hasPremium, true)
         assert.equal(restored.plan, 'monthly')
@@ -211,7 +214,7 @@ test('monetization integration: purchase/restore/status flows keep premium store
         assert.equal(mirrorStore.hasPremiumAccess.value, true)
         assert.equal(primaryStore.premiumPlan.value, 'monthly')
 
-        const restoredInactive = await billing.restorePremiumPurchases()
+        const restoredInactive = await billing.restorePremiumPurchases('user-integration')
         assert.equal(restoredInactive.ok, true)
         assert.equal(restoredInactive.hasPremium, false)
         applyRestoreLikePaywall(restoredInactive)

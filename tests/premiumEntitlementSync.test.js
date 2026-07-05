@@ -8,6 +8,8 @@ const PURCHASES_METHODS = [
   { name: 'purchasePackage', rtype: 'promise' },
   { name: 'getOfferings', rtype: 'promise' },
   { name: 'restorePurchases', rtype: 'promise' },
+  { name: 'getAppUserID', rtype: 'promise' },
+  { name: 'logIn', rtype: 'promise' },
 ]
 
 const withPurchasesEntitlementMock = async (handlers, run) => {
@@ -53,6 +55,7 @@ test('purchase + restore billing outcomes sync premiumAccess state across consum
     await withPurchasesEntitlementMock(
       {
         configure: async () => ({}),
+        getAppUserID: async () => ({ appUserID: 'user-sync' }),
         getOfferings: async () => ({
           offerings: {
             current: {
@@ -99,7 +102,7 @@ test('purchase + restore billing outcomes sync premiumAccess state across consum
         assert.equal(first.hasPremiumAccess.value, false)
         assert.equal(second.hasPremiumAccess.value, false)
 
-        const purchase = await billing.purchasePremiumPlan('yearly')
+        const purchase = await billing.purchasePremiumPlan('yearly', 'user-sync')
         assert.equal(purchase.ok, true)
         assert.equal(purchase.hasPremium, true)
         assert.equal(purchase.plan, 'yearly')
@@ -115,7 +118,7 @@ test('purchase + restore billing outcomes sync premiumAccess state across consum
         assert.equal(first.premiumPlan.value, 'yearly')
         assert.equal(second.premiumPlan.value, 'yearly')
 
-        const restored = await billing.restorePremiumPurchases()
+        const restored = await billing.restorePremiumPurchases('user-sync')
         assert.equal(restored.ok, true)
         assert.equal(restored.hasPremium, false)
         assert.equal(restored.plan, 'monthly')

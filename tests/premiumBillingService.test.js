@@ -9,6 +9,8 @@ const PURCHASES_METHODS = [
   { name: 'purchasePackage', rtype: 'promise' },
   { name: 'restorePurchases', rtype: 'promise' },
   { name: 'getOfferings', rtype: 'promise' },
+  { name: 'getAppUserID', rtype: 'promise' },
+  { name: 'logIn', rtype: 'promise' },
 ]
 
 const withCapacitorPurchasesMock = async (
@@ -163,6 +165,7 @@ test('purchasePremiumPlan handles success, cancelled and network_error flows', a
   await withCapacitorPurchasesMock(
     {
       configure: async () => ({}),
+      getAppUserID: async () => ({ appUserID: 'user-1' }),
       getOfferings: async () => ({
         offerings: {
           current: {
@@ -203,20 +206,20 @@ test('purchasePremiumPlan handles success, cancelled and network_error flows', a
       },
     },
     async (billing) => {
-      const success = await billing.purchasePremiumPlan('yearly')
+      const success = await billing.purchasePremiumPlan('yearly', 'user-1')
       assert.equal(success.ok, true)
       assert.equal(success.available, true)
       assert.equal(success.cancelled, false)
       assert.equal(success.hasPremium, true)
       assert.equal(success.plan, 'yearly')
 
-      const cancelled = await billing.purchasePremiumPlan('monthly')
+      const cancelled = await billing.purchasePremiumPlan('monthly', 'user-1')
       assert.equal(cancelled.ok, false)
       assert.equal(cancelled.available, true)
       assert.equal(cancelled.cancelled, true)
       assert.equal(cancelled.reason, 'unknown')
 
-      const unknownPlan = await billing.purchasePremiumPlan('weekly')
+      const unknownPlan = await billing.purchasePremiumPlan('weekly', 'user-1')
       assert.equal(unknownPlan.ok, false)
       assert.equal(unknownPlan.reason, 'network_error')
       assert.equal(unknownPlan.cancelled, false)
@@ -230,6 +233,7 @@ test('restorePremiumPurchases supports active and inactive restore outcomes', as
   await withCapacitorPurchasesMock(
     {
       configure: async () => ({}),
+      getAppUserID: async () => ({ appUserID: 'user-1' }),
       restorePurchases: async () => {
         restoreCalls += 1
         if (restoreCalls === 1) {
@@ -249,15 +253,150 @@ test('restorePremiumPurchases supports active and inactive restore outcomes', as
       },
     },
     async (billing) => {
-      const restored = await billing.restorePremiumPurchases()
+      const restored = await billing.restorePremiumPurchases('user-1')
       assert.equal(restored.ok, true)
       assert.equal(restored.hasPremium, true)
       assert.equal(restored.plan, 'monthly')
 
-      const noActive = await billing.restorePremiumPurchases()
+      const noActive = await billing.restorePremiumPurchases('user-1')
       assert.equal(noActive.ok, true)
       assert.equal(noActive.hasPremium, false)
       assert.equal(noActive.plan, 'monthly')
+    },
+  )
+})
+
+// A2 (launch audit): purchasing/restoring must never run on the wrong RevenueCat
+// identity — a failed login-time logIn leaves RC anonymous, the entitlement lands
+// on $RCAnonymousID, and the server (which grants by Supabase user id) revokes
+// premium on the next sync: money in, no access.
+test('purchasePremiumPlan re-asserts RevenueCat identity before purchasing', async () => {
+  const loggedInIds = []
+  let purchaseCalls = 0
+  const handlers = {
+    configure: async () => ({}),
+    getAppUserID: async () => ({ appUserID: '$RCAnonymousID:abc' }),
+    logIn: async ({ appUserID }) => {
+      loggedInIds.push(appUserID)
+      return { customerInfo: {} }
+    },
+    getOfferings: async () => ({
+      offerings: {
+        current: {
+          availablePackages: [
+            {
+              identifier: '$rc_annual',
+              productIdentifier: 'arcana.premium.yearly',
+              product: { identifier: 'arcana.premium.yearly' },
+            },
+          ],
+        },
+      },
+    }),
+    purchasePackage: async () => {
+      purchaseCalls += 1
+      return {
+        customerInfo: {
+          entitlements: { active: { premium: { productIdentifier: 'arcana.premium.yearly' } } },
+          activeSubscriptions: ['arcana.premium.yearly'],
+        },
+      }
+    },
+  }
+
+  await withCapacitorPurchasesMock(handlers, async (billing) => {
+    // Anonymous RC id + signed-in user: logIn must run with the user id first.
+    const success = await billing.purchasePremiumPlan('yearly', 'user-42')
+    assert.equal(success.ok, true)
+    assert.deepEqual(loggedInIds, ['user-42'])
+    assert.equal(purchaseCalls, 1)
+
+    // No user id: the purchase must be blocked before any StoreKit interaction.
+    const missingUser = await billing.purchasePremiumPlan('yearly')
+    assert.equal(missingUser.ok, false)
+    assert.equal(missingUser.reason, 'no_user_id')
+    assert.equal(purchaseCalls, 1)
+  })
+})
+
+test('purchasePremiumPlan skips logIn when RC identity already matches', async () => {
+  const loggedInIds = []
+  let purchaseCalls = 0
+  await withCapacitorPurchasesMock(
+    {
+      configure: async () => ({}),
+      getAppUserID: async () => ({ appUserID: 'user-42' }),
+      logIn: async ({ appUserID }) => {
+        loggedInIds.push(appUserID)
+        return { customerInfo: {} }
+      },
+      getOfferings: async () => ({
+        offerings: {
+          current: {
+            availablePackages: [
+              {
+                identifier: '$rc_annual',
+                productIdentifier: 'arcana.premium.yearly',
+                product: { identifier: 'arcana.premium.yearly' },
+              },
+            ],
+          },
+        },
+      }),
+      purchasePackage: async () => {
+        purchaseCalls += 1
+        return {
+          customerInfo: {
+            entitlements: { active: { premium: { productIdentifier: 'arcana.premium.yearly' } } },
+            activeSubscriptions: ['arcana.premium.yearly'],
+          },
+        }
+      },
+    },
+    async (billing) => {
+      const success = await billing.purchasePremiumPlan('yearly', 'user-42')
+      assert.equal(success.ok, true)
+      assert.deepEqual(loggedInIds, [])
+      assert.equal(purchaseCalls, 1)
+    },
+  )
+})
+
+test('purchase and restore are blocked when identity logIn fails', async () => {
+  let purchaseCalls = 0
+  let restoreCalls = 0
+  await withCapacitorPurchasesMock(
+    {
+      configure: async () => ({}),
+      getAppUserID: async () => ({ appUserID: '$RCAnonymousID:abc' }),
+      logIn: async () => {
+        throw new Error('network timeout')
+      },
+      getOfferings: async () => {
+        throw new Error('getOfferings must not be reached when identity fails')
+      },
+      purchasePackage: async () => {
+        purchaseCalls += 1
+        return {}
+      },
+      restorePurchases: async () => {
+        restoreCalls += 1
+        return {}
+      },
+    },
+    async (billing) => {
+      const purchase = await billing.purchasePremiumPlan('yearly', 'user-42')
+      assert.equal(purchase.ok, false)
+      assert.equal(purchase.available, true)
+      assert.equal(purchase.reason, 'network_error')
+      assert.equal(purchase.cancelled, false)
+      assert.equal(purchaseCalls, 0)
+
+      const restore = await billing.restorePremiumPurchases('user-42')
+      assert.equal(restore.ok, false)
+      assert.equal(restore.available, true)
+      assert.equal(restore.reason, 'network_error')
+      assert.equal(restoreCalls, 0)
     },
   )
 })

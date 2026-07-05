@@ -324,7 +324,31 @@ export const getBillingPremiumStatus = async () => {
   }
 }
 
-export const purchasePremiumPlan = async (planId) => {
+// Re-assert the RevenueCat identity right before a billing action. The login-time
+// logIn is fire-and-forget (a network blip or the deferred-configure window can
+// leave RC on an anonymous id); purchasing then attaches the entitlement to
+// $RCAnonymousID while the server grants premium by Supabase user id — money in,
+// no access. Never purchase/restore until the RC appUserID provably equals the
+// signed-in user id.
+const assertBillingIdentity = async (userId) => {
+  const expected = String(userId || '')
+  if (!expected) return { ok: false, reason: 'no_user_id' }
+  try {
+    const idRes = await withTimeout(Purchases.getAppUserID(), 'getAppUserID')
+    const appUserID = String((idRes && idRes.appUserID) || idRes || '')
+    if (appUserID === expected) return { ok: true }
+  } catch {
+    // Fall through: logIn below re-establishes the identity either way.
+  }
+  try {
+    await withTimeout(Purchases.logIn({ appUserID: expected }), 'logIn')
+    return { ok: true }
+  } catch (error) {
+    return { ok: false, reason: toErrorReason(error), error }
+  }
+}
+
+export const purchasePremiumPlan = async (planId, userId) => {
   const normalizedPlan = normalizePlan(planId)
   const configured = await ensureConfigured()
   if (!configured.ok) {
@@ -332,6 +356,18 @@ export const purchasePremiumPlan = async (planId) => {
       ok: false,
       available: false,
       reason: configured.reason,
+      plan: normalizedPlan,
+      hasPremium: false,
+      cancelled: false,
+    }
+  }
+
+  const identity = await assertBillingIdentity(userId)
+  if (!identity.ok) {
+    return {
+      ok: false,
+      available: true,
+      reason: identity.reason,
       plan: normalizedPlan,
       hasPremium: false,
       cancelled: false,
@@ -380,13 +416,27 @@ export const purchasePremiumPlan = async (planId) => {
   }
 }
 
-export const restorePremiumPurchases = async () => {
+export const restorePremiumPurchases = async (userId) => {
   const configured = await ensureConfigured()
   if (!configured.ok) {
     return {
       ok: false,
       available: false,
       reason: configured.reason,
+      plan: 'monthly',
+      hasPremium: false,
+    }
+  }
+
+  // Same identity guard as purchase: restoring on an anonymous RC id would sync
+  // the receipt to a user the server never checks — "restored" locally, revoked
+  // on the next premium sync.
+  const identity = await assertBillingIdentity(userId)
+  if (!identity.ok) {
+    return {
+      ok: false,
+      available: true,
+      reason: identity.reason,
       plan: 'monthly',
       hasPremium: false,
     }
