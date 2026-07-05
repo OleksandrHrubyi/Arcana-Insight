@@ -15,6 +15,7 @@ test('clearUser clears account-scoped local flags but leaves unrelated state', a
     arcana_free_tarot_daily_v1: '2026-06-25',
     arcana_compatibility_connections_v1: '[{"name":"Alex","dob":"1990-01-01"}]',
     arcana_auth_reward_inventory_cache_v1: '{"tokens":0}',
+    horoscope_sign_key_v1: 'virgo',
     locale: 'uk',
     'arcana-onboarding-complete': 'true',
   })
@@ -31,6 +32,9 @@ test('clearUser clears account-scoped local flags but leaves unrelated state', a
     // must not survive a sign-out on a shared device.
     assert.equal(env.localStorage.getItem('arcana_compatibility_connections_v1'), null)
     assert.equal(env.localStorage.getItem('arcana_auth_reward_inventory_cache_v1'), null)
+    // B7: the cached zodiac sign must not survive an account switch — Home
+    // focus-today and the horoscope wheel would show the previous user's sign.
+    assert.equal(env.localStorage.getItem('horoscope_sign_key_v1'), null)
     // Unrelated, non-account-scoped keys must survive a sign-out.
     assert.equal(env.localStorage.getItem('locale'), 'uk')
     assert.equal(env.localStorage.getItem('arcana-onboarding-complete'), 'true')

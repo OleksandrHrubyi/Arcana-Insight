@@ -20,6 +20,10 @@ const clearAccountScopedLocalState = () => {
     localStorage.removeItem('arcana_compatibility_connections_v1')
     // Reward inventory is the signed-in user's own entitlement/reward state.
     localStorage.removeItem('arcana_auth_reward_inventory_cache_v1')
+    // Cached zodiac sign of the signed-in user: until the next account's sign
+    // re-resolves, Home focus-today and the horoscope wheel would keep showing
+    // the PREVIOUS user's sign (B7).
+    localStorage.removeItem('horoscope_sign_key_v1')
   } catch {
     // ignore if localStorage unavailable
   }
