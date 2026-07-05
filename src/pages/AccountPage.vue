@@ -210,6 +210,7 @@ import { usePremiumAccess } from 'stores/premiumAccess.js'
 import { Preferences } from '@capacitor/preferences'
 import { useAppEpoch } from 'stores/appEpoch'
 import { resolveAccountBootstrapUser } from 'src/helpers/accountBootstrapCore.js'
+import { unlinkDeviceForLogout } from 'src/helpers/pushBackend.js'
 import { ensureRitualRewardInventory } from 'src/helpers/ritualRewardsBackend.js'
 import { isRitualRewardActive, RITUAL_REWARD_KEYS } from 'src/helpers/ritualRewardInventory'
 import { REWARDS_ENABLED } from 'src/constants/featureFlags'
@@ -658,6 +659,16 @@ export default defineComponent({
       this.logoutLoading = true
       await this.hapticTap()
       try {
+        // B8: detach this device's push row from the account BEFORE the session
+        // dies — the server's ownership gate only lets the row's own user unlink
+        // it, and an unclaimed row is what lets the logged-out device keep
+        // managing its push settings. Best-effort: an offline logout just leaves
+        // the row claimed until the next sign-in.
+        try {
+          await unlinkDeviceForLogout()
+        } catch (err) {
+          console.warn('[AccountPage] push unlink failed (continuing logout):', err)
+        }
         const signOut = supabase.auth.signOut({ scope: 'local' })
         await Promise.race([
           signOut,

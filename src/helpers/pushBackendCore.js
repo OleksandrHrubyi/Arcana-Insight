@@ -128,6 +128,18 @@ export const createPushBackendService = ({
     return { ok: true, data }
   }
 
+  // Sign-out handshake (B8): while the session is STILL valid, detach this
+  // device's row from the account so the server's ownership gate leaves the
+  // (now anonymous) device free to keep managing its own push settings.
+  // Best-effort: no token means push was never enabled here — nothing to unlink.
+  const unlinkDeviceForLogout = async () => {
+    const token = localStorageRef.getItem(LS_TOKEN)
+    if (!token) return { ok: true, skipped: 'no_token' }
+    const { data, error } = await invokeFunction('register-device', { action: 'unlink', token }, 4000)
+    if (error) return { ok: false, error }
+    return { ok: true, data }
+  }
+
   const resolveAccountPushPreference = async () => {
     const { data, error } = await invokeFunction(
       'register-device',
@@ -152,6 +164,7 @@ export const createPushBackendService = ({
     parseHHMM,
     ensureToken,
     syncRegisterDevice,
+    unlinkDeviceForLogout,
     resolveAccountPushPreference,
     getSavedTime,
     setSavedTime,

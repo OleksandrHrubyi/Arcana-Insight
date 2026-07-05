@@ -1,7 +1,8 @@
+// @ts-nocheck
 import { notifyError } from "../_shared/notify.ts";
 
 type ReqBody = {
-  action?: "upsert" | "resolve_account_preference";
+  action?: "upsert" | "resolve_account_preference" | "unlink";
   token?: string;
   platform?: string; // ios
   locale?: string;   // uk/en
@@ -120,6 +121,34 @@ Deno.serve(async (req) => {
       return json({ ok: true, preference: pref || null });
     }
 
+    // Sign-out handshake: the app unlinks its device row BEFORE the session is
+    // dropped, so the row becomes unclaimed and the (now logged-out) owner can
+    // keep toggling push anonymously. Only the row's own user may unlink it.
+    if (action === "unlink") {
+      if (!authUserId) return json({ error: "auth_required" }, 401);
+      const unlinkToken = (body.token || "").trim();
+      if (!unlinkToken || !isApnsToken(unlinkToken)) return json({ error: "Invalid token" }, 400);
+
+      const patchUrl = `${SUPABASE_URL}/rest/v1/push_devices?token=eq.${encodeURIComponent(unlinkToken)}&user_id=eq.${authUserId}`;
+      const res = await fetch(patchUrl, {
+        method: "PATCH",
+        headers: {
+          apikey: SERVICE_ROLE,
+          authorization: `Bearer ${SERVICE_ROLE}`,
+          "content-type": "application/json",
+          prefer: "return=representation",
+        },
+        body: JSON.stringify({ user_id: null, last_seen_at: new Date().toISOString() }),
+      });
+      if (!res.ok) {
+        const t = await res.text().catch(() => "");
+        console.error("[register-device] Unlink failed:", res.status, t);
+        return json({ error: "device_registration_failed" }, 500);
+      }
+      const rows = await res.json().catch(() => []);
+      return json({ ok: true, unlinked: Array.isArray(rows) ? rows.length : 0 });
+    }
+
     const token = (body.token || "").trim();
     const platform = (body.platform || "ios").toLowerCase();
     const locale = (body.locale || "uk").toLowerCase();
@@ -134,6 +163,37 @@ Deno.serve(async (req) => {
     if (!token || !isApnsToken(token)) return json({ error: "Invalid token" }, 400);
     if (platform !== "ios") return json({ error: "Only ios supported" }, 400);
     if (apns_env !== "sandbox" && apns_env !== "production") return json({ error: "Invalid apns_env" }, 400);
+
+    // Ownership gate (B8): a row claimed by a signed-in account may be modified
+    // only by that same account. Without this, anyone who learned a victim's APNs
+    // token could silently disable their notifications or re-attach the device to
+    // their own user_id. Unclaimed rows stay open on purpose — anonymous devices
+    // are a supported product flow (push works logged-out), and sign-out unlinks
+    // the row via the "unlink" action above. Fail CLOSED on a lookup error: the
+    // guard must not be skippable by inducing a read failure.
+    try {
+      const ownerRes = await fetch(
+        `${SUPABASE_URL}/rest/v1/push_devices?token=eq.${encodeURIComponent(token)}&select=user_id&limit=1`,
+        {
+          headers: {
+            apikey: SERVICE_ROLE,
+            authorization: `Bearer ${SERVICE_ROLE}`,
+          },
+        },
+      );
+      if (!ownerRes.ok) {
+        console.error("[register-device] Ownership lookup failed:", ownerRes.status);
+        return json({ error: "device_registration_failed" }, 500);
+      }
+      const ownerRows = await ownerRes.json().catch(() => []);
+      const ownerId = Array.isArray(ownerRows) ? String(ownerRows[0]?.user_id || "").trim() : "";
+      if (ownerId && ownerId !== authUserId) {
+        return json({ error: "device_owned_by_account" }, 403);
+      }
+    } catch (e) {
+      console.error("[register-device] Ownership lookup threw:", e);
+      return json({ error: "device_registration_failed" }, 500);
+    }
 
     // Compute the next send time NOW (single source of truth = the DB function the
     // push-worker also uses) so a fresh registration or a changed time/timezone
