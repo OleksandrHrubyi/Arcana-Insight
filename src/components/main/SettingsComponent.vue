@@ -429,7 +429,10 @@ export default defineComponent({
   data () {
     return {
       authStore: useAuthStore(),
-      dailyPush: JSON.parse(localStorage.getItem(LS_DAILY_PUSH) || 'false'),
+      // Strict string compare, not JSON.parse: this runs in data() during mount —
+      // a corrupted value must read as "off", never white-screen the Settings tab
+      // (B3 — the writer below stores 'true'/'false').
+      dailyPush: localStorage.getItem(LS_DAILY_PUSH) === 'true',
       busy: false,
       pushSyncError: false,
       suppressDailyPushWatch: false,

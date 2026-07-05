@@ -35,7 +35,9 @@ function getLocale() {
 }
 
 function isDailyPushEnabled() {
-  return JSON.parse(localStorage.getItem(LS_DAILY_PUSH) || 'false') === true
+  // Strict string compare, not JSON.parse: a corrupted value must read as
+  // "disabled", never throw during boot (B3 — the writer stores 'true'/'false').
+  return localStorage.getItem(LS_DAILY_PUSH) === 'true'
 }
 
 function buildTargetFromPayload(payload) {
