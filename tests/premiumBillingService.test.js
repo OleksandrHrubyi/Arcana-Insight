@@ -270,6 +270,30 @@ test('restorePremiumPurchases supports active and inactive restore outcomes', as
 // identity — a failed login-time logIn leaves RC anonymous, the entitlement lands
 // on $RCAnonymousID, and the server (which grants by Supabase user id) revokes
 // premium on the next sync: money in, no access.
+// C14 (launch audit): an entitlement carrying an UNKNOWN product id (renamed in
+// the RC dashboard) used to fall back to "monthly" even for yearly subscribers.
+// The id itself is inspected before defaulting. Access is unaffected either way.
+test('unknown yearly-looking product id resolves to the yearly plan label', async () => {
+  await withCapacitorPurchasesMock(
+    {
+      configure: async () => ({}),
+      getCustomerInfo: async () => ({
+        customerInfo: {
+          entitlements: {
+            active: { premium: { productIdentifier: 'arcana.premium.yearly.v2' } },
+          },
+          activeSubscriptions: ['arcana.premium.yearly.v2'],
+        },
+      }),
+    },
+    async (billing) => {
+      const status = await billing.getBillingPremiumStatus()
+      assert.equal(status.hasPremium, true)
+      assert.equal(status.plan, 'yearly')
+    },
+  )
+})
+
 test('purchasePremiumPlan re-asserts RevenueCat identity before purchasing', async () => {
   const loggedInIds = []
   let purchaseCalls = 0

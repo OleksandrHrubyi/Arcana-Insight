@@ -250,6 +250,12 @@ const resolvePlanFromCustomerInfo = (customerInfo) => {
     return PLAN_BY_PRODUCT_ID[productIdentifier]
   }
 
+  // Unknown product id (e.g. a product renamed in the RC dashboard): infer the
+  // cycle from the id before defaulting, so a yearly subscriber isn't labeled
+  // "monthly" in the UI (audit C14 — cosmetic, access is unaffected either way).
+  const idHints = `${productIdentifier} ${activeSubscriptions.join(' ')}`.toLowerCase()
+  if (/year|annual/.test(idHints)) return 'yearly'
+
   return 'monthly'
 }
 

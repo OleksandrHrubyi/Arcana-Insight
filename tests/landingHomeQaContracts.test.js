@@ -42,3 +42,11 @@ test('home resume reloads content only on day-roll or failed previous load', () 
   assert.match(resume, /this\.refreshHomeProgressState\(\)/)
   assert.match(resume, /if \(dayRolled\) void this\.computeAstro\(\)/)
 })
+
+// C14 (launch audit): the daily reveal flag is written under a dated key and was
+// never pruned — one orphan localStorage key accumulated per day forever.
+test('stale dated home-reveal keys are pruned on mount', () => {
+  const source = readSource('src/components/main/LandingScene.vue')
+  assert.match(source, /pruneStaleHomeDailyCardRevealKeys\(today\)/)
+  assert.match(source, /key\.startsWith\(HOME_DAILY_CARD_REVEAL_PREFIX\) && key !== keepKey/)
+})

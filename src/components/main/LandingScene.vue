@@ -739,6 +739,7 @@ export default {
     }
 
     this.homeDayKey = today
+    this.pruneStaleHomeDailyCardRevealKeys(today)
     if (typeof document !== 'undefined') {
       document.addEventListener('visibilitychange', this.onHomeResume, { passive: true })
     }
@@ -926,6 +927,25 @@ export default {
 
     getHomeDailyCardRevealStorageKey(dateKey = localISODate()) {
       return `${HOME_DAILY_CARD_REVEAL_PREFIX}${dateKey}`
+    },
+
+    // The reveal flag is written once per day under a dated key and was never
+    // cleaned up — one orphan key accumulated per day forever (audit C14).
+    // Sweep every dated key except today's on mount.
+    pruneStaleHomeDailyCardRevealKeys(todayKey = localISODate()) {
+      try {
+        const keepKey = this.getHomeDailyCardRevealStorageKey(todayKey)
+        const stale = []
+        for (let i = 0; i < localStorage.length; i += 1) {
+          const key = localStorage.key(i)
+          if (key && key.startsWith(HOME_DAILY_CARD_REVEAL_PREFIX) && key !== keepKey) {
+            stale.push(key)
+          }
+        }
+        stale.forEach((key) => localStorage.removeItem(key))
+      } catch {
+        // localStorage unavailable — nothing to prune
+      }
     },
 
     normalizeZodiacKey(value) {
