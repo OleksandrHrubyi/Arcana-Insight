@@ -9,11 +9,9 @@ test('appEpoch store exposes consistent shared state and lifecycle markers', asy
   const originalNow = Date.now
 
   try {
-    assert.equal(first.appEpoch.value, 0)
-    first.bump()
-    first.bump()
-    assert.equal(first.appEpoch.value, 2)
-    assert.equal(second.appEpoch.value, 2)
+    // The epoch counter (appEpoch/bump) was removed as dead code (audit C10) —
+    // the store keeps only the members production actually calls.
+    assert.equal('bump' in first, false)
 
     Date.now = () => 1234567890
     first.markBackground()

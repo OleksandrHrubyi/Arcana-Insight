@@ -1,6 +1,4 @@
 <script>
-//import { supabase } from 'src/services/supabaseClient'
-
 import { supabase } from 'src/services/supabaseClient';
 import { upsertAppUser } from 'src/services/supabaseNative';
 import CodeInput from 'components/ui/CodeInput.vue';
