@@ -93,18 +93,18 @@ test.describe('flows: auth × premium dead-end guards', () => {
     await expect(page.locator('a[href*="/login"]')).toHaveAttribute('href', /login\?redirect=.*premium/)
   })
 
-  // Regression #14: an invalid/expired recovery link left the user on a
-  // permanently-disabled form with no way out (the route hides the bottom nav).
-  // It must surface the error AND a working escape control.
-  test('reset-password invalid/expired link is escapable (no dead-end)', async ({ page }) => {
+  // Regression #14, updated: the reset-password flow itself was REMOVED on
+  // 2026-07-04 (auth is email-OTP, no passwords — commit 82b45a3), but an old
+  // bookmarked/emailed link must still land somewhere alive: the 404 page with
+  // a working way home — never a blank screen or a redirect loop.
+  test('removed reset-password URL lands on an escapable 404 (no dead-end)', async ({ page }) => {
     await seedLoggedOut(page)
     await go(page, 'reset-password')
-    // No recovery tokens → invalid-link state; the only control must lead somewhere.
-    const out = page.locator('.reset-submit-btn')
+    const out = page.locator('.notfound-btn')
     await expect(out).toBeVisible()
     await out.click()
     await page.waitForTimeout(600)
-    await expect(page).toHaveURL(/#\/login/)
+    await expect(page).not.toHaveURL(/reset-password/)
   })
 
   // Regression #8: tapping a saved compatibility connection did nothing when the
