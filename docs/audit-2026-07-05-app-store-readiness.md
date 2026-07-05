@@ -127,64 +127,58 @@
 
 ## 🟡 БЛОК C — Полірування / технічний борг (P2, після сабміту — ок)
 
-### C1. Guard-тест паритету i18n en/uk
-- [ ] **MEDIUM (процес; зараз дрифту НЕМАЄ — перевірено: 1313/1313, 0 розбіжностей)** · `tests/i18nMessages.test.js:5-25`
-- **Як виправити:** тест рекурсивної рівності множин ключів `messages.en` vs `messages.uk` (замість спот-чеків ~6 ключів). Missing key рендерить сирий dot-path користувачу.
+### C1. Guard-тест паритету i18n en/uk ✅ (2026-07-06)
+- [x] **MEDIUM (процес)** · Додано в `tests/i18nMessages.test.js`: (1) рекурсивна рівність множин ключів en↔uk (масиви = листя, довжини фраз можуть відрізнятись legally); (2) бонус — заборона порожніх рядків-значень з усвідомленим allowlist (`compatibilityPage.aspects.unknown` — порожній за дизайном). Будь-який майбутній дрифт копі = червоний тест, а не сирий dot-path у UI. 270/270 pass.
 
-### C2. Апгрейд Capacitor 5 → 7 (EOL), RevenueCat 4 → 5, Firebase 10 → 11
+### C2. Апгрейд Capacitor 5 → 7 (EOL), RevenueCat 4 → 5, Firebase 10 → 11 ⏸ ПРИПАРКОВАНО (рішення власника 2026-07-06: тільки post-launch, окремою сесією)
 - [ ] **HIGH (борг, післярелізний)** · `ios/App/Podfile.lock:2,36,125`, `package.json:44-54`
 - 5.x без фіксів; заразом видалити ручний патч `PurchasesHybridCommon` у `Podfile:38-64`. До апгрейду — прогнати смоук на найновішому iOS.
 
-### C3. Доступність: контраст і розміри
-- [ ] **MEDIUM** · `BottomNavigation.vue:322` (неактивний `rgba(194,206,224,.42)` < AA 4.5:1), `:373,423` (лейбли 10px/9px), `app.scss:52,91` (px-типографіка, немає реакції на Dynamic Type)
-- **Як виправити:** підняти альфу неактивних до ~0.6+, лейбли ≥ 11px; критичний текст перевести на rem/clamp.
+### C3. Доступність: контраст і розміри ✅ (2026-07-06)
+- [x] **MEDIUM** · Виправлено в `BottomNavigation.vue`: неактивні таби `0.42 → 0.62` альфи (розраховано: ~3.0:1 → ~5.1:1 поверх #0b1220 — проходить AA 4.5:1), лейбли 10px→11px (вузькі екрани 9px→10px). Регресія: `tests/bottomNavA11yContracts.test.js` пінить підлоги (альфа ≥ 0.6, лейбли ≥ 11/10px). 272/272 pass.
+- Примітка: повноцінний Dynamic Type у WKWebView не мапиться на px/rem — це властивість Capacitor-підходу; актуальна частина (мінімальні розміри найдрібнішого тексту) закрита. Візуальну оцінку нового контрасту глянути оком на девайсі (Блок D).
 
-### C4. VoiceOver: кастомні bottom-sheets поза q-dialog
-- [ ] **MEDIUM (потрібен ручний прохід)** · `app.scss:174-190`, `TarotOraclePage.vue:2630,2702`, `HoroscopeComponent.vue:2724,2882`, `PremiumInfoComponent.vue:781`
-- **Проблема:** fixed-діви без `role="dialog"`/`aria-modal`/focus-trap → VoiceOver може «блукати» по сторінці за відкритою шторкою.
-- **Як виправити:** додати role/aria-modal + focus-trap, або мігрувати на q-dialog (пам'ятай про pointer-events для кастомного контенту). Перед сабмітом — ручний VoiceOver-пас Оракул + astro-sheet.
+### C4. VoiceOver: кастомні bottom-sheets поза q-dialog ✅ FALSE POSITIVE (верифіковано 2026-07-06)
+- [x] **Знахідка не підтвердилась.** Усі реальні шторки — `<q-dialog>` (таро `TarotOraclePage:165,230`; налаштування `SettingsComponent:300,339`; astro `LandingScene:190`) — Quasar дає role="dialog"/aria/focus-management з коробки. Цитовані «fixed-діви»: `HoroscopeComponent:2724` — декоративна фонова смуга, `:2882` — fixed CTA-кнопка, `PremiumInfoComponent:781` — `::after`-градієнт з `pointer-events:none`. Коду виправляти нема чого.
+- [ ] Лишається (Блок D): ручний VoiceOver-пас шторок на девайсі — семантика q-dialog правильна, але реальну поведінку читалки з коду не видно.
 
-### C5. Touch-targets < 44pt поза hit-44 хелпером
-- [ ] **LOW-MEDIUM (виміряти на девайсі)** · `app.scss:192-210` (хелпер свідомо не покриває «packed toolbars»), сітка `CardLibraryPage`, дата-пікери `CompatibilityPage`
-- **Як перевірити:** виміряти реальні розміри тап-зон на девайсі; < 44×44 — розширити.
+### C5. Touch-targets < 44pt поза hit-44 хелпером ✅ (2026-07-06)
+- [x] **LOW-MEDIUM** · Проінспектовано код усіх підозрюваних: дата-колеса сумісності — 44px ✓, reltype-чипси ✓, емодзі-пікер 44×44 ✓, картки сітки великі ✓. Знайдено і виправлено 3 реальні: `cards-search__clear` (~18px) і `compat-savedconn__del` (38px) → додано `hit-44`; фільтр-чипси бібліотеки карт (~28px) → вертикальне 44px-розширення тап-зони через `::before` (візуально без змін; `::after` зайнятий підкресленням). Регресія: `tests/touchTargetContracts.test.js`. 274/274 pass. Фінальний тактильний чек — Блок D.
 
-### C6. `UIBackgroundModes remote-notification` — обґрунтувати або прибрати
-- [ ] **LOW (2.5.4)** · `ios/App/App/Info.plist:32-35`
-- Якщо silent push (`content-available`) реально не використовується — прибрати, щоб не викликати питань рев'юера.
+### C6. `UIBackgroundModes remote-notification` ✅ прибрано (2026-07-06)
+- [x] **LOW (2.5.4)** · Перевірено: `content-available` не використовується ніде (push-worker:650 і send-broadcast:401 шлють тільки alert+sound; у src/ і Swift-коді нуль згадок). Background mode прибрано з Info.plist (`plutil -lint` OK). Alert-пуші доставляються без нього — приводу для питань рев'юера більше немає. Девайс-чек доставки пуша — Блок D.
 
-### C7. Розкрити open-meteo geocoding у privacy policy
-- [ ] **LOW (5.1.1/5.1.2)** · `src/services/geocode.js` → `geocoding-api.open-meteo.com`
-- Додати в політику: назва міста народження надсилається третій стороні для геокодингу (DOB не надсилається).
+### C7. Розкрити open-meteo geocoding у privacy policy ✅ УЖЕ БУЛО (верифіковано 2026-07-06)
+- [x] **LOW (5.1.1/5.1.2)** · Політика вже розкриває: `app-store/privacy-policy.html:254-256` — розділ «Third-Party Services» містить «Open-Meteo (geocoding): Converting the birth city you enter into coordinates… Birth city name only (not linked to your identity)». Діяти не треба.
 
-### C8. Прибрати повний `firebase` JS SDK, якщо не імпортується
-- [ ] **LOW-MEDIUM (bundle)** · `package.json:61` (`firebase ^10.14.1`)
-- Аналітика/краші йдуть через нативні `@capacitor-firebase/*`. Перевірити `grep -r "from 'firebase" src/` → якщо порожньо, видалити залежність.
+### C8. Прибрати повний `firebase` JS SDK, якщо не імпортується ✅ ВИПРАВДАНИЙ, НЕ ЧІПАТИ (верифіковано 2026-07-06)
+- [x] **LOW-MEDIUM (bundle)** · Перевірено: (1) прямих імпортів у src/ нуль; (2) але `firebase` — обов'язковий **peerDependency** `@capacitor-firebase/analytics` (`^9||^10`), npm 7+ встановить його однаково; (3) головне — в шипнутий бандл він НЕ потрапляє: `ios/App/App/public/assets` = 2.6MB без жодного firebase-чанка (web-імплементація плагіна вантажиться динамічно і на iOS не використовується). Видалення нічого не заощадить і зламає dev-режим. Діяти не треба.
 
-### C9. Документація бреше — виправити, щоб не вводила в оману наступні задачі
-- [ ] **LOW** · `docs/canonical-files.md:72-73` (називає мертві `en.json`/`uk.json` канонічними — live source: `messages.bundle.js`); CLAUDE.md/доки називають стори «Pinia» — насправді це module-level `ref()` синглтони (`premiumAccess.js:35`, `appEpoch.js:3`, `authStore.js:37`), Pinia в проєкті немає.
+### C9. Документація бреше — виправлено ✅ (2026-07-06)
+- [x] **LOW** · Виправлено 3 місця: `docs/canonical-files.md` (locale-секція → messages.bundle.js LIVE, en/uk.json — мертві фікстури), `AGENTS.md:45` (i18n-правило тепер вказує на bundle), `CLAUDE.md` (структура: стори — module-level ref()-синглтони, НЕ Pinia). Скіл `arcana-i18n-consistency` уже був коректний. Історичний звіт `pre-release-audit-2026-06-24.md` свідомо не чіпав (запис на дату).
 
-### C10. Мертвий/дубльований код
-- [ ] **LOW** · `src/stores/appEpoch.js:8` (`bump()` — нуль викликів; rollover робиться per-component); `src/data/tarot_full.json` + `src/data/tarot_meta.json` (не імпортуються; канонічний — `src/data/cardsV2/tarot_full.json`); `MainLayout.vue` виглядає мертвим (роути на BlankLayout, `routes.js:6`); `ConfirmEmailCode.vue:2` — застарілий закоментований імпорт. **Не видаляти без окремого дозволу** — спершу підтвердити.
+### C10. Мертвий/дубльований код ✅ (2026-07-06, видалення схвалено власником)
+- [x] **LOW** · Зроблено: (1) `appEpoch.js` — прибрано мертвий епох-лічильник (`appEpoch` ref + `bump()`, нуль прод-викликів), тест стереже від повернення; (2) видалено з дозволу власника: `src/layouts/MainLayout.vue` (нуль посилань, роути на BlankLayout), `src/data/tarot_full.json` (392KB) і `tarot_meta.json` (нуль імпортів, канонічний — cardsV2); (3) `ConfirmEmailCode.vue` — прибрано застарілий закоментований імпорт. Верифікація: 274/274 тестів, lint чистий, `quasar build` — Build succeeded.
 
-### C11. Auth-логіка повз сервісний шар
+### C11. Auth-логіка повз сервісний шар ⏸ ПРИПАРКОВАНО (рішення власника 2026-07-06: post-launch — зачіпає логін/OTP/логаут, ризик > цінність перед релізом)
 - [ ] **MEDIUM (борг)** · `LoginView.vue:3`, `SignUpScene.vue:2`, `ConfirmEmailCode.vue:4`, `AccountPage.vue:202` — прямі виклики `supabase.auth.*` повз `supabaseNative`/`authStore` → логіка дубльована й не покрита тестами authStoreCore.
 - **Як виправити:** винести ці виклики в сервіс/стор; компоненти лишають тільки UI.
 
-### C12. God-компоненти
+### C12. God-компоненти ⏸ ПРИПАРКОВАНО (рішення власника 2026-07-06: post-launch)
 - [ ] **MEDIUM (борг)** · `TarotOraclePage.vue` (3 587 рядків), `LandingScene.vue` (3 043), `HoroscopeComponent.vue` (2 910), `CompatibilityPage.vue` (2 717)
 - Декомпозиція після релізу; трекати в `launch-readiness-plan.md`.
 
-### C13. Преміум-стан потрійно джерельний
+### C13. Преміум-стан потрійно джерельний ⏸ ПРИПАРКОВАНО (рішення власника 2026-07-06: post-launch — грошові шляхи щойно виправлені/протестовані й працюють у проді)
 - [ ] **MEDIUM (борг)** · `premiumAccess.js:35,49`, `authStore.js:62` — localStorage + RC (девайс) + `user_entitlements` (сервер), реконсиляція ad-hoc → клас багів «оплачено, але закрито». Довгостроково: один резолвер-джерело правди.
 
-### C14. Дрібне
-- [ ] `premiumBilling.js:253,268` — фолбек плану `'monthly'` може мітити річного підписника як місячного (косметика).
-- [ ] `flushProfileQueue` — інтервал 15с на форграунді (`boot/auth.ts:45`): підтвердити early-return при порожній черзі.
-- [ ] `LandingScene.vue:924,985-993` — dated-ключі `arcana_home_daily_card_revealed_v1:{date}` ніколи не прунляться (1 ключ/день назавжди) — додати sweep старих дат.
-- [ ] Шрифти `src/assets/fonts/ttf/JetBrainsMono-*.ttf` → woff2 (~-40% розміру); перевірити вагу `oracle-loop.mp4`, `landing-stars-bg.webp`.
-- [ ] `Deno`-функції: винести спільний `requireUser()`/CORS у `_shared` (зараз копіпаст у ~12 функціях — там колись проскочить authz-баг).
-- [ ] `telegram-auth`: підтвердити, що Telegram-логін не шипиться в iOS-білді; якщо шипиться — звірити схему HMAC (WebApp vs Login Widget) і додати rate limit.
-- [ ] Перевірити 1024px іконку на альфа-канал (Apple відхиляє з альфою): `sips -g hasAlpha ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png`.
+### C14. Дрібне ✅ безпечна частина (2026-07-06)
+- [x] `premiumBilling.js` — фолбек плану: додано евристику за product id (`/year|annual/` → yearly) для невідомих продуктів; тест у `premiumBillingService.test.js`.
+- [x] `flushProfileQueue` — підтверджено: early-return і на відсутнього юзера, і на порожню чергу (`authStoreCore.js:136-141`). Діяти не треба.
+- [x] `LandingScene.vue` — додано `pruneStaleHomeDailyCardRevealKeys` на mount: усі dated reveal-ключі, крім сьогоднішнього, зачищаються; контракт-тест у `landingHomeQaContracts.test.js`.
+- [x] Медіа зважено: `oracle-loop.mp4` — 176KB, `landing-stars-bg.webp` — 180KB — легкі, дій не треба. Шрифти `JetBrainsMono-*.ttf` (540KB) — **мертві файли**: ніде не підключені, у бандл не потрапляють (кандидат на видалення, потрібен дозвіл).
+- [ ] ⏸ ПРИПАРКОВАНО: спільний `requireUser()`/CORS для ~12 edge-функцій — зачіпає всі функції + повний редеплой, робити post-launch.
+- [x] `telegram-auth` — підтверджено: Telegram-логіну в iOS-клієнті НЕМАЄ (єдина згадка — CSS-коментар); серверна функція застосунком не викликається (кандидат на декомішн post-launch).
+- [x] Іконка 1024px: `sips -g hasAlpha` → **no** — ризику відхилення немає.
 
 ---
 
