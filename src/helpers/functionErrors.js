@@ -10,6 +10,15 @@ export const isPremiumRequiredError = (error) => {
   return /\b403\b/.test(String(error.message || ''))
 }
 
+// True when the server rejected an AI request because the account hit its daily
+// AI ceiling (HTTP 429 / daily_limit_reached). Callers should show the "come back
+// tomorrow" copy instead of a generic error whose retry can't succeed today.
+export const isDailyLimitError = (error) => {
+  if (!error) return false
+  if (String(error.code || '').toLowerCase() === 'daily_limit_reached') return true
+  return error.status === 429
+}
+
 // True when an invokeFunction() error means the session is missing/expired
 // (HTTP 401). Like a 403, the caller should reconcile (a stale premium flag can't
 // be verified without a session) and show the locked/sign-in state instead of a

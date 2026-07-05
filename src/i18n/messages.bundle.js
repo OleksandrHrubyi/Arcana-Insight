@@ -45,6 +45,7 @@ export const messages = {
         premiumAdvice: 'The cards in this spread point to one area of focus. Sitting with that tension, rather than resolving it immediately, is often where clarity begins.',
         premiumTitle: 'Extended Premium interpretation',
         aiFallbackNotify: 'AI interpretation is temporarily unavailable. Showing the extended Premium interpretation.',
+        aiDailyLimitNotify: 'You’ve reached today’s AI reading limit. Showing the extended Premium interpretation — AI resets tomorrow.',
       },
       freeAiSpent: 'Your free AI reading was already used. Premium unlocks the full interpretation every time.',
       actionsSheetTitle: 'Options',
@@ -722,6 +723,10 @@ export const messages = {
       loadError: 'Couldn’t load. Check your connection and try again.',
       notFoundTitle: 'Page not found',
       notFoundBody: 'The page you are looking for does not exist.',
+    },
+
+    aiLimits: {
+      dailyReached: 'You’ve reached today’s AI reading limit. It resets tomorrow.',
     },
 
     ritualRewards: {
@@ -2288,6 +2293,7 @@ export const messages = {
         premiumAdvice: 'Карти цього розкладу вказують на один фокус уваги. Витримати цю напругу, а не вирішувати її одразу — часто саме там і народжується ясність.',
         premiumTitle: 'Розширене Premium-тлумачення',
         aiFallbackNotify: 'AI-інтерпретація тимчасово недоступна. Показую розширене Premium-тлумачення.',
+        aiDailyLimitNotify: 'Денний ліміт AI-читань вичерпано. Показую розширене Premium-тлумачення — AI оновиться завтра.',
       },
       freeAiSpent: 'Твій безкоштовний AI-розбір уже використано. Premium відкриває повне тлумачення щоразу.',
       actionsSheetTitle: 'Варіанти',
@@ -2951,6 +2957,10 @@ export const messages = {
       loadError: 'Не вдалося завантажити. Перевір зʼєднання і спробуй ще.',
       notFoundTitle: 'Сторінку не знайдено',
       notFoundBody: 'Сторінка, яку ви шукаєте, не існує.',
+    },
+
+    aiLimits: {
+      dailyReached: 'Денний ліміт AI-читань вичерпано. Оновиться завтра.',
     },
 
     ritualRewards: {

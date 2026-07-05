@@ -318,7 +318,7 @@ import { getTarotReading, getTarotClarify } from 'src/services/tarotOracle'
 import { getUserNative, insertTarotReading } from 'src/services/supabaseNative'
 import { analytics } from 'src/services/analytics'
 import { PAYWALL_ENTRY_POINTS, TAROT_SESSION_EVENTS } from 'src/constants/analyticsEvents'
-import { isPremiumRequiredError } from 'src/helpers/functionErrors.js'
+import { isDailyLimitError, isPremiumRequiredError } from 'src/helpers/functionErrors.js'
 import { usePremiumAccess } from 'src/stores/premiumAccess'
 import { useAuthStore } from 'stores/authStore.js'
 
@@ -678,7 +678,7 @@ const t = computed(() => {
     },
     ui: {
       ariaTouchDeck: '', ariaExit: '', ariaBack: '', sheetCard: '', sheetClose: '',
-      loadingBase: '', readingReady: '', declinedHint: '', aiFallbackNotify: '',
+      loadingBase: '', readingReady: '', declinedHint: '', aiFallbackNotify: '', aiDailyLimitNotify: '',
       reversedSuffix: '', reversedTag: '', cardN: '', roleCore: '',
       rewardBadge: '', clarifyThinking: '', clarifySkip: '',
       summaryLine: '', summarySubthemeLine: '',
@@ -2161,9 +2161,14 @@ const acceptInterpretation = async () => {
       try {
         const fallbackData = buildPremiumStructuredFallback(payload, { aiUnavailable: true })
         logInterpretationOutcome(TAROT_SESSION_EVENTS.premiumStructuredFallback, payload, {
-          reason: 'ai_error',
+          reason: isDailyLimitError(error) ? 'ai_daily_limit' : 'ai_error',
         })
-        const fallbackMessage = t.value.ui.aiFallbackNotify
+        // Daily AI ceiling (429) gets honest copy — "resets tomorrow" — instead of
+        // the generic "temporarily unavailable" (which invites a retry that can't
+        // succeed today). Both paths still show the structured Premium fallback.
+        const fallbackMessage = isDailyLimitError(error)
+          ? t.value.ui.aiDailyLimitNotify || t.value.ui.aiFallbackNotify
+          : t.value.ui.aiFallbackNotify
         $q.notify({
           message: fallbackMessage,
           color: 'dark',

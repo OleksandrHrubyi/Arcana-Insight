@@ -189,8 +189,9 @@
             <span>{{ tt('compatibilityPage.aiLoading') }}</span>
           </div>
           <div v-else class="compat-overview__error">
-            <span>{{ tt('common.loadError') }}</span>
+            <span>{{ aiLimitReached ? tt('aiLimits.dailyReached') : tt('common.loadError') }}</span>
             <button
+              v-if="!aiLimitReached"
               type="button"
               class="arcana-btn arcana-btn--secondary compat-overview__retry"
               @click="requestAiReading(result)"
@@ -466,7 +467,7 @@ import { usePremiumAccess } from 'src/stores/premiumAccess'
 import { analytics } from 'src/services/analytics'
 import { PAYWALL_ENTRY_POINTS, CONTENT_SHARE_EVENTS } from 'src/constants/analyticsEvents'
 import { selectAppUser, invokeFunction } from 'src/services/supabaseNative'
-import { isPremiumRequiredError, isUnauthorizedError } from 'src/helpers/functionErrors.js'
+import { isDailyLimitError, isPremiumRequiredError, isUnauthorizedError } from 'src/helpers/functionErrors.js'
 import { useAuthStore } from 'stores/authStore.js'
 import { computeChart, computeCompatibility, computeWeather } from 'src/helpers/compatibilityCore.js'
 import { localISODate } from 'src/helpers/date.ts'
@@ -551,6 +552,9 @@ const weeklyAction = computed(() => {
 const aiReading = ref(null)
 const aiLoading = ref(false)
 const aiError = ref(false)
+// Daily AI ceiling hit (429): different copy and NO retry button — retrying
+// can't succeed until tomorrow.
+const aiLimitReached = ref(false)
 let aiRequestId = 0
 
 let scoreRaf = 0
@@ -583,6 +587,9 @@ const citySearch = ref('')
 const cityResults = ref([])
 const citySearching = ref(false)
 let citySearchTimer = 0
+// Guards city-search results/spinner against out-of-order async completion
+// (same pattern as aiRequestId).
+let citySearchReqId = 0
 
 // iOS-style day/month/year wheel picker (same pattern the app already uses for
 // birth date in Account / Sign-up — one screen, scroll each column).
@@ -825,11 +832,13 @@ function onCitySearch() {
   window.clearTimeout(citySearchTimer)
   if (String(q || '').trim().length < 2) { cityResults.value = []; return }
   citySearchTimer = window.setTimeout(async () => {
+    const reqId = ++citySearchReqId
     citySearching.value = true
     try {
-      cityResults.value = await searchCities(q, locale.value)
+      const results = await searchCities(q, locale.value)
+      if (reqId === citySearchReqId) cityResults.value = results
     } finally {
-      citySearching.value = false
+      if (reqId === citySearchReqId) citySearching.value = false
     }
   }, 350)
 }
@@ -885,6 +894,7 @@ async function requestAiReading(res) {
   const reqId = ++aiRequestId
   aiReading.value = null
   aiError.value = false
+  aiLimitReached.value = false
   aiLoading.value = true
   try {
     const payload = {
@@ -912,6 +922,9 @@ async function requestAiReading(res) {
       // generic error whose retry just re-hits the same 403/401 (C3).
       revokePremiumAccess()
       aiError.value = false
+    } else if (isDailyLimitError(e)) {
+      aiLimitReached.value = true
+      aiError.value = true
     } else {
       aiError.value = true
     }
@@ -947,6 +960,7 @@ function resetPairing() {
   displayScore.value = 0
   aiReading.value = null
   aiError.value = false
+  aiLimitReached.value = false
   aiLoading.value = false
   aiRequestId += 1
   void hapticSelect()

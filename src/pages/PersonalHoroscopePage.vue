@@ -122,7 +122,7 @@ import { Preferences } from '@capacitor/preferences'
 import { Share } from '@capacitor/share'
 import { t, currentLocale } from 'src/i18n'
 import { invokeFunction, selectAppUser } from 'src/services/supabaseNative'
-import { isPremiumRequiredError, isUnauthorizedError } from 'src/helpers/functionErrors.js'
+import { isDailyLimitError, isPremiumRequiredError, isUnauthorizedError } from 'src/helpers/functionErrors.js'
 import { useAuthStore } from 'stores/authStore.js'
 import { localISODate } from 'src/helpers/date.ts'
 import { analytics } from 'src/services/analytics'
@@ -347,6 +347,8 @@ async function generate() {
       // session (401). Reconcile so the lock + sign-in/upgrade CTA show instead of a
       // generic error whose retry just re-POSTs into the same 403/401 (H4).
       revokePremiumAccess()
+    } else if (isDailyLimitError(e)) {
+      error.value = tt('aiLimits.dailyReached')
     } else {
       error.value = tt('personalHoroscope.errorGeneric')
     }
