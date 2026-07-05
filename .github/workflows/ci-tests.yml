@@ -47,4 +47,10 @@ jobs:
           deno-version: v2.x
 
       - name: Deno tests (money paths - premium gate, RC webhook, AI quota)
+        # DENO_NO_PACKAGE_JSON: the repo-root package.json flips Deno into byonm
+        # mode, and this job has no node_modules — type resolution then fails on
+        # npm:@types/node. Ignoring package.json makes npm: imports resolve from
+        # the Deno cache instead.
         run: deno test --allow-env --allow-net supabase/functions/tests/
+        env:
+          DENO_NO_PACKAGE_JSON: '1'

@@ -11,7 +11,7 @@
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "find tests -name '*.test.js' -print0 | xargs -0 node --test",
     "test:coverage": "find tests -name '*.test.js' -print0 | xargs -0 node --test --experimental-test-coverage",
-    "test:functions": "deno test --allow-env --allow-net supabase/functions/tests/",
+    "test:functions": "DENO_NO_PACKAGE_JSON=1 deno test --allow-env --allow-net supabase/functions/tests/",
     "ai:scan:code": "node ai-ops/checks/code-scan.js",
     "ai:scan:launch": "node ai-ops/checks/launch-readiness.js",
     "ai:scan:test": "node ai-ops/checks/test-status.js",
