@@ -35,7 +35,7 @@ test('home qa mode exposes fresh and revealed deterministic states', () => {
 test('home resume reloads content only on day-roll or failed previous load', () => {
   const source = readSource('src/components/main/LandingScene.vue')
 
-  const resume = source.match(/onHomeResume\(\)\s*\{[\s\S]*?\n    \},/)?.[0] || ''
+  const resume = source.match(/onHomeResume\(\)\s*\{[\s\S]*?\n {4}\},/)?.[0] || ''
   assert.ok(resume, 'onHomeResume must exist')
   assert.match(resume, /if \(dayRolled \|\| !this\.dailyCardData\) void this\.loadLandingContent\(\)/)
   assert.doesNotMatch(resume, /^\s*void this\.loadLandingContent\(\)$/m, 'content reload must not be unconditional')

@@ -44,7 +44,7 @@ test('home focus today DB fallback reads selectAppUser row as object, not array'
 // switch invalidates the cache and refetches over the network.
 test('home horoscope preview passes the real entitlement into the registry load', () => {
   const source = readSource('src/components/main/LandingScene.vue')
-  const preview = source.match(/async loadHomeHoroscopePreview\(\{[\s\S]*?\n    \},/)?.[0] || ''
+  const preview = source.match(/async loadHomeHoroscopePreview\(\{[\s\S]*?\n {4}\},/)?.[0] || ''
   assert.ok(preview, 'loadHomeHoroscopePreview must exist')
   assert.match(preview, /isEntitled: premiumAccessStore\.hasPremiumAccess\.value/)
 })
