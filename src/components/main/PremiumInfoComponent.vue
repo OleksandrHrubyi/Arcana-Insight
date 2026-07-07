@@ -669,7 +669,27 @@ watch(premiumPlan, (plan) => {
   }
 })
 
+// DEV-only QA seed (?qa=premium before the hash, e.g. /?qa=premium#/premium):
+// web QA/screenshot runs have no RevenueCat, so the paywall renders the
+// "unavailable" hint and empty prices. Seed the catalog with the real App Store
+// prices so it renders its production look. Same DEV gating as ?qa=home.
+const readPremiumQaSeed = () => {
+  if (!import.meta.env.DEV || typeof window === 'undefined') return null
+  const params = new URLSearchParams(window.location.search || '')
+  if (params.get('qa') !== 'premium') return null
+  return {
+    monthly: { priceLabel: '$2.99', offerLabel: '', freeTrial: null, pricePerMonth: null, currencyCode: 'USD' },
+    yearly: { priceLabel: '$29.99', offerLabel: '', freeTrial: null, pricePerMonth: 29.99 / 12, currencyCode: 'USD' },
+  }
+}
+
 const initializePremiumBillingState = async () => {
+  const qaSeed = readPremiumQaSeed()
+  if (qaSeed) {
+    billingCatalog.value = qaSeed
+    return
+  }
+
   logPaywallEvent(PAYWALL_FUNNEL_EVENTS.paywallView)
 
   // Migration: remove legacy local/test premium state.

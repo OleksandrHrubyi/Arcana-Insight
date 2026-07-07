@@ -12,7 +12,9 @@ const SCREENS = [
   { name: '2-tarot', path: '/#/tarot', wait: 9800 },
   { name: '3-horoscope', path: '/#/horoscope', wait: 3000 },
   { name: '4-compatibility', path: '/#/compatibility', wait: 1800 },
-  { name: '5-premium', path: '/#/premium', wait: 1800 },
+  // ?qa=premium (before the hash) seeds real App Store prices — without it the
+  // web build renders "Purchases are unavailable" + empty price tiles.
+  { name: '5-premium', path: '/?qa=premium#/premium', wait: 1800 },
 ]
 
 test('app store screenshots', async ({ browser }) => {
