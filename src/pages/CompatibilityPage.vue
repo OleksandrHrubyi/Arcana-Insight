@@ -1356,7 +1356,20 @@ onMounted(() => {
   void loadConnections()
   void loadReminderPref()
   void loadProfileDob()
+  seedQaRevealState()
 })
+
+// DEV-only QA seed (?qa=compat before the hash, e.g. /?qa=compat#/compatibility):
+// web QA/screenshot runs can't click through the DOB wheel picker, so seed two
+// birth dates and reveal the locally-computed result. Same DEV gating as ?qa=home.
+function seedQaRevealState() {
+  if (!import.meta.env.DEV || typeof window === 'undefined') return
+  const params = new URLSearchParams(window.location.search || '')
+  if (params.get('qa') !== 'compat') return
+  dobA.value = '1994-04-12'
+  dobB.value = '1992-11-03'
+  if (canReveal.value) reveal()
+}
 
 // The bottom-nav wrap sits above q-dialogs in this app, so a visible nav overlaps
 // the bottom DOB / save sheets. Hide it ONLY while a sheet is open (not page-wide,
