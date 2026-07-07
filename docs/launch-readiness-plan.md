@@ -18,6 +18,7 @@
 - [ ] **LR-13 — Subscriptions "Ready to Submit" in ASC (~5 min).** Both subs exist & route through RevenueCat. In ASC confirm each subscription is in state **Ready to Submit** (the sandbox tile showed `UNRATED`) and **attached to the app version** you submit.
 - [ ] **LR-14 — Upload screenshots (~15 min).** Raw set is generated and on disk (tooling committed). Review, optionally polish, and **upload to ASC**.
 - [ ] **LR-16 — Fill Age Rating + App Privacy forms (~10 min).** Click-ready answers in **`app-store/asc-age-rating-and-privacy.md`** (Age rating → **4+**; App Privacy → 8 data types, all Linked / no Tracking). Manifest already matches. Just transcribe into ASC.
+- [x] **LR-27 — Move push trigger to pg_cron — ✅ DONE & DEVICE-VERIFIED 2026-07-07.** Live end-to-end test passed: forced `next_send_at=now` → next 2-min tick sent (`due:1, sent:1`), push arrived on the real device ~60s after schedule, `next_send_at` rolled to next-day 08:00 Kyiv. Real root cause of late pushes was a legacy dead-401 pg_cron pair (stale `push_secret`), both removed; `ADMIN_PUSH_SECRET` rotated (edge + Vault + GitHub). Full story: `docs/release-audit/PUSH_TIMING_PGCRON.md`.
 - [ ] **Submit for review** → Apple review ~1–2 weeks.
 
 **Deferred (NOT a blocker):** LR-23 tarot journal/patterns — post-launch (needs real user history + a `note` DB column).
@@ -307,6 +308,8 @@
 
 ## Daily Progress Log
 > Append one line per work session: date — items moved — commit(s).
+
+- 2026-07-07 — **LR-27 code part done (push timing / pg_cron).** Diagnosed 2026-07-04: daily push hours late because the `push-worker` trigger is a GitHub Actions schedule (best-effort, lags 15–75 min); tz math + `next_send_at` verified correct. Committed the two dashboard-only DB fns (`compute_next_send_at`, `push_mark_sent`, dumped verbatim from prod) as migration `202607071000_push_schedule_functions.sql`; commented out the GH Actions `schedule:` (kept `workflow_dispatch`). Remaining = 3 SQL steps in Supabase dashboard (`docs/release-audit/PUSH_TIMING_PGCRON.md`) — added to REMAINING TO SUBMIT. ⚠️ pg_cron must be live before this lands on `main`.
 
 - 2026-06-16 — Plan created from deep audit. Baseline: 194/194 tests, readiness 74%. Earlier today: fixed bottom-sheet pointer-events bug across all dialogs (commits `6808838`, `43e47a1`); home screen finished + haptics/close-button/back-nav (`e5f0bc6`).
 - 2026-06-16 — **LR-01 done**: OpenRouter fallback + horoscope-calibrated content guard in `generate-horoscopes`. Tests 194/194. Next: LR-02 (`personal-horoscope`). Reminder: set `OPENROUTER_API_KEY` secret.

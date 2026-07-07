@@ -1,12 +1,13 @@
 name: Send push notifications
 
 on:
-  schedule:
-    # Every 10 min so a device's next_send_at is picked up close to its time
-    # (was */30, which bucketed sends up to half an hour late). Note: GitHub
-    # Actions scheduled runs are best-effort and can still lag several minutes;
-    # for tight timing move this trigger to Supabase pg_cron.
-    - cron: "*/10 * * * *"
+  # Schedule DISABLED (LR-27): the trigger moved to Supabase pg_cron
+  # ('push-worker-tick', every 2 min) — GitHub scheduled runs lag 15-75 min,
+  # which delivered daily pushes hours late. Setup + rollback:
+  # docs/release-audit/PUSH_TIMING_PGCRON.md. Do NOT push this change to main
+  # before the pg_cron job is live, or daily pushes stop entirely.
+  # schedule:
+  #   - cron: "*/10 * * * *"
   workflow_dispatch:
     inputs:
       mode:

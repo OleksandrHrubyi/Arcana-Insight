@@ -1,6 +1,42 @@
 # TODO: move push trigger to Supabase pg_cron (fix late notifications)
 
-Status: **OPEN** — do when at a computer with Supabase dashboard access.
+Status: **✅ LIVE (2026-07-07).** Tracked as **LR-27** in `docs/launch-readiness-plan.md`.
+
+## Rollout result (2026-07-07)
+- Steps 1–3 done: `pg_cron`+`pg_net` enabled, new `ADMIN_PUSH_SECRET` generated
+  (old value was lost → rotated; set in edge secrets + Vault `admin_push_secret`
+  + GitHub secret), `push-worker-tick` scheduled `*/2`.
+- **Verified live:** tick run at 19:00 UTC → HTTP **200** `{ok:true,due:0,sent:0}`
+  (check real HTTP status in `net._http_response`, NOT `cron.job_run_details` —
+  `succeeded` there only means the SQL ran; `net.http_post` is async).
+- **Plot twist — the real root cause:** two legacy pg_cron jobs already existed
+  (unknown to the repo/docs): `push-worker-every-minute` (`* * * * *`) and
+  `daily-arcana-push` (`0 8 * * *` broadcast "Гороскоп дня вже готовий ✨",
+  limit 5000). Both used Vault `push_secret`, which no longer matched the edge
+  `ADMIN_PUSH_SECRET` → **401 every minute, silently, for weeks**. So the
+  per-minute trigger existed but was dead, and delivery depended on the laggy
+  GitHub Action — hence the "hours late" pushes.
+- **Cleanup (done, owner-approved):** both legacy jobs unscheduled
+  (`push-worker-every-minute` — replaced by `push-worker-tick`;
+  `daily-arcana-push` — generic broadcast duplicating the per-device daily push)
+  and stale Vault entries `push_secret` / `project_url` deleted. Final state:
+  one cron job (`push-worker-tick`), one Vault secret (`admin_push_secret`).
+- **Live device test PASSED (2026-07-07 19:12 UTC):** forced `next_send_at=now()`
+  on the owner's device (the in-app picker has a 30-min step —
+  `SettingsComponent.vue` `step = 30` — so a "+3 min" test isn't settable from UI);
+  next tick sent it (`due:1, sent:1, marked_next:1`), push arrived on device,
+  `next_send_at` correctly rolled to next-day 08:00 Kyiv. End-to-end chain
+  (pg_cron → pg_net → push-worker → APNs → device → reschedule) verified.
+
+Done in repo (2026-07-07):
+- Step 4 (disable GH Actions schedule) — `schedule:` commented out in
+  `.github/workflows/send-push-notifications.yml`, `workflow_dispatch` kept.
+  **⚠️ Don't push to `main` until the pg_cron job (steps 1–3) is live**, or daily
+  pushes stop entirely.
+- The two DB functions (`compute_next_send_at`, `push_mark_sent`) are now committed
+  as migration `supabase/migrations/202607071000_push_schedule_functions.sql`
+  (dumped verbatim from prod — re-apply is a no-op). Closes the "live only in the
+  dashboard" note below.
 
 ## The problem (diagnosed 2026-07-04)
 Daily push arrives hours late (set 07:00 → arrives ~09:00). Root cause is **NOT**
