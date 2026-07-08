@@ -374,7 +374,8 @@ const goToTarot = async () => {
 
 const goToLogin = async () => {
   await hapticTap()
-  router.push({ name: 'login' })
+  // Carry the redirect so sign-in returns the user here, not to Home.
+  router.push({ name: 'login', query: { redirect: '/readings' } })
 }
 
 const goPremium = async () => {

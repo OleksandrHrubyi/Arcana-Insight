@@ -118,6 +118,44 @@ test('router guard prioritizes onboarding redirect over auth redirect', async ()
   })
 })
 
+// Regression (2026-07-08, user-reported): login → /premium → Close did a
+// history-back into /login, stranding a just-signed-in user on the login page.
+// An authenticated user must be bounced off the auth screens — home, NOT the
+// redirect query (which would loop back to the page they just closed).
+test('router guard bounces an authenticated user off login/sign-up to home', async () => {
+  const { resolveRouteGuardDecision } = await importModule('src/router/guard.js')
+
+  for (const name of ['login', 'signUp']) {
+    const result = resolveRouteGuardDecision({
+      to: baseRoute({
+        name,
+        fullPath: `/${name}?redirect=%2Fpremium`,
+        meta: { allowWithoutOnboarding: true },
+      }),
+      onboardingComplete: true,
+      hasUser: true,
+    })
+    assert.deepEqual(result, { name: 'arcana' })
+  }
+})
+
+test('router guard still allows login/sign-up for logged-out users', async () => {
+  const { resolveRouteGuardDecision } = await importModule('src/router/guard.js')
+
+  for (const name of ['login', 'signUp']) {
+    const result = resolveRouteGuardDecision({
+      to: baseRoute({
+        name,
+        fullPath: `/${name}`,
+        meta: { allowWithoutOnboarding: true },
+      }),
+      onboardingComplete: true,
+      hasUser: false,
+    })
+    assert.equal(result, true)
+  }
+})
+
 test('dev home qa bypass activates only for qa=home searches', async () => {
   const { isDevHomeQaBypassActive } = await importModule('src/router/guard.js')
 

@@ -1,5 +1,11 @@
 # Arcana Insight — App Store Metadata
 
+> ⚠️ **DEPRECATED (2026-07-08).** Historical draft — do NOT paste values from this file
+> into App Store Connect. The canonical, submitted ASC copy lives in **`asc-metadata.md`**
+> (+ `asc-age-rating-and-privacy.md`, `reviewer-notes.md`). App name, subtitle, keywords
+> and age rating below are STALE. This file is kept only because the ai-ops scanner
+> (`ai-ops/checks/launch-readiness.js`) reads it.
+
 ---
 
 ## ⚠️ Claims to remove / avoid before submission

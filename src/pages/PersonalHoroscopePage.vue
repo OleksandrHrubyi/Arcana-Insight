@@ -47,12 +47,13 @@
           <div class="personal-loading__text">{{ tt('personalHoroscope.loading') }}</div>
         </div>
 
-        <div v-else-if="error" class="personal-panel personal-panel--center personal-empty">
-          <div class="personal-empty__icon"><q-icon name="error_outline" size="30px" /></div>
-          <div class="personal-empty__text">{{ error }}</div>
-        </div>
-
+        <!-- Reading wins over error: a failed Regenerate must not hide the
+             reading the user already has — the error shows as a banner above it. -->
         <div v-else-if="reading" class="personal-reading">
+          <div v-if="error" class="personal-panel personal-error-banner">
+            <q-icon name="error_outline" size="18px" />
+            <span>{{ error }}</span>
+          </div>
           <article
             v-for="section in readingSections"
             :key="section.key"
@@ -63,6 +64,11 @@
             <div class="personal-section__text">{{ section.text }}</div>
           </article>
           <p class="personal-disclaimer">{{ tt('common.disclaimer') }}</p>
+        </div>
+
+        <div v-else-if="error" class="personal-panel personal-panel--center personal-empty">
+          <div class="personal-empty__icon"><q-icon name="error_outline" size="30px" /></div>
+          <div class="personal-empty__text">{{ error }}</div>
         </div>
 
         <div v-else class="personal-panel personal-panel--center personal-start">
@@ -753,6 +759,17 @@ onMounted(async () => {
     color: rgba(255, 255, 255, 0.5);
     max-width: 260px;
   }
+}
+
+.personal-error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(252, 200, 180, 0.9);
 }
 
 .personal-loading {

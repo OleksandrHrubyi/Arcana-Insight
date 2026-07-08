@@ -7,6 +7,7 @@ import { Capacitor } from '@capacitor/core'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { analytics } from 'src/services/analytics'
 import { resolveAuthRedirect } from 'src/helpers/authRedirect.js'
+import { isAppleSignInCancel } from 'src/helpers/appleSignInError.js'
 
 export default {
   name: 'SignUpScene',
@@ -305,6 +306,11 @@ export default {
         this.logAuth('apple_success_redirect')
         this.$router.push(resolveAuthRedirect(this.$route.query.redirect, '/'))
       } catch (err) {
+        // Tapping "Cancel" on the Apple sheet is not a failure — stay silent.
+        if (isAppleSignInCancel(err)) {
+          this.logAuth('apple_cancelled')
+          return
+        }
         this.errorMessage = this.tt('errors.appleFailed')
         console.error('Apple login failed', err)
         this.logAuth('apple_exception', err?.message || err?.toString())

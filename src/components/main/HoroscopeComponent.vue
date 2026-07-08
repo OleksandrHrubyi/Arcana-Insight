@@ -2373,6 +2373,9 @@ export default {
 
 .horoscope-lock-overlay {
   position: absolute;
+  /* Above the z-index:1 .horoscope-info-style stacking context, or the pulsing
+     skeleton paints over the "Unlock Premium" CTA. */
+  z-index: 2;
   inset: 3px;
   transform: none;
   overflow: hidden;
