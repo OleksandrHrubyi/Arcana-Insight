@@ -17,15 +17,18 @@ Use it when changing screen structure, hierarchy, CTA logic, or above-the-fold c
 - Page wrapper: `src/pages/GetStartedPage.vue`
 - Main component: `src/components/main/LandingScene.vue`
 - Role: main daily dashboard
-- Primary CTA: continue today's most important ritual action
-- Secondary CTA: open horoscope, tarot, or another meaningful continuation path
+- Primary CTA: continue today's reflection ritual — the `.ritual-band` under the greeting
+  (real sky line + 4-step progress + adaptive label; tap = next undone ritual step,
+  reflection-first → `/journal`) (RP-03)
+- Secondary CTA: reveal/open the daily card (demoted hero, eyebrow "DAILY CARD"),
+  open horoscope, or another meaningful continuation path
 - Above the fold must show:
-  - one clear primary action
+  - one clear primary action (the ritual band)
   - today's summary
   - visible daily progress or completion state
   - a continuation path if the user already started something
 - Must not break:
-  - card-of-day hero visibility
+  - card-of-day hero visibility (kept visible but visually secondary since RP-03)
   - bottom navigation clarity
   - readable mobile typography
   - one-action hierarchy

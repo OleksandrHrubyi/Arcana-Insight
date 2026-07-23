@@ -61,9 +61,12 @@
   (+20) + 33 Deno; E2E Playwright-прогін: /journal флоу + збереження + чип — пройдено.
 - [x] **RP-02 · Mood check-in — DONE 2026-07-23** (в складі RP-01: 6 настроїв, mood-only
   save дозволений — «1 хвилина, 1 тап» тримається).
-- [ ] **RP-03 · Home hero reframe** — `LandingScene.vue`: hero = сьогоднішній ритуал рефлексії
-  (небо сьогодні → промпт → check-in → журнал). Карта дня/гороскоп — нижче, як supporting-блоки.
-  Дотримуватись `docs/home-focus-today-block.md` і CTA-ієрархії.
+- [x] **RP-03 · Home hero reframe — DONE 2026-07-23** («середній» варіант за рішенням owner).
+  `.ritual-band` у шапці = primary CTA (реальне небо · 4 крапки прогресу · адаптивний лейбл;
+  тап → перший незроблений крок, reflection-first → /journal). Таро-коло лишилось, але
+  demoted: scale 0.92, eyebrow "DAILY CARD"/«КАРТА ДНЯ». Старий чип видалено. 6 візуальних
+  бейзлайнів перегенеровано і переглянуто; contract-тести (daily-hero/QA/focus-today) цілі
+  + новий `landingHomeRitualBandContracts`. E2E: тап по стрічці → журнал — пройдено.
 - [ ] **RP-04 · Onboarding reframe** — онбординг продає рефлексію/ритуал, не «таро і гороскопи»;
   перший запуск має підтверджувати нову назву.
 - [ ] **RP-11 · Numerology engine input** — Life Path + Personal Day → у reflection-промпт;

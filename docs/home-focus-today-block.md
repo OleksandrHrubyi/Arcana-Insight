@@ -18,6 +18,9 @@ Add one compact, source-backed daily insight to the home screen without:
 - Visual position: compact card below the hero CTA layer
 
 This block is not a new top section and must not sit between the header and the hero.
+(RP-03 exception: the `.ritual-band` is part of the HEADER layer — inside `.logo-wrap`,
+below the greeting row — not a block between header and hero; this rule stays in force
+for any other block.)
 
 ## Role On Home
 
