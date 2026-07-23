@@ -40,6 +40,7 @@ export const JOURNAL_PROMPT_BANK = Object.freeze({
     saturn: 2,
   }),
   retrograde: 3,
+  numerology: Object.freeze({ 1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 2, 7: 2, 8: 2, 9: 2 }),
   general: 6,
 })
 
@@ -68,6 +69,38 @@ const hashString = (value) => {
     hash = Math.imul(hash, 0x01000193) >>> 0
   }
   return hash >>> 0
+}
+
+const reduceToDigit = (value) => {
+  let n = Math.abs(Math.trunc(value))
+  while (n > 9) {
+    n = String(n)
+      .split('')
+      .reduce((sum, digit) => sum + Number(digit), 0)
+  }
+  return n
+}
+
+// Universal day number — same formula as the home astro strip's "Day Number"
+// card (digit sum of YYYY + M + D, months/days unpadded).
+export const computeUniversalDayNumber = (dateKey) => {
+  const date = parseDateKey(dateKey)
+  if (!date) return null
+  const digits = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`
+  return reduceToDigit(digits.split('').reduce((sum, digit) => sum + Number(digit), 0))
+}
+
+// Personal day number (RP-11): birth month + birth day folded into today's
+// digits. Returns null when the birth date is missing/invalid — caller falls
+// back to the universal day number.
+export const computePersonalDayNumber = (dateKey, birthDateKey) => {
+  const date = parseDateKey(dateKey)
+  const birth = parseDateKey(birthDateKey)
+  if (!date || !birth) return null
+  const digits =
+    `${birth.getMonth() + 1}${birth.getDate()}` +
+    `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`
+  return reduceToDigit(digits.split('').reduce((sum, digit) => sum + Number(digit), 0))
 }
 
 export const normalizeMoodKey = (value) => {
@@ -109,36 +142,41 @@ export const normalizeJournalEntry = (row) => {
   return entry
 }
 
-const resolvePromptPool = ({ hash, astro }) => {
+const resolvePromptPool = ({ hash, astro, dayNumber }) => {
   const moonPools = JOURNAL_PROMPT_BANK.moonPhase
   const dayPools = JOURNAL_PROMPT_BANK.planetaryDay
+  const numPools = JOURNAL_PROMPT_BANK.numerology
   const moonPhaseKey = String(astro?.moonPhaseKey || '').trim()
   const planetaryDay = String(astro?.planetaryDay?.key || astro?.planetaryDay || '').trim()
+  const numKey = String(dayNumber || '').trim()
   const hasMoon = Object.prototype.hasOwnProperty.call(moonPools, moonPhaseKey)
   const hasDay = Object.prototype.hasOwnProperty.call(dayPools, planetaryDay)
+  const hasNum = Object.prototype.hasOwnProperty.call(numPools, numKey)
 
   if (astro?.mercuryRetrograde === true && hash % 4 === 0) {
     return { poolKey: 'retrograde', path: 'retrograde', size: JOURNAL_PROMPT_BANK.retrograde }
   }
-  const preferMoon = hash % 2 === 0
-  if (preferMoon && hasMoon) {
-    return { poolKey: 'moonPhase', path: `moonPhase.${moonPhaseKey}`, size: moonPools[moonPhaseKey] }
-  }
-  if (hasDay) {
-    return { poolKey: 'planetaryDay', path: `planetaryDay.${planetaryDay}`, size: dayPools[planetaryDay] }
-  }
-  if (hasMoon) {
-    return { poolKey: 'moonPhase', path: `moonPhase.${moonPhaseKey}`, size: moonPools[moonPhaseKey] }
+  // Rotate moon → planetary day → numerology by date hash; each falls through
+  // to the next available source, then general.
+  const order = [
+    ['moonPhase', hasMoon, () => ({ poolKey: 'moonPhase', path: `moonPhase.${moonPhaseKey}`, size: moonPools[moonPhaseKey] })],
+    ['planetaryDay', hasDay, () => ({ poolKey: 'planetaryDay', path: `planetaryDay.${planetaryDay}`, size: dayPools[planetaryDay] })],
+    ['numerology', hasNum, () => ({ poolKey: 'numerology', path: `numerology.${numKey}`, size: numPools[numKey] })],
+  ]
+  const start = hash % order.length
+  for (let i = 0; i < order.length; i += 1) {
+    const [, available, build] = order[(start + i) % order.length]
+    if (available) return build()
   }
   return { poolKey: 'general', path: 'general', size: JOURNAL_PROMPT_BANK.general }
 }
 
 // Deterministic per-day prompt. `promptKey` is the i18n subpath under
 // `journalPage.prompts` (e.g. 'moonPhase.full.1'); never repeats yesterday's key.
-export const selectDailyPrompt = ({ dateKey, astro = null, previousPromptKey = '' } = {}) => {
+export const selectDailyPrompt = ({ dateKey, astro = null, dayNumber = null, previousPromptKey = '' } = {}) => {
   const normalizedDate = parseDateKey(dateKey) ? String(dateKey).trim() : ''
   const hash = hashString(`journal-prompt::${normalizedDate}`)
-  const pool = resolvePromptPool({ hash, astro })
+  const pool = resolvePromptPool({ hash, astro, dayNumber })
 
   let index = hash % pool.size
   let promptKey = `${pool.path}.${index}`
@@ -158,9 +196,10 @@ export const selectDailyPrompt = ({ dateKey, astro = null, previousPromptKey = '
   return {
     promptKey,
     poolKey: pool.poolKey,
-    contextKey: pool.poolKey === 'general' || pool.poolKey === 'retrograde'
-      ? ''
-      : pool.path.split('.')[1] || '',
+    contextKey:
+      pool.poolKey === 'general' || pool.poolKey === 'retrograde'
+        ? ''
+        : pool.path.split('.')[1] || '',
   }
 }
 

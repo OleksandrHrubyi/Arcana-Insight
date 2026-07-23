@@ -2176,6 +2176,8 @@ export const messages = {
         tired: 'Tired',
       },
       promptLabel: "Today's question",
+      dayWord: 'Day',
+      personalDayWord: 'Personal day',
       entryPlaceholder: 'Write a few lines — just for you.',
       charCount: '{used}/{max}',
       saveBtn: 'Save entry',
@@ -2268,6 +2270,44 @@ export const messages = {
           0: 'Retrograde days suit second looks. What is worth re-reading or double-checking before you move on?',
           1: 'What plan could use a slower second pass today?',
           2: 'Is there a conversation worth revisiting — calmly, with fresh eyes?',
+        },
+        numerology: {
+          1: {
+            0: 'One-days favor initiative. What is one thing you could simply begin today?',
+            1: "Where in your life are you waiting for permission you don't actually need?",
+          },
+          2: {
+            0: 'Two-days highlight partnership. Who deserves a bit more of your attention or patience today?',
+            1: 'Where do you feel out of balance right now — and what small counterweight could help?',
+          },
+          3: {
+            0: 'Three-days favor expression. What have you been meaning to say — and to whom?',
+            1: 'What made you genuinely laugh or feel light recently?',
+          },
+          4: {
+            0: 'Four-days reward order. What corner of your life could use ten minutes of tidying — literal or mental?',
+            1: 'Which routine is quietly carrying you right now?',
+          },
+          5: {
+            0: 'Five-days stir change. What would you do differently today if nobody expected anything from you?',
+            1: 'What small change have you been resisting that might actually free you?',
+          },
+          6: {
+            0: 'Six-days center on care. Who took care of you lately — and how did you receive it?',
+            1: 'What does your home — or your body — quietly ask of you today?',
+          },
+          7: {
+            0: 'Seven-days invite depth. What question keeps returning to you this week?',
+            1: "What do you know now that you didn't know a month ago?",
+          },
+          8: {
+            0: 'Eight-days speak of ambition. What result are you actually working toward — in one sentence?',
+            1: 'Where could you take yourself more seriously, without apology?',
+          },
+          9: {
+            0: 'Nine-days close circles. What is quietly ending in your life right now — and how do you feel about it?',
+            1: 'What would you like to finish before this month ends?',
+          },
         },
         general: {
           0: 'What is one thing on your mind right now? Start there.',
@@ -4525,6 +4565,8 @@ export const messages = {
         tired: 'Втома',
       },
       promptLabel: 'Питання дня',
+      dayWord: 'День',
+      personalDayWord: 'Особистий день',
       entryPlaceholder: 'Напиши кілька рядків — лише для себе.',
       charCount: '{used}/{max}',
       saveBtn: 'Зберегти запис',
@@ -4617,6 +4659,44 @@ export const messages = {
           0: 'Ретроградні дні пасують для другого погляду. Що варто перечитати чи перевірити, перш ніж рухатися далі?',
           1: 'Якому плану сьогодні не завадить повільніший другий прохід?',
           2: 'Чи є розмова, до якої варто повернутися — спокійно і свіжим поглядом?',
+        },
+        numerology: {
+          1: {
+            0: 'Одиниця — день ініціативи. Що можна просто почати сьогодні, не чекаючи ідеальних умов?',
+            1: 'Де в житті чекаєш дозволу, який насправді не потрібен?',
+          },
+          2: {
+            0: 'Двійка підсвічує стосунки. Кому сьогодні не завадить трохи більше твоєї уваги чи терпіння?',
+            1: 'Де зараз відчувається дисбаланс — і яка маленька противага допомогла б?',
+          },
+          3: {
+            0: 'Трійка — день вираження. Що давно хочеться сказати — і кому?',
+            1: 'Що останнім часом викликало щирий сміх чи легкість?',
+          },
+          4: {
+            0: 'Четвірка любить порядок. Якому куточку життя не завадить десять хвилин ладу — буквального чи в думках?',
+            1: 'Яка рутина зараз непомітно тримає тебе на плаву?',
+          },
+          5: {
+            0: 'Пʼятірка ворушить зміни. Що сьогодні можна було б зробити інакше, якби ніхто нічого не очікував?',
+            1: 'Яка маленька зміна, якій опираєшся, насправді могла б звільнити?',
+          },
+          6: {
+            0: 'Шістка — про турботу. Хто подбав про тебе останнім часом — і як це було прийнято?',
+            1: 'Чого сьогодні тихо просить твій дім — або твоє тіло?',
+          },
+          7: {
+            0: 'Сімка кличе вглиб. Яке питання повертається до тебе цього тижня?',
+            1: 'Що відомо тобі зараз, чого не було відомо місяць тому?',
+          },
+          8: {
+            0: 'Вісімка — про амбіції. До якого результату насправді йдеш — одним реченням?',
+            1: 'Де можна поставитися до себе серйозніше — без вибачень?',
+          },
+          9: {
+            0: 'Девʼятка закриває кола. Що зараз тихо завершується в житті — і як тобі з цим?',
+            1: 'Що хочеться завершити до кінця цього місяця?',
+          },
         },
         general: {
           0: 'Що зараз крутиться в голові? Почни звідти.',

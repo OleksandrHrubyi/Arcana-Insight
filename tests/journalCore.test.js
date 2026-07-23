@@ -6,6 +6,8 @@ const core = await importModule('src/helpers/journalCore.js')
 const { getLocalDateKey } = await importModule('src/helpers/dailyRitual.js')
 
 const {
+  computePersonalDayNumber,
+  computeUniversalDayNumber,
   JOURNAL_BODY_MAX,
   JOURNAL_LOCAL_RETENTION_DAYS,
   JOURNAL_ENTRIES_STORAGE_KEY,
@@ -107,6 +109,9 @@ test('every derivable promptKey resolves to copy in both locales', async () => {
     for (let i = 0; i < size; i += 1) paths.push(`planetaryDay.${day}.${i}`)
   }
   for (let i = 0; i < JOURNAL_PROMPT_BANK.retrograde; i += 1) paths.push(`retrograde.${i}`)
+  for (const [num, size] of Object.entries(JOURNAL_PROMPT_BANK.numerology)) {
+    for (let i = 0; i < size; i += 1) paths.push(`numerology.${num}.${i}`)
+  }
   for (let i = 0; i < JOURNAL_PROMPT_BANK.general; i += 1) paths.push(`general.${i}`)
 
   for (const subPath of paths) {
@@ -119,6 +124,43 @@ test('every derivable promptKey resolves to copy in both locales', async () => {
       )
     }
   }
+})
+
+test('day numbers: universal matches the home formula, personal folds in the birth date', () => {
+  // 2026-07-23 → digits 2026723 → 22 → 4 (same math as the home astro strip).
+  assert.equal(computeUniversalDayNumber('2026-07-23'), 4)
+  assert.equal(computeUniversalDayNumber('not-a-date'), null)
+
+  // Birth 1990-03-14 → digits "314" + "2026723" → 3+1+4+22 = 30 → 3.
+  assert.equal(computePersonalDayNumber('2026-07-23', '1990-03-14'), 3)
+  assert.equal(computePersonalDayNumber('2026-07-23', ''), null)
+  assert.equal(computePersonalDayNumber('2026-07-23', 'garbage'), null)
+
+  for (let day = 1; day <= 28; day += 1) {
+    const value = computeUniversalDayNumber(`2026-09-${String(day).padStart(2, '0')}`)
+    assert.equal(value >= 1 && value <= 9, true)
+  }
+})
+
+test('selectDailyPrompt uses the numerology pool when a day number is provided', () => {
+  let sawNumerology = false
+  for (let i = 1; i <= 31; i += 1) {
+    const dateKey = `2026-10-${String(i).padStart(2, '0')}`
+    const { promptKey, poolKey } = selectDailyPrompt({
+      dateKey,
+      astro: FULL_ASTRO,
+      dayNumber: computeUniversalDayNumber(dateKey),
+    })
+    if (poolKey === 'numerology') {
+      sawNumerology = true
+      assert.match(promptKey, /^numerology\.[1-9]\.\d+$/)
+    }
+  }
+  assert.equal(sawNumerology, true)
+
+  // Without astro, the rotation still alternates numerology/general (never throws).
+  const noAstro = selectDailyPrompt({ dateKey: '2026-10-05', astro: null, dayNumber: 7 })
+  assert.equal(['numerology', 'general'].includes(noAstro.poolKey), true)
 })
 
 test('normalizeMoodKey accepts only known moods', () => {

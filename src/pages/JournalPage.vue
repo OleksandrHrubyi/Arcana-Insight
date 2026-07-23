@@ -195,11 +195,14 @@ import {
 import {
   JOURNAL_BODY_MAX,
   JOURNAL_MOODS,
+  computePersonalDayNumber,
+  computeUniversalDayNumber,
   selectDailyPrompt,
   loadJournalSnapshot,
   saveJournalEntrySnapshot,
   removeLocalJournalEntry,
 } from 'src/helpers/journalCore.js'
+import { Preferences } from '@capacitor/preferences'
 import {
   DAILY_ACTIVITY_KEYS,
   getLocalDateKey,
@@ -233,6 +236,7 @@ const selectedMood = ref('')
 const body = ref('')
 const saving = ref(false)
 const astroToday = ref(null)
+const birthDateKey = ref('')
 const promptKey = ref('')
 const promptPool = ref('')
 const detailOpen = ref(false)
@@ -261,14 +265,30 @@ const hapticTap = async () => {
 const canSave = computed(() => Boolean(selectedMood.value || body.value.trim()))
 const pastEntries = computed(() => entries.value.filter((entry) => entry.dateKey !== todayKey.value))
 
+// Personal day (RP-11) when the birth date is known; universal day otherwise.
+const journalDayNumber = computed(() => {
+  const personal = computePersonalDayNumber(todayKey.value, birthDateKey.value)
+  if (personal) return { value: personal, personal: true }
+  const universal = computeUniversalDayNumber(todayKey.value)
+  return universal ? { value: universal, personal: false } : null
+})
+
 const skyLine = computed(() => {
   const astro = astroToday.value
-  if (!astro?.moonSignKey || !astro?.moonPhaseKey) return ''
-  const parts = [
-    `${tt('astro.moonIn')} ${tt(`zodiacLocative.${astro.moonSignKey}`)}`,
-    tt(`astro.phases.${astro.moonPhaseKey}`),
-  ]
-  if (astro.mercuryRetrograde) parts.push(tt('astro.mercuryRetrograde'))
+  const parts = []
+  if (astro?.moonSignKey && astro?.moonPhaseKey) {
+    parts.push(
+      `${tt('astro.moonIn')} ${tt(`zodiacLocative.${astro.moonSignKey}`)}`,
+      tt(`astro.phases.${astro.moonPhaseKey}`),
+    )
+    if (astro.mercuryRetrograde) parts.push(tt('astro.mercuryRetrograde'))
+  }
+  const day = journalDayNumber.value
+  if (day) {
+    parts.push(
+      `${tt(day.personal ? 'journalPage.personalDayWord' : 'journalPage.dayWord')} ${day.value}`,
+    )
+  }
   return parts.join(' · ')
 })
 
@@ -351,12 +371,25 @@ const computeAstro = async () => {
   }
 }
 
+// Best-effort: the profile cache (native Preferences) carries date_of_birth for
+// signed-in users; guests/web simply fall back to the universal day number.
+const loadBirthDate = async () => {
+  try {
+    const { value } = await Preferences.get({ key: 'profile_cache_v1' })
+    const profile = value ? JSON.parse(value) : null
+    birthDateKey.value = String(profile?.date_of_birth || '').trim()
+  } catch {
+    birthDateKey.value = ''
+  }
+}
+
 const refreshPrompt = () => {
   const yesterdayKey = getLocalDateKey(new Date(Date.now() - 24 * 60 * 60 * 1000))
   const previous = entries.value.find((entry) => entry.dateKey === yesterdayKey)
   const selection = selectDailyPrompt({
     dateKey: todayKey.value,
     astro: astroToday.value,
+    dayNumber: journalDayNumber.value?.value || null,
     previousPromptKey: previous?.promptKey || '',
   })
   promptKey.value = selection.promptKey
@@ -396,6 +429,7 @@ const initToday = async () => {
   selectedMood.value = ''
   body.value = ''
   await loadEntries()
+  await loadBirthDate()
   await computeAstro()
   refreshPrompt()
 }
