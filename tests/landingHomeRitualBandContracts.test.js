@@ -27,8 +27,8 @@ test('funnel continuity: daily_track entry name is preserved', () => {
   assert.match(source, /query: \{ source: 'landing', entry: 'daily_track' \}/)
 })
 
-test('sky line degrades gracefully when astro is unavailable', () => {
-  assert.match(source, /ritualBandSkyLine\(\) \{/)
-  assert.match(source, /if \(!d\) return ''/)
-  assert.match(source, /v-if="ritualBandSkyLine"/)
+test('band stays single-row: no sky line duplicating the astro strip below', () => {
+  // Owner decision 2026-07-23: the two-row band pushed the astro strip down;
+  // sky data already lives in the MOON PHASE astro card (no duplicate content).
+  assert.doesNotMatch(source, /ritual-band__sky/)
 })

@@ -46,7 +46,6 @@
           :aria-label="dailyProgressAriaLabel"
           @click="openNextRitual"
         >
-          <span v-if="ritualBandSkyLine" class="ritual-band__sky">{{ ritualBandSkyLine }}</span>
           <span class="ritual-band__row">
             <span class="ritual-band__dots" aria-hidden="true">
               <span
@@ -575,17 +574,6 @@ export default {
       if (done === 1) return this.tt('landing.progress.summaryOneDone')
       if (DAILY_FULL_DAY_THRESHOLD - done === 1) return this.tt('landing.progress.summaryOneLeft')
       return this.tt('landing.progress.summaryInProgress')
-    },
-
-    ritualBandSkyLine() {
-      const d = this.astroToday
-      if (!d) return ''
-      const parts = [
-        `${this.tt('astro.moonIn')} ${this.tt(`zodiacLocative.${d.moonSignKey}`)}`,
-        this.tt(`astro.phases.${d.moonPhaseKey}`),
-      ]
-      if (d.mercuryRetrograde) parts.push(this.tt('astro.mercuryRetrograde'))
-      return parts.join(' · ')
     },
 
     astroCards() {
@@ -1851,16 +1839,16 @@ export default {
   color: rgba(226, 232, 241, 0.72);
 }
 
-/* Ritual band — primary above-the-fold CTA (RP-03). Glass-lite surface in the
-   focus-today language; opacity/transform-only entrance via showHomeActions. */
+/* Ritual band — primary above-the-fold CTA (RP-03). Single row: the sky data
+   lives in the astro strip right below (no duplicate content on home).
+   Glass-lite surface; opacity/transform-only entrance via showHomeActions. */
 .ritual-band {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: stretch;
-  gap: 5px;
-  min-height: 56px;
-  padding: 9px 14px;
+  min-height: 44px;
+  padding: 8px 14px;
   border-radius: 16px;
   border: 1px solid rgba(148, 178, 214, 0.12);
   background:
@@ -1899,16 +1887,6 @@ export default {
   box-shadow:
     0 0 0 3px rgba(113, 168, 232, 0.12),
     0 10px 22px rgba(2, 7, 15, 0.14);
-}
-
-.ritual-band__sky {
-  font-size: 11px;
-  line-height: 1;
-  letter-spacing: 0.02em;
-  color: rgba(214, 225, 242, 0.62);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .ritual-band__row {
@@ -1968,7 +1946,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 10px;
+  gap: 8px;
   padding: max(52px, calc(env(safe-area-inset-top, 0px) + 12px))
     max(16px, calc(env(safe-area-inset-right, 0px) + 16px)) 0
     max(16px, calc(env(safe-area-inset-left, 0px) + 16px));
@@ -2658,8 +2636,9 @@ export default {
   position: absolute;
   /* Mirrors the header's own max() padding so the band→strip gap holds both on
      notch devices and at safe-area 0 (Playwright). Offset = greeting block
-     (~66px) + gap (10px) + band (56px) + 14px clearance. */
-  top: calc(max(52px, calc(env(safe-area-inset-top, 0px) + 12px)) + 146px);
+     (~66px) + gap (8px) + compact band (44px) + 12px clearance. On a notched
+     iPhone this lands the strip at its pre-RP-03 height. */
+  top: calc(max(52px, calc(env(safe-area-inset-top, 0px) + 12px)) + 130px);
   left: 0;
   right: 0;
   z-index: 3;
@@ -3066,12 +3045,8 @@ export default {
     padding-top: 88px;
   }
   .ritual-band {
-    min-height: 50px;
-    padding: 7px 12px;
-    gap: 4px;
-  }
-  .ritual-band__sky {
-    font-size: 10px;
+    min-height: 40px;
+    padding: 6px 12px;
   }
   .circle-card__img-wrap {
     width: 94px;
@@ -3100,7 +3075,7 @@ export default {
     font-size: 11px;
   }
   .astro-cards {
-    top: calc(max(44px, calc(env(safe-area-inset-top, 0px) + 10px)) + 136px);
+    top: calc(max(44px, calc(env(safe-area-inset-top, 0px) + 10px)) + 120px);
   }
   .logo-wrap {
     padding-top: max(44px, calc(env(safe-area-inset-top, 0px) + 10px));
@@ -3110,11 +3085,11 @@ export default {
 @media (max-width: 390px) and (max-height: 700px) {
   .astro-cards {
     --cards-pad: 16px;
-    top: calc(max(44px, calc(env(safe-area-inset-top, 0px) + 10px)) + 132px);
+    top: calc(max(44px, calc(env(safe-area-inset-top, 0px) + 10px)) + 116px);
     gap: 6px;
   }
   .ritual-band {
-    min-height: 46px;
+    min-height: 38px;
   }
   .ritual-band__label {
     font-size: 12px;
