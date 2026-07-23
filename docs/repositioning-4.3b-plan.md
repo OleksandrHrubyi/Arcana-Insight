@@ -69,8 +69,11 @@
   demoted: scale 0.92, eyebrow "DAILY CARD"/«КАРТА ДНЯ». Старий чип видалено. 6 візуальних
   бейзлайнів перегенеровано і переглянуто; contract-тести (daily-hero/QA/focus-today) цілі
   + новий `landingHomeRitualBandContracts`. E2E: тап по стрічці → журнал — пройдено.
-- [ ] **RP-04 · Onboarding reframe** — онбординг продає рефлексію/ритуал, не «таро і гороскопи»;
-  перший запуск має підтверджувати нову назву.
+- [x] **RP-04 · Onboarding reframe — DONE 2026-07-23.** Сабтайтл онбордингу: «Tarot and
+  horoscope, personalized for your day» → «A daily reflection ritual, guided by the real
+  sky» (uk дзеркально). Інтерес "Future/Майбутнє" перейменовано на "Clarity/Ясність"
+  (той самий ключ — синхронно оновився в Settings і Menu). Структура екрана не мінялась.
+  Після вибору нової назви (RP-05) перевірити title.
 - [x] **RP-11 · Numerology engine input — DONE 2026-07-23.** Число дня фідить банк промптів
   журналу: `numerology` пул (9 чисел × 2 промпти × en/uk) у ротації з фазою Місяця і
   планетарним днем; **Особистий день** (DOB з profile-кешу) для залогінених, універсальне

@@ -2367,7 +2367,7 @@ export const messages = {
 
     onboardingPage: {
       title: 'Welcome to Arcana Insight',
-      subtitle: 'Tarot and horoscope, personalized for your day',
+      subtitle: 'A daily reflection ritual, guided by the real sky',
       nextTitle: 'Next',
       nextText: 'Open Home. Start today’s ritual in one tap.',
       sectionInterests: 'Interests',
@@ -2387,7 +2387,7 @@ export const messages = {
         money: 'Money',
         self: 'Self',
         energy: 'Energy',
-        future: 'Future',
+        future: 'Clarity',
       },
     },
     personalHoroscope: {
@@ -4756,7 +4756,7 @@ export const messages = {
 
     onboardingPage: {
       title: 'Ласкаво просимо в Arcana Insight',
-      subtitle: 'Таро й гороскоп, персоналізовані під твій день',
+      subtitle: 'Щоденний ритуал рефлексії, підказаний реальним небом',
       nextTitle: 'Далі',
       nextText: 'Відкрий головну. Запусти сьогоднішній ритуал в один дотик.',
       sectionInterests: 'Інтереси',
@@ -4776,7 +4776,7 @@ export const messages = {
         money: 'Фінанси',
         self: 'Я',
         energy: 'Енергія',
-        future: 'Майбутнє',
+        future: 'Ясність',
       },
     },
     personalHoroscope: {
