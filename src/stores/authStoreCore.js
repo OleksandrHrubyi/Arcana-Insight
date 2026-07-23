@@ -24,6 +24,10 @@ const clearAccountScopedLocalState = () => {
     // re-resolves, Home focus-today and the horoscope wheel would keep showing
     // the PREVIOUS user's sign (B7).
     localStorage.removeItem('horoscope_sign_key_v1')
+    // Journal entries are personal written content (PII) — must not surface for
+    // the next account on a shared device. Signed-in users keep the server copy.
+    localStorage.removeItem('arcana_journal_entries_v1')
+    localStorage.removeItem('arcana_journal_migration_v1')
   } catch {
     // ignore if localStorage unavailable
   }

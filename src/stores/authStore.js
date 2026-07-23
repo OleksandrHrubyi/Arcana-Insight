@@ -3,6 +3,7 @@ import { upsertAppUser, refreshAccessTokenNative, selectAppUser } from 'src/serv
 import { Preferences } from '@capacitor/preferences'
 import { createAuthStore } from './authStoreCore'
 import { syncGuestRitualState } from 'src/helpers/ritualRewardsBackend.js'
+import { syncGuestJournalEntries } from 'src/helpers/journalBackend.js'
 import { loginToRevenueCat, logoutFromRevenueCat, getBillingPremiumStatus } from 'src/services/premiumBilling.js'
 import { usePremiumAccess } from './premiumAccess.js'
 import { crashReporting } from 'src/services/crashReporting.js'
@@ -55,6 +56,9 @@ const store = createAuthStore({
       userId: user?.id || '',
       source: `auth_${String(context?.source || 'sync').trim().slice(0, 32)}`,
     })
+    // Guest journal entries migrate to the account once (fire-and-forget — a
+    // failure retries on the next auth event, never blocks sign-in).
+    syncGuestJournalEntries({ userId: user?.id || '' }).catch(() => {})
     if (user?.id) {
       await loginToRevenueCat(user.id)
       // Grant premium based on the now-identified RC user (covers fresh login AND

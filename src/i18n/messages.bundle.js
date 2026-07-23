@@ -856,6 +856,7 @@ export const messages = {
         card: 'Card',
         horoscope: 'Horoscope',
         tarot: 'Tarot',
+        reflection: 'Reflect',
         summaryStart: "Start today's ritual",
         summaryOneDone: '1 step done today',
         summaryOneLeft: '1 step left today',
@@ -1102,6 +1103,7 @@ export const messages = {
       cards: 'Card library',
       zodiacGuide: 'Zodiac signs',
       readings: 'My readings',
+      journal: 'Daily reflection',
       premium: 'Premium',
       soon: 'Soon',
     },
@@ -2159,6 +2161,125 @@ export const messages = {
       spread5: '5 cards',
     },
 
+    journalPage: {
+      title: 'Daily reflection',
+      subtitle: "A minute with today's sky",
+      todayKicker: 'Today',
+      moodQuestion: 'How do you feel right now?',
+      moodLabel: 'Mood',
+      moods: {
+        calm: 'Calm',
+        bright: 'Bright',
+        steady: 'Steady',
+        tense: 'Tense',
+        low: 'Low',
+        tired: 'Tired',
+      },
+      promptLabel: "Today's question",
+      entryPlaceholder: 'Write a few lines — just for you.',
+      charCount: '{used}/{max}',
+      saveBtn: 'Save entry',
+      savedToast: 'Entry saved',
+      editBtn: 'Edit',
+      doneTitle: "Today's reflection is done",
+      doneText: 'Come back tomorrow — the sky will bring a new question.',
+      historyTitle: 'Past entries',
+      emptyTitle: 'No entries yet',
+      emptyHint: 'Your daily reflections will appear here.',
+      guestHint: 'Entries are saved on this device. Sign in to keep them with your account.',
+      loginCta: 'Sign in',
+      deleteBtn: 'Delete entry',
+      deleteTitle: 'Delete entry?',
+      deleteText: 'This entry will be permanently removed.',
+      prompts: {
+        moonPhase: {
+          new: {
+            0: 'A new cycle starts quietly. What would you like to begin this month?',
+            1: 'The sky is dark and open. What deserves a fresh start today?',
+            2: 'New moons favor small first steps. What tiny step could you take today?',
+          },
+          waxingCrescent: {
+            0: 'Momentum is just forming. What did you start recently that deserves another push?',
+            1: 'What small habit, kept up this week, would leave you proud of yourself?',
+            2: 'Where could a little patience help something grow?',
+          },
+          firstQuarter: {
+            0: 'First obstacles tend to show up at this phase. What pushed back today, and what did it teach you?',
+            1: 'What decision have you been circling? Write one honest pro and one con.',
+            2: 'Where did you hold your ground today, even when it was tempting to quit?',
+          },
+          waxingGibbous: {
+            0: '"Almost done" is a stage of its own. What is close to finished in your life, and what does it still need?',
+            1: 'What could you refine today instead of starting something new?',
+            2: 'What feedback — from people or from events — are you ready to take in?',
+          },
+          full: {
+            0: 'Full moons bring things into view. What became clearer to you today?',
+            1: 'What are you proud of right now, even if no one noticed?',
+            2: 'Strong feelings surface easily today. Which one visited you, and what was behind it?',
+          },
+          waningGibbous: {
+            0: "What happened lately that you're quietly grateful for?",
+            1: 'What did you figure out recently that someone else could use?',
+            2: 'What tension from the past days is ready to soften?',
+          },
+          lastQuarter: {
+            0: 'What habit or worry could you set down — even just for today?',
+            1: 'Looking back at the past week, what would you do differently?',
+            2: 'What are you holding onto that has already served its purpose?',
+          },
+          waningCrescent: {
+            0: 'The cycle is closing. What deserves a calm ending this week?',
+            1: 'Rest is part of the rhythm. What would real rest look like for you today?',
+            2: 'What can wait until the next cycle — and is that okay?',
+          },
+        },
+        planetaryDay: {
+          sun: {
+            0: 'What gave you energy today — and what quietly drained it?',
+            1: 'Where did you feel most like yourself this week?',
+          },
+          moon: {
+            0: 'What mood has followed you around today? Give it a name and one sentence.',
+            1: 'What does your inner weather need this evening — quiet, warmth, or space?',
+          },
+          mars: {
+            0: 'What did you actually do today that your future self will thank you for?',
+            1: 'Where is your energy asking to be used — and where is it being wasted?',
+          },
+          mercury: {
+            0: 'What conversation stayed with you today, and why?',
+            1: 'What is one thought worth writing down before it slips away?',
+          },
+          jupiter: {
+            0: 'Where have you grown a little this month, even if slowly?',
+            1: "What opportunity is in front of you that you haven't fully looked at?",
+          },
+          venus: {
+            0: 'Which relationship gave you warmth this week? What made it work?',
+            1: 'What did you do today purely because you enjoy it?',
+          },
+          saturn: {
+            0: 'What structure — a routine, a limit, a plan — is actually helping you right now?',
+            1: 'What commitment matters enough to protect next week?',
+          },
+        },
+        retrograde: {
+          0: 'Retrograde days suit second looks. What is worth re-reading or double-checking before you move on?',
+          1: 'What plan could use a slower second pass today?',
+          2: 'Is there a conversation worth revisiting — calmly, with fresh eyes?',
+        },
+        general: {
+          0: 'What is one thing on your mind right now? Start there.',
+          1: 'What went better today than you expected?',
+          2: 'What are you avoiding, and what makes it feel heavy?',
+          3: 'If today had a title, what would it be — and why?',
+          4: 'What do you want to remember about today a year from now?',
+          5: 'What would make tomorrow ten percent lighter?',
+        },
+      },
+    },
+
     faqPage: {
       title: 'FAQ & Support',
       subtitle: 'Answers and help',
@@ -3090,6 +3211,7 @@ export const messages = {
         card: 'Карта',
         horoscope: 'Гороскоп',
         tarot: 'Таро',
+        reflection: 'Рефлексія',
         summaryStart: 'Почни ритуал на сьогодні',
         summaryOneDone: '1 крок уже зроблено',
         summaryOneLeft: 'Залишився 1 крок',
@@ -3333,6 +3455,7 @@ export const messages = {
       cards: 'Бібліотека карт',
       zodiacGuide: 'Знаки зодіаку',
       readings: 'Мої розклади',
+      journal: 'Щоденна рефлексія',
       premium: 'Преміум',
       soon: 'Скоро',
     },
@@ -4385,6 +4508,125 @@ export const messages = {
       spread1: '1 карта',
       spread3: '3 карти',
       spread5: '5 карт',
+    },
+
+    journalPage: {
+      title: 'Щоденна рефлексія',
+      subtitle: 'Хвилина із сьогоднішнім небом',
+      todayKicker: 'Сьогодні',
+      moodQuestion: 'Як ти зараз почуваєшся?',
+      moodLabel: 'Настрій',
+      moods: {
+        calm: 'Спокій',
+        bright: 'Піднесення',
+        steady: 'Рівновага',
+        tense: 'Напруга',
+        low: 'Смуток',
+        tired: 'Втома',
+      },
+      promptLabel: 'Питання дня',
+      entryPlaceholder: 'Напиши кілька рядків — лише для себе.',
+      charCount: '{used}/{max}',
+      saveBtn: 'Зберегти запис',
+      savedToast: 'Запис збережено',
+      editBtn: 'Редагувати',
+      doneTitle: 'Рефлексію на сьогодні завершено',
+      doneText: 'Повертайся завтра — небо принесе нове питання.',
+      historyTitle: 'Попередні записи',
+      emptyTitle: 'Записів ще немає',
+      emptyHint: "Тут з'являтимуться твої щоденні записи.",
+      guestHint: 'Записи зберігаються на цьому пристрої. Увійди, щоб зберігати їх в акаунті.',
+      loginCta: 'Увійти',
+      deleteBtn: 'Видалити запис',
+      deleteTitle: 'Видалити запис?',
+      deleteText: 'Цей запис буде видалено назавжди.',
+      prompts: {
+        moonPhase: {
+          new: {
+            0: 'Новий цикл починається тихо. Що хочеться розпочати цього місяця?',
+            1: 'Небо темне й відкрите. Що заслуговує на чистий аркуш сьогодні?',
+            2: 'Молодик сприяє маленьким першим крокам. Який крихітний крок можна зробити вже сьогодні?',
+          },
+          waxingCrescent: {
+            0: 'Розгін лише формується. Що з нещодавно початого варте ще одного поштовху?',
+            1: 'Яка маленька звичка, збережена цього тижня, дасть відчуття гордості за себе?',
+            2: 'Де трохи терпіння допомогло б чомусь вирости?',
+          },
+          firstQuarter: {
+            0: 'Перші перешкоди зʼявляються саме на цій фазі. Що сьогодні чинило опір — і чого це вчить?',
+            1: 'Навколо якого рішення крутяться думки? Запиши один чесний аргумент за і один проти.',
+            2: 'Де сьогодні вдалося не відступити, хоч і хотілося?',
+          },
+          waxingGibbous: {
+            0: '«Майже готово» — теж етап. Що в житті близьке до завершення і чого йому ще бракує?',
+            1: 'Що сьогодні краще відшліфувати, ніж починати нове?',
+            2: 'Який відгук — від людей чи від подій — час нарешті почути?',
+          },
+          full: {
+            0: 'Повня робить речі видимими. Що сьогодні стало зрозумілішим?',
+            1: 'Чим зараз можна пишатися, навіть якщо ніхто не помітив?',
+            2: 'Сильні почуття сьогодні близько до поверхні. Яке з них навідалось — і що за ним стоїть?',
+          },
+          waningGibbous: {
+            0: 'За що з останніх днів є тиха вдячність?',
+            1: 'Що з нещодавно зрозумілого могло б стати в пригоді комусь іще?',
+            2: 'Якій напрузі останніх днів уже час ослабнути?',
+          },
+          lastQuarter: {
+            0: 'Яку звичку чи тривогу можна відкласти — хоча б на сьогодні?',
+            1: 'Озираючись на минулий тиждень: що варто було б зробити інакше?',
+            2: 'Що з того, що тримаєш, уже виконало свою роль?',
+          },
+          waningCrescent: {
+            0: 'Цикл завершується. Що заслуговує на спокійне завершення цього тижня?',
+            1: 'Відпочинок — частина ритму. Яким був би справжній відпочинок сьогодні?',
+            2: 'Що може почекати до наступного циклу — і чи це нормально?',
+          },
+        },
+        planetaryDay: {
+          sun: {
+            0: 'Що сьогодні давало енергію, а що непомітно її забирало?',
+            1: 'Де цього тижня найбільше відчувалося «це я»?',
+          },
+          moon: {
+            0: 'Який настрій ходить за тобою сьогодні? Дай йому назву та одне речення.',
+            1: 'Чого потребує внутрішня погода цього вечора — тиші, тепла чи простору?',
+          },
+          mars: {
+            0: 'За що з сьогоднішніх справ майбутнє «я» подякує?',
+            1: 'Куди енергія проситься бути вкладеною — і де вона зараз витрачається намарно?',
+          },
+          mercury: {
+            0: 'Яка розмова сьогодні залишилась у думках — і чому?',
+            1: 'Яку одну думку варто записати, поки вона не вислизнула?',
+          },
+          jupiter: {
+            0: 'У чому за цей місяць є хоч трохи росту, нехай і повільного?',
+            1: 'Яка можливість лежить перед тобою, але ще не розглянута уважно?',
+          },
+          venus: {
+            0: 'Які стосунки цього тижня дали тепло? Що саме спрацювало?',
+            1: 'Що сьогодні було зроблено просто із задоволення?',
+          },
+          saturn: {
+            0: 'Яка структура — звичка, межа чи план — зараз справді допомагає?',
+            1: 'Яке зобовʼязання варто оберігати наступного тижня?',
+          },
+        },
+        retrograde: {
+          0: 'Ретроградні дні пасують для другого погляду. Що варто перечитати чи перевірити, перш ніж рухатися далі?',
+          1: 'Якому плану сьогодні не завадить повільніший другий прохід?',
+          2: 'Чи є розмова, до якої варто повернутися — спокійно і свіжим поглядом?',
+        },
+        general: {
+          0: 'Що зараз крутиться в голові? Почни звідти.',
+          1: 'Що сьогодні пройшло краще, ніж очікувалось?',
+          2: 'Чого уникаєш — і що робить це таким важким?',
+          3: 'Якби сьогодні мало заголовок, яким би він був — і чому?',
+          4: 'Що з сьогоднішнього хочеться памʼятати через рік?',
+          5: 'Що зробило б завтра на десять відсотків легшим?',
+        },
+      },
     },
 
     faqPage: {

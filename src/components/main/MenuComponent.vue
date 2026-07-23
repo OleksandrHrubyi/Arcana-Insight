@@ -267,6 +267,12 @@ export default defineComponent({
         routeName: 'arcana',
       },
       {
+        key: 'journal',
+        labelKey: 'nav.journal',
+        icon: 'edit_note',
+        routeName: 'journal',
+      },
+      {
         key: 'compatibility',
         labelKey: 'nav.compatibility',
         icon: 'favorite',

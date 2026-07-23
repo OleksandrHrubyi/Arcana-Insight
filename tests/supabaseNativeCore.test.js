@@ -238,6 +238,55 @@ test('tarot readings endpoints return normalized arrays and map errors', async (
   assert.equal(fail.error.message, 'tarot_readings select failed: 503')
 })
 
+test('journal entries endpoints build correct URLs, upsert headers and map errors', async () => {
+  const okHarness = await createHarness({
+    initialSession: { access_token: 'token' },
+    responses: [
+      { status: 200, data: [{ id: 'j1', entry_date: '2026-07-23' }] },
+      { status: 201, data: [{ id: 'j2', entry_date: '2026-07-23' }] },
+      { status: 200, data: { deleted: true } },
+    ],
+  })
+
+  const list = await okHarness.service.selectJournalEntriesByUser('user_1')
+  const upsert = await okHarness.service.upsertJournalEntry({
+    user_id: 'user_1',
+    entry_date: '2026-07-23',
+    mood: 'calm',
+  })
+  const del = await okHarness.service.deleteJournalEntry('j2')
+
+  assert.deepEqual(list.data, [{ id: 'j1', entry_date: '2026-07-23' }])
+  assert.match(
+    okHarness.calls[0].url,
+    /\/journal_entries\?user_id=eq.user_1&order=entry_date.desc&limit=60$/,
+  )
+  // Upsert must target the (user_id, entry_date) unique key and return the row
+  // (id is needed for delete later).
+  assert.match(okHarness.calls[1].url, /\/journal_entries\?on_conflict=user_id,entry_date$/)
+  assert.equal(okHarness.calls[1].init.method, 'POST')
+  assert.equal(
+    okHarness.calls[1].init.headers.Prefer,
+    'resolution=merge-duplicates,return=representation',
+  )
+  assert.equal(upsert.error, null)
+  assert.equal(upsert.data.id, 'j2')
+  assert.equal(okHarness.calls[2].init.method, 'DELETE')
+  assert.match(okHarness.calls[2].url, /\/journal_entries\?id=eq.j2$/)
+  assert.equal(del.error, null)
+
+  const failHarness = await createHarness({
+    initialSession: { access_token: 'token' },
+    responses: [{ status: 503, data: {} }, { status: 422, data: {} }, { status: 404, data: {} }],
+  })
+  const sFail = await failHarness.service.selectJournalEntriesByUser('user_1')
+  const uFail = await failHarness.service.upsertJournalEntry({ user_id: 'user_1' })
+  const dFail = await failHarness.service.deleteJournalEntry('missing')
+  assert.equal(sFail.error.message, 'journal_entries select failed: 503')
+  assert.equal(uFail.error.message, 'journal_entries upsert failed: 422')
+  assert.equal(dFail.error.message, 'journal_entries delete failed: 404')
+})
+
 test('selectHoroscopes and invokeFunction build correct URLs and payloads', async () => {
   const h = await createHarness({
     initialSession: { access_token: 'token' },

@@ -29,6 +29,37 @@ test('markDailyActivity writes activity date and hasDailyActivityToday detects i
   }
 })
 
+test('reflection is a first-class daily activity and full-day stays at 3 of 4', async () => {
+  const env = installBrowserEnv()
+  try {
+    const {
+      DAILY_ACTIVITY_KEYS,
+      DAILY_FULL_DAY_THRESHOLD,
+      markDailyActivity,
+      hasDailyActivityToday,
+      getRecentDailyJourney,
+      computeLocalRitualPoints,
+    } = await importModule('src/helpers/dailyRitual.js')
+
+    assert.equal(DAILY_ACTIVITY_KEYS.reflection, 'reflection')
+    assert.equal(DAILY_FULL_DAY_THRESHOLD, 3)
+
+    markDailyActivity(DAILY_ACTIVITY_KEYS.reflection)
+    assert.equal(hasDailyActivityToday(DAILY_ACTIVITY_KEYS.reflection), true)
+    const todayRow = getRecentDailyJourney(1)[0]
+    assert.equal(todayRow.hasReflection, true)
+
+    // Any 3 of 4 activities must count as a full day (bonus awarded).
+    markDailyActivity(DAILY_ACTIVITY_KEYS.dailyCard)
+    markDailyActivity(DAILY_ACTIVITY_KEYS.horoscope)
+    const points = computeLocalRitualPoints()
+    assert.equal(points.fullDaysCount, 1)
+    assert.equal(points.balance, 3 * 10 + 20)
+  } finally {
+    env.restore()
+  }
+})
+
 test('touchDailyStreak increments on consecutive days and resets after gap', async () => {
   const env = installBrowserEnv()
   try {

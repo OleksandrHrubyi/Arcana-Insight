@@ -15,7 +15,7 @@ import {
   upsertAuthInventoryRowInCache,
 } from './ritualRewardInventory'
 
-const ALLOWED_ACTIVITIES = new Set(['daily_card', 'horoscope', 'tarot'])
+const ALLOWED_ACTIVITIES = new Set(['daily_card', 'horoscope', 'tarot', 'reflection'])
 const trackedKeys = new Set()
 const pendingTrackRequests = new Map()
 const GUEST_QUEUE_STORAGE_KEY = 'arcana_guest_ritual_queue_v1'

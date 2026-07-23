@@ -96,6 +96,17 @@ export const RETENTION_EVENTS = Object.freeze({
   ritualComplete: 'ritual_complete',
 })
 
+export const JOURNAL_EVENTS = Object.freeze({
+  // Daily reflection journal (RP-01/RP-02). entrySave params: { mood, has_body,
+  // prompt_pool }; ritual_complete {activity:'reflection'} fires separately via
+  // markDailyActivity (RETENTION_EVENTS).
+  journalView: 'journal_view',
+  moodSelect: 'journal_mood_select',
+  promptShown: 'journal_prompt_shown',
+  entrySave: 'journal_entry_save',
+  entryDelete: 'journal_entry_delete',
+})
+
 export const ONBOARDING_EVENTS = Object.freeze({
   onboardingView: 'onboarding_view',
   interestSelect: 'interest_select',

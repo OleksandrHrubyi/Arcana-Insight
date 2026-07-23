@@ -242,6 +242,7 @@ import { t, currentLocale } from 'src/i18n/index.js'
 import {
   readDailyStreak,
   DAILY_ACTIVITY_KEYS,
+  DAILY_FULL_DAY_THRESHOLD,
   hasDailyActivityToday,
   markDailyActivity,
 } from 'src/helpers/dailyRitual.js'
@@ -331,6 +332,7 @@ export default {
       hasRevealedDailyCardOnHomeToday: false,
       hasHoroscopeToday: false,
       hasTarotToday: false,
+      hasReflectionToday: false,
       horoscopeData: null,
       homeSignKey: '',
       isFirstVisitToday: false,
@@ -519,6 +521,13 @@ export default {
 
     dailyProgressItems() {
       return [
+        // Reflection leads: openNextRitual picks the first undone item, so the
+        // "next" CTA steers into the journal — the core of the v1.1 identity.
+        {
+          key: DAILY_ACTIVITY_KEYS.reflection,
+          label: this.tt('landing.progress.reflection'),
+          done: this.hasReflectionToday,
+        },
         {
           key: DAILY_ACTIVITY_KEYS.dailyCard,
           label: this.tt('landing.progress.card'),
@@ -548,21 +557,22 @@ export default {
     },
 
     dailyProgressComplete() {
+      // "Complete" mirrors the full-day threshold (any 3 of 4) — same semantics
+      // as the server bonus and streak, not "every dot filled".
       return (
         this.dailyProgressItems.length > 0 &&
-        this.dailyProgressDoneCount >= this.dailyProgressItems.length
+        this.dailyProgressDoneCount >= DAILY_FULL_DAY_THRESHOLD
       )
     },
 
     dailyProgressSummary() {
       const done = this.dailyProgressDoneCount
-      const total = this.dailyProgressItems.length
       if (done <= 0) return this.tt('landing.progress.summaryStart')
       // When the loop is complete, invite the user to continue into the journal
       // (saved readings) — closes the retention loop instead of dead-ending.
-      if (done >= total) return this.tt('landing.progress.revisit')
+      if (done >= DAILY_FULL_DAY_THRESHOLD) return this.tt('landing.progress.revisit')
       if (done === 1) return this.tt('landing.progress.summaryOneDone')
-      if (total - done === 1) return this.tt('landing.progress.summaryOneLeft')
+      if (DAILY_FULL_DAY_THRESHOLD - done === 1) return this.tt('landing.progress.summaryOneLeft')
       return this.tt('landing.progress.summaryInProgress')
     },
 
@@ -867,6 +877,7 @@ export default {
         this.hasRevealedDailyCardOnHomeToday = true
         this.hasHoroscopeToday = true
         this.hasTarotToday = false
+        this.hasReflectionToday = false
         return
       }
 
@@ -874,6 +885,7 @@ export default {
       this.hasRevealedDailyCardOnHomeToday = false
       this.hasHoroscopeToday = false
       this.hasTarotToday = false
+      this.hasReflectionToday = false
     },
 
     syncAstroSheetNavState(isOpen) {
@@ -923,6 +935,7 @@ export default {
         this.hasDailyCardToday || this.readHomeDailyCardRevealState()
       this.hasHoroscopeToday = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.horoscope)
       this.hasTarotToday = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.tarot)
+      this.hasReflectionToday = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.reflection)
     },
 
     getHomeDailyCardRevealStorageKey(dateKey = localISODate()) {
@@ -1069,6 +1082,7 @@ export default {
       await this.triggerImpact(ImpactStyle.Light)
       const next = this.dailyProgressItems.find((item) => !item.done)
       const routeByKey = {
+        [DAILY_ACTIVITY_KEYS.reflection]: 'journal',
         [DAILY_ACTIVITY_KEYS.dailyCard]: 'daily',
         [DAILY_ACTIVITY_KEYS.horoscope]: 'horoscope',
         [DAILY_ACTIVITY_KEYS.tarot]: 'tarot',

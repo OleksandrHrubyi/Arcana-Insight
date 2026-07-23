@@ -12,7 +12,11 @@ export const DAILY_ACTIVITY_KEYS = Object.freeze({
   dailyCard: 'daily_card',
   horoscope: 'horoscope',
   tarot: 'tarot',
+  reflection: 'reflection',
 })
+// A "full day" is any 3 of the 4 activities — mirrors the server threshold in
+// ritual-track/ritual-dashboard, which stays at 3 by design.
+export const DAILY_FULL_DAY_THRESHOLD = 3
 const ALLOWED_ACTIVITIES = new Set(Object.values(DAILY_ACTIVITY_KEYS))
 
 export const getLocalDateKey = (value = new Date()) => {
@@ -247,6 +251,7 @@ export const getRecentDailyJourney = (days = 7, value = new Date()) => {
       hasDailyCard: activities.includes(DAILY_ACTIVITY_KEYS.dailyCard),
       hasHoroscope: activities.includes(DAILY_ACTIVITY_KEYS.horoscope),
       hasTarot: activities.includes(DAILY_ACTIVITY_KEYS.tarot),
+      hasReflection: activities.includes(DAILY_ACTIVITY_KEYS.reflection),
     })
   }
   return rows
@@ -265,7 +270,7 @@ export const computeLocalRitualPoints = (value = new Date()) => {
     if (!normalized.length) continue
     activeDaysCount += 1
     balance += normalized.length * LOCAL_ACTIVITY_POINTS
-    if (normalized.length >= 3) {
+    if (normalized.length >= DAILY_FULL_DAY_THRESHOLD) {
       balance += LOCAL_FULL_DAY_BONUS_POINTS
       fullDaysCount += 1
     }

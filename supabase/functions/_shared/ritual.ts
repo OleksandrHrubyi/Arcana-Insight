@@ -1,6 +1,6 @@
 import { notifyError } from './notify.ts'
 
-export const RITUAL_ACTIVITY_KEYS = ['daily_card', 'horoscope', 'tarot'] as const
+export const RITUAL_ACTIVITY_KEYS = ['daily_card', 'horoscope', 'tarot', 'reflection'] as const
 export type RitualActivityKey = (typeof RITUAL_ACTIVITY_KEYS)[number]
 
 export const ACTIVITY_POINTS = 10

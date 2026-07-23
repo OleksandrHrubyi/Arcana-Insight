@@ -244,6 +244,55 @@ export const createSupabaseNativeService = ({
     return { data, error: null }
   }
 
+  const selectJournalEntriesByUser = async (userId, timeoutMs = 8000) => {
+    if (!restBase) return { data: null, error: new Error('Supabase URL missing') }
+    const makeRequest = async () => {
+      const headers = await buildAuthHeaders()
+      const url =
+        `${restBase}/journal_entries?user_id=eq.${encodeURIComponent(userId)}` +
+        '&order=entry_date.desc&limit=60'
+      return { url, init: { method: 'GET', headers } }
+    }
+    const { res, data } = await requestWithRetry(makeRequest, timeoutMs, 'rest.journal_entries.select')
+    if (!res.ok) {
+      return { data: null, error: new Error(`journal_entries select failed: ${res.status}`) }
+    }
+    return { data: Array.isArray(data) ? data : [], error: null }
+  }
+
+  const upsertJournalEntry = async (payload, timeoutMs = 8000) => {
+    if (!restBase) return { data: null, error: new Error('Supabase URL missing') }
+    const makeRequest = async () => {
+      const headers = await buildAuthHeaders({
+        'Content-Type': 'application/json',
+        // return=representation so the caller gets the row id back (needed for delete)
+        Prefer: 'resolution=merge-duplicates,return=representation',
+      })
+      const url = `${restBase}/journal_entries?on_conflict=user_id,entry_date`
+      return { url, init: { method: 'POST', headers, body: JSON.stringify(payload) } }
+    }
+    const { res, data } = await requestWithRetry(makeRequest, timeoutMs, 'rest.journal_entries.upsert')
+    if (!res.ok) {
+      return { data: null, error: new Error(`journal_entries upsert failed: ${res.status}`) }
+    }
+    const row = Array.isArray(data) ? data[0] : data
+    return { data: row || null, error: null }
+  }
+
+  const deleteJournalEntry = async (id, timeoutMs = 8000) => {
+    if (!restBase) return { data: null, error: new Error('Supabase URL missing') }
+    const makeRequest = async () => {
+      const headers = await buildAuthHeaders()
+      const url = `${restBase}/journal_entries?id=eq.${encodeURIComponent(id)}`
+      return { url, init: { method: 'DELETE', headers } }
+    }
+    const { res, data } = await requestWithRetry(makeRequest, timeoutMs, 'rest.journal_entries.delete')
+    if (!res.ok) {
+      return { data: null, error: new Error(`journal_entries delete failed: ${res.status}`) }
+    }
+    return { data, error: null }
+  }
+
   const selectHoroscopes = async (date, locale, timeoutMs = 8000) => {
     if (!restBase) return { data: null, error: new Error('Supabase URL missing') }
     const makeRequest = async () => {
@@ -293,6 +342,9 @@ export const createSupabaseNativeService = ({
     selectTarotReadingsByUser,
     insertTarotReading,
     deleteTarotReading,
+    selectJournalEntriesByUser,
+    upsertJournalEntry,
+    deleteJournalEntry,
     selectHoroscopes,
     invokeFunction,
   }
