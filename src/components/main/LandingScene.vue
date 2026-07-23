@@ -56,7 +56,7 @@
               ></span>
             </span>
             <span class="ritual-band__label">{{ dailyProgressSummary }}</span>
-            <q-icon name="chevron_right" size="16px" class="ritual-band__chevron" />
+            <q-icon name="chevron_right" size="14px" class="ritual-band__chevron" />
           </span>
         </button>
       </header>
@@ -1847,16 +1847,12 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: stretch;
-  min-height: 44px;
-  padding: 8px 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(148, 178, 214, 0.12);
-  background:
-    linear-gradient(180deg, rgba(17, 28, 46, 0.55), rgba(10, 17, 29, 0.72)),
-    radial-gradient(circle at top left, rgba(124, 166, 226, 0.09), rgba(124, 166, 226, 0) 46%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 10px 22px rgba(2, 7, 15, 0.1);
+  min-height: 36px;
+  padding: 5px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 178, 214, 0.1);
+  background: linear-gradient(180deg, rgba(17, 28, 46, 0.42), rgba(10, 17, 29, 0.58));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   color: inherit;
   font: inherit;
   text-align: left;
@@ -1884,9 +1880,7 @@ export default {
 
 .ritual-band:focus-visible {
   border-color: rgba(169, 208, 245, 0.32);
-  box-shadow:
-    0 0 0 3px rgba(113, 168, 232, 0.12),
-    0 10px 22px rgba(2, 7, 15, 0.14);
+  box-shadow: 0 0 0 3px rgba(113, 168, 232, 0.12);
 }
 
 .ritual-band__row {
@@ -1898,13 +1892,13 @@ export default {
 
 .ritual-band__dots {
   display: inline-flex;
-  gap: 5px;
+  gap: 4px;
   flex-shrink: 0;
 }
 
 .ritual-band__dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.18);
   transition: background 0.3s ease;
@@ -1917,7 +1911,7 @@ export default {
 .ritual-band__label {
   flex: 1 1 auto;
   min-width: 0;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1;
   color: rgba(240, 245, 252, 0.92);
@@ -1946,7 +1940,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 8px;
+  gap: 6px;
   padding: max(52px, calc(env(safe-area-inset-top, 0px) + 12px))
     max(16px, calc(env(safe-area-inset-right, 0px) + 16px)) 0
     max(16px, calc(env(safe-area-inset-left, 0px) + 16px));
@@ -2638,7 +2632,7 @@ export default {
      notch devices and at safe-area 0 (Playwright). Offset = greeting block
      (~66px) + gap (8px) + compact band (44px) + 12px clearance. On a notched
      iPhone this lands the strip at its pre-RP-03 height. */
-  top: calc(max(52px, calc(env(safe-area-inset-top, 0px) + 12px)) + 130px);
+  top: calc(max(52px, calc(env(safe-area-inset-top, 0px) + 12px)) + 120px);
   left: 0;
   right: 0;
   z-index: 3;
@@ -3045,8 +3039,8 @@ export default {
     padding-top: 88px;
   }
   .ritual-band {
-    min-height: 40px;
-    padding: 6px 12px;
+    min-height: 34px;
+    padding: 4px 10px;
   }
   .circle-card__img-wrap {
     width: 94px;
@@ -3075,7 +3069,7 @@ export default {
     font-size: 11px;
   }
   .astro-cards {
-    top: calc(max(44px, calc(env(safe-area-inset-top, 0px) + 10px)) + 120px);
+    top: calc(max(44px, calc(env(safe-area-inset-top, 0px) + 10px)) + 112px);
   }
   .logo-wrap {
     padding-top: max(44px, calc(env(safe-area-inset-top, 0px) + 10px));
@@ -3085,14 +3079,14 @@ export default {
 @media (max-width: 390px) and (max-height: 700px) {
   .astro-cards {
     --cards-pad: 16px;
-    top: calc(max(44px, calc(env(safe-area-inset-top, 0px) + 10px)) + 116px);
+    top: calc(max(44px, calc(env(safe-area-inset-top, 0px) + 10px)) + 108px);
     gap: 6px;
   }
   .ritual-band {
-    min-height: 38px;
+    min-height: 32px;
   }
   .ritual-band__label {
-    font-size: 12px;
+    font-size: 11px;
   }
   .astro-card {
     width: 104px;
