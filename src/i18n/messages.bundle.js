@@ -830,7 +830,7 @@ export const messages = {
       hero: {
         ariaOpen: 'Open daily card interpretation',
         ariaReveal: 'Reveal daily card',
-        eyebrow: 'CARD OF THE DAY',
+        eyebrow: 'DAILY CARD',
         readInterpretation: 'Read interpretation',
         revealCard: 'Reveal card',
       },

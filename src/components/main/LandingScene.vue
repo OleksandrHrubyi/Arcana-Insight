@@ -26,39 +26,40 @@
         <div class="shooting-star"></div>
       </div>
 
-      <!-- Home hero text -->
+      <!-- Home hero text + ritual band -->
       <header class="logo-wrap no-pointer-events">
-        <div class="myday-hero__text">
-          <h1 class="myday-title">{{ homeHeroTitle }}</h1>
-          <p v-if="homeHeroKicker" class="myday-kicker">{{ homeHeroKicker }}</p>
+        <div class="logo-wrap__row">
+          <div class="myday-hero__text">
+            <h1 class="myday-title">{{ homeHeroTitle }}</h1>
+            <p v-if="homeHeroKicker" class="myday-kicker">{{ homeHeroKicker }}</p>
+          </div>
+          <div class="status-stack">
+            <p v-if="dailyStreak > 0" class="streak-badge">
+              {{ streakBadgeLabel }}
+            </p>
+          </div>
         </div>
-        <div class="status-stack">
-          <p v-if="dailyStreak > 0" class="streak-badge">
-            {{ streakBadgeLabel }}
-          </p>
-          <button
-            type="button"
-            class="daily-track"
-            :aria-label="dailyProgressAriaLabel"
-            @click="openNextRitual"
-          >
-            <span class="daily-track__dots" aria-hidden="true">
+        <button
+          type="button"
+          class="ritual-band"
+          :class="{ 'ritual-band--visible': showHomeActions }"
+          :aria-label="dailyProgressAriaLabel"
+          @click="openNextRitual"
+        >
+          <span v-if="ritualBandSkyLine" class="ritual-band__sky">{{ ritualBandSkyLine }}</span>
+          <span class="ritual-band__row">
+            <span class="ritual-band__dots" aria-hidden="true">
               <span
                 v-for="item in dailyProgressItems"
                 :key="item.key"
-                class="daily-track__dot"
-                :class="{ 'daily-track__dot--done': item.done }"
+                class="ritual-band__dot"
+                :class="{ 'ritual-band__dot--done': item.done }"
               ></span>
             </span>
-            <span class="daily-track__label">{{ dailyProgressSummary }}</span>
-            <q-icon
-              v-if="dailyProgressComplete"
-              name="chevron_right"
-              size="14px"
-              class="daily-track__chevron"
-            />
-          </button>
-        </div>
+            <span class="ritual-band__label">{{ dailyProgressSummary }}</span>
+            <q-icon name="chevron_right" size="16px" class="ritual-band__chevron" />
+          </span>
+        </button>
       </header>
 
       <!-- Astro strip -->
@@ -574,6 +575,17 @@ export default {
       if (done === 1) return this.tt('landing.progress.summaryOneDone')
       if (DAILY_FULL_DAY_THRESHOLD - done === 1) return this.tt('landing.progress.summaryOneLeft')
       return this.tt('landing.progress.summaryInProgress')
+    },
+
+    ritualBandSkyLine() {
+      const d = this.astroToday
+      if (!d) return ''
+      const parts = [
+        `${this.tt('astro.moonIn')} ${this.tt(`zodiacLocative.${d.moonSignKey}`)}`,
+        this.tt(`astro.phases.${d.moonPhaseKey}`),
+      ]
+      if (d.mercuryRetrograde) parts.push(this.tt('astro.mercuryRetrograde'))
+      return parts.join(' · ')
     },
 
     astroCards() {
@@ -1839,48 +1851,105 @@ export default {
   color: rgba(226, 232, 241, 0.72);
 }
 
-.daily-track {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-  margin-top: 4px;
-  min-height: 40px;
-  padding: 8px 10px;
-  border: none;
-  background: transparent;
+/* Ritual band — primary above-the-fold CTA (RP-03). Glass-lite surface in the
+   focus-today language; opacity/transform-only entrance via showHomeActions. */
+.ritual-band {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  gap: 5px;
+  min-height: 56px;
+  padding: 9px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 178, 214, 0.12);
+  background:
+    linear-gradient(180deg, rgba(17, 28, 46, 0.55), rgba(10, 17, 29, 0.72)),
+    radial-gradient(circle at top left, rgba(124, 166, 226, 0.09), rgba(124, 166, 226, 0) 46%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 22px rgba(2, 7, 15, 0.1);
+  color: inherit;
+  font: inherit;
+  text-align: left;
   cursor: pointer;
+  outline: none;
   pointer-events: auto;
-  color: rgba(226, 232, 241, 0.6);
-  font-size: 12px;
-  font-weight: 600;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.6s ease 0.05s,
+    transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.05s;
+}
+
+.ritual-band--visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.6s ease 0.05s,
+    transform 160ms ease;
+}
+
+.ritual-band--visible:active {
+  transform: scale(0.98);
+}
+
+.ritual-band:focus-visible {
+  border-color: rgba(169, 208, 245, 0.32);
+  box-shadow:
+    0 0 0 3px rgba(113, 168, 232, 0.12),
+    0 10px 22px rgba(2, 7, 15, 0.14);
+}
+
+.ritual-band__sky {
+  font-size: 11px;
   line-height: 1;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
+  color: rgba(214, 225, 242, 0.62);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.daily-track__dots {
+.ritual-band__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ritual-band__dots {
   display: inline-flex;
-  gap: 4px;
+  gap: 5px;
+  flex-shrink: 0;
 }
 
-.daily-track__dot {
-  width: 6px;
-  height: 6px;
+.ritual-band__dot {
+  width: 7px;
+  height: 7px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.18);
   transition: background 0.3s ease;
 }
 
-.daily-track__dot--done {
+.ritual-band__dot--done {
   background: rgba(141, 190, 240, 0.9);
 }
 
-.daily-track__label {
+.ritual-band__label {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  color: rgba(240, 245, 252, 0.92);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.daily-track__chevron {
-  margin-left: -2px;
+.ritual-band__chevron {
+  flex-shrink: 0;
   color: rgba(141, 190, 240, 0.85);
 }
 
@@ -1897,12 +1966,19 @@ export default {
   position: relative;
   z-index: 5;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
   padding: max(52px, calc(env(safe-area-inset-top, 0px) + 12px))
     max(16px, calc(env(safe-area-inset-right, 0px) + 16px)) 0
     max(16px, calc(env(safe-area-inset-left, 0px) + 16px));
+}
+
+.logo-wrap__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .myday-hero__text {
@@ -1939,7 +2015,8 @@ export default {
 /* Positioned so the card image sits in the center of the large ring. */
 .circle-card {
   position: absolute;
-  top: 55.5%;
+  /* 56.5% + scale(0.92): demoted hero (RP-03) — the ritual band above is primary. */
+  top: 56.5%;
   left: 50%;
   width: min(272px, calc(100vw - 44px));
   min-height: 160px;
@@ -1958,12 +2035,12 @@ export default {
   transition:
     opacity 0.9s ease 0.2s,
     transform 0s linear 0s;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.92);
   will-change: opacity;
 }
 .circle-card--visible {
   opacity: 1;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.92);
 }
 
 .focus-today {
@@ -2579,7 +2656,10 @@ export default {
 .astro-cards {
   --cards-pad: 20px;
   position: absolute;
-  top: calc(env(safe-area-inset-top, 0px) + 146px);
+  /* Mirrors the header's own max() padding so the band→strip gap holds both on
+     notch devices and at safe-area 0 (Playwright). Offset = greeting block
+     (~66px) + gap (10px) + band (56px) + 14px clearance. */
+  top: calc(max(52px, calc(env(safe-area-inset-top, 0px) + 12px)) + 146px);
   left: 0;
   right: 0;
   z-index: 3;
@@ -2981,9 +3061,17 @@ export default {
 
 @media (max-height: 700px) {
   .circle-card {
-    top: 51.5%;
+    top: 53%;
     min-height: 146px;
     padding-top: 88px;
+  }
+  .ritual-band {
+    min-height: 50px;
+    padding: 7px 12px;
+    gap: 4px;
+  }
+  .ritual-band__sky {
+    font-size: 10px;
   }
   .circle-card__img-wrap {
     width: 94px;
@@ -3012,7 +3100,7 @@ export default {
     font-size: 11px;
   }
   .astro-cards {
-    top: calc(env(safe-area-inset-top, 0px) + 120px);
+    top: calc(max(44px, calc(env(safe-area-inset-top, 0px) + 10px)) + 136px);
   }
   .logo-wrap {
     padding-top: max(44px, calc(env(safe-area-inset-top, 0px) + 10px));
@@ -3022,8 +3110,14 @@ export default {
 @media (max-width: 390px) and (max-height: 700px) {
   .astro-cards {
     --cards-pad: 16px;
-    top: calc(env(safe-area-inset-top, 0px) + 104px);
+    top: calc(max(44px, calc(env(safe-area-inset-top, 0px) + 10px)) + 132px);
     gap: 6px;
+  }
+  .ritual-band {
+    min-height: 46px;
+  }
+  .ritual-band__label {
+    font-size: 12px;
   }
   .astro-card {
     width: 104px;
@@ -3045,7 +3139,7 @@ export default {
     font-size: 10px;
   }
   .circle-card {
-    top: 48.9%;
+    top: 55%;
     width: min(206px, calc(100vw - 60px));
     min-height: 116px;
     padding-top: 52px;

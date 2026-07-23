@@ -40,7 +40,10 @@ test.describe('home visual qa', () => {
 
       await expect(page.locator('.circle-card')).toBeVisible()
       await expect(page.locator('.focus-today')).toBeVisible()
-      await expect(page.locator('.circle-card__eyebrow')).toHaveText('CARD OF THE DAY')
+      // RP-03: the ritual band is the primary above-the-fold CTA; the demoted
+      // hero keeps a softer eyebrow.
+      await expect(page.locator('.ritual-band')).toBeVisible()
+      await expect(page.locator('.circle-card__eyebrow')).toHaveText('DAILY CARD')
 
       await expect(page).toHaveScreenshot(`landing-home-${state.name}.png`, {
         fullPage: true,
