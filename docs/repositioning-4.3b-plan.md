@@ -87,8 +87,15 @@
 
 ### P0 — метадані / сабмішн
 
-- [ ] **RP-05 · Metadata** — нова назва (прибрати «Tarot & Horoscope» з headline), сабтайтл,
-  keywords, опис; категорія Lifestyle vs H&F. Оновити `app-store/asc-metadata.md`.
+- [~] **RP-05 · Metadata — PREPARED 2026-07-23** (owner обрав назву **«Zorya: Daily Sky
+  Journal»** / uk «Зоря — щоденник неба»; перевірено — у велнес-ніші вільна).
+  Зроблено в коді/доках: `asc-metadata.md` повністю переписаний (name, subtitle «Mood,
+  reflection & moon ritual», promo, keywords — divination-терміни пішли в невидимі
+  keywords, опис journal-first en+uk, What's New v1.1, підписи скріншотів, review notes),
+  `CFBundleDisplayName`=Zorya, `capacitor.config.json`, in-app бренд (i18n: Zorya/«Зоря»).
+  **Лишилось (owner, кліки в ASC):** внести name/subtitle/promo/keywords/description з
+  дока, uk-локаль, перевірити категорію Lifestyle. Product IDs `arcana.premium.*` не
+  міняються (immutable) — тільки display-назви підписок на «Zorya Premium».
 - [ ] **RP-06 · Screenshots** — перші 2–3 скріни ведуть з reflection loop (mood → sky prompt →
   journal); таро/гороскоп — у хвості сету. Переробити `tests/visual/appstore-shots.spec.js`.
 - [ ] **RP-07 · Review notes v3** — переписати `app-store/reviewer-notes.md` під нову ідентичність
