@@ -26,39 +26,17 @@
         <div class="shooting-star"></div>
       </div>
 
-      <!-- Home hero text + ritual band -->
+      <!-- Home hero text -->
       <header class="logo-wrap no-pointer-events">
-        <div class="logo-wrap__row">
-          <div class="myday-hero__text">
-            <h1 class="myday-title">{{ homeHeroTitle }}</h1>
-            <p v-if="homeHeroKicker" class="myday-kicker">{{ homeHeroKicker }}</p>
-          </div>
-          <div class="status-stack">
-            <p v-if="dailyStreak > 0" class="streak-badge">
-              {{ streakBadgeLabel }}
-            </p>
-          </div>
+        <div class="myday-hero__text">
+          <h1 class="myday-title">{{ homeHeroTitle }}</h1>
+          <p v-if="homeHeroKicker" class="myday-kicker">{{ homeHeroKicker }}</p>
         </div>
-        <button
-          type="button"
-          class="ritual-band"
-          :class="{ 'ritual-band--visible': showHomeActions }"
-          :aria-label="dailyProgressAriaLabel"
-          @click="openNextRitual"
-        >
-          <span class="ritual-band__row">
-            <span class="ritual-band__dots" aria-hidden="true">
-              <span
-                v-for="item in dailyProgressItems"
-                :key="item.key"
-                class="ritual-band__dot"
-                :class="{ 'ritual-band__dot--done': item.done }"
-              ></span>
-            </span>
-            <span class="ritual-band__label">{{ dailyProgressSummary }}</span>
-            <q-icon name="chevron_right" size="14px" class="ritual-band__chevron" />
-          </span>
-        </button>
+        <div class="status-stack">
+          <p v-if="dailyStreak > 0" class="streak-badge">
+            {{ streakBadgeLabel }}
+          </p>
+        </div>
       </header>
 
       <!-- Astro strip -->
@@ -186,6 +164,28 @@
           </div>
         </button>
       </section>
+
+      <!-- Ritual band: primary CTA docked above the bottom nav (RP-03) -->
+      <button
+        type="button"
+        class="ritual-band"
+        :class="{ 'ritual-band--visible': showHomeActions }"
+        :aria-label="dailyProgressAriaLabel"
+        @click="openNextRitual"
+      >
+        <span class="ritual-band__row">
+          <span class="ritual-band__dots" aria-hidden="true">
+            <span
+              v-for="item in dailyProgressItems"
+              :key="item.key"
+              class="ritual-band__dot"
+              :class="{ 'ritual-band__dot--done': item.done }"
+            ></span>
+          </span>
+          <span class="ritual-band__label">{{ dailyProgressSummary }}</span>
+          <q-icon name="chevron_right" size="14px" class="ritual-band__chevron" />
+        </span>
+      </button>
 
       <q-dialog v-model="astroSheetOpen" position="bottom" class="astro-sheet-dialog">
         <section v-if="astroSheetContent" class="astro-sheet" :style="astroSheetStyle()">
@@ -1839,10 +1839,15 @@ export default {
   color: rgba(226, 232, 241, 0.72);
 }
 
-/* Ritual band — primary above-the-fold CTA (RP-03). Single row: the sky data
-   lives in the astro strip right below (no duplicate content on home).
-   Glass-lite surface; opacity/transform-only entrance via showHomeActions. */
+/* Ritual band — primary CTA docked in the free space between focus-today and
+   the bottom nav (owner decision 2026-07-23; header/astro/hero keep their
+   original geometry). Single row, quiet glass; entrance via showHomeActions. */
 .ritual-band {
+  position: absolute;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 88px);
+  width: min(348px, calc(100vw - 28px));
+  z-index: 4;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1860,7 +1865,7 @@ export default {
   outline: none;
   pointer-events: auto;
   opacity: 0;
-  transform: translateY(6px);
+  transform: translate(-50%, 6px);
   transition:
     opacity 0.6s ease 0.05s,
     transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.05s;
@@ -1868,14 +1873,14 @@ export default {
 
 .ritual-band--visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
   transition:
     opacity 0.6s ease 0.05s,
     transform 160ms ease;
 }
 
 .ritual-band--visible:active {
-  transform: scale(0.98);
+  transform: translate(-50%, 0) scale(0.98);
 }
 
 .ritual-band:focus-visible {
@@ -1938,19 +1943,12 @@ export default {
   position: relative;
   z-index: 5;
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 6px;
-  padding: max(52px, calc(env(safe-area-inset-top, 0px) + 12px))
-    max(16px, calc(env(safe-area-inset-right, 0px) + 16px)) 0
-    max(16px, calc(env(safe-area-inset-left, 0px) + 16px));
-}
-
-.logo-wrap__row {
-  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  padding: max(52px, calc(env(safe-area-inset-top, 0px) + 12px))
+    max(16px, calc(env(safe-area-inset-right, 0px) + 16px)) 0
+    max(16px, calc(env(safe-area-inset-left, 0px) + 16px));
 }
 
 .myday-hero__text {
@@ -1987,8 +1985,7 @@ export default {
 /* Positioned so the card image sits in the center of the large ring. */
 .circle-card {
   position: absolute;
-  /* 56.5% + scale(0.92): demoted hero (RP-03) — the ritual band above is primary. */
-  top: 56.5%;
+  top: 55.5%;
   left: 50%;
   width: min(272px, calc(100vw - 44px));
   min-height: 160px;
@@ -2007,12 +2004,12 @@ export default {
   transition:
     opacity 0.9s ease 0.2s,
     transform 0s linear 0s;
-  transform: translate(-50%, -50%) scale(0.92);
+  transform: translate(-50%, -50%);
   will-change: opacity;
 }
 .circle-card--visible {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(0.92);
+  transform: translate(-50%, -50%);
 }
 
 .focus-today {
@@ -2628,11 +2625,7 @@ export default {
 .astro-cards {
   --cards-pad: 20px;
   position: absolute;
-  /* Mirrors the header's own max() padding so the band→strip gap holds both on
-     notch devices and at safe-area 0 (Playwright). Offset = greeting block
-     (~66px) + gap (8px) + compact band (44px) + 12px clearance. On a notched
-     iPhone this lands the strip at its pre-RP-03 height. */
-  top: calc(max(52px, calc(env(safe-area-inset-top, 0px) + 12px)) + 120px);
+  top: calc(env(safe-area-inset-top, 0px) + 146px);
   left: 0;
   right: 0;
   z-index: 3;
@@ -3034,13 +3027,14 @@ export default {
 
 @media (max-height: 700px) {
   .circle-card {
-    top: 53%;
+    top: 51.5%;
     min-height: 146px;
     padding-top: 88px;
   }
   .ritual-band {
-    min-height: 34px;
-    padding: 4px 10px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 88px);
+    min-height: 28px;
+    padding: 3px 10px;
   }
   .circle-card__img-wrap {
     width: 94px;
@@ -3050,7 +3044,8 @@ export default {
     top: -94px;
   }
   .focus-today {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 112px);
+    /* +10px vs pre-band value: makes room for the 30px band docked below. */
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 122px);
     width: min(332px, calc(100vw - 24px));
   }
   .focus-today__card {
@@ -3069,7 +3064,7 @@ export default {
     font-size: 11px;
   }
   .astro-cards {
-    top: calc(max(44px, calc(env(safe-area-inset-top, 0px) + 10px)) + 112px);
+    top: calc(env(safe-area-inset-top, 0px) + 120px);
   }
   .logo-wrap {
     padding-top: max(44px, calc(env(safe-area-inset-top, 0px) + 10px));
@@ -3079,11 +3074,8 @@ export default {
 @media (max-width: 390px) and (max-height: 700px) {
   .astro-cards {
     --cards-pad: 16px;
-    top: calc(max(44px, calc(env(safe-area-inset-top, 0px) + 10px)) + 108px);
+    top: calc(env(safe-area-inset-top, 0px) + 104px);
     gap: 6px;
-  }
-  .ritual-band {
-    min-height: 32px;
   }
   .ritual-band__label {
     font-size: 11px;
@@ -3108,7 +3100,7 @@ export default {
     font-size: 10px;
   }
   .circle-card {
-    top: 55%;
+    top: 48.9%;
     width: min(206px, calc(100vw - 60px));
     min-height: 116px;
     padding-top: 52px;

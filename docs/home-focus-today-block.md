@@ -18,9 +18,10 @@ Add one compact, source-backed daily insight to the home screen without:
 - Visual position: compact card below the hero CTA layer
 
 This block is not a new top section and must not sit between the header and the hero.
-(RP-03 exception: the `.ritual-band` is part of the HEADER layer — inside `.logo-wrap`,
-below the greeting row — not a block between header and hero; this rule stays in force
-for any other block.)
+(RP-03 note: the `.ritual-band` is docked BELOW this block, between focus-today and the
+bottom nav — on short screens focus-today lifts +10px to make room. Header-area
+placement of the band was tried and rejected by the owner; nothing may sit between the
+header and the hero.)
 
 ## Role On Home
 

@@ -17,10 +17,12 @@ Use it when changing screen structure, hierarchy, CTA logic, or above-the-fold c
 - Page wrapper: `src/pages/GetStartedPage.vue`
 - Main component: `src/components/main/LandingScene.vue`
 - Role: main daily dashboard
-- Primary CTA: continue today's reflection ritual — the `.ritual-band` under the greeting
-  (single row: 4-step progress + adaptive label; tap = next undone ritual step,
-  reflection-first → `/journal`; sky data lives in the astro strip below, never in the
-  band — no duplicate content) (RP-03)
+- Primary CTA: continue today's reflection ritual — the `.ritual-band` docked between
+  focus-today and the bottom nav (single row: 4-step progress + adaptive label; tap =
+  next undone ritual step, reflection-first → `/journal`; never shows sky data — that
+  lives in the astro strip; owner placement decision 2026-07-23: the band must NOT sit
+  in the header — it moved header/astro/hero geometry, which is frozen at its
+  pre-RP-03 values) (RP-03)
 - Secondary CTA: reveal/open the daily card (demoted hero, eyebrow "DAILY CARD"),
   open horoscope, or another meaningful continuation path
 - Above the fold must show:
