@@ -28,24 +28,22 @@ test('resolveOnboardingRouteTarget accepts array-like from query values', async 
   })
 })
 
-test('resolveOnboardingRouteTarget falls back to home replace for blocked or unknown routes', async () => {
+test('resolveOnboardingRouteTarget falls back to the first-run journal for blocked or unknown routes', async () => {
   const { resolveOnboardingRouteTarget } = await importModule('src/helpers/onboardingRouteTarget.js')
 
   const blocked = resolveOnboardingRouteTarget('/premium')
   const unknown = resolveOnboardingRouteTarget('/some-random-screen')
 
-  assert.deepEqual(blocked, {
-    target: { name: 'arcana' },
+  // RP-04: a true first run opens the reflection journal, not Home — the first
+  // minute in the app is the daily ritual (repositioned identity).
+  const firstRun = {
+    target: { name: 'journal', query: { source: 'onboarding', entry: 'first_run' } },
     navigationMode: 'replace',
     hadValidFrom: false,
-    resolvedTarget: '/',
-  })
-  assert.deepEqual(unknown, {
-    target: { name: 'arcana' },
-    navigationMode: 'replace',
-    hadValidFrom: false,
-    resolvedTarget: '/',
-  })
+    resolvedTarget: '/journal',
+  }
+  assert.deepEqual(blocked, firstRun)
+  assert.deepEqual(unknown, firstRun)
 })
 
 test('resolveOnboardingRouteTarget rejects external and malformed from values', async () => {
@@ -55,18 +53,18 @@ test('resolveOnboardingRouteTarget rejects external and malformed from values', 
   const malformed = resolveOnboardingRouteTarget('//example.com/menu')
 
   assert.equal(external.navigationMode, 'replace')
-  assert.equal(external.resolvedTarget, '/')
+  assert.equal(external.resolvedTarget, '/journal')
   assert.equal(malformed.navigationMode, 'replace')
-  assert.equal(malformed.resolvedTarget, '/')
+  assert.equal(malformed.resolvedTarget, '/journal')
 })
 
 test('onboarding route whitelist exports first-run allowlist', async () => {
   const { onboardingRouteWhitelist } = await importModule('src/helpers/onboardingRouteTarget.js')
 
   // N2: self-sufficient content screens are preserved through the onboarding gate;
-  // gated/stateful/auth screens stay blocked.
+  // gated/stateful/auth screens stay blocked. '/' is intentionally absent — a
+  // plain launch (guard stamps from=/) is the first-run case → journal (RP-04).
   assert.deepEqual(onboardingRouteWhitelist.allowed, [
-    '/',
     '/menu',
     '/horoscope',
     '/tarot',

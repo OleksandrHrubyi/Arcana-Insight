@@ -21,7 +21,7 @@ test('buildOnboardingExitContext creates push payload for valid from target', as
   })
 })
 
-test('buildOnboardingExitContext creates replace payload for default home fallback', async () => {
+test('buildOnboardingExitContext creates replace payload for the first-run journal fallback', async () => {
   const { buildOnboardingExitContext } = await importModule('src/helpers/onboardingFlow.js')
 
   const result = buildOnboardingExitContext({
@@ -31,9 +31,13 @@ test('buildOnboardingExitContext creates replace payload for default home fallba
 
   assert.equal(result.navigationMode, 'replace')
   assert.equal(result.hadValidFrom, false)
-  assert.deepEqual(result.target, { name: 'arcana' })
+  // RP-04: first run lands on the reflection journal, not Home.
+  assert.deepEqual(result.target, {
+    name: 'journal',
+    query: { source: 'onboarding', entry: 'first_run' },
+  })
   assert.deepEqual(result.payload, {
-    resolved_target: '/',
+    resolved_target: '/journal',
     navigation_mode: 'replace',
     had_valid_from: false,
     selected_count: 0,

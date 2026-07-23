@@ -1,12 +1,21 @@
-export const ONBOARDING_HOME_ROUTE = Object.freeze({ name: 'arcana' })
-export const ONBOARDING_HOME_PATH = '/'
+// RP-04: a true first run (no valid `from` deep-link) lands on the reflection
+// journal, not Home — the first minute in the app IS the daily ritual, which is
+// the repositioned identity Apple sees. Re-entries with a valid `from` keep
+// returning to their origin.
+export const ONBOARDING_FIRST_RUN_ROUTE = Object.freeze({
+  name: 'journal',
+  query: Object.freeze({ source: 'onboarding', entry: 'first_run' }),
+})
+export const ONBOARDING_FIRST_RUN_PATH = '/journal'
 
 // After the onboarding gate, return the user to their original destination (e.g. a
 // push / marketing deep-link) when it is a self-sufficient screen that renders fine
 // for a brand-new user. Gated/stateful screens stay blocked so a first run never
 // lands on an empty/locked/auth surface (N2).
+// NOTE: '/' is deliberately NOT allowed — the guard stamps `from=/` on every
+// plain app launch, which is exactly the first-run case that must land on the
+// journal. Real deep-links carry a specific path.
 const ALLOWED_FROM_PATHS = Object.freeze([
-  '/',
   '/menu',
   '/horoscope',
   '/tarot',
@@ -70,10 +79,10 @@ export const resolveOnboardingRouteTarget = (rawFrom) => {
   }
 
   return {
-    target: ONBOARDING_HOME_ROUTE,
+    target: ONBOARDING_FIRST_RUN_ROUTE,
     navigationMode: 'replace',
     hadValidFrom: false,
-    resolvedTarget: ONBOARDING_HOME_PATH,
+    resolvedTarget: ONBOARDING_FIRST_RUN_PATH,
   }
 }
 
