@@ -88,6 +88,23 @@
                   <q-icon name="chevron_right" size="18px" class="settings-chevron" />
                 </q-item-section>
               </q-item>
+
+              <q-item v-if="healthAvailable" class="settings-item">
+                <q-item-section avatar class="row items-center justify-center">
+                  <q-icon name="self_improvement" size="20px" class="settings-icon" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="settings-label">{{ tt('settingsPage.mindfulSync') }}</q-item-label>
+                  <q-item-label caption class="settings-caption">{{ tt('settingsPage.mindfulSyncHint') }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-toggle
+                    v-model="mindfulSync"
+                    class="arcana-toggle"
+                    @update:model-value="onToggleMindful"
+                  />
+                </q-item-section>
+              </q-item>
             </q-list>
           </div>
 
@@ -233,6 +250,23 @@
               <q-item-section side class="row items-center no-wrap settings-side">
                 <div class="settings-value">{{ optimalTimeLabel }}</div>
                 <q-icon name="chevron_right" size="18px" class="settings-chevron" />
+              </q-item-section>
+            </q-item>
+
+            <q-item v-if="healthAvailable" class="settings-item">
+              <q-item-section avatar class="row items-center justify-center">
+                <q-icon name="self_improvement" size="20px" class="settings-icon" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="settings-label">{{ tt('settingsPage.mindfulSync') }}</q-item-label>
+                <q-item-label caption class="settings-caption">{{ tt('settingsPage.mindfulSyncHint') }}</q-item-label>
+              </q-item-section>
+              <q-item-section side>
+                <q-toggle
+                  v-model="mindfulSync"
+                  class="arcana-toggle"
+                  @update:model-value="onToggleMindful"
+                />
               </q-item-section>
             </q-item>
           </q-list>
@@ -396,6 +430,7 @@ import { useAuthStore } from 'stores/authStore.js'
 
 // Capacitor Haptics (safe import)
 import { Capacitor } from '@capacitor/core'
+import { isMindfulSyncEnabled, setMindfulSyncEnabled } from 'src/helpers/mindfulnessCore.js'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 
 const LS_DAILY_PUSH = 'daily_push_enabled'
@@ -433,6 +468,9 @@ export default defineComponent({
       // a corrupted value must read as "off", never white-screen the Settings tab
       // (B3 — the writer below stores 'true'/'false').
       dailyPush: localStorage.getItem(LS_DAILY_PUSH) === 'true',
+      // RP-15: opt-in Apple Health Mindful Minutes (iOS only, write-only).
+      mindfulSync: isMindfulSyncEnabled(),
+      healthAvailable: Capacitor.getPlatform() === 'ios',
       busy: false,
       pushSyncError: false,
       suppressDailyPushWatch: false,
@@ -763,6 +801,10 @@ export default defineComponent({
       this.onboardingInterests = normalized
       persistOnboardingPreferences(normalized)
       this.hapticSelect()
+    },
+
+    onToggleMindful (value) {
+      setMindfulSyncEnabled(value === true)
     },
 
     onOpenLanguage () {

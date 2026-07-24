@@ -231,6 +231,7 @@ import {
 import { trackRitualActivityWithGuestFallback } from 'src/helpers/ritualRewardsBackend.js'
 import { isDayKeyStale } from 'src/helpers/dayRollover.js'
 import { analytics } from 'src/services/analytics'
+import { logMindfulSessionIfEnabled } from 'src/services/mindfulness.js'
 import { JOURNAL_EVENTS } from 'src/constants/analyticsEvents'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
@@ -520,6 +521,8 @@ const saveEntry = async () => {
         source: 'journal_page',
         userId: userId.value,
       })
+      // RP-15: opt-in Apple Health Mindful Minutes (write-only, never blocks UI).
+      void logMindfulSessionIfEnabled()
     }
     void analytics.logEvent(JOURNAL_EVENTS.entrySave, {
       mood: result.entry.mood || 'none',

@@ -671,6 +671,8 @@ export const messages = {
     backToHome: 'Back to Home',
 
     settingsPage: {
+      mindfulSync: 'Apple Health',
+      mindfulSyncHint: 'Log finished reflections as Mindful Minutes (write-only)',
       subtitle: 'Tune your arcana flow',
       sections: {
         general: 'General',
@@ -3070,6 +3072,8 @@ export const messages = {
     backToHome: 'Назад на головну',
 
     settingsPage: {
+      mindfulSync: 'Apple Health',
+      mindfulSyncHint: 'Записувати завершену рефлексію як хвилини усвідомленості (лише запис)',
       subtitle: 'Налаштуй свій потік аркани',
       sections: {
         general: 'Загальні',
