@@ -1,9 +1,15 @@
+//
+//  ArcanaWidget.swift
+//  ArcanaWidget
+//
+//  RP-16: Arcana home-screen widget — today's sky, the daily question and the
+//  ritual progress. Pure renderer: all text arrives pre-localized from the app
+//  via the App Group snapshot (see WidgetBridgePlugin in the main target).
+//  Entry point lives in ArcanaWidgetBundle.swift (@main).
+//
+
 import WidgetKit
 import SwiftUI
-
-// RP-16: Arcana home-screen widget — today's sky, the daily question and the
-// ritual progress. Pure renderer: all text arrives pre-localized from the app
-// via the App Group snapshot (see WidgetBridgePlugin in the main target).
 
 private let appGroupId = "group.com.hrubyi.arcana"
 private let snapshotKey = "arcana_widget_snapshot_v1"
@@ -71,11 +77,11 @@ struct Provider: TimelineProvider {
     }
 }
 
-struct ArcanaWidgetView: View {
+struct ArcanaWidgetEntryView: View {
     var entry: ArcanaEntry
     @Environment(\.widgetFamily) var family
 
-    private var background: some View {
+    private var backgroundGradient: LinearGradient {
         LinearGradient(
             stops: [
                 .init(color: Color(red: 0.004, green: 0.35, blue: 0.59), location: 0),
@@ -90,7 +96,7 @@ struct ArcanaWidgetView: View {
     private var dots: some View {
         HStack(spacing: 4) {
             let done = entry.snapshot?.progressDone ?? 0
-            let total = entry.snapshot?.progressTotal ?? 4
+            let total = max(entry.snapshot?.progressTotal ?? 4, 1)
             ForEach(0..<total, id: \.self) { index in
                 Circle()
                     .fill(index < done
@@ -101,38 +107,46 @@ struct ArcanaWidgetView: View {
         }
     }
 
-    var body: some View {
-        ZStack(alignment: .leading) {
-            background
-            VStack(alignment: .leading, spacing: family == .systemSmall ? 6 : 8) {
-                if let snapshot = entry.snapshot, !entry.isStale {
-                    if !snapshot.skyLine.isEmpty {
-                        Text(snapshot.skyLine)
-                            .font(.system(size: family == .systemSmall ? 10 : 11, weight: .medium))
-                            .foregroundColor(.white.opacity(0.65))
-                            .lineLimit(1)
-                    }
-                    Text(snapshot.promptText)
-                        .font(.system(size: family == .systemSmall ? 13 : 15, weight: .semibold))
-                        .foregroundColor(.white)
-                        .lineLimit(family == .systemSmall ? 4 : 3)
-                        .minimumScaleFactor(0.85)
-                    Spacer(minLength: 0)
-                    dots
-                } else {
-                    Text("ARCANA")
-                        .font(.system(size: 10, weight: .bold))
-                        .tracking(2)
-                        .foregroundColor(.white.opacity(0.6))
-                    Text(staleText)
-                        .font(.system(size: family == .systemSmall ? 13 : 15, weight: .semibold))
-                        .foregroundColor(.white)
-                        .lineLimit(3)
-                    Spacer(minLength: 0)
-                    dots
+    private var content: some View {
+        VStack(alignment: .leading, spacing: family == .systemSmall ? 6 : 8) {
+            if let snapshot = entry.snapshot, !entry.isStale {
+                if !snapshot.skyLine.isEmpty {
+                    Text(snapshot.skyLine)
+                        .font(.system(size: family == .systemSmall ? 10 : 11, weight: .medium))
+                        .foregroundColor(.white.opacity(0.65))
+                        .lineLimit(1)
                 }
+                Text(snapshot.promptText)
+                    .font(.system(size: family == .systemSmall ? 13 : 15, weight: .semibold))
+                    .foregroundColor(.white)
+                    .lineLimit(family == .systemSmall ? 4 : 3)
+                    .minimumScaleFactor(0.85)
+                Spacer(minLength: 0)
+                dots
+            } else {
+                Text("ARCANA")
+                    .font(.system(size: 10, weight: .bold))
+                    .tracking(2)
+                    .foregroundColor(.white.opacity(0.6))
+                Text(staleText)
+                    .font(.system(size: family == .systemSmall ? 13 : 15, weight: .semibold))
+                    .foregroundColor(.white)
+                    .lineLimit(3)
+                Spacer(minLength: 0)
+                dots
             }
-            .padding(family == .systemSmall ? 12 : 14)
+        }
+    }
+
+    var body: some View {
+        if #available(iOS 17.0, *) {
+            content
+                .containerBackground(for: .widget) { backgroundGradient }
+        } else {
+            ZStack(alignment: .leading) {
+                backgroundGradient
+                content.padding(family == .systemSmall ? 12 : 14)
+            }
         }
     }
 
@@ -144,16 +158,32 @@ struct ArcanaWidgetView: View {
     }
 }
 
-@main
 struct ArcanaWidget: Widget {
     let kind: String = "ArcanaWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            ArcanaWidgetView(entry: entry)
+            ArcanaWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Arcana")
         .description("Today's sky, your daily question and ritual progress.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
+}
+
+#Preview(as: .systemSmall) {
+    ArcanaWidget()
+} timeline: {
+    ArcanaEntry(
+        date: .now,
+        snapshot: WidgetSnapshot(
+            v: 1,
+            dateKey: localDateKey(),
+            skyLine: "Moon in Leo · Waxing Gibbous",
+            promptText: "What deserves your patience today?",
+            progressDone: 1,
+            progressTotal: 4
+        ),
+        isStale: false
+    )
 }

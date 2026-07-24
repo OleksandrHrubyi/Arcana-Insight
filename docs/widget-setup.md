@@ -17,12 +17,16 @@
 
 1. **File → New → Target… → Widget Extension.**
    - Product Name: `ArcanaWidget` (точно так).
-   - ❌ ЗНЯТИ галочку «Include Configuration App Intent» (нам треба StaticConfiguration).
-   - Embed in Application: App. → Finish. На питання про activate scheme — Activate.
-2. Xcode створить папку `ArcanaWidget` зі своїм шаблонним свіфт-файлом
-   (`ArcanaWidget.swift`, можливо `ArcanaWidgetBundle.swift`, `ArcanaWidgetLiveActivity.swift`).
-   **Видали ВЕСЬ шаблонний .swift-вміст** (Move to Trash), а замість нього
-   Add Files… → додай НАШ `ios/App/ArcanaWidget/ArcanaWidget.swift` у таргет ArcanaWidget.
+   - ❌ ЗНЯТИ «Include Live Activity» і «Include Control» (новий Xcode вмикає їх
+     за замовчуванням — нам не потрібні).
+   - ❌ «Include Configuration App Intent» лишити знятою (нам треба StaticConfiguration).
+   - Project: App, Embed in Application: App. → Finish. Activate scheme — Activate.
+2. Xcode створить папку `ArcanaWidget` зі шаблонними .swift-файлами
+   (`ArcanaWidgetBundle.swift`, `ArcanaWidget.swift`).
+   **Видали ВСІ шаблонні .swift** (Delete → Move to Trash), а замість них:
+   правий клік по папці ArcanaWidget → Add Files to "App"… → вибери наш
+   `ios/App/ArcanaWidget/ArcanaWidget.swift` (він уже лежить у цій папці на диску) →
+   «Add to targets»: галочка ТІЛЬКИ ArcanaWidget (не App). → Add.
    (Assets.xcassets та Info.plist шаблону залиш.)
 3. **App Groups для ОБОХ таргетів:**
    - Таргет App → Signing & Capabilities → **+ App Groups** → додай/постав галочку
