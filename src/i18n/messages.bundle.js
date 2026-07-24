@@ -1,6 +1,6 @@
 export const messages = {
   en: {
-    appName: 'Zorya',
+    appName: 'Arcana Insight',
 
     // Horoscope
     dailyHoroscope: 'DAILY HOROSCOPE',
@@ -686,7 +686,7 @@ export const messages = {
 
     notifications: {
       defaultTime: 'Default (08:00 UTC)',
-      noPermission: 'Notifications are off. Enable them for Zorya in iOS Settings to get daily reminders.',
+      noPermission: 'Notifications are off. Enable them for Arcana Insight in iOS Settings to get daily reminders.',
       syncFailed: 'Push sync failed',
       syncing: 'Syncing notifications…',
       off: 'Daily reminders are off',
@@ -2336,7 +2336,7 @@ export const messages = {
       a4: 'Your readings are stored locally on your device unless you sign in. We do not sell personal data.',
       q5: 'Why do I see different meanings for the same card?',
       a5: 'Meanings vary with position and orientation, and are meant to be read as a full story.',
-      q6: 'Is Zorya a replacement for professional advice?',
+      q6: 'Is Arcana Insight a replacement for professional advice?',
       a6: 'No. The content is for reflection and personal guidance, not for medical, legal, or financial decisions.',
       q7: 'How should I use tarot readings here?',
       a7: 'Treat readings as a reflective tool. The value comes from connecting symbols to your current context.',
@@ -2356,7 +2356,7 @@ export const messages = {
         'We use trusted third-party services to run the app: OpenAI / OpenRouter (AI readings), Supabase (accounts & data), RevenueCat (subscriptions) and Firebase (analytics).',
       privacyPolicyCta: 'Read the full Privacy Policy',
       termsTitle: 'Terms',
-      termsText1: 'Zorya provides spiritual and informational content for personal use.',
+      termsText1: 'Arcana Insight provides spiritual and informational content for personal use.',
       termsText2: 'You are responsible for how you interpret and use the content.',
       termsSubscription:
         'Premium is an auto-renewable subscription (monthly or yearly). Payment is charged to your App Store account and renews automatically unless canceled at least 24 hours before the period ends. Manage or cancel anytime in your App Store account settings.',
@@ -2366,7 +2366,7 @@ export const messages = {
     },
 
     onboardingPage: {
-      title: 'Welcome to Zorya',
+      title: 'Welcome to Arcana Insight',
       subtitle: 'A daily reflection ritual, guided by the real sky',
       nextTitle: 'Next',
       nextText: 'Open Home. Start today’s ritual in one tap.',
@@ -2410,7 +2410,7 @@ export const messages = {
   },
 
   uk: {
-    appName: 'Зоря',
+    appName: 'Arcana Insight',
 
     dailyHoroscope: 'ГОРОСКОП НА СЬОГОДНІ',
     horoscopeFor: 'ГОРОСКОП НА',
@@ -3081,7 +3081,7 @@ export const messages = {
 
     notifications: {
       defaultTime: 'За замовчуванням (08:00 UTC)',
-      noPermission: 'Сповіщення вимкнені. Увімкни їх для Зорі у Налаштуваннях iOS, щоб отримувати щоденні нагадування.',
+      noPermission: 'Сповіщення вимкнені. Увімкни їх для Arcana Insight у Налаштуваннях iOS, щоб отримувати щоденні нагадування.',
       syncFailed: 'Синхронізація push не вдалася',
       syncing: 'Синхронізуємо сповіщення…',
       off: 'Щоденні нагадування вимкнені',
@@ -4725,7 +4725,7 @@ export const messages = {
       a4: 'Розклади зберігаються локально на пристрої, якщо ти не увійшов. Ми не продаємо персональні дані.',
       q5: 'Чому для однієї карти є різні значення?',
       a5: 'Значення залежать від позиції та орієнтації і читаються як частина історії.',
-      q6: 'Чи замінює Зоря професійну консультацію?',
+      q6: 'Чи замінює Arcana Insight професійну консультацію?',
       a6: 'Ні. Це інструмент для рефлексії, не для медичних, юридичних чи фінансових рішень.',
       q7: 'Як правильно працювати з таро тут?',
       a7: 'Сприймай розклад як інструмент рефлексії. Цінність у зв’язку символів із твоєю ситуацією.',
@@ -4745,7 +4745,7 @@ export const messages = {
       privacyPolicyCta: 'Повна Політика конфіденційності',
       termsTitle: 'Умови',
       termsText1:
-        'Зоря надає духовний та інформаційний контент для особистого використання.',
+        'Arcana Insight надає духовний та інформаційний контент для особистого використання.',
       termsText2: 'Відповідальність за інтерпретацію контенту лежить на користувачі.',
       termsSubscription:
         'Premium — це підписка з автоподовженням (місячна або річна). Оплата списується з твого App Store акаунта і автоматично подовжується, якщо не скасувати щонайменше за 24 години до кінця періоду. Керувати чи скасувати можна будь-коли в налаштуваннях App Store акаунта.',
@@ -4755,7 +4755,7 @@ export const messages = {
     },
 
     onboardingPage: {
-      title: 'Ласкаво просимо в Зорю',
+      title: 'Ласкаво просимо в Arcana Insight',
       subtitle: 'Щоденний ритуал рефлексії, підказаний реальним небом',
       nextTitle: 'Далі',
       nextText: 'Відкрий головну. Запусти сьогоднішній ритуал в один дотик.',

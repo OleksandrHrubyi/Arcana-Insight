@@ -1,6 +1,6 @@
 {
   "appId": "com.hrubyi.arcana",
-  "appName": "Zorya",
+  "appName": "Arcana Insight",
   "webDir": "dist/spa",
   "backgroundColor": "#0a0a0f",
   "ios": {

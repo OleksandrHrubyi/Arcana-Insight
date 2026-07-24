@@ -34,15 +34,13 @@ test('i18n translation resolves value, supports fallback and returns key for unk
   const env = installBrowserEnv({ locale: 'uk' })
   try {
     const mod = await importFresh('src/i18n/index.js')
-    const loaded = await waitFor(() => mod.t('en', 'appName') === 'Zorya')
+    const loaded = await waitFor(() => mod.t('en', 'appName') === 'Arcana Insight')
     assert.equal(loaded, true)
 
-    assert.equal(mod.t('en', 'appName'), 'Zorya')
-    assert.equal(mod.t('zz', 'appName'), 'Zorya')
+    assert.equal(mod.t('en', 'appName'), 'Arcana Insight')
+    assert.equal(mod.t('zz', 'appName'), 'Arcana Insight')
     assert.equal(mod.t('zz', 'missing.key.path'), 'missing.key.path')
-    // Locale-less call resolves the ACTIVE locale (seeded uk above) — the brand
-    // is localized since the Zorya rename, so uk resolves «Зоря».
-    assert.equal(mod.t('appName'), 'Зоря')
+    assert.equal(mod.t('appName'), 'Arcana Insight')
   } finally {
     env.restore()
   }
@@ -82,7 +80,7 @@ test('messages resolve synchronously on import (no cold-start raw-key flash)', a
   try {
     const mod = await importFresh('src/i18n/index.js')
     // No waitFor — these must already be real copy, not the literal key.
-    assert.equal(mod.t('en', 'appName'), 'Zorya')
+    assert.equal(mod.t('en', 'appName'), 'Arcana Insight')
     assert.notEqual(mod.t('uk', 'appName'), 'appName')
     assert.notEqual(mod.t('uk', 'nav.home'), 'nav.home')
     assert.notEqual(mod.t('en', 'nav.menu'), 'nav.menu')

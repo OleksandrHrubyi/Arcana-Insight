@@ -87,15 +87,16 @@
 
 ### P0 — метадані / сабмішн
 
-- [~] **RP-05 · Metadata — PREPARED 2026-07-23** (owner обрав назву **«Zorya: Daily Sky
-  Journal»** / uk «Зоря — щоденник неба»; перевірено — у велнес-ніші вільна).
-  Зроблено в коді/доках: `asc-metadata.md` повністю переписаний (name, subtitle «Mood,
-  reflection & moon ritual», promo, keywords — divination-терміни пішли в невидимі
-  keywords, опис journal-first en+uk, What's New v1.1, підписи скріншотів, review notes),
-  `CFBundleDisplayName`=Zorya, `capacitor.config.json`, in-app бренд (i18n: Zorya/«Зоря»).
-  **Лишилось (owner, кліки в ASC):** внести name/subtitle/promo/keywords/description з
-  дока, uk-локаль, перевірити категорію Lifestyle. Product IDs `arcana.premium.*` не
-  міняються (immutable) — тільки display-назви підписок на «Zorya Premium».
+- [~] **RP-05 · Metadata — PREPARED 2026-07-24.** Історія рішення: 23.07 owner обрав
+  «Zorya» → 24.07 ВІДХИЛИВ через літеру Z (символ російського вторгнення) → раунди
+  альтернатив (Dosvit/Tysha/Povnia/…) не зайшли → **фінал: бренд Arcana ЛИШАЄТЬСЯ,
+  назва «Arcana: Daily Sky Journal»** / uk «Arcana: щоденник неба». Свідомо прийнятий
+  ризик: Arcana — таро-слово; компенсується сабтайтлом, скріншотами, first-run і
+  review notes. Графіка (іконка/splash/logo) НЕ міняється. `asc-metadata.md` —
+  journal-first (name, subtitle «Mood, reflection & moon ritual», promo, keywords з
+  divination-термінами у невидимому полі, описи en+uk, What's New v1.1, підписи).
+  **Лишилось (owner, кліки в ASC):** внести все з дока + uk-локаль, категорія Lifestyle.
+  Product IDs `arcana.premium.*` і display-назви «Arcana Premium» — без змін.
 - [x] **RP-06 · Screenshots — DONE 2026-07-23.** Новий сет 9 кадрів × 2 розміри
   (6.9″+6.5″): 1) журнал-флоу (настрій+небо+питання+текст), 2) журнал-історія (тиждень
   записів), 3) головна зі стрічкою ритуалу, далі карта/гороскоп/сумісність/таро/

@@ -1,4 +1,4 @@
-# Zorya — App Review Notes
+# Arcana — App Review Notes
 
 Use this text in App Store Connect reviewer notes.
 
@@ -10,8 +10,8 @@ Use this text in App Store Connect reviewer notes.
 CONTEXT — RESPONSE TO YOUR 4.3(b) FEEDBACK:
 This app was previously submitted as "Arcana: Tarot & Horoscope" (v1.0 build 62)
 and rejected under Guideline 4.3(b). We took the feedback seriously and rebuilt
-the concept rather than resubmitting: Zorya is now a daily reflection journal
-guided by real astronomy. The name, subtitle, screenshots, onboarding, first-run
+the concept rather than resubmitting: Arcana is now a daily reflection journal
+guided by real astronomy (App Store name: "Arcana: Daily Sky Journal"). The name, subtitle, screenshots, onboarding, first-run
 flow and the home screen's primary action all lead with the reflection ritual.
 Tarot and horoscope remain as secondary, supporting features.
 
