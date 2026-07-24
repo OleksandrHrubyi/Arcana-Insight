@@ -25,7 +25,9 @@ test('buildWidgetSnapshot normalizes, trims and clamps', () => {
   assert.equal(snapshot.skyLine.startsWith('Moon in Scorpio'), true)
   assert.equal(snapshot.promptText.length, WIDGET_PROMPT_MAX_CHARS)
   assert.equal(snapshot.progressDone, 9)
-  assert.equal(snapshot.progressTotal, 1)
+  // 0 is not a meaningful total — falls back to the default of 4.
+  assert.equal(snapshot.progressTotal, 4)
+  assert.equal(buildWidgetSnapshot({ progressTotal: 99 }).progressTotal, 9)
 
   const empty = buildWidgetSnapshot({})
   assert.equal(empty.promptText, '')
