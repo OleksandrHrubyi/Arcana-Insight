@@ -381,6 +381,38 @@ test('saveJournalEntrySnapshot remote failure still counts as saved locally', as
   assert.equal(result.error, failure)
 })
 
+test('computeJournalPatterns: window filter, thresholds and deterministic ties', () => {
+  const { computeJournalPatterns } = core
+  const mk = (offset, mood, phase) => ({
+    dateKey: dateKeyDaysAgo(offset),
+    mood,
+    body: 'x',
+    sky: phase ? { moonPhaseKey: phase } : {},
+    updatedAt: '',
+  })
+
+  // fewer than 3 entries in the window → null
+  assert.equal(computeJournalPatterns([mk(0, 'calm'), mk(1, 'calm')]), null)
+
+  // out-of-window entries are ignored
+  const withOld = [mk(0, 'calm', 'full'), mk(1, 'calm', 'full'), mk(2, 'bright'), mk(10, 'low')]
+  const patterns = computeJournalPatterns(withOld)
+  assert.equal(patterns.entryCount, 3)
+  assert.deepEqual(patterns.topMood, { key: 'calm', count: 2 })
+  assert.deepEqual(patterns.topPhase, { key: 'full', count: 2 })
+
+  // single-occurrence mood/phase is noise → null fields, block still shows count
+  const scattered = [mk(0, 'calm', 'full'), mk(1, 'bright', 'new'), mk(2, 'low')]
+  const noisy = computeJournalPatterns(scattered)
+  assert.equal(noisy.entryCount, 3)
+  assert.equal(noisy.topMood, null)
+  assert.equal(noisy.topPhase, null)
+
+  // tie between moods resolves by canonical JOURNAL_MOODS order (calm before tired)
+  const tied = [mk(0, 'tired'), mk(1, 'tired'), mk(2, 'calm'), mk(3, 'calm')]
+  assert.equal(computeJournalPatterns(tied).topMood.key, 'calm')
+})
+
 test('planGuestJournalMigration uploads missing dates plus newer local today', () => {
   const today = getLocalDateKey()
   const yesterday = dateKeyDaysAgo(1)

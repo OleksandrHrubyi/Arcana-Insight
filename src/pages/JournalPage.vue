@@ -99,6 +99,24 @@
           </button>
         </div>
 
+        <section v-if="journalPatterns" class="journal-patterns">
+          <div class="journal-patterns__title">{{ tt('journalPage.patternsTitle') }}</div>
+          <div class="journal-patterns__chips">
+            <span class="journal-patterns__chip">
+              {{ journalPatterns.entryCount }} {{ patternsEntryWord }} · 7
+              {{ tt('landing.dayForms.many') }}
+            </span>
+            <span v-if="journalPatterns.topMood" class="journal-patterns__chip">
+              {{ tt('journalPage.patternsMood') }}:
+              {{ tt(`journalPage.moods.${journalPatterns.topMood.key}`) }}
+            </span>
+            <span v-if="journalPatterns.topPhase" class="journal-patterns__chip">
+              {{ tt('journalPage.patternsPhase') }}:
+              {{ tt(`astro.phases.${journalPatterns.topPhase.key}`) }}
+            </span>
+          </div>
+        </section>
+
         <section v-if="pastEntries.length" class="journal-history">
           <div class="journal-history__title">{{ tt('journalPage.historyTitle') }}</div>
           <article
@@ -185,7 +203,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { t, currentLocale } from 'src/i18n'
+import { t, currentLocale, pluralForm } from 'src/i18n'
 import {
   getUserNative,
   selectJournalEntriesByUser,
@@ -195,6 +213,7 @@ import {
 import {
   JOURNAL_BODY_MAX,
   JOURNAL_MOODS,
+  computeJournalPatterns,
   computePersonalDayNumber,
   computeUniversalDayNumber,
   selectDailyPrompt,
@@ -264,6 +283,19 @@ const hapticTap = async () => {
 
 const canSave = computed(() => Boolean(selectedMood.value || body.value.trim()))
 const pastEntries = computed(() => entries.value.filter((entry) => entry.dateKey !== todayKey.value))
+
+// "Your week" (RP-14): recomputes as entries change (save/delete included).
+const journalPatterns = computed(() =>
+  computeJournalPatterns(entries.value, { todayKey: todayKey.value }),
+)
+const patternsEntryWord = computed(() =>
+  pluralForm(locale.value, journalPatterns.value?.entryCount || 0, {
+    one: tt('journalPage.patternsEntryForms.one'),
+    few: tt('journalPage.patternsEntryForms.few'),
+    many: tt('journalPage.patternsEntryForms.many'),
+    other: tt('journalPage.patternsEntryForms.other'),
+  }),
+)
 
 // Personal day (RP-11) when the birth date is known; universal day otherwise.
 const journalDayNumber = computed(() => {
@@ -826,6 +858,37 @@ onBeforeUnmount(() => {
   font-size: 12px;
   line-height: 1.5;
   color: rgba(214, 225, 242, 0.72);
+}
+
+.journal-patterns {
+  display: grid;
+  gap: 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 178, 214, 0.12);
+  background: linear-gradient(180deg, rgba(17, 28, 46, 0.42), rgba(10, 17, 29, 0.58));
+  padding: 12px 14px;
+}
+
+.journal-patterns__title {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(214, 225, 242, 0.55);
+}
+
+.journal-patterns__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.journal-patterns__chip {
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(165, 196, 245, 0.22);
+  background: rgba(64, 96, 156, 0.16);
+  font-size: 12px;
+  color: rgba(226, 236, 255, 0.9);
 }
 
 .journal-history {

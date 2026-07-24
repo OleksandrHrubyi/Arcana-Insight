@@ -422,6 +422,57 @@ export const saveJournalEntrySnapshot = async ({
   }
 }
 
+export const JOURNAL_PATTERNS_MIN_ENTRIES = 3
+export const JOURNAL_PATTERNS_WINDOW_DAYS = 7
+
+// Week patterns (RP-14): entry count, dominant mood and the moon phase with the
+// most entries over the last N days. Pure — feeds the "Your week" block.
+// Returns null when there are fewer than JOURNAL_PATTERNS_MIN_ENTRIES entries in
+// the window (a pattern needs data; an empty stats block is noise).
+export const computeJournalPatterns = (
+  entries,
+  { todayKey = getLocalDateKey(), days = JOURNAL_PATTERNS_WINDOW_DAYS } = {},
+) => {
+  const windowEntries = []
+  for (const value of Array.isArray(entries) ? entries : []) {
+    const entry = normalizeJournalEntry(value)
+    if (!entry) continue
+    const diff = diffDaysBetween(entry.dateKey, todayKey)
+    if (diff == null || diff < 0 || diff >= days) continue
+    windowEntries.push(entry)
+  }
+  if (windowEntries.length < JOURNAL_PATTERNS_MIN_ENTRIES) return null
+
+  const pickTop = (counts, order) => {
+    let top = null
+    for (const key of order) {
+      const count = counts[key] || 0
+      if (count > 0 && (!top || count > top.count)) top = { key, count }
+    }
+    return top
+  }
+
+  const moodCounts = {}
+  const phaseCounts = {}
+  for (const entry of windowEntries) {
+    if (entry.mood) moodCounts[entry.mood] = (moodCounts[entry.mood] || 0) + 1
+    const phase = String(entry.sky?.moonPhaseKey || '').trim()
+    if (phase) phaseCounts[phase] = (phaseCounts[phase] || 0) + 1
+  }
+
+  // Ties resolve by the canonical order (moods) / by insertion (phases) — deterministic.
+  const topMood = pickTop(moodCounts, JOURNAL_MOODS.map((mood) => mood.key))
+  const topPhase = pickTop(phaseCounts, Object.keys(phaseCounts))
+
+  return {
+    entryCount: windowEntries.length,
+    windowDays: days,
+    // A "pattern" from a single occurrence is noise — require at least 2.
+    topMood: topMood && topMood.count >= 2 ? topMood : null,
+    topPhase: topPhase && topPhase.count >= 2 ? topPhase : null,
+  }
+}
+
 // Which local (guest) entries should be uploaded after sign-in: dates the server
 // does not have, plus a strictly-newer local "today". Server wins otherwise.
 export const planGuestJournalMigration = (localMap, serverRows, todayKey = getLocalDateKey()) => {
