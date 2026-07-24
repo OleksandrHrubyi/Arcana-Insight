@@ -92,20 +92,18 @@
 > оновити скріншоти (віджет у перший кадр) і сабмітити. Якщо реджект повториться —
 > список для Resolution Center: журнал + віджет + Health + реальна астрономія.
 
-- [ ] **RP-14 · Патерни журналу** — блок «Твій тиждень» на сторінці журналу (≥3 записів за
-  7 днів): кількість записів, домінантний настрій, фаза Місяця з найбільшою активністю
-  (sky.moonPhaseKey уже зберігається в записах). Чистий JS: `journalCore` +
-  `JournalPage` + i18n + тести. ~пів дня.
-- [ ] **RP-15 · Apple Health: Mindful Minutes** — завершення рефлексії пише mindful-сесію
-  в HealthKit. Custom Capacitor-плагін (Swift), `NSHealthUpdateUsageDescription`,
-  ентайтлмент HealthKit (owner вмикає capability в Xcode). Опційно (тогл у налаштуваннях,
-  off за замовчуванням → жодних нових App Privacy декларацій про збір — запис локальний
-  в Health, ми нічого не читаємо). ~пів дня.
-- [ ] **RP-16 · iOS-віджет (WidgetKit)** — home-screen віджет: сьогоднішнє небо (фаза
-  Місяця + знак), питання дня, прогрес ритуалу N/4. Данні через App Group
-  (UserDefaults suite), апка пише снапшот при кожному відкритті/збереженні. SwiftUI
-  extension target (правка pbxproj + нові Swift-файли; підпис target'а — owner у Xcode).
-  Кадр з віджетом — першим у скріншот-сет. ~день.
+- [x] **RP-14 · Патерни журналу — DONE 2026-07-24** (`24664da`): блок «Твій тиждень»
+  (кількість/настрій тижня/фаза-пік; ≥3 записи, поодинокі збіги = шум). E2E uk пройдено.
+- [x] **RP-15 · Apple Health — DONE 2026-07-24** (`f851610` + `060fc03`): Swift-плагін
+  MindfulSession (write-only, opt-in тогл у Settings, default OFF), entitlement +
+  usage description; owner увімкнув capability в Xcode (зайвий Estimate Recalibration
+  прибрано). Тести 311.
+- [~] **RP-16 · Віджет — КОД ГОТОВИЙ 2026-07-24, чекає 5 хв owner в Xcode**
+  (`docs/widget-setup.md`): WidgetBridgePlugin (App Group `group.com.hrubyi.arcana`) +
+  повний SwiftUI-віджет `ios/App/ArcanaWidget/ArcanaWidget.swift` (small+medium,
+  stale-стан) + JS-снапшот з журналу. Owner: створити Widget Extension таргет,
+  підкинути наш файл, App Groups на обидва таргети (кроки в доку). Після цього —
+  скріншот віджета першим кадром у стор-сет.
 
 ### P0 — метадані / сабмішн
 

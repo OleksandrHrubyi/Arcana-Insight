@@ -232,6 +232,8 @@ import { trackRitualActivityWithGuestFallback } from 'src/helpers/ritualRewardsB
 import { isDayKeyStale } from 'src/helpers/dayRollover.js'
 import { analytics } from 'src/services/analytics'
 import { logMindfulSessionIfEnabled } from 'src/services/mindfulness.js'
+import { buildWidgetSnapshot, computeRitualProgress } from 'src/helpers/widgetSnapshotCore.js'
+import { syncWidgetSnapshot } from 'src/services/widgetBridge.js'
 import { JOURNAL_EVENTS } from 'src/constants/analyticsEvents'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Capacitor } from '@capacitor/core'
@@ -416,6 +418,20 @@ const loadBirthDate = async () => {
   }
 }
 
+// RP-16: keep the home-screen widget in sync (sky line, question, progress).
+const pushWidgetSnapshot = () => {
+  const progress = computeRitualProgress()
+  void syncWidgetSnapshot(
+    buildWidgetSnapshot({
+      dateKey: todayKey.value,
+      skyLine: skyLine.value,
+      promptText: promptText.value,
+      progressDone: progress.done,
+      progressTotal: progress.total,
+    }),
+  )
+}
+
 const refreshPrompt = () => {
   const yesterdayKey = getLocalDateKey(new Date(Date.now() - 24 * 60 * 60 * 1000))
   const previous = entries.value.find((entry) => entry.dateKey === yesterdayKey)
@@ -465,6 +481,7 @@ const initToday = async () => {
   await loadBirthDate()
   await computeAstro()
   refreshPrompt()
+  pushWidgetSnapshot()
 }
 
 const retryLoad = async () => {
@@ -523,6 +540,7 @@ const saveEntry = async () => {
       })
       // RP-15: opt-in Apple Health Mindful Minutes (write-only, never blocks UI).
       void logMindfulSessionIfEnabled()
+      pushWidgetSnapshot()
     }
     void analytics.logEvent(JOURNAL_EVENTS.entrySave, {
       mood: result.entry.mood || 'none',
