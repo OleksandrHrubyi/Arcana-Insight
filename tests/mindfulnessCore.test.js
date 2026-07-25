@@ -29,6 +29,23 @@ test('mindful flag helpers are safe without window', () => {
   assert.doesNotThrow(() => setMindfulSyncEnabled(true))
 })
 
+test('breath-done flag is per-day and safe without window', () => {
+  const env = installBrowserEnv()
+  try {
+    const { isBreathDoneOn, markBreathDoneOn } = core
+    assert.equal(isBreathDoneOn('2026-07-26'), false)
+    markBreathDoneOn('2026-07-26')
+    assert.equal(isBreathDoneOn('2026-07-26'), true)
+    // A new day resets the offer.
+    assert.equal(isBreathDoneOn('2026-07-27'), false)
+  } finally {
+    env.restore()
+  }
+  assert.equal(core.isBreathDoneOn('2026-07-26'), false)
+  assert.doesNotThrow(() => core.markBreathDoneOn('2026-07-26'))
+  assert.equal(core.BREATH_DURATION_SECONDS, 30)
+})
+
 test('clampMindfulDuration bounds and defaults', () => {
   assert.equal(clampMindfulDuration(60), 60)
   assert.equal(clampMindfulDuration(5), 30)

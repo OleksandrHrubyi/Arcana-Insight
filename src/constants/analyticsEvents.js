@@ -105,6 +105,8 @@ export const JOURNAL_EVENTS = Object.freeze({
   promptShown: 'journal_prompt_shown',
   entrySave: 'journal_entry_save',
   entryDelete: 'journal_entry_delete',
+  breathStart: 'journal_breath_start',
+  breathEnd: 'journal_breath_end', // params: { completed }
 })
 
 export const ONBOARDING_EVENTS = Object.freeze({

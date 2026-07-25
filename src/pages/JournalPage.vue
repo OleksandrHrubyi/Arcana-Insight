@@ -32,6 +32,32 @@
           <div v-if="skyLine" class="journal-sky">{{ skyLine }}</div>
 
           <template v-if="!todayEntry || editing">
+            <template v-if="breathing">
+              <div class="journal-breath">
+                <div class="journal-breath__circle" :class="`journal-breath__circle--${breathPhase}`"></div>
+                <div class="journal-breath__phase">
+                  {{ tt(breathPhase === 'in' ? 'journalPage.breathIn' : 'journalPage.breathOut') }}
+                </div>
+                <div class="journal-breath__count">{{ breathSecondsLeft }}</div>
+                <button
+                  type="button"
+                  class="arcana-btn arcana-btn--secondary"
+                  @click="stopBreath(false)"
+                >
+                  {{ tt('onboardingPage.skip') }}
+                </button>
+              </div>
+            </template>
+            <template v-else>
+            <button
+              v-if="showBreathChip"
+              type="button"
+              class="journal-breath-chip hit-44"
+              @click="startBreath"
+            >
+              <q-icon name="air" size="16px" />
+              <span>{{ tt('journalPage.breathChip') }}</span>
+            </button>
             <div class="journal-block-label">{{ tt('journalPage.moodQuestion') }}</div>
             <div class="journal-moods">
               <button
@@ -71,6 +97,7 @@
             >
               {{ tt('journalPage.saveBtn') }}
             </button>
+            </template>
           </template>
 
           <template v-else>
@@ -233,6 +260,12 @@ import { trackRitualActivityWithGuestFallback } from 'src/helpers/ritualRewardsB
 import { isDayKeyStale } from 'src/helpers/dayRollover.js'
 import { analytics } from 'src/services/analytics'
 import { logMindfulSessionIfEnabled } from 'src/services/mindfulness.js'
+import {
+  BREATH_DURATION_SECONDS,
+  BREATH_PHASE_SECONDS,
+  isBreathDoneOn,
+  markBreathDoneOn,
+} from 'src/helpers/mindfulnessCore.js'
 import { buildWidgetSnapshot, computeRitualProgress } from 'src/helpers/widgetSnapshotCore.js'
 import { syncWidgetSnapshot } from 'src/services/widgetBridge.js'
 import { JOURNAL_EVENTS } from 'src/constants/analyticsEvents'
@@ -267,6 +300,51 @@ const detailOpen = ref(false)
 const selectedEntry = ref(null)
 const deleteDialog = ref(false)
 const deleting = ref(false)
+
+// RP-18: optional 30-second stillness pause before the question.
+const breathing = ref(false)
+const breathPhase = ref('in')
+const breathSecondsLeft = ref(BREATH_DURATION_SECONDS)
+const breathDoneToday = ref(false)
+let breathTimer = null
+let breathPhaseTimer = null
+
+const showBreathChip = computed(() => !todayEntry.value && !breathDoneToday.value)
+
+const clearBreathTimers = () => {
+  if (breathTimer) clearInterval(breathTimer)
+  if (breathPhaseTimer) clearInterval(breathPhaseTimer)
+  breathTimer = null
+  breathPhaseTimer = null
+}
+
+const stopBreath = async (completed) => {
+  clearBreathTimers()
+  breathing.value = false
+  void analytics.logEvent(JOURNAL_EVENTS.breathEnd, { completed })
+  if (completed) {
+    breathDoneToday.value = true
+    markBreathDoneOn(todayKey.value)
+    // A finished round is a real mindful moment — log it (opt-in, write-only).
+    void logMindfulSessionIfEnabled({ durationSeconds: BREATH_DURATION_SECONDS })
+  }
+  await hapticTap()
+}
+
+const startBreath = async () => {
+  breathing.value = true
+  breathPhase.value = 'in'
+  breathSecondsLeft.value = BREATH_DURATION_SECONDS
+  void analytics.logEvent(JOURNAL_EVENTS.breathStart, {})
+  breathTimer = setInterval(() => {
+    breathSecondsLeft.value -= 1
+    if (breathSecondsLeft.value <= 0) void stopBreath(true)
+  }, 1000)
+  breathPhaseTimer = setInterval(() => {
+    breathPhase.value = breathPhase.value === 'in' ? 'out' : 'in'
+  }, BREATH_PHASE_SECONDS * 1000)
+  await hapticTap()
+}
 
 let astronomyEnginePromise = null
 const loadAstronomyEngine = async () => {
@@ -482,6 +560,9 @@ const loadEntries = async () => {
 const initToday = async () => {
   todayKey.value = getLocalDateKey()
   daypart.value = getJournalDaypart()
+  clearBreathTimers()
+  breathing.value = false
+  breathDoneToday.value = isBreathDoneOn(todayKey.value)
   editing.value = false
   selectedMood.value = ''
   body.value = ''
@@ -644,6 +725,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  clearBreathTimers()
   if (typeof document !== 'undefined') {
     document.removeEventListener('visibilitychange', onVisibilityChange)
   }
@@ -894,6 +976,71 @@ onBeforeUnmount(() => {
   font-size: 12px;
   line-height: 1.5;
   color: rgba(214, 225, 242, 0.72);
+}
+
+.journal-breath-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: start;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 178, 214, 0.2);
+  background: rgba(17, 28, 46, 0.5);
+  color: rgba(214, 225, 242, 0.85);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.journal-breath-chip:active {
+  transform: scale(0.98);
+}
+
+.journal-breath {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 18px 0 10px;
+}
+
+.journal-breath__circle {
+  width: 110px;
+  height: 110px;
+  border-radius: 999px;
+  border: 1px solid rgba(165, 205, 245, 0.35);
+  background: radial-gradient(circle, rgba(96, 148, 210, 0.35) 0%, rgba(96, 148, 210, 0.08) 70%);
+  transition: transform 4s ease-in-out;
+  transform: scale(0.8);
+}
+
+.journal-breath__circle--in {
+  transform: scale(1.15);
+}
+
+.journal-breath__circle--out {
+  transform: scale(0.8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journal-breath__circle {
+    transition: opacity 4s ease-in-out;
+    transform: none !important;
+  }
+  .journal-breath__circle--out {
+    opacity: 0.5;
+  }
+}
+
+.journal-breath__phase {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: rgba(232, 240, 252, 0.92);
+}
+
+.journal-breath__count {
+  font-size: 12px;
+  color: rgba(214, 225, 242, 0.5);
 }
 
 .journal-patterns {
