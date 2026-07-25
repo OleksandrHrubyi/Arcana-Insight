@@ -141,10 +141,14 @@
 
 ### P1 — узгодженість
 
-- [ ] **RP-08 · Copy sweep** — `messages.bundle.js` (en+uk): tone-of-voice під рефлексію;
-  узгодити з `docs/copy-bible.md`.
-- [ ] **RP-09 · Nav naming** — назви табів/розділів у bottom-nav під новий концепт
-  (`docs/flow-map.md`, routing-guardrails).
+- [x] **RP-08 · Copy sweep — DONE 2026-07-26 (ключова частина).** Тижневий розклад пушів
+  перебалансований: було 5/7 днів у таро/гороскоп і 0 у журнал → стало **5/7 у журнал**
+  (intention/midweek/streak/weekend/close) + 1 карта дня + 1 love-гороскоп; копі
+  рефлексивне en+uk; `journal` доданий у push ROUTE_MAP/pathMap клієнта; push-worker
+  редеплой. Інші поверхні (FAQ, онбординг-хінти) перевірені — вже grounded.
+- [x] **RP-09 · Nav naming — РІШЕННЯ 2026-07-26: без змін.** Таб «Таро» лишається чесно
+  названим (перейменування читалось би як маскування); ідентичність заявлена журналом,
+  first-run і назвою. Owner погодив.
 - [x] **RP-10 · Premium reframe — DONE 2026-07-26.** Заголовні рядки premium-сторінки більше
   не ведуть з «unlimited tarot»: subtitle = «Щоденна рефлексія — завжди безкоштовна.
   Premium додає глибину…», compare-lead = «Free покриває повний ритуал рефлексії…»;

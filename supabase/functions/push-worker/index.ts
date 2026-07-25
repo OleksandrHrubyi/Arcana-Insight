@@ -451,18 +451,17 @@ function isoWeekdayUtc(dateIso: string) {
 function pickDailyContent(locale: string | null, dateIso: string, signKey = '') {
   const isEn = (locale || '').toLowerCase() === 'en'
   const weekday = isoWeekdayUtc(dateIso)
-  const dayNumber = dayOfYearUtc(new Date(`${dateIso}T00:00:00.000Z`))
-  const tarotFocus = dayNumber % 2 === 0 ? 'self' : 'future'
 
+  // RP-08: the weekly nudge cadence is journal-first (5 of 7 days lead to the
+  // reflection ritual); the daily card and one horoscope theme stay as flavor.
   const contentByWeekday = isEn
     ? {
         1: {
           title: 'Arcana',
-          body: 'Start the week with your career horoscope.',
-          route: 'horoscope',
-          path: '/horoscope',
-          contentType: 'horoscope_career',
-          theme: 'career',
+          body: 'A new week. Your morning question is ready.',
+          route: 'journal',
+          path: '/journal',
+          contentType: 'journal_intention',
         },
         2: {
           title: 'Arcana',
@@ -473,11 +472,10 @@ function pickDailyContent(locale: string | null, dateIso: string, signKey = '') 
         },
         3: {
           title: 'Arcana',
-          body: 'Take a short tarot check-in for clarity today.',
-          route: 'tarot',
-          path: '/tarot',
-          contentType: 'tarot_checkin',
-          focus: tarotFocus,
+          body: "One honest minute: today's question is waiting.",
+          route: 'journal',
+          path: '/journal',
+          contentType: 'journal_midweek',
         },
         4: {
           title: 'Arcana',
@@ -489,50 +487,47 @@ function pickDailyContent(locale: string | null, dateIso: string, signKey = '') 
         },
         5: {
           title: 'Arcana',
-          body: 'Your daily card is waiting. Keep your streak alive.',
-          route: 'daily',
-          path: '/daily',
-          contentType: 'daily_card_streak',
+          body: "Today's question is waiting. Keep your streak alive.",
+          route: 'journal',
+          path: '/journal',
+          contentType: 'journal_streak',
         },
         6: {
           title: 'Arcana',
-          body: 'Weekend tarot guidance is ready.',
-          route: 'tarot',
-          path: '/tarot',
-          contentType: 'tarot_weekend',
-          focus: 'future',
+          body: 'A quiet weekend minute — see what your week says.',
+          route: 'journal',
+          path: '/journal',
+          contentType: 'journal_weekend',
         },
         7: {
           title: 'Arcana',
-          body: 'Close the week with your daily reflection card.',
-          route: 'daily',
-          path: '/daily',
-          contentType: 'daily_reflection',
+          body: 'Close the week in your journal — one last question.',
+          route: 'journal',
+          path: '/journal',
+          contentType: 'journal_close',
         },
       }
     : {
         1: {
           title: 'Arcana',
-          body: 'Почни тиждень із карʼєрного гороскопу.',
-          route: 'horoscope',
-          path: '/horoscope',
-          contentType: 'horoscope_career',
-          theme: 'career',
+          body: 'Новий тиждень. Твоє ранкове питання вже готове.',
+          route: 'journal',
+          path: '/journal',
+          contentType: 'journal_intention',
         },
         2: {
           title: 'Arcana',
-          body: 'Ваша карта дня вже готова. Натисніть, щоб відкрити.',
+          body: 'Твоя карта дня готова. Торкнись, щоб відкрити.',
           route: 'daily',
           path: '/daily',
           contentType: 'daily_card',
         },
         3: {
           title: 'Arcana',
-          body: 'Зроби короткий tarot check-in, щоб навести фокус.',
-          route: 'tarot',
-          path: '/tarot',
-          contentType: 'tarot_checkin',
-          focus: tarotFocus,
+          body: 'Одна чесна хвилина: питання дня чекає.',
+          route: 'journal',
+          path: '/journal',
+          contentType: 'journal_midweek',
         },
         4: {
           title: 'Arcana',
@@ -544,25 +539,24 @@ function pickDailyContent(locale: string | null, dateIso: string, signKey = '') 
         },
         5: {
           title: 'Arcana',
-          body: 'Карта дня чекає. Підтримай свій streak.',
-          route: 'daily',
-          path: '/daily',
-          contentType: 'daily_card_streak',
+          body: 'Питання дня чекає. Підтримай свою серію.',
+          route: 'journal',
+          path: '/journal',
+          contentType: 'journal_streak',
         },
         6: {
           title: 'Arcana',
-          body: 'Готова tarot-підказка на вихідні.',
-          route: 'tarot',
-          path: '/tarot',
-          contentType: 'tarot_weekend',
-          focus: 'future',
+          body: 'Тиха хвилина вихідних — глянь, що каже твій тиждень.',
+          route: 'journal',
+          path: '/journal',
+          contentType: 'journal_weekend',
         },
         7: {
           title: 'Arcana',
-          body: 'Заверши тиждень картою щоденної рефлексії.',
-          route: 'daily',
-          path: '/daily',
-          contentType: 'daily_reflection',
+          body: 'Заверши тиждень у щоденнику — одне останнє питання.',
+          route: 'journal',
+          path: '/journal',
+          contentType: 'journal_close',
         },
       }
 

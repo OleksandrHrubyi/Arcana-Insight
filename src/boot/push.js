@@ -6,6 +6,7 @@ import { analytics } from 'src/services/analytics'
 const DEBUG_PUSH = import.meta.env.DEV
 const LS_DAILY_PUSH = 'daily_push_enabled'
 const ROUTE_MAP = {
+  journal: 'journal',
   horoscope: 'horoscope',
   daily: 'daily',
   tarot: 'tarot',
@@ -79,6 +80,7 @@ function fallbackNavigate(target) {
 
   const name = String(target?.name || '')
   const pathMap = {
+    journal: '/journal',
     daily: '/daily',
     horoscope: '/horoscope',
     tarot: '/tarot',
