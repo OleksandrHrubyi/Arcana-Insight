@@ -98,6 +98,15 @@
   MindfulSession (write-only, opt-in тогл у Settings, default OFF), entitlement +
   usage description; owner увімкнув capability в Xcode (зайвий Estimate Recalibration
   прибрано). Тести 311.
+- [x] **RP-17 · Ранок/вечір-режим журналу — DONE 2026-07-25** (Stoic-патерн за brain-сесією):
+  до 12:00 питання дня = «Ранкове налаштування» (новий пул: 7 планетарних днів × 2 + 6
+  загальних = 20 наміро-питань en+uk, планетарний день рахується з дати без астро),
+  після — «Вечірній підсумок» (наявний банк). Перемикання опівдні ловиться на
+  visibilitychange; запис як був один/день. Метадані й review notes оновлені
+  («morning intention, evening reflection»).
+- [ ] **RP-18 · Дихальна пауза (30 сек)** — опційний чип «Почни з 30 секунд тиші» перед
+  питанням: анімоване коло вдих/видих, скіп завжди видимий; звʼязка з Health mindful
+  minutes. Наступна в черзі.
 - [~] **RP-16 · Віджет — КОД ГОТОВИЙ 2026-07-24, чекає 5 хв owner в Xcode**
   (`docs/widget-setup.md`): WidgetBridgePlugin (App Group `group.com.hrubyi.arcana`) +
   повний SwiftUI-віджет `ios/App/ArcanaWidget/ArcanaWidget.swift` (small+medium,

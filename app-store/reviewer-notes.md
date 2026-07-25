@@ -18,8 +18,9 @@ Tarot and horoscope remain as secondary, supporting features.
 THE CORE EXPERIENCE (new in this version):
 - A daily reflection journal: a one-tap mood check-in, today's real sky (Moon
   sign and phase, planetary day, retrogrades — computed on-device with the
-  astronomy-engine library, not canned content), and ONE reflective question per
-  day selected deterministically from that sky data and the day's number.
+  astronomy-engine library, not canned content), and ONE question per day
+  selected deterministically from that sky data and the day's number — a
+  forward-looking MORNING INTENTION before noon, an EVENING REFLECTION after.
 - Entries build into a private journal (on-device for guests; synced to the
   account after sign-in). The first run after onboarding lands directly in this
   flow.

@@ -2178,6 +2178,8 @@ export const messages = {
         tired: 'Tired',
       },
       promptLabel: "Today's question",
+      promptLabelMorning: 'Morning intention',
+      promptLabelEvening: 'Evening reflection',
       dayWord: 'Day',
       personalDayWord: 'Personal day',
       entryPlaceholder: 'Write a few lines — just for you.',
@@ -2322,6 +2324,46 @@ export const messages = {
           3: 'If today had a title, what would it be — and why?',
           4: 'What do you want to remember about today a year from now?',
           5: 'What would make tomorrow ten percent lighter?',
+        },
+        morning: {
+          planetaryDay: {
+            sun: {
+              0: 'What would make today feel genuinely good — not perfect, just good?',
+              1: 'Where will your energy be most needed today?',
+            },
+            moon: {
+              0: 'What does your inner weather look like this morning?',
+              1: 'What would help you stay steady today, whatever comes?',
+            },
+            mars: {
+              0: 'What is the one thing worth doing first today?',
+              1: 'Where might you need a little courage today?',
+            },
+            mercury: {
+              0: 'What conversation or message deserves your care today?',
+              1: 'What is one thing you want to understand better by tonight?',
+            },
+            jupiter: {
+              0: 'Where is there room to grow today, even slightly?',
+              1: 'What opportunity might today offer if you keep your eyes open?',
+            },
+            venus: {
+              0: 'What small pleasure will you make room for today?',
+              1: 'Who deserves a bit of warmth from you today?',
+            },
+            saturn: {
+              0: 'What boundary will protect your day?',
+              1: 'What does discipline look like for you today — gently?',
+            },
+          },
+          general: {
+            0: 'What deserves your attention first today?',
+            1: 'What would make this day feel complete by evening?',
+            2: 'What is one thing you can let be simple today?',
+            3: 'What are you looking forward to — even something small?',
+            4: "What would 'enough' look like today?",
+            5: 'What intention fits this morning best?',
+          },
         },
       },
     },
@@ -4573,6 +4615,8 @@ export const messages = {
         tired: 'Втома',
       },
       promptLabel: 'Питання дня',
+      promptLabelMorning: 'Ранкове налаштування',
+      promptLabelEvening: 'Вечірній підсумок',
       dayWord: 'День',
       personalDayWord: 'Особистий день',
       entryPlaceholder: 'Напиши кілька рядків — лише для себе.',
@@ -4717,6 +4761,46 @@ export const messages = {
           3: 'Якби сьогодні мало заголовок, яким би він був — і чому?',
           4: 'Що з сьогоднішнього хочеться памʼятати через рік?',
           5: 'Що зробило б завтра на десять відсотків легшим?',
+        },
+        morning: {
+          planetaryDay: {
+            sun: {
+              0: 'Що зробило б сьогоднішній день по-справжньому добрим — не ідеальним, просто добрим?',
+              1: 'Де сьогодні найбільше знадобиться твоя енергія?',
+            },
+            moon: {
+              0: 'Яка твоя внутрішня погода цього ранку?',
+              1: 'Що допоможе тримати рівновагу сьогодні, хай що станеться?',
+            },
+            mars: {
+              0: 'Яку одну справу варто зробити першою сьогодні?',
+              1: 'Де сьогодні може знадобитися трохи сміливості?',
+            },
+            mercury: {
+              0: 'Яка розмова чи повідомлення сьогодні заслуговує на уважність?',
+              1: 'Що хочеться зрозуміти краще до вечора?',
+            },
+            jupiter: {
+              0: 'Де сьогодні є місце для росту, нехай маленького?',
+              1: 'Яку можливість може принести день, якщо тримати очі відкритими?',
+            },
+            venus: {
+              0: 'Для якої маленької приємності сьогодні знайдеться місце?',
+              1: 'Кому сьогодні не завадить трохи твого тепла?',
+            },
+            saturn: {
+              0: 'Яка межа сьогодні захистить твій день?',
+              1: 'Як виглядає сьогодні дисципліна — мʼяко, без тиску?',
+            },
+          },
+          general: {
+            0: 'Що сьогодні заслуговує твоєї уваги найперше?',
+            1: 'Що зробить цей день завершеним до вечора?',
+            2: 'Що сьогодні можна лишити простим?',
+            3: 'Чого ти чекаєш сьогодні — нехай і дрібниці?',
+            4: 'Як виглядатиме сьогодні «достатньо»?',
+            5: 'Який намір найкраще пасує цьому ранку?',
+          },
         },
       },
     },

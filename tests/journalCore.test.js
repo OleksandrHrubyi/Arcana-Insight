@@ -113,6 +113,10 @@ test('every derivable promptKey resolves to copy in both locales', async () => {
     for (let i = 0; i < size; i += 1) paths.push(`numerology.${num}.${i}`)
   }
   for (let i = 0; i < JOURNAL_PROMPT_BANK.general; i += 1) paths.push(`general.${i}`)
+  for (const [day, size] of Object.entries(JOURNAL_PROMPT_BANK.morning.planetaryDay)) {
+    for (let i = 0; i < size; i += 1) paths.push(`morning.planetaryDay.${day}.${i}`)
+  }
+  for (let i = 0; i < JOURNAL_PROMPT_BANK.morning.general; i += 1) paths.push(`morning.general.${i}`)
 
   for (const subPath of paths) {
     for (const locale of ['en', 'uk']) {
@@ -161,6 +165,39 @@ test('selectDailyPrompt uses the numerology pool when a day number is provided',
   // Without astro, the rotation still alternates numerology/general (never throws).
   const noAstro = selectDailyPrompt({ dateKey: '2026-10-05', astro: null, dayNumber: 7 })
   assert.equal(['numerology', 'general'].includes(noAstro.poolKey), true)
+})
+
+test('daypart: morning before noon, evening after; morning prompts come from morning pools', async () => {
+  const { getJournalDaypart, JOURNAL_MORNING_END_HOUR } = core
+  assert.equal(JOURNAL_MORNING_END_HOUR, 12)
+  assert.equal(getJournalDaypart(new Date(2026, 6, 25, 8, 0)), 'morning')
+  assert.equal(getJournalDaypart(new Date(2026, 6, 25, 11, 59)), 'morning')
+  assert.equal(getJournalDaypart(new Date(2026, 6, 25, 12, 0)), 'evening')
+  assert.equal(getJournalDaypart(new Date(2026, 6, 25, 22, 0)), 'evening')
+
+  // Morning selection is deterministic, uses only morning.* keys, and differs
+  // from the evening selection for the same date.
+  const morningA = selectDailyPrompt({ dateKey: '2026-07-25', astro: FULL_ASTRO, daypart: 'morning' })
+  const morningB = selectDailyPrompt({ dateKey: '2026-07-25', astro: FULL_ASTRO, daypart: 'morning' })
+  assert.deepEqual(morningA, morningB)
+  assert.match(morningA.promptKey, /^morning\.(planetaryDay\.[a-z]+|general)\.\d+$/)
+  assert.equal(morningA.poolKey, 'morning')
+
+  const evening = selectDailyPrompt({ dateKey: '2026-07-25', astro: FULL_ASTRO, daypart: 'evening' })
+  assert.doesNotMatch(evening.promptKey, /^morning\./)
+
+  // No-repeat holds across a morning chain too.
+  let previous = ''
+  for (let i = 1; i <= 10; i += 1) {
+    const { promptKey } = selectDailyPrompt({
+      dateKey: `2026-11-${String(i).padStart(2, '0')}`,
+      astro: FULL_ASTRO,
+      daypart: 'morning',
+      previousPromptKey: previous,
+    })
+    assert.notEqual(promptKey, previous)
+    previous = promptKey
+  }
 })
 
 test('normalizeMoodKey accepts only known moods', () => {

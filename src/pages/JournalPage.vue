@@ -48,7 +48,7 @@
             </div>
 
             <div v-if="promptText" class="journal-prompt">
-              <div class="journal-block-label">{{ tt('journalPage.promptLabel') }}</div>
+              <div class="journal-block-label">{{ promptLabelText }}</div>
               <p class="journal-prompt__text">{{ promptText }}</p>
             </div>
 
@@ -214,6 +214,7 @@ import {
   JOURNAL_BODY_MAX,
   JOURNAL_MOODS,
   computeJournalPatterns,
+  getJournalDaypart,
   computePersonalDayNumber,
   computeUniversalDayNumber,
   selectDailyPrompt,
@@ -258,6 +259,7 @@ const selectedMood = ref('')
 const body = ref('')
 const saving = ref(false)
 const astroToday = ref(null)
+const daypart = ref(getJournalDaypart())
 const birthDateKey = ref('')
 const promptKey = ref('')
 const promptPool = ref('')
@@ -338,6 +340,10 @@ const resolvePromptText = (key) => {
 }
 
 const promptText = computed(() => resolvePromptText(promptKey.value))
+// RP-17: morning = intention, evening = reflection.
+const promptLabelText = computed(() =>
+  tt(daypart.value === 'morning' ? 'journalPage.promptLabelMorning' : 'journalPage.promptLabelEvening'),
+)
 const entryPromptText = (entry) => (entry?.promptKey ? resolvePromptText(entry.promptKey) : '')
 
 const moodIcon = (moodKey) => moods.find((mood) => mood.key === moodKey)?.icon || 'circle'
@@ -440,6 +446,7 @@ const refreshPrompt = () => {
     astro: astroToday.value,
     dayNumber: journalDayNumber.value?.value || null,
     previousPromptKey: previous?.promptKey || '',
+    daypart: daypart.value,
   })
   promptKey.value = selection.promptKey
   promptPool.value = selection.poolKey
@@ -474,6 +481,7 @@ const loadEntries = async () => {
 
 const initToday = async () => {
   todayKey.value = getLocalDateKey()
+  daypart.value = getJournalDaypart()
   editing.value = false
   selectedMood.value = ''
   body.value = ''
@@ -617,6 +625,13 @@ const onVisibilityChange = () => {
   // under yesterday's date (unsaved text is kept and saves under the new day).
   if (isDayKeyStale(todayKey.value, getLocalDateKey())) {
     void initToday()
+    return
+  }
+  // Noon rollover (RP-17): morning intention -> evening reflection.
+  if (getJournalDaypart() !== daypart.value) {
+    daypart.value = getJournalDaypart()
+    refreshPrompt()
+    pushWidgetSnapshot()
   }
 }
 

@@ -62,7 +62,7 @@ Arcana is a daily reflection journal guided by the real sky. One quiet minute a 
 YOUR DAILY RITUAL
 • Mood check-in — one tap to name how you feel.
 • Today's sky — real astronomy, computed for your day: Moon sign and phase, planetary day, retrogrades.
-• One question a day — a reflective prompt drawn from today's sky and number. Never predictions; always a question only you can answer.
+• Morning intention, evening reflection — before noon the day's question looks forward, after noon it looks back. Drawn from today's sky and number; never predictions, always a question only you can answer.
 • Your journal — entries build into a private history you can revisit. Works offline; syncs when you sign in.
 • Streaks & progress — a gentle rhythm, three small steps a day.
 
@@ -223,7 +223,7 @@ Arcana — щоденник рефлексії, який веде справжн
 ТВІЙ ЩОДЕННИЙ РИТУАЛ
 • Чек-ін настрою — один дотик, щоб назвати, як ти почуваєшся.
 • Небо сьогодні — реальна астрономія: знак і фаза Місяця, планетарний день, ретрогради.
-• Одне питання на день — рефлексивний промпт із сьогоднішнього неба й числа. Без передбачень — лише питання, на яке можеш відповісти тільки ти.
+• Ранкове налаштування, вечірній підсумок — до полудня питання дня дивиться вперед, після — назад. Із сьогоднішнього неба й числа; без передбачень — лише питання, на яке можеш відповісти тільки ти.
 • Твій щоденник — записи складаються в приватну історію. Працює офлайн; синхронізується після входу.
 • Серії та прогрес — м'який ритм: три маленькі кроки на день.
 

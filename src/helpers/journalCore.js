@@ -42,7 +42,30 @@ export const JOURNAL_PROMPT_BANK = Object.freeze({
   retrograde: 3,
   numerology: Object.freeze({ 1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 2, 7: 2, 8: 2, 9: 2 }),
   general: 6,
+  // Morning pools (RP-17): intention questions, forward-looking. Selected before
+  // JOURNAL_MORNING_END_HOUR; keyed by the planetary day (derived from the date,
+  // no astro needed) with a general fallback.
+  morning: Object.freeze({
+    planetaryDay: Object.freeze({
+      sun: 2,
+      moon: 2,
+      mars: 2,
+      mercury: 2,
+      jupiter: 2,
+      venus: 2,
+      saturn: 2,
+    }),
+    general: 6,
+  }),
 })
+
+export const JOURNAL_MORNING_END_HOUR = 12
+
+// 'morning' → intention questions; 'evening' → the reflective bank.
+export const getJournalDaypart = (date = new Date()) =>
+  date.getHours() < JOURNAL_MORNING_END_HOUR ? 'morning' : 'evening'
+
+const PLANETARY_RULERS = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']
 
 const DATE_KEY_RE = /^(\d{4})-(\d{2})-(\d{2})$/
 const MS_PER_DAY = 86400000
@@ -171,12 +194,41 @@ const resolvePromptPool = ({ hash, astro, dayNumber }) => {
   return { poolKey: 'general', path: 'general', size: JOURNAL_PROMPT_BANK.general }
 }
 
+const resolveMorningPool = ({ hash, dateKey }) => {
+  const pools = JOURNAL_PROMPT_BANK.morning
+  const date = parseDateKey(dateKey)
+  const ruler = date ? PLANETARY_RULERS[date.getDay()] : ''
+  const hasRuler = Object.prototype.hasOwnProperty.call(pools.planetaryDay, ruler)
+  if (hash % 2 === 0 && hasRuler) {
+    return {
+      poolKey: 'morning',
+      path: `morning.planetaryDay.${ruler}`,
+      size: pools.planetaryDay[ruler],
+      contextKey: ruler,
+    }
+  }
+  return { poolKey: 'morning', path: 'morning.general', size: pools.general, contextKey: '' }
+}
+
 // Deterministic per-day prompt. `promptKey` is the i18n subpath under
 // `journalPage.prompts` (e.g. 'moonPhase.full.1'); never repeats yesterday's key.
-export const selectDailyPrompt = ({ dateKey, astro = null, dayNumber = null, previousPromptKey = '' } = {}) => {
+// daypart 'morning' (RP-17) selects forward-looking intention questions.
+export const selectDailyPrompt = ({
+  dateKey,
+  astro = null,
+  dayNumber = null,
+  previousPromptKey = '',
+  daypart = 'evening',
+} = {}) => {
   const normalizedDate = parseDateKey(dateKey) ? String(dateKey).trim() : ''
-  const hash = hashString(`journal-prompt::${normalizedDate}`)
-  const pool = resolvePromptPool({ hash, astro, dayNumber })
+  const isMorning = daypart === 'morning'
+  const hash = hashString(`journal-prompt::${normalizedDate}${isMorning ? '::am' : ''}`)
+  const pool = isMorning
+    ? resolveMorningPool({ hash, dateKey: normalizedDate })
+    : resolvePromptPool({ hash, astro, dayNumber })
+  const fallback = isMorning
+    ? { path: 'morning.general', size: JOURNAL_PROMPT_BANK.morning.general, poolKey: 'morning' }
+    : { path: 'general', size: JOURNAL_PROMPT_BANK.general, poolKey: 'general' }
 
   let index = hash % pool.size
   let promptKey = `${pool.path}.${index}`
@@ -184,15 +236,18 @@ export const selectDailyPrompt = ({ dateKey, astro = null, dayNumber = null, pre
     index = (index + 1) % pool.size
     promptKey = `${pool.path}.${index}`
   }
-  if (promptKey === String(previousPromptKey || '').trim() && pool.poolKey !== 'general') {
-    const fallbackIndex = hash % JOURNAL_PROMPT_BANK.general
+  if (promptKey === String(previousPromptKey || '').trim() && pool.path !== fallback.path) {
+    const fallbackIndex = hash % fallback.size
     return {
-      promptKey: `general.${fallbackIndex}`,
-      poolKey: 'general',
+      promptKey: `${fallback.path}.${fallbackIndex}`,
+      poolKey: fallback.poolKey,
       contextKey: '',
     }
   }
 
+  if (isMorning) {
+    return { promptKey, poolKey: 'morning', contextKey: pool.contextKey || '' }
+  }
   return {
     promptKey,
     poolKey: pool.poolKey,
