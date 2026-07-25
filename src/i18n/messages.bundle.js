@@ -1790,9 +1790,9 @@ export const messages = {
 
     premiumPage: {
       title: 'Premium',
-      subtitle: 'Deeper guidance, unlimited tarot, and every reading saved in one place.',
+      subtitle: 'Your daily reflection stays free. Premium adds depth: unlimited sessions, all themes, full history.',
       compareTable: {
-        lead: 'Free works for a basic daily ritual. Premium unlocks the full tarot, horoscope, and compatibility experience.',
+        lead: 'Free covers the full daily reflection ritual. Premium unlocks the deeper formats: full spreads, all horoscope themes, complete compatibility.',
         summary: 'Premium = full access to every format with no daily limits.',
         tarotFormat: { feature: 'Tarot spread', free: '1 card/day', premium: '1, 3, or 5 cards with no limit' },
         interpretation: { feature: 'Reading depth', free: 'Short takeaway', premiumAi: 'Deep AI reading + action steps', premiumBasic: 'Deep reading + action steps' },
@@ -1812,7 +1812,7 @@ export const messages = {
       },
       accessModel: {
         title: 'Access model',
-        free: 'Free: daily card, energy horoscope, and one 1-card tarot reading per day.',
+        free: 'Free: the daily reflection journal, daily card, energy horoscope, and one 1-card reading per day.',
         premium:
           'Premium: unlimited tarot sessions, all horoscope themes, full history, and compatibility insights.',
         purchasePrefix: 'Purchase:',
@@ -1861,6 +1861,7 @@ export const messages = {
         premiumRibbon: 'Most value',
       },
       free: {
+        journal: 'Daily reflection journal — always free',
         dailyCard: 'Daily card',
         horoscope: 'Daily horoscope: energy theme',
         tarotOne: 'Tarot: 1 reading per day (1 card)',
@@ -4233,9 +4234,9 @@ export const messages = {
 
     premiumPage: {
       title: 'Преміум',
-      subtitle: 'Глибші підказки, безлімітне таро і всі читання в одному місці.',
+      subtitle: 'Щоденна рефлексія — завжди безкоштовна. Premium додає глибину: безліміт сесій, усі теми, повна історія.',
       compareTable: {
-        lead: 'Free підходить для базового щоденного ритуалу. Premium відкриває повний формат роботи з таро, гороскопом і сумісністю.',
+        lead: 'Free покриває повний щоденний ритуал рефлексії. Premium відкриває глибші формати: повні розклади, всі теми гороскопу, повна сумісність.',
         summary: 'Premium = повний доступ до всіх форматів без денних лімітів.',
         tarotFormat: { feature: 'Розклад таро', free: '1 карта/день', premium: '1, 3 або 5 карт без ліміту' },
         interpretation: { feature: 'Розбір', free: 'Короткий висновок', premiumAi: 'Глибокий AI-розбір + кроки', premiumBasic: 'Глибокий розбір + кроки' },
@@ -4255,7 +4256,7 @@ export const messages = {
       },
       accessModel: {
         title: 'Модель доступу',
-        free: 'Free: карта дня, гороскоп духу та один розклад таро на 1 карту щодня.',
+        free: 'Free: щоденник рефлексії, карта дня, гороскоп енергії та один розклад на 1 карту щодня.',
         premium:
           'Premium: необмежені сесії таро, усі теми гороскопу, повна історія та інсайти сумісності.',
         purchasePrefix: 'Покупка:',
@@ -4304,6 +4305,7 @@ export const messages = {
         premiumRibbon: 'Найбільша цінність',
       },
       free: {
+        journal: 'Щоденник рефлексії — завжди безкоштовно',
         dailyCard: 'Карта дня',
         horoscope: 'Щоденний гороскоп: тема енергії',
         tarotOne: 'Таро: 1 розклад на день (1 карта)',

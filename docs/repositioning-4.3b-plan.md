@@ -145,8 +145,12 @@
   узгодити з `docs/copy-bible.md`.
 - [ ] **RP-09 · Nav naming** — назви табів/розділів у bottom-nav під новий концепт
   (`docs/flow-map.md`, routing-guardrails).
-- [ ] **RP-10 · Premium matrix** — переглянути `docs/premium-matrix.md`: що з reflection-фіч
-  free/premium; premium-сторінка не повинна продавати «більше таро» як головну цінність.
+- [x] **RP-10 · Premium reframe — DONE 2026-07-26.** Заголовні рядки premium-сторінки більше
+  не ведуть з «unlimited tarot»: subtitle = «Щоденна рефлексія — завжди безкоштовна.
+  Premium додає глибину…», compare-lead = «Free покриває повний ритуал рефлексії…»;
+  у Free-списку перший рядок — «Щоденник рефлексії — завжди безкоштовно»
+  (`premiumPage.free.journal`, доданий у PREMIUM_FREE_ITEM_KEYS). Фактичні рядки порівнянь
+  не змінювались (правдивість збережена). en+uk.
 
 ## Механіка сабмішну
 
