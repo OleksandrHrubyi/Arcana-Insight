@@ -123,6 +123,7 @@ import {
   findUpcomingLunarEvents,
   computePlanetSigns,
 } from 'src/helpers/skyCore.js'
+import moonTextureUrl from 'src/assets/images/moon.webp'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key, vars) => {
@@ -149,12 +150,20 @@ const loadEngine = async () => {
   return mod?.default || mod
 }
 
-// Realistic moon: sphere-shaded surface, accurate terminator (polygon of the lit
-// region — no canvas winding ambiguity), maria, glow, dark earthshine.
+// Photorealistic moon: a real lunar photograph (NASA / LRO nearside mosaic,
+// public domain) masked to a disk, with an astronomically-placed terminator
+// shadow. The shadow is the *dark-region* polygon — terminator curve down one
+// side, dark limb back up the other — so illumination maps exactly: new = fully
+// shadowed, full = fully lit, and the faint earthshine keeps the unlit surface
+// just visible instead of dead black.
+const moonImg = new Image()
+moonImg.src = moonTextureUrl
+const MOON_DISK = 1.0 // the photo's lunar disk fills the frame edge-to-edge
+
 const drawMoon = (canvas, illumination, waxing, { detail = true } = {}) => {
   if (!canvas) return
   const dpr = Math.min(window.devicePixelRatio || 2, 3)
-  const cssSize = canvas.clientWidth || 120
+  const cssSize = canvas.clientWidth || (detail ? 240 : 18)
   canvas.width = cssSize * dpr
   canvas.height = cssSize * dpr
   const ctx = canvas.getContext('2d')
@@ -163,32 +172,32 @@ const drawMoon = (canvas, illumination, waxing, { detail = true } = {}) => {
   const size = cssSize
   const cx = size / 2
   const cy = size / 2
-  const r = (size / 2) * (detail ? 0.82 : 0.92)
+  const r = (size / 2) * (detail ? 0.98 : 0.94)
   const f = Math.max(0, Math.min(1, illumination))
   const litDir = waxing ? 1 : -1
   ctx.clearRect(0, 0, size, size)
-
-  if (detail) {
-    const glow = ctx.createRadialGradient(cx, cy, r * 0.75, cx, cy, r * 1.55)
-    glow.addColorStop(0, `rgba(198,216,255,${0.06 + 0.16 * f})`)
-    glow.addColorStop(1, 'rgba(198,216,255,0)')
-    ctx.fillStyle = glow
-    ctx.fillRect(0, 0, size, size)
-  }
 
   ctx.save()
   ctx.beginPath()
   ctx.arc(cx, cy, r, 0, Math.PI * 2)
   ctx.clip()
 
-  const sh = ctx.createRadialGradient(cx, cy, r * 0.2, cx, cy, r)
-  sh.addColorStop(0, 'rgba(14,19,33,1)')
-  sh.addColorStop(1, 'rgba(7,10,20,1)')
-  ctx.fillStyle = sh
-  ctx.fillRect(cx - r, cy - r, r * 2, r * 2)
+  // Lunar surface: the real photograph, or a neutral disk until it loads.
+  if (moonImg.complete && moonImg.naturalWidth > 0) {
+    const dw = (2 * r) / MOON_DISK
+    ctx.drawImage(moonImg, cx - dw / 2, cy - dw / 2, dw, dw)
+  } else {
+    const base = ctx.createRadialGradient(cx - r * 0.2, cy - r * 0.2, r * 0.1, cx, cy, r)
+    base.addColorStop(0, '#d7dbe4')
+    base.addColorStop(1, '#9498a6')
+    ctx.fillStyle = base
+    ctx.fillRect(cx - r, cy - r, r * 2, r * 2)
+  }
 
-  // Lit-region polygon: terminator (top→bottom) then lit limb (bottom→top).
-  const N = detail ? 90 : 40
+  // Night side: dark-region polygon with a soft-blurred terminator.
+  const N = detail ? 90 : 44
+  ctx.save()
+  ctx.filter = `blur(${detail ? Math.max(1, r * 0.012) : 0.6}px)`
   ctx.beginPath()
   for (let i = 0; i <= N; i += 1) {
     const y = -r + (2 * r * i) / N
@@ -201,45 +210,22 @@ const drawMoon = (canvas, illumination, waxing, { detail = true } = {}) => {
   for (let i = N; i >= 0; i -= 1) {
     const y = -r + (2 * r * i) / N
     const X = Math.sqrt(Math.max(0, r * r - y * y))
-    ctx.lineTo(cx + litDir * X, cy + y)
+    ctx.lineTo(cx - litDir * X, cy + y)
   }
   ctx.closePath()
-  ctx.save()
-  ctx.clip()
-  const litX = cx + litDir * r * 0.42
-  const surf = ctx.createRadialGradient(litX, cy - r * 0.22, r * 0.1, cx, cy, r * 1.2)
-  surf.addColorStop(0, '#f2f4f8')
-  surf.addColorStop(0.55, '#ccd0da')
-  surf.addColorStop(1, '#8f93a1')
-  ctx.fillStyle = surf
-  ctx.fillRect(cx - r, cy - r, r * 2, r * 2)
-  if (detail) {
-    const maria = [
-      [0.34, 0.3, 0.22, 0.19],
-      [0.56, 0.4, 0.15, 0.13],
-      [0.44, 0.58, 0.2, 0.16],
-      [0.66, 0.63, 0.12, 0.1],
-      [0.3, 0.5, 0.1, 0.09],
-    ]
-    for (const [mx, my, mrx, mry] of maria) {
-      const qx = cx + (mx - 0.5) * 2 * r
-      const qy = cy + (my - 0.5) * 2 * r
-      const g = ctx.createRadialGradient(qx, qy, 0, qx, qy, mrx * r * 2.2)
-      g.addColorStop(0, 'rgba(116,120,136,0.5)')
-      g.addColorStop(1, 'rgba(116,120,136,0)')
-      ctx.fillStyle = g
-      ctx.beginPath()
-      ctx.ellipse(qx, qy, mrx * r, mry * r, 0, 0, Math.PI * 2)
-      ctx.fill()
-    }
-  }
+  const sh = ctx.createRadialGradient(cx, cy, r * 0.2, cx, cy, r)
+  sh.addColorStop(0, `rgba(6,9,18,${detail ? 0.9 : 0.95})`)
+  sh.addColorStop(1, `rgba(4,7,14,${detail ? 0.95 : 0.98})`)
+  ctx.fillStyle = sh
+  ctx.fill()
   ctx.restore()
 
+  // Limb darkening so the lit disk reads as a sphere, not a flat sticker.
   ctx.beginPath()
   ctx.arc(cx, cy, r, 0, Math.PI * 2)
-  const ring = ctx.createRadialGradient(cx, cy, r * 0.86, cx, cy, r)
+  const ring = ctx.createRadialGradient(cx, cy, r * 0.82, cx, cy, r)
   ring.addColorStop(0, 'rgba(0,0,0,0)')
-  ring.addColorStop(1, 'rgba(0,0,0,0.28)')
+  ring.addColorStop(1, 'rgba(0,0,0,0.34)')
   ctx.fillStyle = ring
   ctx.fill()
   ctx.restore()
@@ -253,6 +239,14 @@ const drawCalendarMoons = () => {
     drawMoon(canvas, illum, waxing, { detail: false })
   })
 }
+
+const redrawAll = () => {
+  if (!sky.value) return
+  drawMoon(moonCanvas.value, sky.value.illumination, sky.value.waxing, { detail: true })
+  drawCalendarMoons()
+}
+// The photo may finish decoding after the first paint — redraw once it's ready.
+moonImg.onload = () => redrawAll()
 
 const buildMonth = () => {
   if (!Astronomy) return
@@ -351,10 +345,7 @@ onMounted(async () => {
   // Draw only after loading=false so the canvases are actually in the DOM
   // (the hero + calendar live in the v-else-if="sky" branch).
   await nextTick()
-  if (sky.value) {
-    drawMoon(moonCanvas.value, sky.value.illumination, sky.value.waxing, { detail: true })
-    drawCalendarMoons()
-  }
+  redrawAll()
 })
 </script>
 
