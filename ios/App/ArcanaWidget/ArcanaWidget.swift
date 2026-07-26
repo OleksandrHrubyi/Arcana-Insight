@@ -93,49 +93,35 @@ struct ArcanaWidgetEntryView: View {
         )
     }
 
-    private var dots: some View {
-        HStack(spacing: 4) {
-            let done = entry.snapshot?.progressDone ?? 0
-            let total = max(entry.snapshot?.progressTotal ?? 4, 1)
-            ForEach(0..<total, id: \.self) { index in
-                Circle()
-                    .fill(index < done
-                        ? Color(red: 0.55, green: 0.75, blue: 0.94)
-                        : Color.white.opacity(0.22))
-                    .frame(width: 6, height: 6)
-            }
-        }
-    }
-
     private var content: some View {
-        VStack(alignment: .leading, spacing: family == .systemSmall ? 6 : 8) {
+        VStack(alignment: .leading, spacing: family == .systemSmall ? 7 : 9) {
+            Text("ARCANA")
+                .font(.system(size: 9, weight: .bold))
+                .tracking(2)
+                .foregroundColor(.white.opacity(0.5))
             if let snapshot = entry.snapshot, !entry.isStale {
                 if !snapshot.skyLine.isEmpty {
                     Text(snapshot.skyLine)
                         .font(.system(size: family == .systemSmall ? 10 : 11, weight: .medium))
-                        .foregroundColor(.white.opacity(0.65))
+                        .foregroundColor(.white.opacity(0.7))
                         .lineLimit(1)
                 }
                 Text(snapshot.promptText)
-                    .font(.system(size: family == .systemSmall ? 13 : 15, weight: .semibold))
+                    .font(.system(size: family == .systemSmall ? 14 : 16, weight: .semibold))
                     .foregroundColor(.white)
-                    .lineLimit(family == .systemSmall ? 4 : 3)
-                    .minimumScaleFactor(0.85)
+                    .lineLimit(family == .systemSmall ? 5 : 4)
+                    .minimumScaleFactor(0.8)
+                    .fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: 0)
-                dots
             } else {
-                Text("ARCANA")
-                    .font(.system(size: 10, weight: .bold))
-                    .tracking(2)
-                    .foregroundColor(.white.opacity(0.6))
                 Text(staleText)
-                    .font(.system(size: family == .systemSmall ? 13 : 15, weight: .semibold))
+                    .font(.system(size: family == .systemSmall ? 14 : 16, weight: .semibold))
                     .foregroundColor(.white)
-                    .lineLimit(3)
+                    .lineLimit(4)
                 Spacer(minLength: 0)
-                dots
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     var body: some View {
