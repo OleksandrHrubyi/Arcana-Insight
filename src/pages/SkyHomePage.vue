@@ -1,7 +1,8 @@
 <template>
   <q-page class="skh">
-    <canvas ref="starCanvas" class="skh-stars" aria-hidden="true"></canvas>
-    <div class="skh-veil" aria-hidden="true"></div>
+    <div class="skh-sky" :style="skyStyle" aria-hidden="true"></div>
+    <div class="skh-fade" aria-hidden="true"></div>
+    <canvas ref="fxCanvas" class="skh-fx" aria-hidden="true"></canvas>
 
     <div v-if="loading" class="skh-loading"><q-spinner color="white" size="34px" /></div>
 
@@ -16,6 +17,7 @@
         <div class="skh-kick">{{ tt('skyHome.kicker') }} · {{ formatToday }}</div>
 
         <div class="skh-moonwrap">
+          <div class="skh-moonhalo" aria-hidden="true"></div>
           <canvas ref="moonCanvas" class="skh-moon"></canvas>
         </div>
 
@@ -131,6 +133,8 @@
             <q-icon name="chevron_right" size="16px" class="skh-extra__arrow" />
           </button>
         </section>
+
+        <div class="skh-credit">{{ tt('skyHome.credit') }}</div>
       </div>
     </template>
 
@@ -174,7 +178,8 @@ import {
   makeObserver,
 } from 'src/helpers/skyCore.js'
 import { drawMoon, onMoonReady } from 'src/helpers/moonRender.js'
-import { createStarfield } from 'src/helpers/starfield.js'
+import { createShootingStars } from 'src/helpers/starfield.js'
+import milkywayUrl from 'src/assets/images/milkyway.webp'
 import {
   skyLocation,
   loadSkyLocation,
@@ -202,8 +207,9 @@ const monthCells = ref([])
 const viewYear = ref(new Date().getFullYear())
 const viewMonth = ref(new Date().getMonth())
 const moonCanvas = ref(null)
-const starCanvas = ref(null)
+const fxCanvas = ref(null)
 const locationOpen = ref(false)
+const skyStyle = { backgroundImage: `url(${milkywayUrl})` }
 const cities = SKY_CITIES
 const loc = skyLocation
 
@@ -267,12 +273,12 @@ const redrawAll = () => {
 }
 onMoonReady(redrawAll)
 
-let starfield = null
+let skyFx = null
 let resizeRaf = 0
 const onResize = () => {
   cancelAnimationFrame(resizeRaf)
   resizeRaf = requestAnimationFrame(() => {
-    starfield?.resize()
+    skyFx?.resize()
     redrawAll()
   })
 }
@@ -365,15 +371,15 @@ onMounted(async () => {
   }
   await nextTick()
   redrawAll()
-  starfield = createStarfield(starCanvas.value)
-  starfield.start()
+  skyFx = createShootingStars(fxCanvas.value)
+  skyFx.start()
   window.addEventListener('resize', onResize)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize)
   cancelAnimationFrame(resizeRaf)
-  starfield?.stop()
+  skyFx?.stop()
 })
 </script>
 
@@ -385,19 +391,35 @@ onBeforeUnmount(() => {
   background: #03060d;
   overflow-x: hidden;
 }
-.skh-stars {
+.skh-sky {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100vh;
   z-index: 0;
-  background:
-    radial-gradient(120% 70% at 50% 108%, rgba(28, 52, 74, 0.5), rgba(6, 12, 22, 0) 60%),
-    radial-gradient(90% 60% at 78% 8%, rgba(20, 40, 60, 0.45), rgba(6, 12, 22, 0) 55%),
-    linear-gradient(180deg, #050a14 0%, #04070f 55%, #03060d 100%);
+  background-color: #04070c;
+  background-size: cover;
+  background-position: 50% 46%;
+  transform: scale(1.14);
+  animation: skh-drift 70s ease-in-out infinite alternate;
+  will-change: transform;
 }
-.skh-veil {
+@keyframes skh-drift {
+  0% {
+    transform: scale(1.14) translate(-1.2%, -1%);
+  }
+  100% {
+    transform: scale(1.2) translate(1.4%, 2.2%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skh-sky {
+    animation: none;
+    transform: scale(1.14);
+  }
+}
+.skh-fade {
   position: absolute;
   top: 0;
   left: 0;
@@ -405,14 +427,25 @@ onBeforeUnmount(() => {
   height: 100vh;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(3, 6, 13, 0.26) 0%,
-    rgba(3, 6, 13, 0) 22%,
-    rgba(3, 6, 13, 0) 62%,
-    rgba(3, 6, 13, 0.66) 88%,
-    #03060d 100%
-  );
+  background:
+    linear-gradient(
+      180deg,
+      rgba(4, 7, 12, 0.62) 0%,
+      rgba(4, 7, 12, 0) 20%,
+      rgba(4, 7, 12, 0) 58%,
+      rgba(4, 7, 12, 0.82) 92%,
+      #03060d 100%
+    ),
+    radial-gradient(120% 60% at 50% 42%, rgba(4, 7, 12, 0) 40%, rgba(4, 7, 12, 0.34) 100%);
+}
+.skh-fx {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
+  pointer-events: none;
 }
 .skh-loading {
   position: relative;
@@ -463,8 +496,9 @@ onBeforeUnmount(() => {
   font-size: 10.5px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: rgba(150, 178, 214, 0.5);
+  color: rgba(170, 192, 220, 0.62);
   text-align: center;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
 }
 .skh-moonwrap {
   flex: 1;
@@ -473,15 +507,26 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+}
+.skh-moonhalo {
+  position: absolute;
+  width: min(96vw, 420px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(4, 7, 12, 0.5) 30%, rgba(4, 7, 12, 0) 68%);
+  pointer-events: none;
 }
 .skh-moon {
+  position: relative;
   width: min(74vw, 320px);
   aspect-ratio: 1;
-  filter: drop-shadow(0 14px 60px rgba(120, 160, 220, 0.28));
+  filter: drop-shadow(0 12px 50px rgba(150, 180, 230, 0.32));
 }
 .skh-caption {
   text-align: center;
   padding-bottom: 4px;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.7);
 }
 .skh-phase {
   font-size: 30px;
@@ -733,6 +778,12 @@ onBeforeUnmount(() => {
   position: absolute;
   right: 12px;
   color: rgba(214, 225, 242, 0.4);
+}
+.skh-credit {
+  text-align: center;
+  font-size: 10px;
+  color: rgba(150, 172, 200, 0.4);
+  padding: 2px 8px;
 }
 
 /* Location sheet */
