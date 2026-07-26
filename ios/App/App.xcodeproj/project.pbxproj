@@ -207,8 +207,8 @@
 				504EC3011FED79650016851F /* Frameworks */,
 				504EC3021FED79650016851F /* Resources */,
 				766041BD4087BEBFB05A4ABC /* [CP] Embed Pods Frameworks */,
-				AB5C2A1F9D4E3B7C8F01D2E6 /* [Firebase] Upload Crashlytics dSYMs */,
 				114857373014022D00A2BD69 /* Embed Foundation Extensions */,
+				AB5C2A1F9D4E3B7C8F01D2E6 /* [Firebase] Upload Crashlytics dSYMs */,
 			);
 			buildRules = (
 			);
