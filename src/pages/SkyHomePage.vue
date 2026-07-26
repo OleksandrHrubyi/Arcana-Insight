@@ -1,36 +1,39 @@
 <template>
   <q-page class="skh">
-    <div class="skh-bg" aria-hidden="true"></div>
-    <div class="skh-content">
-      <div v-if="loading" class="skh-loading"><q-spinner color="white" size="34px" /></div>
+    <canvas ref="starCanvas" class="skh-stars" aria-hidden="true"></canvas>
+    <div class="skh-veil" aria-hidden="true"></div>
 
-      <template v-else-if="sky">
-        <!-- Location + date -->
-        <header class="skh-head">
-          <button type="button" class="skh-loc hit-44" @click="locationOpen = true">
-            <q-icon name="place" size="16px" />
-            <span class="skh-loc__name">{{ locationLabel }}</span>
-            <q-icon name="expand_more" size="16px" class="skh-loc__caret" />
-          </button>
-          <div class="skh-kicker">{{ tt('skyHome.kicker') }}</div>
-          <div class="skh-date">{{ formatToday }}</div>
-        </header>
+    <div v-if="loading" class="skh-loading"><q-spinner color="white" size="34px" /></div>
 
-        <!-- Moon hero -->
-        <section class="skh-hero">
-          <canvas ref="moonCanvas" class="skh-hero__moon"></canvas>
-          <div class="skh-hero__phase">{{ tt(`astro.phases.${sky.moonPhaseKey}`) }}</div>
-          <div class="skh-hero__illum">{{ sky.illuminationPct }}% {{ tt('skyHome.illuminated') }}</div>
-          <div class="skh-hero__rs">
-            <span>{{ tt('skyHome.moonRises') }} {{ formatTime(moonRS.rise) }}</span>
-            <span class="skh-hero__dot">·</span>
-            <span>{{ tt('skyHome.moonSets') }} {{ formatTime(moonRS.set) }}</span>
+    <template v-else-if="sky">
+      <!-- First screen: the live moon over the real night sky -->
+      <section class="skh-first">
+        <button type="button" class="skh-loc hit-44" @click="locationOpen = true">
+          <span class="skh-loc__dot"></span>
+          <span class="skh-loc__name">{{ locationLabel }}</span>
+          <q-icon name="expand_more" size="15px" class="skh-loc__caret" />
+        </button>
+        <div class="skh-kick">{{ tt('skyHome.kicker') }} · {{ formatToday }}</div>
+
+        <div class="skh-moonwrap">
+          <canvas ref="moonCanvas" class="skh-moon"></canvas>
+        </div>
+
+        <div class="skh-caption">
+          <div class="skh-phase">{{ tt(`astro.phases.${sky.moonPhaseKey}`) }}</div>
+          <div class="skh-sub">
+            {{ sky.illuminationPct }}% {{ tt('skyHome.illuminated') }}<template v-if="nextFullMoon">
+              · <span class="skh-accent">{{ tt('skyHome.events.fullMoon') }} {{ untilLabel(nextFullMoon.daysUntil) }}</span></template>
           </div>
-          <div v-if="nextFullMoon" class="skh-hero__next">
-            {{ tt('skyHome.events.fullMoon') }} {{ untilLabel(nextFullMoon.daysUntil) }}
+          <div class="skh-rs">
+            {{ tt('skyHome.moonRises') }} {{ formatTime(moonRS.rise) }} ·
+            {{ tt('skyHome.moonSets') }} {{ formatTime(moonRS.set) }}
           </div>
-        </section>
+          <div class="skh-hint" aria-hidden="true"><span class="skh-hint__chev"></span></div>
+        </div>
+      </section>
 
+      <div class="skh-data">
         <!-- Visible this evening -->
         <section class="skh-visible">
           <div class="skh-section-title">{{ tt('skyHome.visibleTitle') }}</div>
@@ -128,8 +131,8 @@
             <q-icon name="chevron_right" size="16px" class="skh-extra__arrow" />
           </button>
         </section>
-      </template>
-    </div>
+      </div>
+    </template>
 
     <!-- Location picker -->
     <q-dialog v-model="locationOpen" position="bottom">
@@ -157,7 +160,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import {
@@ -171,6 +174,7 @@ import {
   makeObserver,
 } from 'src/helpers/skyCore.js'
 import { drawMoon, onMoonReady } from 'src/helpers/moonRender.js'
+import { createStarfield } from 'src/helpers/starfield.js'
 import {
   skyLocation,
   loadSkyLocation,
@@ -198,6 +202,7 @@ const monthCells = ref([])
 const viewYear = ref(new Date().getFullYear())
 const viewMonth = ref(new Date().getMonth())
 const moonCanvas = ref(null)
+const starCanvas = ref(null)
 const locationOpen = ref(false)
 const cities = SKY_CITIES
 const loc = skyLocation
@@ -261,6 +266,16 @@ const redrawAll = () => {
   drawCalendarMoons()
 }
 onMoonReady(redrawAll)
+
+let starfield = null
+let resizeRaf = 0
+const onResize = () => {
+  cancelAnimationFrame(resizeRaf)
+  resizeRaf = requestAnimationFrame(() => {
+    starfield?.resize()
+    redrawAll()
+  })
+}
 
 const pickCity = (cityKey) => {
   setSkyLocationCity(cityKey)
@@ -350,109 +365,167 @@ onMounted(async () => {
   }
   await nextTick()
   redrawAll()
+  starfield = createStarfield(starCanvas.value)
+  starfield.start()
+  window.addEventListener('resize', onResize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onResize)
+  cancelAnimationFrame(resizeRaf)
+  starfield?.stop()
 })
 </script>
 
 <style scoped lang="scss">
 .skh {
+  position: relative;
   min-height: 100vh;
   color: #e9edf4;
-  position: relative;
-  overflow: hidden;
+  background: #03060d;
+  overflow-x: hidden;
 }
-.skh-bg {
+.skh-stars {
   position: absolute;
-  inset: 0;
-  background: radial-gradient(140% 80% at 50% -10%, #0d2740 0%, #081521 42%, #04080f 100%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
   z-index: 0;
+  background:
+    radial-gradient(120% 70% at 50% 108%, rgba(28, 52, 74, 0.5), rgba(6, 12, 22, 0) 60%),
+    radial-gradient(90% 60% at 78% 8%, rgba(20, 40, 60, 0.45), rgba(6, 12, 22, 0) 55%),
+    linear-gradient(180deg, #050a14 0%, #04070f 55%, #03060d 100%);
 }
-.skh-content {
-  position: relative;
+.skh-veil {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
   z-index: 1;
-  padding: calc(18px + env(safe-area-inset-top)) 16px 108px;
-  max-width: 520px;
-  margin: 0 auto;
-  display: grid;
-  gap: 22px;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(3, 6, 13, 0.26) 0%,
+    rgba(3, 6, 13, 0) 22%,
+    rgba(3, 6, 13, 0) 62%,
+    rgba(3, 6, 13, 0.66) 88%,
+    #03060d 100%
+  );
 }
 .skh-loading {
+  position: relative;
+  z-index: 2;
   display: flex;
   justify-content: center;
-  padding: 120px 0;
+  padding: 160px 0;
 }
 
-/* Header */
-.skh-head {
-  text-align: center;
-  display: grid;
-  gap: 4px;
-  justify-items: center;
+/* First screen (cinematic) */
+.skh-first {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: calc(16px + env(safe-area-inset-top)) 22px calc(90px + env(safe-area-inset-bottom));
 }
 .skh-loc {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
+  gap: 6px;
+  padding: 7px 15px;
   border-radius: 999px;
-  border: 1px solid rgba(148, 178, 214, 0.16);
-  background: rgba(13, 22, 36, 0.55);
-  color: rgba(214, 225, 242, 0.9);
+  border: 1px solid rgba(150, 180, 220, 0.16);
+  background: rgba(10, 18, 30, 0.4);
+  backdrop-filter: blur(6px);
+  color: rgba(226, 236, 250, 0.9);
   font-size: 13px;
-  margin-bottom: 6px;
   transition: transform 0.12s ease;
 }
 .skh-loc:active {
   transform: scale(0.97);
 }
+.skh-loc__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #8fc0f2;
+  box-shadow: 0 0 8px #8fc0f2;
+}
 .skh-loc__caret {
   opacity: 0.6;
 }
-.skh-kicker {
-  font-size: 11px;
+.skh-kick {
+  margin-top: 10px;
+  font-size: 10.5px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: rgba(184, 205, 236, 0.62);
+  color: rgba(150, 178, 214, 0.5);
+  text-align: center;
 }
-.skh-date {
-  font-size: 15px;
-  color: rgba(233, 240, 250, 0.9);
-  text-transform: capitalize;
+.skh-moonwrap {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.skh-moon {
+  width: min(74vw, 320px);
+  aspect-ratio: 1;
+  filter: drop-shadow(0 14px 60px rgba(120, 160, 220, 0.28));
+}
+.skh-caption {
+  text-align: center;
+  padding-bottom: 4px;
+}
+.skh-phase {
+  font-size: 30px;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+.skh-sub {
+  margin-top: 9px;
+  font-size: 13.5px;
+  font-weight: 300;
+  color: rgba(200, 218, 244, 0.72);
+}
+.skh-rs {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: rgba(150, 178, 214, 0.58);
+  font-variant-numeric: tabular-nums;
+}
+.skh-accent {
+  color: #8fc0f2;
+}
+.skh-hint {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+.skh-hint__chev {
+  width: 15px;
+  height: 15px;
+  border-right: 1.5px solid rgba(150, 178, 214, 0.5);
+  border-bottom: 1.5px solid rgba(150, 178, 214, 0.5);
+  transform: rotate(45deg);
 }
 
-/* Hero */
-.skh-hero {
+/* Data area (below the fold) */
+.skh-data {
+  position: relative;
+  z-index: 2;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 8px 16px calc(96px + env(safe-area-inset-bottom));
   display: grid;
-  justify-items: center;
-  gap: 5px;
-  padding: 2px 0;
-}
-.skh-hero__moon {
-  width: min(74vw, 300px);
-  height: min(74vw, 300px);
-  filter: drop-shadow(0 10px 40px rgba(120, 160, 220, 0.22));
-}
-.skh-hero__phase {
-  font-size: 24px;
-  font-weight: 600;
-  margin-top: 4px;
-}
-.skh-hero__illum {
-  font-size: 13px;
-  color: rgba(184, 205, 236, 0.72);
-}
-.skh-hero__rs {
-  font-size: 13px;
-  color: rgba(210, 224, 244, 0.86);
-  display: flex;
-  gap: 8px;
-  margin-top: 2px;
-}
-.skh-hero__dot {
-  opacity: 0.4;
-}
-.skh-hero__next {
-  font-size: 12px;
-  color: rgba(141, 190, 240, 0.85);
+  gap: 22px;
 }
 
 /* Section titles */
