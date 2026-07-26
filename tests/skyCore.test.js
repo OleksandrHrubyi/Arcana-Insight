@@ -76,3 +76,71 @@ test('planet signs return all five visible planets with retrograde flags', () =>
     assert.equal(typeof p.retrograde, 'boolean')
   }
 })
+
+// ── Location-aware sky ───────────────────────────────────────────────────────
+const KYIV = { lat: 50.4501, lon: 30.5234 }
+
+test('azimuthToCompassKey maps cardinal + intercardinal directions', () => {
+  assert.equal(sky.azimuthToCompassKey(0), 'n')
+  assert.equal(sky.azimuthToCompassKey(45), 'ne')
+  assert.equal(sky.azimuthToCompassKey(90), 'e')
+  assert.equal(sky.azimuthToCompassKey(180), 's')
+  assert.equal(sky.azimuthToCompassKey(270), 'w')
+  assert.equal(sky.azimuthToCompassKey(360), 'n') // wraps
+})
+
+test('sun rise/set/dusk are real and correctly ordered for Kyiv in summer', () => {
+  const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
+  const date = new Date('2026-07-26T10:00:00Z')
+  const { sunrise, sunset, darkStart } = sky.computeSunTimes(Astronomy, obs, date)
+  assert.ok(sunrise instanceof Date && sunset instanceof Date, 'sunrise + sunset defined')
+  assert.ok(sunrise.getTime() < sunset.getTime(), 'sunrise before sunset')
+  assert.ok(darkStart instanceof Date, 'astronomical dusk defined')
+  assert.ok(darkStart.getTime() > sunset.getTime(), 'dark sky begins after sunset')
+})
+
+test('the Sun is above the horizon over Kyiv at local midday', () => {
+  const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
+  // 10:00 UTC = 13:00 Kyiv (EEST) — clearly daytime.
+  const { altitude } = sky.horizontalPosition(Astronomy, 'sun', obs, new Date('2026-07-26T10:00:00Z'))
+  assert.ok(altitude > 0, `sun up at midday (alt=${altitude})`)
+})
+
+test('moon rise/set for the local day return Date-or-null without throwing', () => {
+  const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
+  const { rise, set } = sky.riseSetForLocalDay(Astronomy, 'moon', obs, new Date('2026-07-26T10:00:00Z'))
+  for (const v of [rise, set]) assert.ok(v === null || v instanceof Date)
+})
+
+test('visible-tonight yields only above-horizon planets with valid fields', () => {
+  const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
+  const vis = sky.computeVisibleTonight(Astronomy, obs, new Date('2026-07-26T10:00:00Z'))
+  assert.ok(Array.isArray(vis))
+  for (const p of vis) {
+    assert.ok(sky.VISIBLE_BODY_KEYS.includes(p.planetKey))
+    assert.ok(p.altitude >= 3, 'above the min altitude')
+    assert.ok(['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'].includes(p.azimuthKey))
+    assert.equal(typeof p.magnitude, 'number')
+    assert.equal(typeof p.retrograde, 'boolean')
+  }
+  // Sorted by altitude, highest first.
+  for (let i = 1; i < vis.length; i += 1) assert.ok(vis[i - 1].altitude >= vis[i].altitude)
+})
+
+test('upcoming sky-events feed is future, sorted, capped, and typed', () => {
+  const now = new Date('2026-07-26T12:00:00Z')
+  const feed = sky.computeUpcomingSkyEvents(Astronomy, now, { horizonDays: 120, limit: 8 })
+  assert.ok(Array.isArray(feed) && feed.length > 0)
+  assert.ok(feed.length <= 8, 'respects the limit')
+  const types = new Set(['moonPhase', 'apsis', 'lunarEclipse', 'solarEclipse', 'season', 'meteor'])
+  let prev = 0
+  for (const e of feed) {
+    assert.ok(types.has(e.type), `known type: ${e.type}`)
+    assert.ok(e.date instanceof Date && e.date.getTime() >= now.getTime(), 'in the future')
+    assert.ok(e.daysUntil >= 0 && e.daysUntil <= 120, 'within horizon')
+    assert.ok(e.date.getTime() >= prev, 'date-sorted ascending')
+    prev = e.date.getTime()
+  }
+  // A full moon is due within days of this date — the feed must surface a phase.
+  assert.ok(feed.some((e) => e.type === 'moonPhase'), 'includes a moon phase')
+})

@@ -144,3 +144,149 @@ export const computePlanetSigns = (Astronomy, date = new Date()) =>
       retrograde: isRetrograde(Astronomy, body, date),
     }
   })
+
+// ── Location-aware sky (rise/set, horizon position, events) ──────────────────
+// These take the observer's real coordinates so the home reads as a factual
+// astronomy tool ("for YOUR location"), not a generic display.
+
+const bodyOf = (Astronomy, key) => Astronomy.Body[key.charAt(0).toUpperCase() + key.slice(1)]
+
+const toDate = (astroTime) => {
+  if (!astroTime) return null
+  return astroTime.date instanceof Date ? astroTime.date : new Date(astroTime.date)
+}
+
+const localMidnight = (date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0)
+
+const daysBetween = (eventDate, from) =>
+  Math.max(0, Math.ceil((eventDate.getTime() - from.getTime()) / 86400000))
+
+export const makeObserver = (Astronomy, lat, lon, height = 0) =>
+  new Astronomy.Observer(lat, lon, height)
+
+// Compass 8-point key from an azimuth measured clockwise from true north.
+const COMPASS_KEYS = Object.freeze(['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'])
+export const azimuthToCompassKey = (az) => COMPASS_KEYS[Math.round(norm360(az) / 45) % 8]
+
+// Rise & set of a body for the observer's local calendar day containing `date`.
+// Either can be null (the Moon skips a rise on some days; polar day/night).
+export const riseSetForLocalDay = (Astronomy, bodyKey, observer, date = new Date()) => {
+  const body = bodyOf(Astronomy, bodyKey)
+  const start = makeTime(Astronomy, localMidnight(date))
+  return {
+    rise: toDate(Astronomy.SearchRiseSet(body, observer, +1, start, 1.0)),
+    set: toDate(Astronomy.SearchRiseSet(body, observer, -1, start, 1.0)),
+  }
+}
+
+// Altitude (°above horizon) and azimuth (° clockwise from north) of a body now.
+export const horizontalPosition = (Astronomy, bodyKey, observer, date = new Date()) => {
+  const body = bodyOf(Astronomy, bodyKey)
+  const time = makeTime(Astronomy, date)
+  const equ = Astronomy.Equator(body, time, observer, true, true)
+  const hor = Astronomy.Horizon(time, observer, equ.ra, equ.dec, 'normal')
+  return { altitude: hor.altitude, azimuth: hor.azimuth }
+}
+
+// Sunrise, sunset, and astronomical dusk (Sun 18° below the horizon → truly
+// dark sky) for the local day.
+export const computeSunTimes = (Astronomy, observer, date = new Date()) => {
+  const start = makeTime(Astronomy, localMidnight(date))
+  const sunrise = toDate(Astronomy.SearchRiseSet(Astronomy.Body.Sun, observer, +1, start, 1.0))
+  const sunset = toDate(Astronomy.SearchRiseSet(Astronomy.Body.Sun, observer, -1, start, 1.0))
+  let darkStart = null
+  if (sunset) {
+    darkStart = toDate(
+      Astronomy.SearchAltitude(Astronomy.Body.Sun, observer, -1, makeTime(Astronomy, sunset), 0.5, -18),
+    )
+  }
+  return { sunrise, sunset, darkStart }
+}
+
+export const VISIBLE_BODY_KEYS = Object.freeze(['mercury', 'venus', 'mars', 'jupiter', 'saturn'])
+
+// Planets above the horizon in the early evening (sunset + 1h, or local 21:00 as
+// a fallback), brightest-placed first. This is the observational-planning core
+// that makes the screen a tool rather than a horoscope.
+export const computeVisibleTonight = (Astronomy, observer, date = new Date(), { minAltitude = 3 } = {}) => {
+  const { sunset } = computeSunTimes(Astronomy, observer, date)
+  const evening = sunset
+    ? new Date(sunset.getTime() + 60 * 60000)
+    : new Date(date.getFullYear(), date.getMonth(), date.getDate(), 21, 0, 0)
+  return VISIBLE_BODY_KEYS.map((planetKey) => {
+    const { altitude, azimuth } = horizontalPosition(Astronomy, planetKey, observer, evening)
+    const illum = Astronomy.Illumination(bodyOf(Astronomy, planetKey), makeTime(Astronomy, evening))
+    return {
+      planetKey,
+      altitude: Math.round(altitude),
+      azimuthKey: azimuthToCompassKey(azimuth),
+      magnitude: Math.round(illum.mag * 10) / 10,
+      retrograde: isRetrograde(Astronomy, bodyOf(Astronomy, planetKey), evening),
+      visible: altitude >= minAltitude,
+    }
+  })
+    .filter((p) => p.visible)
+    .sort((a, b) => b.altitude - a.altitude)
+}
+
+// Fixed annual peak dates of the major meteor showers (local-evening reference).
+export const METEOR_SHOWERS = Object.freeze([
+  { key: 'quadrantids', month: 1, day: 3 },
+  { key: 'lyrids', month: 4, day: 22 },
+  { key: 'etaAquariids', month: 5, day: 6 },
+  { key: 'perseids', month: 8, day: 12 },
+  { key: 'orionids', month: 10, day: 21 },
+  { key: 'leonids', month: 11, day: 17 },
+  { key: 'geminids', month: 12, day: 14 },
+])
+
+// A unified, date-sorted feed of upcoming sky events — moon phases, lunar apsis
+// (super/micro moon), eclipses, seasons, meteor peaks. All computed on-device.
+export const computeUpcomingSkyEvents = (
+  Astronomy,
+  date = new Date(),
+  { horizonDays = 120, limit = 8 } = {},
+) => {
+  const start = makeTime(Astronomy, date)
+  const events = []
+  const push = (type, key, eventDate) => {
+    const d = eventDate instanceof Date ? eventDate : toDate(eventDate)
+    if (!d) return
+    const du = daysBetween(d, date)
+    if (d.getTime() < date.getTime() || du > horizonDays) return
+    events.push({ type, key, date: d, daysUntil: du })
+  }
+
+  const phases = findUpcomingLunarEvents(Astronomy, date)
+  push('moonPhase', 'newMoon', phases.newMoon?.date)
+  push('moonPhase', 'firstQuarter', phases.firstQuarter?.date)
+  push('moonPhase', 'fullMoon', phases.fullMoon?.date)
+  push('moonPhase', 'lastQuarter', phases.lastQuarter?.date)
+
+  // Next two apsides catch both the coming perigee and apogee. kind: 0=perigee.
+  let apsis = Astronomy.SearchLunarApsis(start)
+  for (let i = 0; i < 2 && apsis; i += 1) {
+    push('apsis', apsis.kind === 0 ? 'perigee' : 'apogee', toDate(apsis.time))
+    apsis = Astronomy.NextLunarApsis(apsis)
+  }
+
+  const lunarEcl = Astronomy.SearchLunarEclipse(start)
+  push('lunarEclipse', 'lunarEclipse', toDate(lunarEcl?.peak))
+  const solarEcl = Astronomy.SearchGlobalSolarEclipse(start)
+  push('solarEclipse', 'solarEclipse', toDate(solarEcl?.peak))
+
+  const year = date.getFullYear()
+  for (const yr of [year, year + 1]) {
+    const s = Astronomy.Seasons(yr)
+    push('season', 'marchEquinox', toDate(s.mar_equinox))
+    push('season', 'juneSolstice', toDate(s.jun_solstice))
+    push('season', 'septemberEquinox', toDate(s.sep_equinox))
+    push('season', 'decemberSolstice', toDate(s.dec_solstice))
+    for (const shower of METEOR_SHOWERS) {
+      push('meteor', shower.key, new Date(yr, shower.month - 1, shower.day, 22, 0, 0))
+    }
+  }
+
+  return events.sort((a, b) => a.date - b.date).slice(0, limit)
+}
