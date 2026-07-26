@@ -2372,6 +2372,22 @@ export const messages = {
       },
     },
 
+    skyPage: {
+      kicker: "TODAY'S SKY",
+      illuminated: 'illuminated',
+      calendarTitle: 'Moon calendar',
+      eventsTitle: 'Upcoming',
+      planetsTitle: 'Planets now',
+      today: 'today',
+      tomorrow: 'tomorrow',
+      inDays: 'in {n} days',
+      retrograde: 'retrograde',
+      secondaryReflection: "Today's reflection",
+      secondaryCard: 'Card of the day',
+      weekdays: { mon: 'Mo', tue: 'Tu', wed: 'We', thu: 'Th', fri: 'Fr', sat: 'Sa', sun: 'Su' },
+      events: { newMoon: 'New Moon', firstQuarter: 'First Quarter', fullMoon: 'Full Moon', lastQuarter: 'Last Quarter' },
+    },
+
     faqPage: {
       title: 'FAQ & Support',
       subtitle: 'Answers and help',
@@ -4811,6 +4827,22 @@ export const messages = {
           },
         },
       },
+    },
+
+    skyPage: {
+      kicker: 'НЕБО СЬОГОДНІ',
+      illuminated: 'освітлений',
+      calendarTitle: 'Місячний календар',
+      eventsTitle: 'Найближче',
+      planetsTitle: 'Планети зараз',
+      today: 'сьогодні',
+      tomorrow: 'завтра',
+      inDays: 'через {n} дн.',
+      retrograde: 'ретроград',
+      secondaryReflection: 'Рефлексія сьогодні',
+      secondaryCard: 'Карта дня',
+      weekdays: { mon: 'Пн', tue: 'Вт', wed: 'Ср', thu: 'Чт', fri: 'Пт', sat: 'Сб', sun: 'Нд' },
+      events: { newMoon: 'Новий місяць', firstQuarter: 'Перша чверть', fullMoon: 'Повня', lastQuarter: 'Остання чверть' },
     },
 
     faqPage: {

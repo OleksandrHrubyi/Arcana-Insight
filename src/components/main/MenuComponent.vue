@@ -273,6 +273,12 @@ export default defineComponent({
         routeName: 'journal',
       },
       {
+        key: 'sky',
+        labelKey: 'skyPage.kicker',
+        icon: 'nightlight',
+        routeName: 'sky',
+      },
+      {
         key: 'compatibility',
         labelKey: 'nav.compatibility',
         icon: 'favorite',
