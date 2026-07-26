@@ -3,8 +3,8 @@ export const messages = {
     appName: 'Arcana Insight',
 
     // Horoscope
-    dailyHoroscope: 'DAILY HOROSCOPE',
-    horoscopeFor: 'HOROSCOPE FOR',
+    dailyHoroscope: "TODAY'S SKY",
+    horoscopeFor: 'SKY READING FOR',
     tarotOracle: {
       ui: {
         ariaTouchDeck: 'Touch the deck',
@@ -659,7 +659,7 @@ export const messages = {
     settings: 'Settings',
     tarot: 'Tarot',
     arcana: 'Arcana',
-    horoscope: 'Horoscope',
+    horoscope: 'Sky',
     language: 'Language',
     dailyPush: 'Daily push notifications',
     optimalTime: 'Optimal time',
@@ -735,7 +735,7 @@ export const messages = {
       syncFailed: 'Couldn’t sync rewards.',
       filterAll: 'All',
       filterTarot: 'Tarot',
-      filterHoroscope: 'Horoscope',
+      filterHoroscope: 'Sky',
       filterProfile: 'Profile',
       categoryFallback: 'Reward',
       heroEyebrow: 'Mystic ritual economy',
@@ -840,9 +840,9 @@ export const messages = {
         eyebrow: 'TODAY FOR YOUR SIGN',
         fallbackEyebrow: "TODAY'S ZODIAC PREVIEW",
         fallbackTitle: "Today's zodiac preview",
-        fallbackTheme: 'Horoscope',
+        fallbackTheme: 'Sky',
         fallbackPreview:
-          "Open your horoscope to see today's energy, love, or career focus in one quick view.",
+          "Open today's sky to see your energy, love, or career focus in one quick view.",
         themes: {
           energy: 'Energy',
           love: 'Love',
@@ -851,12 +851,12 @@ export const messages = {
       },
       focusToday: {
         title: 'Focus today',
-        fallbackKnownSign: "Open your horoscope to see today's focus.",
-        fallbackMissingSign: "Open Horoscope and choose your sign to see today's focus.",
+        fallbackKnownSign: "Open today's sky to see your focus.",
+        fallbackMissingSign: "Open Sky and choose your sign to see today's focus.",
       },
       progress: {
         card: 'Card',
-        horoscope: 'Horoscope',
+        horoscope: 'Sky',
         tarot: 'Tarot',
         reflection: 'Reflect',
         summaryStart: "Start today's ritual",
@@ -905,7 +905,7 @@ export const messages = {
           lunar:
             'This card is purely calendar-based: it shows your distance to the full moon, not the mood of the day.',
           planet:
-            'The day ruler gives a broad rhythm, but it does not replace your horoscope or daily card.',
+            'The day ruler gives a broad rhythm, but it does not replace your daily reading or daily card.',
           sun: 'The Sun here shows a seasonal background, not just a one-day mood.',
           element:
             'The element shows the reaction style of the day: emotional, mental, practical, or impulsive.',
@@ -977,14 +977,14 @@ export const messages = {
           numberKey: 'Number key',
           currentStreak: 'Current streak',
           dailyCardToday: 'Daily card today',
-          horoscopeToday: 'Horoscope today',
+          horoscopeToday: 'Sky today',
           tarotToday: 'Tarot today',
           retrogradeMeaning: 'Retrograde means the planet appears to move backward from Earth.',
           mercuryTradition: 'Mercury is traditionally linked with messages, travel, and details.',
           currentRetroStatus: 'Current status: retrograde motion is active.',
         },
         actions: {
-          openHoroscope: 'Open horoscope',
+          openHoroscope: 'Open sky',
         },
         yesNo: {
           yes: 'yes',
@@ -1011,7 +1011,7 @@ export const messages = {
       codeResent: 'We’ve just resent your verification code. Check your inbox again.',
       loginHelper: 'We’ll send a 6-digit code to your email.',
       signUpHelper:
-        'Start with your email. You can add your birth date later for personal horoscope.',
+        'Start with your email. You can add your birth date later for a personal reading.',
       wrongOrExpiredCode: 'Wrong or expired code. Try again.',
       tooManyAttempts: 'Too many attempts. Please wait a moment and try again.',
       fillAllFields: 'Please fill all fields correctly.',
@@ -1035,7 +1035,7 @@ export const messages = {
     },
 
     getStarted: {
-      subtitle: 'Discover daily Tarot and Horoscope readings.',
+      subtitle: 'Your daily reflection ritual, guided by the real sky.',
       action: 'Get Started',
     },
 
@@ -1098,7 +1098,7 @@ export const messages = {
       home: 'Home',
       menu: 'Menu',
       daily: 'Daily card',
-      personalHoroscope: 'Personal horoscope',
+      personalHoroscope: 'Personal sky',
       support: 'FAQ & Support',
       privacy: 'Privacy & Terms',
       compatibility: 'Compatibility',
@@ -1127,7 +1127,7 @@ export const messages = {
       nextCardIn: 'Next card in',
       statusDone: 'Done',
       statusNext: 'Next',
-      actionGoHoroscope: 'Open horoscope',
+      actionGoHoroscope: 'Open sky',
       actionGoTarot: 'Open tarot',
       reminderCta: 'Reminders',
       reminderOn: 'Daily reminders are enabled.',
@@ -1135,7 +1135,7 @@ export const messages = {
       reminderOff: 'Reminders are off. Turn them on to keep the daily ritual.',
       ritualItems: {
         dailyCard: 'Daily card',
-        horoscope: 'Horoscope',
+        horoscope: 'Sky',
         tarot: 'Tarot session',
       },
       energySheet: {
@@ -1587,12 +1587,12 @@ export const messages = {
         horoscopeLove: {
           free: 'Only daily energy theme.',
           premium: 'Daily love-focused insights and deeper emotional guidance.',
-          purchase: 'Premium subscription with all daily horoscope themes.',
+          purchase: 'Premium subscription with all daily reading themes.',
         },
         horoscopeCareer: {
           free: 'Only daily energy theme.',
           premium: 'Daily career-focused guidance and next-step focus.',
-          purchase: 'Premium subscription with all daily horoscope themes.',
+          purchase: 'Premium subscription with all daily reading themes.',
         },
       },
       horoscope: {
@@ -1624,8 +1624,8 @@ export const messages = {
         },
       },
       personalHoroscope: {
-        title: 'Personal horoscope is in Premium',
-        text: 'Free includes your daily sign horoscope. Premium adds a personal reading shaped by your Sun and Moon signs.',
+        title: 'Personal sky reading is in Premium',
+        text: 'Free includes your daily sign reading. Premium adds a personal reading shaped by your Sun and Moon signs.',
       },
       spreads: {
         notify:
@@ -1780,10 +1780,10 @@ export const messages = {
       },
       personalizedHints: {
         love: 'Tarot focused on relationships and emotional dynamics',
-        career: 'Career-focused horoscope theme and practical direction',
+        career: 'Career-focused daily theme and practical direction',
         money: 'Tarot focus on finances, stability, and decisions',
         self: 'Daily guidance for reflection and personal clarity',
-        energy: 'Energy-focused horoscope for your inner rhythm',
+        energy: 'Energy-focused reading for your inner rhythm',
         future: 'Tarot focus on choices and next-step direction',
       },
     },
@@ -1792,11 +1792,11 @@ export const messages = {
       title: 'Premium',
       subtitle: 'Your daily reflection stays free. Premium adds depth: unlimited sessions, all themes, full history.',
       compareTable: {
-        lead: 'Free covers the full daily reflection ritual. Premium unlocks the deeper formats: full spreads, all horoscope themes, complete compatibility.',
+        lead: 'Free covers the full daily reflection ritual. Premium unlocks the deeper formats: full spreads, all daily themes, complete compatibility.',
         summary: 'Premium = full access to every format with no daily limits.',
         tarotFormat: { feature: 'Tarot spread', free: '1 card/day', premium: '1, 3, or 5 cards with no limit' },
         interpretation: { feature: 'Reading depth', free: 'Short takeaway', premiumAi: 'Deep AI reading + action steps', premiumBasic: 'Deep reading + action steps' },
-        horoscope: { feature: 'Horoscope themes', free: 'Energy only', premium: 'Energy, love, and career' },
+        horoscope: { feature: 'Daily themes', free: 'Energy only', premium: 'Energy, love, and career' },
         compatibility: { feature: 'Compatibility', free: 'Score + 1 sphere', premium: 'Full relationship reading' },
         history: { feature: 'History', free: 'No history', premium: 'All readings saved' },
       },
@@ -1812,9 +1812,9 @@ export const messages = {
       },
       accessModel: {
         title: 'Access model',
-        free: 'Free: the daily reflection journal, daily card, energy horoscope, and one 1-card reading per day.',
+        free: 'Free: the daily reflection journal, daily card, energy reading, and one 1-card reading per day.',
         premium:
-          'Premium: unlimited tarot sessions, all horoscope themes, full history, and compatibility insights.',
+          'Premium: unlimited tarot sessions, all daily themes, full history, and compatibility insights.',
         purchasePrefix: 'Purchase:',
       },
       status: 'Current access model',
@@ -1863,14 +1863,14 @@ export const messages = {
       free: {
         journal: 'Daily reflection journal — always free',
         dailyCard: 'Daily card',
-        horoscope: 'Daily horoscope: energy theme',
+        horoscope: 'Daily reading: energy theme',
         tarotOne: 'Tarot: 1 reading per day (1 card)',
         cardsLibrary: 'Card library',
         zodiacGuide: 'Zodiac signs guide',
       },
       premium: {
         unlimitedTarot: 'Unlimited tarot sessions',
-        horoscopeThemes: 'All horoscope themes every day',
+        horoscopeThemes: 'All daily themes every day',
         spreads: '3-card and 5-card spreads',
         fullInterpretation: 'Deeper interpretation with action points',
         compatibility: 'Premium compatibility insights',
@@ -1882,7 +1882,7 @@ export const messages = {
           text: 'No daily cap: run 1, 3, or 5-card readings whenever you need clarity.',
         },
         horoscopeThemes: {
-          title: 'All horoscope themes, daily',
+          title: 'All daily themes',
           text: 'Unlock love and career every day, not only the free energy theme.',
         },
         spreads: {
@@ -1918,13 +1918,13 @@ export const messages = {
         tarot: 'Unlimited Tarot',
         tarotSub: 'As many readings as you want',
         love: 'Love & Career',
-        loveSub: 'All horoscope themes',
+        loveSub: 'All daily themes',
         ai: 'Deep Interpretation',
         aiSub: 'AI analysis of every card',
         history: 'Saved Readings',
         historySub: 'Your personal history',
         compat: 'Compatibility',
-        compatSub: 'Horoscope for couples',
+        compatSub: 'A reading for couples',
         spreads: '3 & 5 Cards',
         spreadsSub: 'Full spread readings',
       },
@@ -2033,7 +2033,7 @@ export const messages = {
         includesTitle: 'Every plan includes:',
         includes: {
           unlimitedReadings: 'Unlimited tarot readings (1, 3, and 5 cards)',
-          horoscopeThemes: 'All daily horoscope themes: energy, love, and career',
+          horoscopeThemes: 'All daily themes: energy, love, and career',
           deepInterpretation: 'Deeper AI interpretations with practical action points',
           structuredInterpretation: 'Extended structured interpretations with clear next actions',
           compatibility: 'Premium compatibility with full score breakdown',
@@ -2392,8 +2392,8 @@ export const messages = {
       a6: 'No. The content is for reflection and personal guidance, not for medical, legal, or financial decisions.',
       q7: 'How should I use tarot readings here?',
       a7: 'Treat readings as a reflective tool. The value comes from connecting symbols to your current context.',
-      q8: 'How is the horoscope generated?',
-      a8: 'The horoscope is based on your selected sign and is refreshed daily.',
+      q8: 'How is the daily reading generated?',
+      a8: 'The daily reading is based on your selected sign and is refreshed daily.',
     },
 
     policyPage: {
@@ -2464,8 +2464,8 @@ export const messages = {
   uk: {
     appName: 'Arcana Insight',
 
-    dailyHoroscope: 'ГОРОСКОП НА СЬОГОДНІ',
-    horoscopeFor: 'ГОРОСКОП НА',
+    dailyHoroscope: 'НЕБО СЬОГОДНІ',
+    horoscopeFor: 'НЕБО ДЛЯ',
     tarotOracle: {
       ui: {
         ariaTouchDeck: 'Торкнутися колоди',
@@ -3106,7 +3106,7 @@ export const messages = {
     settings: 'Налаштування',
     tarot: 'Таро',
     arcana: 'Аркана',
-    horoscope: 'Гороскоп',
+    horoscope: 'Небо',
     language: 'Мова',
     dailyPush: 'Щоденні push-сповіщення',
     optimalTime: 'Оптимальний час',
@@ -3182,7 +3182,7 @@ export const messages = {
       syncFailed: 'Не вдалося синхронізувати нагороди.',
       filterAll: 'Усі',
       filterTarot: 'Таро',
-      filterHoroscope: 'Гороскоп',
+      filterHoroscope: 'Небо',
       filterProfile: 'Профіль',
       categoryFallback: 'Нагорода',
       heroEyebrow: 'Містична економіка ритуалу',
@@ -3287,9 +3287,9 @@ export const messages = {
         eyebrow: 'СЬОГОДНІ ДЛЯ ТВОГО ЗНАКУ',
         fallbackEyebrow: 'ЗОДІАКАЛЬНИЙ ОГЛЯД НА СЬОГОДНІ',
         fallbackTitle: 'Зодіакальний огляд на сьогодні',
-        fallbackTheme: 'Гороскоп',
+        fallbackTheme: 'Небо',
         fallbackPreview:
-          'Відкрий гороскоп, щоб швидко побачити фокус дня в темах енергії, кохання або карʼєри.',
+          'Відкрий небо сьогодні, щоб швидко побачити фокус дня в темах енергії, кохання або карʼєри.',
         themes: {
           energy: 'Енергія',
           love: 'Кохання',
@@ -3298,12 +3298,12 @@ export const messages = {
       },
       focusToday: {
         title: 'Фокус дня',
-        fallbackKnownSign: 'Відкрий гороскоп, щоб побачити фокус цього дня.',
-        fallbackMissingSign: 'Відкрий Гороскоп і обери свій знак, щоб бачити фокус дня.',
+        fallbackKnownSign: 'Відкрий небо сьогодні, щоб побачити фокус цього дня.',
+        fallbackMissingSign: 'Відкрий Небо і обери свій знак, щоб бачити фокус дня.',
       },
       progress: {
         card: 'Карта',
-        horoscope: 'Гороскоп',
+        horoscope: 'Небо',
         tarot: 'Таро',
         reflection: 'Рефлексія',
         summaryStart: 'Почни ритуал на сьогодні',
@@ -3351,7 +3351,7 @@ export const messages = {
           moon: 'Фаза показує місце в циклі, а знак Місяця показує, яким способом цей фон проживається.',
           lunar:
             'Ця картка чисто календарна: вона потрібна, щоб бачити дистанцію до повні, а не емоційний тон дня.',
-          planet: 'Керівник дня дає загальний ритм, але не замінює ні гороскоп, ні карту дня.',
+          planet: 'Керівник дня дає загальний ритм, але не замінює ні читання дня, ні карту дня.',
           sun: 'Сонце тут показує не “настрій на сьогодні”, а сезонний фон, який тримається довше.',
           element:
             'Елемент показує тип реакції дня: емоційний, ментальний, практичний або імпульсивний.',
@@ -3421,7 +3421,7 @@ export const messages = {
           numberKey: 'Ключ числа',
           currentStreak: 'Поточна серія',
           dailyCardToday: 'Карта дня сьогодні',
-          horoscopeToday: 'Гороскоп сьогодні',
+          horoscopeToday: 'Небо сьогодні',
           tarotToday: 'Таро сьогодні',
           retrogradeMeaning: 'Ретроградність означає видимий з Землі зворотний рух планети.',
           mercuryTradition:
@@ -3429,7 +3429,7 @@ export const messages = {
           currentRetroStatus: 'Поточний статус: ретроградний рух активний.',
         },
         actions: {
-          openHoroscope: 'Відкрити гороскоп',
+          openHoroscope: 'Дивитись небо',
         },
         yesNo: {
           yes: 'так',
@@ -3455,7 +3455,7 @@ export const messages = {
       codeSent: 'Ми надіслали 6-значний код підтвердження на вашу пошту',
       codeResent: 'Ми щойно надіслали код повторно. Перевірте пошту ще раз.',
       loginHelper: 'Надішлемо 6-значний код на вашу пошту.',
-      signUpHelper: 'Почни з email. Дату народження додаси пізніше для персонального гороскопу.',
+      signUpHelper: 'Почни з email. Дату народження додаси пізніше для персонального читання.',
       wrongOrExpiredCode: 'Код неправильний або прострочений. Спробуйте ще раз.',
       tooManyAttempts: 'Забагато спроб. Зачекайте трохи й спробуйте ще раз.',
       fillAllFields: 'Будь ласка, заповніть усі поля правильно.',
@@ -3479,7 +3479,7 @@ export const messages = {
     },
 
     getStarted: {
-      subtitle: 'Щоденні читання Таро та гороскопів.',
+      subtitle: 'Щоденний ритуал рефлексії, підказаний реальним небом.',
       action: 'Почати',
     },
 
@@ -3542,7 +3542,7 @@ export const messages = {
       home: 'Головна',
       menu: 'Меню',
       daily: 'Карта дня',
-      personalHoroscope: 'Персональний гороскоп',
+      personalHoroscope: 'Персональне небо',
       support: 'FAQ і підтримка',
       privacy: 'Конфіденційність і умови',
       compatibility: 'Сумісність',
@@ -3571,7 +3571,7 @@ export const messages = {
       nextCardIn: 'Наступна карта через',
       statusDone: 'Готово',
       statusNext: 'Далі',
-      actionGoHoroscope: 'Відкрити гороскоп',
+      actionGoHoroscope: 'Дивитись небо',
       actionGoTarot: 'Відкрити таро',
       reminderCta: 'Нагадування',
       reminderOn: 'Щоденні нагадування увімкнені.',
@@ -3579,7 +3579,7 @@ export const messages = {
       reminderOff: 'Нагадування вимкнені. Увімкни їх для щоденного ритуалу.',
       ritualItems: {
         dailyCard: 'Карта дня',
-        horoscope: 'Гороскоп',
+        horoscope: 'Небо',
         tarot: 'Сесія таро',
       },
       energySheet: {
@@ -4031,12 +4031,12 @@ export const messages = {
         horoscopeLove: {
           free: 'Доступна лише щоденна тема енергії.',
           premium: 'Щоденні інсайти про стосунки і глибша емоційна динаміка.',
-          purchase: 'Підписка Premium з усіма щоденними темами гороскопу.',
+          purchase: 'Підписка Premium з усіма щоденними темами читання.',
         },
         horoscopeCareer: {
           free: 'Доступна лише щоденна тема енергії.',
           premium: 'Щоденний карʼєрний фокус і чіткі наступні кроки.',
-          purchase: 'Підписка Premium з усіма щоденними темами гороскопу.',
+          purchase: 'Підписка Premium з усіма щоденними темами читання.',
         },
       },
       horoscope: {
@@ -4068,8 +4068,8 @@ export const messages = {
         },
       },
       personalHoroscope: {
-        title: 'Персональний гороскоп — у Premium',
-        text: 'У безкоштовній версії — щоденний гороскоп за знаком. Premium додає персональне читання за твоїм Сонцем і Місяцем.',
+        title: 'Персональне небо — у Premium',
+        text: 'У безкоштовній версії — щоденне читання за знаком. Premium додає персональне читання за твоїм Сонцем і Місяцем.',
       },
       spreads: {
         notify:
@@ -4224,10 +4224,10 @@ export const messages = {
       },
       personalizedHints: {
         love: 'Таро з фокусом на стосунки та емоційну динаміку',
-        career: 'Тема гороскопу про карʼєру з практичним напрямом',
+        career: 'Щоденна тема про карʼєру з практичним напрямом',
         money: 'Таро-фокус на фінансах, стабільності та рішеннях',
         self: 'Щоденний напрям для рефлексії та особистої ясності',
-        energy: 'Гороскоп про внутрішній ритм та енергію дня',
+        energy: 'Читання про внутрішній ритм та енергію дня',
         future: 'Таро-фокус на виборі та напрямі наступного кроку',
       },
     },
@@ -4236,11 +4236,11 @@ export const messages = {
       title: 'Преміум',
       subtitle: 'Щоденна рефлексія — завжди безкоштовна. Premium додає глибину: безліміт сесій, усі теми, повна історія.',
       compareTable: {
-        lead: 'Free покриває повний щоденний ритуал рефлексії. Premium відкриває глибші формати: повні розклади, всі теми гороскопу, повна сумісність.',
+        lead: 'Free покриває повний щоденний ритуал рефлексії. Premium відкриває глибші формати: повні розклади, всі щоденні теми, повна сумісність.',
         summary: 'Premium = повний доступ до всіх форматів без денних лімітів.',
         tarotFormat: { feature: 'Розклад таро', free: '1 карта/день', premium: '1, 3 або 5 карт без ліміту' },
         interpretation: { feature: 'Розбір', free: 'Короткий висновок', premiumAi: 'Глибокий AI-розбір + кроки', premiumBasic: 'Глибокий розбір + кроки' },
-        horoscope: { feature: 'Теми гороскопу', free: 'Лише енергія', premium: 'Енергія, кохання, карʼєра' },
+        horoscope: { feature: 'Щоденні теми', free: 'Лише енергія', premium: 'Енергія, кохання, карʼєра' },
         compatibility: { feature: 'Сумісність', free: 'Бал + 1 сфера', premium: 'Повний розбір пари' },
         history: { feature: 'Історія', free: 'Без історії', premium: 'Усі читання збережені' },
       },
@@ -4256,9 +4256,9 @@ export const messages = {
       },
       accessModel: {
         title: 'Модель доступу',
-        free: 'Free: щоденник рефлексії, карта дня, гороскоп енергії та один розклад на 1 карту щодня.',
+        free: 'Free: щоденник рефлексії, карта дня, читання енергії та один розклад на 1 карту щодня.',
         premium:
-          'Premium: необмежені сесії таро, усі теми гороскопу, повна історія та інсайти сумісності.',
+          'Premium: необмежені сесії таро, усі щоденні теми, повна історія та інсайти сумісності.',
         purchasePrefix: 'Покупка:',
       },
       status: 'Поточна модель доступу',
@@ -4307,14 +4307,14 @@ export const messages = {
       free: {
         journal: 'Щоденник рефлексії — завжди безкоштовно',
         dailyCard: 'Карта дня',
-        horoscope: 'Щоденний гороскоп: тема енергії',
+        horoscope: 'Щоденне читання: тема енергії',
         tarotOne: 'Таро: 1 розклад на день (1 карта)',
         cardsLibrary: 'Бібліотека карт',
         zodiacGuide: 'Гід по знаках зодіаку',
       },
       premium: {
         unlimitedTarot: 'Необмежені сесії таро',
-        horoscopeThemes: 'Усі теми гороскопу щодня',
+        horoscopeThemes: 'Усі щоденні теми щодня',
         spreads: 'Розклади на 3 і 5 карт',
         fullInterpretation: 'Глибша інтерпретація з практичними кроками',
         compatibility: 'Преміум-інсайти сумісності',
@@ -4326,7 +4326,7 @@ export const messages = {
           text: 'Без денного ліміту: запускай розклади на 1, 3 або 5 карт у будь-який момент.',
         },
         horoscopeThemes: {
-          title: 'Усі теми гороскопу щодня',
+          title: 'Усі щоденні теми',
           text: 'Відкрий кохання і карʼєру щодня, а не лише безкоштовну тему енергії.',
         },
         spreads: {
@@ -4363,13 +4363,13 @@ export const messages = {
         tarot: 'Таро без лімітів',
         tarotSub: 'Скільки завгодно читань',
         love: 'Кохання і Кар\u2019єра',
-        loveSub: 'Усі теми гороскопу',
+        loveSub: 'Усі щоденні теми',
         ai: 'Глибока розшифровка',
         aiSub: 'AI\u2011аналіз кожної карти',
         history: 'Збережені читання',
         historySub: 'Твоя особиста хроніка',
         compat: 'Сумісність',
-        compatSub: 'Гороскоп для пар',
+        compatSub: 'Читання для пар',
         spreads: '3 і 5 карт',
         spreadsSub: 'Розгорнуті розклади',
       },
@@ -4477,7 +4477,7 @@ export const messages = {
         includesTitle: 'У кожному плані ти отримуєш:',
         includes: {
           unlimitedReadings: 'Необмежені розклади таро (1, 3 і 5 карт)',
-          horoscopeThemes: 'Усі щоденні теми гороскопу: дух, кохання і карʼєра',
+          horoscopeThemes: 'Усі щоденні теми: дух, кохання і карʼєра',
           deepInterpretation: 'Глибші AI-інтерпретації з практичними акцентами',
           structuredInterpretation: 'Розширені структуровані інтерпретації з чіткими діями',
           compatibility: 'Преміум-сумісність із повною розбивкою балів',
@@ -4833,8 +4833,8 @@ export const messages = {
       a6: 'Ні. Це інструмент для рефлексії, не для медичних, юридичних чи фінансових рішень.',
       q7: 'Як правильно працювати з таро тут?',
       a7: 'Сприймай розклад як інструмент рефлексії. Цінність у зв’язку символів із твоєю ситуацією.',
-      q8: 'Як формується гороскоп?',
-      a8: 'Гороскоп залежить від обраного знаку і оновлюється щодня.',
+      q8: 'Як формується щоденне читання?',
+      a8: 'Щоденне читання залежить від обраного знаку і оновлюється щодня.',
     },
 
     policyPage: {

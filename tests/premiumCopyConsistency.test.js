@@ -119,7 +119,7 @@ test('premium copy stays aligned on compatibility preview and energy-theme wordi
   )
   assert.equal(messages.uk.premiumAccess.model.horoscopeLove.free, 'Доступна лише щоденна тема енергії.')
   assert.equal(messages.uk.premiumAccess.model.horoscopeCareer.free, 'Доступна лише щоденна тема енергії.')
-  assert.equal(messages.uk.premiumPage.free.horoscope, 'Щоденний гороскоп: тема енергії')
+  assert.equal(messages.uk.premiumPage.free.horoscope, 'Щоденне читання: тема енергії')
   assert.equal(messages.en.premiumAccess.model.readings.free, 'Today’s reading is not saved to history.')
   assert.equal(
     messages.en.premiumAccess.readings.text,
@@ -165,11 +165,11 @@ test('signup keeps birth date out of the first account step', async () => {
 
   assert.equal(
     messages.en.auth.signUpHelper,
-    'Start with your email. You can add your birth date later for personal horoscope.',
+    'Start with your email. You can add your birth date later for a personal reading.',
   )
   assert.equal(
     messages.uk.auth.signUpHelper,
-    'Почни з email. Дату народження додаси пізніше для персонального гороскопу.',
+    'Почни з email. Дату народження додаси пізніше для персонального читання.',
   )
   assert.match(signUpScene, /tt\('auth\.signUpHelper'\)/)
   assert.doesNotMatch(signUpScene, /id="signup-dob"/)
