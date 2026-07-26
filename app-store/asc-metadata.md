@@ -146,15 +146,17 @@ Everything in Premium, billed once a year
 
 ---
 
-## Screenshot captions (optional, per screen)
-> RP-06: the FIRST THREE shots must show the reflection ritual; tarot moves to the tail.
-1. Journal (today flow) — "One honest minute a day"
-2. Journal (sky + question) — "A question from today's real sky"
-3. Home — "Your calm daily ritual"
-4. Card of the day — "Go deeper when you want to"
-5. Horoscope — "Daily energy, love & career"
-6. Compatibility — "See how two charts meet"
-7. Premium — "The full practice, unlocked"
+## Screenshot captions (per screen, 10-shot set — reflection ritual leads)
+1. Journal today — "One honest minute a day"
+2. Journal breathing — "Start with 30 seconds of stillness"
+3. Journal history — "It builds into a private journal"
+4. Home — "Your calm daily ritual"
+5. Card of the day — "Go deeper when you want to"
+6. Sky (daily reading) — "Today's sky, for your sign"
+7. Compatibility — "See how two charts meet"
+8. Tarot — "Ask the oracle, when you want to"
+9. Card library — "All 78 cards, upright & reversed"
+10. Premium — "The full practice, unlocked"
 
 ---
 

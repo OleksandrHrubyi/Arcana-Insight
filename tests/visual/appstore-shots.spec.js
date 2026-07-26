@@ -80,7 +80,15 @@ async function runJournalToday(page) {
   await page.waitForTimeout(600)
 }
 
-// Journal shot 2: save today's entry so the page shows the done-card plus the
+// Breathing shot: open the 30-second stillness pause and capture the circle
+// mid-inhale (a clean wellness frame for the store).
+async function runJournalBreath(page) {
+  await page.locator('.journal-breath-chip').click().catch(() => {})
+  // ~2s in the circle is scaled up on the inhale phase.
+  await page.waitForTimeout(2200)
+}
+
+// Journal shot: save today's entry so the page shows the done-card plus the
 // seeded week of history below (varied moods) — "it builds into a journal".
 async function runJournalHistory(page) {
   const form = await page.$('.journal-input textarea')
@@ -96,19 +104,20 @@ async function runJournalHistory(page) {
 const SCREENS = [
   // RP-06: the reflection ritual leads; tarot moved to the tail of the set.
   { name: '1-journal-today', path: '/#/journal', wait: 2600, run: runJournalToday },
-  { name: '2-journal-history', path: '/?shot=history#/journal', wait: 2600, run: runJournalHistory },
-  { name: '3-home', path: '/?qa=home&view=revealed&locale=en', wait: 2000 },
-  { name: '4-daily-card', path: '/#/daily', wait: 3500 },
-  { name: '5-horoscope', path: '/#/horoscope', wait: 3000 },
+  { name: '2-journal-breath', path: '/#/journal', wait: 2600, run: runJournalBreath },
+  { name: '3-journal-history', path: '/?shot=history#/journal', wait: 2600, run: runJournalHistory },
+  { name: '4-home', path: '/?qa=home&view=revealed&locale=en', wait: 2000 },
+  { name: '5-daily-card', path: '/#/daily', wait: 3500 },
+  { name: '6-horoscope', path: '/#/horoscope', wait: 3000 },
   // ?qa=compat (before the hash) seeds two birth dates + reveals the local
   // result — the DOB wheel picker can't be clicked through deterministically.
-  { name: '6-compatibility', path: '/?qa=compat#/compatibility', wait: 4500 },
+  { name: '7-compatibility', path: '/?qa=compat#/compatibility', wait: 4500 },
   // Oracle scene driven to a revealed 3-card spread (see runTarotFlow).
-  { name: '7-tarot', path: '/#/tarot', wait: 9800, run: runTarotFlow },
-  { name: '8-card-library', path: '/#/cards', wait: 2500 },
+  { name: '8-tarot', path: '/#/tarot', wait: 9800, run: runTarotFlow },
+  { name: '9-card-library', path: '/#/cards', wait: 2500 },
   // ?qa=premium (before the hash) seeds real App Store prices — without it the
   // web build renders "Purchases are unavailable" + empty price tiles.
-  { name: '9-premium', path: '/?qa=premium#/premium', wait: 1800 },
+  { name: '10-premium', path: '/?qa=premium#/premium', wait: 1800 },
 ]
 
 test('app store screenshots', async ({ browser }) => {
