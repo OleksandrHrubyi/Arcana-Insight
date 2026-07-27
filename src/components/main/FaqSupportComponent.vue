@@ -33,6 +33,15 @@
           <a class="faq-support__link" :href="mailtoLink">{{ supportEmail }}</a>
         </div>
       </section>
+
+      <section class="faq-card">
+        <div class="faq-card__title">{{ tt('faqPage.sectionCredits') }}</div>
+        <div class="faq-credits">
+          <p>{{ tt('skyHome.credit') }}</p>
+          <p>{{ tt('faqPage.creditMoon') }}</p>
+          <p>{{ tt('skyHome.weatherCredit') }}</p>
+        </div>
+      </section>
     </div>
   </q-page>
 </template>
@@ -253,5 +262,15 @@ const onBack = async () => {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-size: 12px;
+}
+
+.faq-credits p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(214, 225, 242, 0.6);
+  margin: 0 0 6px;
+}
+.faq-credits p:last-child {
+  margin-bottom: 0;
 }
 </style>

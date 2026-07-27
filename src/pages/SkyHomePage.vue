@@ -77,7 +77,6 @@
           <span>{{ tt('skyHome.openSky') }}</span>
           <q-icon name="chevron_right" size="18px" />
         </button>
-        <div class="skh-credit">{{ creditLine }}</div>
       </footer>
     </section>
 
@@ -384,9 +383,6 @@ const conditionsLabel = computed(() => {
   if (band === 'cloudy') return tt('skyHome.condCloudy')
   return tt('skyHome.condPartly')
 })
-const creditLine = computed(() =>
-  conditions.value ? `${tt('skyHome.credit')} · ${tt('skyHome.weatherCredit')}` : tt('skyHome.credit'),
-)
 const formatToday = computed(() => {
   try {
     return new Intl.DateTimeFormat(locale.value, {
@@ -911,11 +907,6 @@ onBeforeUnmount(() => {
 }
 .skh-more .q-icon {
   color: rgba(145, 188, 255, 0.9);
-}
-.skh-credit {
-  font-size: 9.5px;
-  color: rgba(150, 172, 200, 0.4);
-  text-align: center;
 }
 
 /* Location sheet */
