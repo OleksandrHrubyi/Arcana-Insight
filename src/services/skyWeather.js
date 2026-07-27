@@ -18,18 +18,19 @@ const summarize = (json) => {
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 0, 0)
   const from = Math.max(now.getTime(), start.getTime())
   const to = start.getTime() + 9 * 3600000
+  const hours = []
   let sum = 0
-  let n = 0
   for (let i = 0; i < t.length; i += 1) {
     const ts = new Date(t[i]).getTime()
     if (ts >= from && ts <= to && typeof c[i] === 'number') {
+      hours.push({ t: t[i], pct: c[i] })
       sum += c[i]
-      n += 1
     }
   }
-  if (!n) return null
-  const cloudCoverPct = Math.round(sum / n)
-  return { cloudCoverPct, band: bandOf(cloudCoverPct) }
+  if (!hours.length) return null
+  const cloudCoverPct = Math.round(sum / hours.length)
+  const best = hours.reduce((a, b) => (b.pct < a.pct ? b : a), hours[0])
+  return { cloudCoverPct, band: bandOf(cloudCoverPct), hours, best }
 }
 
 export const fetchTonightConditions = async (lat, lon) => {

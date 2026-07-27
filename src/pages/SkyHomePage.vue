@@ -17,10 +17,16 @@
           <q-icon name="expand_more" size="15px" class="skh-loc__caret" />
         </button>
         <div class="skh-kick">{{ tt('skyHome.kicker') }} · {{ formatToday }}</div>
-        <div v-if="conditions" class="skh-cond" :class="`skh-cond--${conditions.band}`">
+        <button
+          v-if="conditions"
+          type="button"
+          class="skh-cond"
+          :class="`skh-cond--${conditions.band}`"
+          @click="condSheetOpen = true"
+        >
           <span class="skh-cond__dot"></span>
           {{ conditionsLabel }} · {{ conditions.cloudCoverPct }}% {{ tt('skyHome.cloudLabel') }}
-        </div>
+        </button>
       </header>
 
       <div class="skh-hero">
@@ -143,6 +149,23 @@
       </q-card>
     </q-dialog>
 
+    <!-- Tonight's cloud cover -->
+    <q-dialog v-model="condSheetOpen" position="bottom">
+      <q-card v-if="conditions" class="skh-sheet">
+        <div class="skh-sheet__title">{{ tt('skyHome.conditionsTitle') }}</div>
+        <div class="skh-cloudrows">
+          <div v-for="h in conditions.hours" :key="h.t" class="skh-cloudrow">
+            <span class="skh-cloudrow__t">{{ formatTime(new Date(h.t)) }}</span>
+            <span class="skh-cloudrow__bar"><span :style="{ width: h.pct + '%' }"></span></span>
+            <span class="skh-cloudrow__pct">{{ h.pct }}%</span>
+          </div>
+        </div>
+        <div v-if="conditions.best" class="skh-sheet__note">
+          {{ tt('skyHome.bestWindow', { t: formatTime(new Date(conditions.best.t)) }) }} · {{ conditions.best.pct }}%
+        </div>
+      </q-card>
+    </q-dialog>
+
     <!-- Sun detail -->
     <q-dialog v-model="sunSheetOpen" position="bottom">
       <q-card v-if="sunDetail" class="skh-sheet">
@@ -229,6 +252,7 @@ const fxCanvas = ref(null)
 const locationOpen = ref(false)
 const moonSheetOpen = ref(false)
 const sunSheetOpen = ref(false)
+const condSheetOpen = ref(false)
 const scheduledIds = ref(new Set())
 const cities = SKY_CITIES
 const loc = skyLocation
@@ -665,6 +689,52 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(6px);
   font-size: 12px;
   color: rgba(214, 225, 242, 0.82);
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+.skh-cond:active {
+  transform: scale(0.97);
+}
+.skh-cloudrows {
+  display: grid;
+  gap: 8px;
+  margin-top: 2px;
+}
+.skh-cloudrow {
+  display: grid;
+  grid-template-columns: 52px 1fr 40px;
+  align-items: center;
+  gap: 10px;
+}
+.skh-cloudrow__t {
+  font-size: 12px;
+  color: rgba(200, 214, 240, 0.66);
+  font-variant-numeric: tabular-nums;
+}
+.skh-cloudrow__bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.skh-cloudrow__bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(127, 200, 255, 0.7), rgba(150, 172, 200, 0.85));
+}
+.skh-cloudrow__pct {
+  font-size: 12px;
+  color: rgba(233, 240, 250, 0.9);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.skh-sheet__note {
+  margin-top: 14px;
+  font-size: 13px;
+  color: rgba(145, 188, 255, 0.9);
+  font-variant-numeric: tabular-nums;
 }
 .skh-cond__dot {
   width: 7px;
