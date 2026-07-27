@@ -220,6 +220,8 @@ import {
   notifId,
 } from 'src/services/skyNotifications.js'
 import { fetchTonightConditions } from 'src/services/skyWeather.js'
+import { buildWidgetSnapshot } from 'src/helpers/widgetSnapshotCore.js'
+import { syncWidgetSnapshot } from 'src/services/widgetBridge.js'
 import milkywayUrl from 'src/assets/images/milkyway.webp'
 import {
   skyLocation,
@@ -314,11 +316,30 @@ const recompute = () => {
   moonDetail.value = computeMoonDetail(Astronomy, now)
   sunDetail.value = computeSunDetail(Astronomy, observer, now)
   moonPos.value = horizontalPosition(Astronomy, 'moon', observer, now)
+  syncWidget()
 }
 
 // Tonight's observing conditions (cloud cover) — networked, non-blocking.
 const loadConditions = async () => {
   conditions.value = await fetchTonightConditions(loc.value.lat, loc.value.lon)
+}
+
+// Push the current moon to the home-screen widget (fire-and-forget, native-only).
+const syncWidget = () => {
+  if (!sky.value) return
+  const s = sky.value
+  const sub = nextFullMoon.value
+    ? `${tt('skyHome.events.fullMoon')} ${untilLabel(nextFullMoon.value.daysUntil)}`
+    : `${tt('skyHome.moonRises')} ${formatTime(moonRS.value.rise)} · ${tt('skyHome.moonSets')} ${formatTime(moonRS.value.set)}`
+  void syncWidgetSnapshot(
+    buildWidgetSnapshot({
+      moonPhaseKey: s.moonPhaseKey,
+      moonPhaseLabel: tt(`astro.phases.${s.moonPhaseKey}`),
+      illuminationPct: s.illuminationPct,
+      subLine: sub,
+      locationLabel: locationLabel.value,
+    }),
+  )
 }
 
 const redrawMoon = () => {

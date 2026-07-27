@@ -34,3 +34,20 @@ test('buildWidgetSnapshot normalizes, trims and clamps', () => {
   assert.equal(empty.progressTotal, 4)
   assert.match(empty.dateKey, /^\d{4}-\d{2}-\d{2}$/)
 })
+
+test('buildWidgetSnapshot carries the moon fields (astronomy widget)', () => {
+  const s = buildWidgetSnapshot({
+    moonPhaseKey: 'waxingGibbous',
+    moonPhaseLabel: '  Waxing Gibbous  ',
+    illuminationPct: 93.6,
+    subLine: 'Full Moon in 2 days',
+    locationLabel: 'Kyiv',
+  })
+  assert.equal(s.moonPhaseKey, 'waxingGibbous')
+  assert.equal(s.moonPhaseLabel, 'Waxing Gibbous')
+  assert.equal(s.illuminationPct, 94) // rounded + clamped 0..100
+  assert.equal(s.subLine, 'Full Moon in 2 days')
+  assert.equal(s.locationLabel, 'Kyiv')
+  assert.equal(buildWidgetSnapshot({ illuminationPct: 250 }).illuminationPct, 100)
+  assert.equal(buildWidgetSnapshot({}).moonPhaseLabel, '')
+})
