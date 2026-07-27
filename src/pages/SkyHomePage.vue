@@ -17,6 +17,10 @@
           <q-icon name="expand_more" size="15px" class="skh-loc__caret" />
         </button>
         <div class="skh-kick">{{ tt('skyHome.kicker') }} · {{ formatToday }}</div>
+        <div v-if="conditions" class="skh-cond" :class="`skh-cond--${conditions.band}`">
+          <span class="skh-cond__dot"></span>
+          {{ conditionsLabel }} · {{ conditions.cloudCoverPct }}% {{ tt('skyHome.cloudLabel') }}
+        </div>
       </header>
 
       <div class="skh-hero">
@@ -67,7 +71,7 @@
           <span>{{ tt('skyHome.openSky') }}</span>
           <q-icon name="chevron_right" size="18px" />
         </button>
-        <div class="skh-credit">{{ tt('skyHome.credit') }}</div>
+        <div class="skh-credit">{{ creditLine }}</div>
       </footer>
     </section>
 
@@ -192,6 +196,7 @@ import {
   getScheduledIds,
   notifId,
 } from 'src/services/skyNotifications.js'
+import { fetchTonightConditions } from 'src/services/skyWeather.js'
 import milkywayUrl from 'src/assets/images/milkyway.webp'
 import {
   skyLocation,
@@ -218,6 +223,7 @@ const nextFullMoon = ref(null)
 const moonDetail = ref(null)
 const sunDetail = ref(null)
 const moonPos = ref({ altitude: 0, azimuth: 0 })
+const conditions = ref(null)
 const moonCanvas = ref(null)
 const fxCanvas = ref(null)
 const locationOpen = ref(false)
@@ -286,6 +292,11 @@ const recompute = () => {
   moonPos.value = horizontalPosition(Astronomy, 'moon', observer, now)
 }
 
+// Tonight's observing conditions (cloud cover) — networked, non-blocking.
+const loadConditions = async () => {
+  conditions.value = await fetchTonightConditions(loc.value.lat, loc.value.lon)
+}
+
 const redrawMoon = () => {
   if (!sky.value) return
   drawMoon(moonCanvas.value, sky.value.illumination, sky.value.waxing, { detail: true })
@@ -306,6 +317,7 @@ const onResize = () => {
 const onVisible = () => {
   if (document.visibilityState !== 'visible') return
   recompute()
+  void loadConditions()
   void nextTick(() => redrawMoon())
 }
 
@@ -320,6 +332,15 @@ const useMyLocation = async () => {
 
 const locationLabel = computed(() =>
   loc.value.cityKey ? tt(`skyHome.cities.${loc.value.cityKey}`) : tt('skyHome.myLocation'),
+)
+const conditionsLabel = computed(() => {
+  const band = conditions.value?.band
+  if (band === 'clear') return tt('skyHome.condClear')
+  if (band === 'cloudy') return tt('skyHome.condCloudy')
+  return tt('skyHome.condPartly')
+})
+const creditLine = computed(() =>
+  conditions.value ? `${tt('skyHome.credit')} · ${tt('skyHome.weatherCredit')}` : tt('skyHome.credit'),
 )
 const formatToday = computed(() => {
   try {
@@ -428,6 +449,7 @@ watch(
   () => loc.value,
   () => {
     recompute()
+    void loadConditions()
     void nextTick(() => redrawMoon())
   },
   { deep: true },
@@ -444,6 +466,7 @@ onMounted(async () => {
     loading.value = false
   }
   buildParticles()
+  void loadConditions()
   await nextTick()
   redrawMoon()
   skyFx = createShootingStars(fxCanvas.value)
@@ -629,6 +652,35 @@ onBeforeUnmount(() => {
   color: rgba(170, 192, 220, 0.62);
   text-align: center;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+.skh-cond {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(150, 180, 220, 0.14);
+  background: rgba(8, 14, 24, 0.4);
+  backdrop-filter: blur(6px);
+  font-size: 12px;
+  color: rgba(214, 225, 242, 0.82);
+}
+.skh-cond__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.skh-cond--clear .skh-cond__dot {
+  background: #7fdca0;
+  box-shadow: 0 0 8px rgba(127, 220, 160, 0.7);
+}
+.skh-cond--partly .skh-cond__dot {
+  background: #e2c07a;
+  box-shadow: 0 0 8px rgba(226, 192, 122, 0.6);
+}
+.skh-cond--cloudy .skh-cond__dot {
+  background: rgba(150, 172, 200, 0.7);
 }
 
 /* Hero group grows to fill and stays centered */
