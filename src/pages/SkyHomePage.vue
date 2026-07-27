@@ -388,7 +388,8 @@ onBeforeUnmount(() => {
   position: relative;
   min-height: 100vh;
   color: #e9edf4;
-  background: #03060d;
+  // Match the app's shared background (see JournalPage etc.)
+  background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
   overflow-x: hidden;
 }
 .skh-sky {
@@ -398,19 +399,19 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100vh;
   z-index: 0;
-  background-color: #04070c;
+  background-color: #050d15;
   background-size: cover;
   background-position: 50% 46%;
-  transform: scale(1.14);
-  animation: skh-drift 70s ease-in-out infinite alternate;
+  transform: scale(1.16);
+  animation: skh-drift 58s ease-in-out infinite alternate;
   will-change: transform;
 }
 @keyframes skh-drift {
   0% {
-    transform: scale(1.14) translate(-1.2%, -1%);
+    transform: scale(1.16) translate(-1.6%, -1.3%);
   }
   100% {
-    transform: scale(1.2) translate(1.4%, 2.2%);
+    transform: scale(1.24) translate(1.8%, 2.8%);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -430,13 +431,14 @@ onBeforeUnmount(() => {
   background:
     linear-gradient(
       180deg,
-      rgba(4, 7, 12, 0.62) 0%,
-      rgba(4, 7, 12, 0) 20%,
-      rgba(4, 7, 12, 0) 58%,
-      rgba(4, 7, 12, 0.82) 92%,
-      #03060d 100%
+      rgba(7, 19, 29, 0.66) 0%,
+      rgba(7, 19, 29, 0) 20%,
+      rgba(7, 19, 29, 0) 56%,
+      rgba(5, 13, 21, 0.9) 90%,
+      #050d15 100%
     ),
-    radial-gradient(120% 60% at 50% 42%, rgba(4, 7, 12, 0) 40%, rgba(4, 7, 12, 0.34) 100%);
+    radial-gradient(120% 60% at 50% 42%, rgba(7, 19, 29, 0) 40%, rgba(7, 19, 29, 0.42) 100%),
+    linear-gradient(0deg, rgba(12, 38, 56, 0.14), rgba(12, 38, 56, 0.14));
 }
 .skh-fx {
   position: absolute;
@@ -485,8 +487,8 @@ onBeforeUnmount(() => {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #8fc0f2;
-  box-shadow: 0 0 8px #8fc0f2;
+  background: #91bcff;
+  box-shadow: 0 0 8px #91bcff;
 }
 .skh-loc__caret {
   opacity: 0.6;
@@ -547,7 +549,7 @@ onBeforeUnmount(() => {
   font-variant-numeric: tabular-nums;
 }
 .skh-accent {
-  color: #8fc0f2;
+  color: #91bcff;
 }
 .skh-hint {
   margin-top: 20px;
@@ -570,16 +572,37 @@ onBeforeUnmount(() => {
   margin: 0 auto;
   padding: 8px 16px calc(96px + env(safe-area-inset-bottom));
   display: grid;
-  gap: 22px;
+  gap: 18px;
+}
+
+// Shared app card surface (mirrors JournalPage's card language).
+%app-card {
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(112, 156, 255, 0.16) 0%, rgba(12, 18, 30, 0.12) 42%, transparent 100%),
+    linear-gradient(160deg, rgba(14, 20, 32, 0.92), rgba(6, 10, 18, 0.98));
+  box-shadow:
+    0 18px 40px rgba(2, 6, 12, 0.52),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.skh-sun,
+.skh-events,
+.skh-cal {
+  @extend %app-card;
+  padding: 16px 16px 14px;
+}
+.skh-cal {
+  padding: 14px;
 }
 
 /* Section titles */
 .skh-section-title {
-  font-size: 11px;
-  letter-spacing: 0.18em;
+  font-size: 10px;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(184, 205, 236, 0.55);
-  margin-bottom: 10px;
+  color: rgba(214, 225, 242, 0.6);
+  margin-bottom: 12px;
 }
 
 /* Visible tonight */
@@ -598,8 +621,8 @@ onBeforeUnmount(() => {
   min-width: 92px;
   padding: 12px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(148, 178, 214, 0.12);
-  background: rgba(13, 22, 36, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(9, 14, 23, 0.65);
   display: grid;
   gap: 3px;
 }
@@ -687,13 +710,7 @@ onBeforeUnmount(() => {
   font-variant-numeric: tabular-nums;
 }
 
-/* Calendar */
-.skh-cal {
-  border-radius: 20px;
-  border: 1px solid rgba(148, 178, 214, 0.1);
-  background: linear-gradient(180deg, rgba(15, 25, 40, 0.5), rgba(8, 14, 24, 0.6));
-  padding: 14px;
-}
+/* Calendar (surface comes from %app-card above) */
 .skh-cal__head {
   display: flex;
   align-items: center;
@@ -757,6 +774,7 @@ onBeforeUnmount(() => {
 
 /* Extras */
 .skh-extra {
+  @extend %app-card;
   position: relative;
   display: flex;
   align-items: center;
@@ -764,9 +782,6 @@ onBeforeUnmount(() => {
   width: 100%;
   padding: 14px 16px;
   margin-bottom: 8px;
-  border-radius: 14px;
-  border: 1px solid rgba(148, 178, 214, 0.1);
-  background: rgba(11, 18, 30, 0.55);
   color: rgba(214, 225, 242, 0.85);
   font-size: 14px;
   transition: transform 0.12s ease;
