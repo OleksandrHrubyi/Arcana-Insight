@@ -1096,6 +1096,8 @@ export const messages = {
       bottom: 'Bottom navigation',
       more: 'More',
       home: 'Home',
+      sky: 'Sky',
+      readingsHub: 'Readings',
       menu: 'Menu',
       daily: 'Daily card',
       personalHoroscope: 'Personal sky',
@@ -2388,6 +2390,19 @@ export const messages = {
       events: { newMoon: 'New Moon', firstQuarter: 'First Quarter', fullMoon: 'Full Moon', lastQuarter: 'Last Quarter' },
     },
 
+    readingsHubPage: {
+      title: 'Readings',
+      subtitle: 'Tarot, horoscope and more',
+      cardOfDay: 'Card of the day',
+      cardOfDayDesc: 'Your daily tarot draw',
+      tarot: 'Tarot reading',
+      tarotDesc: 'Draw and interpret cards',
+      horoscope: 'Horoscope',
+      horoscopeDesc: 'Your daily sign reading',
+      compatibility: 'Compatibility',
+      compatibilityDesc: 'Match two signs',
+    },
+
     skyHome: {
       kicker: 'SKY TONIGHT',
       moonRises: 'Rises',
@@ -3648,6 +3663,8 @@ export const messages = {
       bottom: 'Нижня навігація',
       more: 'Ще',
       home: 'Головна',
+      sky: 'Небо',
+      readingsHub: 'Читання',
       menu: 'Меню',
       daily: 'Карта дня',
       personalHoroscope: 'Персональне небо',
@@ -4935,6 +4952,19 @@ export const messages = {
       secondaryCard: 'Карта дня',
       weekdays: { mon: 'Пн', tue: 'Вт', wed: 'Ср', thu: 'Чт', fri: 'Пт', sat: 'Сб', sun: 'Нд' },
       events: { newMoon: 'Новий місяць', firstQuarter: 'Перша чверть', fullMoon: 'Повня', lastQuarter: 'Остання чверть' },
+    },
+
+    readingsHubPage: {
+      title: 'Читання',
+      subtitle: 'Таро, гороскоп і не тільки',
+      cardOfDay: 'Карта дня',
+      cardOfDayDesc: 'Твоя щоденна карта таро',
+      tarot: 'Розклад таро',
+      tarotDesc: 'Витягни й розтлумач карти',
+      horoscope: 'Гороскоп',
+      horoscopeDesc: 'Щоденний гороскоп за знаком',
+      compatibility: 'Сумісність',
+      compatibilityDesc: 'Сумісність двох знаків',
     },
 
     skyHome: {

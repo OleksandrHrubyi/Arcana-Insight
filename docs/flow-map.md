@@ -8,21 +8,36 @@ Use it when changing navigation, redirects, onboarding handoff, auth behavior, p
 
 Product-level anchors from `src/router/routes.js`:
 
-- `/` -> `arcana`
-- `/horoscope`
-- `/tarot`
+- `/` -> `arcana` (astronomy home — `src/pages/SkyHomePage.vue`)
+- `/sky` (astronomy detail — calendar, events, ISS passes, planets)
+- `/readings-hub` (`readingsHub` — tarot / horoscope / card of the day / compatibility)
 - `/menu`
 - `/premium`
 
 These are the main product navigation surfaces. Do not create competing pseudo-home or pseudo-menu flows.
 
+## Bottom Navigation (post astronomy pivot)
+
+Four tabs (`src/components/ui/BottomNavigation.vue`), each a top-level route name:
+
+- **Home** (`arcana`) -> `SkyHomePage` — the single-screen astronomy home.
+- **Sky** (`sky`) -> `SkyPage` — astronomy detail.
+- **Readings** (`readingsHub`) -> `ReadingsPage` — the hub for tarot, horoscope,
+  card of the day and compatibility. Divination lives here (secondary), NOT on
+  the home — this is deliberate for App Store 4.3(b) (the app must read as an
+  astronomy tool, not primarily fortune-telling).
+- **Menu** (`menu`).
+
+The previous home (`GetStartedPage` -> `LandingScene`) is preserved at
+`/classic-home` in case it is needed again.
+
 ## Home Flow
 
 - Entry route: `/`
-- Page: `src/pages/GetStartedPage.vue`
-- Main component: `src/components/main/LandingScene.vue`
+- Page: `src/pages/SkyHomePage.vue`
 - Type: destination
-- Role: main dashboard and daily action hub
+- Role: astronomy home — tonight's Moon/sky for the user's location; the tarot
+  and horoscope features are reached via the Readings tab, never surfaced here.
 
 Expected entry sources:
 

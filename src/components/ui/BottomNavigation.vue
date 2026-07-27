@@ -39,8 +39,8 @@
           </svg>
         </template>
 
-        <!-- Horoscope -->
-        <template v-else-if="item.name === 'horoscope'">
+        <!-- Sky (astronomy detail) -->
+        <template v-else-if="item.name === 'sky'">
           <svg class="nav-tab__svg nav-tab__svg--outline" viewBox="0 0 28 28" fill="none">
             <path d="M21 15.5A8 8 0 0 1 12.5 7a8 8 0 1 0 8.5 8.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
             <path d="M20 6l.6 1.4L22 8l-1.4.6L20 10l-.6-1.4L18 8l1.4-.6z" fill="currentColor" opacity="0.6"/>
@@ -58,8 +58,8 @@
           </svg>
         </template>
 
-        <!-- Tarot -->
-        <template v-else-if="item.name === 'tarot'">
+        <!-- Readings (tarot, horoscope, card of the day) -->
+        <template v-else-if="item.name === 'readingsHub'">
           <svg class="nav-tab__svg nav-tab__svg--outline" viewBox="0 0 28 28" fill="none">
             <rect x="9" y="5" width="11" height="17" rx="2.2" stroke="currentColor" stroke-width="1.8" transform="rotate(-8 14.5 13.5)"/>
             <path d="M14.5 12l0.9 2 2 0.3-1.45 1.4.35 2-1.8-1-1.8 1 .35-2L11.6 14.3l2-.3z"
@@ -122,10 +122,10 @@ const current = ref('arcana')
 const selectedLocale = computed(() => currentLocale.value || 'en')
 
 const items = [
-  { name: 'arcana',    labelKey: 'nav.home' },
-  { name: 'horoscope', labelKey: 'horoscope' },
-  { name: 'tarot',     labelKey: 'tarot' },
-  { name: 'menu',      labelKey: 'nav.menu' },
+  { name: 'arcana',   labelKey: 'nav.home' },
+  { name: 'sky',      labelKey: 'nav.sky' },
+  { name: 'readingsHub', labelKey: 'nav.readingsHub' },
+  { name: 'menu',     labelKey: 'nav.menu' },
 ]
 
 // Unique ID suffix so multiple instances of the component don't collide with gradient IDs
