@@ -3,6 +3,9 @@
     <div class="skh-sky" :style="skyStyle" aria-hidden="true"></div>
     <div class="skh-fade" aria-hidden="true"></div>
     <canvas ref="fxCanvas" class="skh-fx" aria-hidden="true"></canvas>
+    <div class="skh-particles" aria-hidden="true">
+      <span v-for="p in particles" :key="p.id" class="skh-particle" :style="p.style"></span>
+    </div>
 
     <div v-if="loading" class="skh-loading"><q-spinner color="white" size="34px" /></div>
 
@@ -210,6 +213,40 @@ const moonCanvas = ref(null)
 const fxCanvas = ref(null)
 const locationOpen = ref(false)
 const skyStyle = { backgroundImage: `url(${milkywayUrl})` }
+
+// Floating luminous motes — the same ambient "living sky" as the horoscope
+// screen (HoroscopeComponent). CSS-driven; skipped when reduced-motion is on.
+const particles = ref([])
+const buildParticles = () => {
+  const reduced =
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (reduced) {
+    particles.value = []
+    return
+  }
+  const colors = ['rgba(255,255,255,0.95)', 'rgba(159,216,246,0.85)', 'rgba(255,220,180,0.70)']
+  const out = []
+  for (let i = 0; i < 26; i += 1) {
+    const dur = 8 + Math.random() * 14
+    out.push({
+      id: i,
+      style: {
+        '--x': (Math.random() * 100).toFixed(2),
+        '--y': (Math.random() * 100).toFixed(2),
+        '--s': (1.2 + Math.random() * 2.8).toFixed(2),
+        '--blur': (Math.random() * 1.2).toFixed(2),
+        '--dur': dur.toFixed(2),
+        '--delay': (-Math.random() * dur).toFixed(2),
+        '--dx': (-22 + Math.random() * 44).toFixed(2),
+        '--dy': (-(90 + Math.random() * 150)).toFixed(2),
+        '--o': (0.25 + Math.random() * 0.6).toFixed(2),
+        '--c': colors[Math.floor(Math.random() * colors.length)],
+      },
+    })
+  }
+  particles.value = out
+}
 const cities = SKY_CITIES
 const loc = skyLocation
 
@@ -369,6 +406,7 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+  buildParticles()
   await nextTick()
   redrawAll()
   skyFx = createShootingStars(fxCanvas.value)
@@ -448,6 +486,60 @@ onBeforeUnmount(() => {
   height: 100vh;
   z-index: 1;
   pointer-events: none;
+}
+.skh-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.skh-particle {
+  position: absolute;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1%);
+  width: calc(var(--s) * 1px);
+  height: calc(var(--s) * 1px);
+  border-radius: 999px;
+  background: radial-gradient(circle, var(--c) 0%, rgba(255, 255, 255, 0) 72%);
+  mix-blend-mode: screen;
+  filter: blur(calc(var(--blur) * 1px));
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .skh-particle {
+    animation:
+      skhParticleMove calc(var(--dur) * 1s) linear infinite,
+      skhParticleFade calc(var(--dur) * 1s) ease-in-out infinite;
+    animation-delay: calc(var(--delay) * 1s), calc(var(--delay) * 1s);
+  }
+  @keyframes skhParticleMove {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(calc(var(--dx) * 1px), calc(var(--dy) * 1px), 0);
+    }
+  }
+  @keyframes skhParticleFade {
+    0% {
+      opacity: 0;
+    }
+    15% {
+      opacity: var(--o);
+    }
+    85% {
+      opacity: var(--o);
+    }
+    100% {
+      opacity: 0;
+    }
+  }
 }
 .skh-loading {
   position: relative;
