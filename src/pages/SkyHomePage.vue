@@ -301,6 +301,13 @@ const onResize = () => {
     redrawMoon()
   })
 }
+// Keep the readings live: recompute whenever the app returns to the foreground
+// (a new "now", and a possible date rollover), then repaint the moon.
+const onVisible = () => {
+  if (document.visibilityState !== 'visible') return
+  recompute()
+  void nextTick(() => redrawMoon())
+}
 
 const pickCity = (cityKey) => {
   setSkyLocationCity(cityKey)
@@ -442,10 +449,12 @@ onMounted(async () => {
   skyFx = createShootingStars(fxCanvas.value)
   skyFx.start()
   window.addEventListener('resize', onResize)
+  document.addEventListener('visibilitychange', onVisible)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize)
+  document.removeEventListener('visibilitychange', onVisible)
   cancelAnimationFrame(resizeRaf)
   skyFx?.stop()
 })
