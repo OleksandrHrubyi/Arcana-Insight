@@ -290,3 +290,71 @@ export const computeUpcomingSkyEvents = (
 
   return events.sort((a, b) => a.date - b.date).slice(0, limit)
 }
+
+// ── Moon & Sun detail (for the tap-through sheets) ───────────────────────────
+
+export const MOON_RADIUS_KM = 1737.4
+
+// Everything the moon-detail sheet shows: real distance, apparent size,
+// libration, the next four principal phases, and the next apsis.
+export const computeMoonDetail = (Astronomy, date = new Date()) => {
+  const time = makeTime(Astronomy, date)
+  const lib = Astronomy.Libration(time)
+  const distanceKm = Math.round(lib.dist_km)
+  const angularDiameterDeg = 2 * Math.asin(MOON_RADIUS_KM / lib.dist_km) * (180 / Math.PI)
+  const elong = moonSunElongation(Astronomy, date)
+
+  const phases = findUpcomingLunarEvents(Astronomy, date)
+  const nextPhases = ['newMoon', 'firstQuarter', 'fullMoon', 'lastQuarter']
+    .map((key) => (phases[key] ? { key, ...phases[key] } : null))
+    .filter(Boolean)
+    .sort((a, b) => a.date - b.date)
+
+  const apsis = Astronomy.SearchLunarApsis(time)
+  const nextApsis = apsis
+    ? {
+        kind: apsis.kind === 0 ? 'perigee' : 'apogee',
+        date: toDate(apsis.time),
+        daysUntil: daysBetween(toDate(apsis.time), date),
+        distanceKm: Math.round(apsis.dist_km),
+      }
+    : null
+
+  return {
+    distanceKm,
+    angularDiameterDeg: Math.round(angularDiameterDeg * 1000) / 1000,
+    librationLon: Math.round(lib.elon * 10) / 10,
+    librationLat: Math.round(lib.elat * 10) / 10,
+    illuminationPct: Math.round(illuminationFromElongation(elong) * 100),
+    phaseKey: phaseKeyFromElongation(elong),
+    nextPhases,
+    nextApsis,
+  }
+}
+
+// Everything the sun-detail sheet shows: rise/set, astronomical dawn/dusk,
+// evening golden hour, and day length with the day-over-day delta.
+export const computeSunDetail = (Astronomy, observer, date = new Date()) => {
+  const { sunrise, sunset, darkStart } = computeSunTimes(Astronomy, observer, date)
+  const start = makeTime(Astronomy, localMidnight(date))
+  const dawn = toDate(Astronomy.SearchAltitude(Astronomy.Body.Sun, observer, +1, start, 1.0, -18))
+
+  let goldenEveningStart = null
+  if (sunset) {
+    const from = makeTime(Astronomy, new Date(sunset.getTime() - 3 * 3600000))
+    goldenEveningStart = toDate(Astronomy.SearchAltitude(Astronomy.Body.Sun, observer, -1, from, 0.25, 6))
+  }
+
+  let dayLengthMs = null
+  let dayLengthDeltaMs = null
+  if (sunrise && sunset) {
+    dayLengthMs = sunset.getTime() - sunrise.getTime()
+    const yesterday = new Date(date.getTime() - 86400000)
+    const y = computeSunTimes(Astronomy, observer, yesterday)
+    if (y.sunrise && y.sunset) {
+      dayLengthDeltaMs = dayLengthMs - (y.sunset.getTime() - y.sunrise.getTime())
+    }
+  }
+
+  return { sunrise, sunset, dawn, dusk: darkStart, goldenEveningStart, dayLengthMs, dayLengthDeltaMs }
+}

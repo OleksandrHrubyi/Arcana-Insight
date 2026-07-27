@@ -127,6 +127,39 @@ test('visible-tonight yields only above-horizon planets with valid fields', () =
   for (let i = 1; i < vis.length; i += 1) assert.ok(vis[i - 1].altitude >= vis[i].altitude)
 })
 
+test('moon detail returns real distance, apparent size, phases and apsis', () => {
+  const d = sky.computeMoonDetail(Astronomy, new Date('2026-07-27T12:00:00Z'))
+  // Lunar distance always lies between perigee (~356 500) and apogee (~406 700) km.
+  assert.ok(d.distanceKm > 356000 && d.distanceKm < 407500, `distance ${d.distanceKm}`)
+  // Apparent diameter is about half a degree.
+  assert.ok(d.angularDiameterDeg > 0.48 && d.angularDiameterDeg < 0.57, `diam ${d.angularDiameterDeg}`)
+  assert.ok(Math.abs(d.librationLon) <= 10 && Math.abs(d.librationLat) <= 10)
+  assert.ok(d.illuminationPct >= 0 && d.illuminationPct <= 100)
+  // Four principal phases, chronologically ordered, all in the future.
+  assert.equal(d.nextPhases.length, 4)
+  let prev = 0
+  for (const ph of d.nextPhases) {
+    assert.ok(['newMoon', 'firstQuarter', 'fullMoon', 'lastQuarter'].includes(ph.key))
+    assert.ok(ph.date.getTime() >= prev, 'phases sorted')
+    prev = ph.date.getTime()
+  }
+  assert.ok(['perigee', 'apogee'].includes(d.nextApsis.kind))
+  assert.ok(d.nextApsis.distanceKm > 356000 && d.nextApsis.distanceKm < 407500)
+})
+
+test('sun detail: dawn before sunrise, real day length + small daily delta', () => {
+  const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
+  const d = sky.computeSunDetail(Astronomy, obs, new Date('2026-07-27T10:00:00Z'))
+  assert.ok(d.dawn instanceof Date && d.sunrise instanceof Date)
+  assert.ok(d.dawn.getTime() < d.sunrise.getTime(), 'astronomical dawn precedes sunrise')
+  assert.ok(d.goldenEveningStart instanceof Date && d.goldenEveningStart.getTime() < d.sunset.getTime())
+  // Kyiv late July: ~15–16 h of daylight.
+  const hours = d.dayLengthMs / 3600000
+  assert.ok(hours > 14 && hours < 17, `day length ${hours}h`)
+  // The day changes by only a few minutes near late July.
+  assert.ok(Math.abs(d.dayLengthDeltaMs) < 6 * 60000, 'delta under 6 min')
+})
+
 test('upcoming sky-events feed is future, sorted, capped, and typed', () => {
   const now = new Date('2026-07-26T12:00:00Z')
   const feed = sky.computeUpcomingSkyEvents(Astronomy, now, { horizonDays: 120, limit: 8 })
