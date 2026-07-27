@@ -9,21 +9,21 @@
 
     <div v-if="loading" class="skh-loading"><q-spinner color="white" size="34px" /></div>
 
-    <template v-else-if="sky">
-      <!-- First screen: the live moon over the real night sky -->
-      <section class="skh-first">
+    <section v-else-if="sky" class="skh-screen">
+      <header class="skh-head">
         <button type="button" class="skh-loc hit-44" @click="locationOpen = true">
           <span class="skh-loc__dot"></span>
           <span class="skh-loc__name">{{ locationLabel }}</span>
           <q-icon name="expand_more" size="15px" class="skh-loc__caret" />
         </button>
         <div class="skh-kick">{{ tt('skyHome.kicker') }} · {{ formatToday }}</div>
+      </header>
 
+      <div class="skh-hero">
         <div class="skh-moonwrap">
           <div class="skh-moonhalo" aria-hidden="true"></div>
           <canvas ref="moonCanvas" class="skh-moon"></canvas>
         </div>
-
         <div class="skh-caption">
           <div class="skh-phase">{{ tt(`astro.phases.${sky.moonPhaseKey}`) }}</div>
           <div class="skh-sub">
@@ -34,112 +34,34 @@
             {{ tt('skyHome.moonRises') }} {{ formatTime(moonRS.rise) }} ·
             {{ tt('skyHome.moonSets') }} {{ formatTime(moonRS.set) }}
           </div>
-          <div class="skh-hint" aria-hidden="true"><span class="skh-hint__chev"></span></div>
         </div>
-      </section>
 
-      <div class="skh-data">
-        <!-- Visible this evening -->
-        <section class="skh-visible">
-          <div class="skh-section-title">{{ tt('skyHome.visibleTitle') }}</div>
-          <div v-if="visible.length" class="skh-visible__row">
-            <div v-for="p in visible" :key="p.planetKey" class="skh-planet">
-              <div class="skh-planet__name">{{ tt(`astro.planets.${p.planetKey}`) }}</div>
-              <div class="skh-planet__dir">{{ tt(`skyHome.compass.${p.azimuthKey}`) }} · {{ p.altitude }}°</div>
-              <div class="skh-planet__mag">
-                {{ formatMag(p.magnitude) }}
-                <span v-if="p.retrograde" class="skh-planet__rx">℞</span>
-              </div>
-            </div>
+        <div class="skh-essentials">
+          <div class="skh-fact">
+            <span class="skh-fact__label">{{ tt('skyHome.sunset') }}</span>
+            <span class="skh-fact__val">{{ formatTime(sun.sunset) }}</span>
           </div>
-          <div v-else class="skh-empty">{{ tt('skyHome.visibleEmpty') }}</div>
-        </section>
-
-        <!-- Sun -->
-        <section class="skh-sun">
-          <div class="skh-section-title">{{ tt('skyHome.sunTitle') }}</div>
-          <div class="skh-sun__row">
-            <div class="skh-sun__item">
-              <span class="skh-sun__label">{{ tt('skyHome.sunrise') }}</span>
-              <span class="skh-sun__val">{{ formatTime(sun.sunrise) }}</span>
-            </div>
-            <div class="skh-sun__item">
-              <span class="skh-sun__label">{{ tt('skyHome.sunset') }}</span>
-              <span class="skh-sun__val">{{ formatTime(sun.sunset) }}</span>
-            </div>
-            <div v-if="sun.darkStart" class="skh-sun__item">
-              <span class="skh-sun__dark">{{ tt('skyHome.darkFrom', { t: formatTime(sun.darkStart) }) }}</span>
-            </div>
+          <div v-if="sun.darkStart" class="skh-fact">
+            <span class="skh-fact__label">{{ tt('skyHome.darkShort') }}</span>
+            <span class="skh-fact__val">{{ formatTime(sun.darkStart) }}</span>
           </div>
-        </section>
-
-        <!-- Upcoming events -->
-        <section class="skh-events">
-          <div class="skh-section-title">{{ tt('skyHome.upcomingTitle') }}</div>
-          <div v-for="ev in events" :key="ev.type + ev.key + ev.daysUntil" class="skh-event">
-            <span class="skh-event__name">{{ tt(`skyHome.events.${ev.key}`) }}</span>
-            <span class="skh-event__meta">
-              <span class="skh-event__when">{{ untilLabel(ev.daysUntil) }}</span>
-              <span class="skh-event__date">{{ formatShort(ev.date) }}</span>
+          <div v-if="topVisible" class="skh-fact">
+            <span class="skh-fact__label">{{ tt('skyHome.visibleShort') }}</span>
+            <span class="skh-fact__val">
+              {{ tt(`astro.planets.${topVisible.planetKey}`) }} · {{ tt(`skyHome.compass.${topVisible.azimuthKey}`) }}
             </span>
           </div>
-        </section>
-
-        <!-- Moon calendar -->
-        <section class="skh-cal">
-          <div class="skh-cal__head">
-            <button type="button" class="skh-cal__nav hit-44" @click="stepMonth(-1)">
-              <q-icon name="chevron_left" size="20px" />
-            </button>
-            <div class="skh-cal__title">{{ monthLabel }}</div>
-            <button type="button" class="skh-cal__nav hit-44" @click="stepMonth(1)">
-              <q-icon name="chevron_right" size="20px" />
-            </button>
-          </div>
-          <div class="skh-cal__grid skh-cal__grid--head" aria-hidden="true">
-            <span v-for="w in weekdayLabels" :key="w" class="skh-cal__wd">{{ w }}</span>
-          </div>
-          <div class="skh-cal__grid">
-            <span v-for="n in leadingBlanks" :key="`b${n}`" class="skh-cal__blank"></span>
-            <div
-              v-for="cell in monthCells"
-              :key="cell.day"
-              class="skh-cal__day"
-              :class="{ 'skh-cal__day--today': cell.isToday }"
-            >
-              <canvas
-                class="skh-cal__moon"
-                :data-illum="cell.illumination"
-                :data-waxing="cell.waxing ? '1' : '0'"
-              ></canvas>
-              <span class="skh-cal__num">{{ cell.day }}</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- Extras (demoted) -->
-        <section class="skh-extras">
-          <div class="skh-section-title">{{ tt('skyHome.extrasTitle') }}</div>
-          <button type="button" class="skh-extra" @click="go('journal')">
-            <q-icon name="edit_note" size="18px" />
-            <span>{{ tt('skyHome.extrasReflection') }}</span>
-            <q-icon name="chevron_right" size="16px" class="skh-extra__arrow" />
-          </button>
-          <button type="button" class="skh-extra" @click="go('daily')">
-            <q-icon name="style" size="18px" />
-            <span>{{ tt('skyHome.extrasCard') }}</span>
-            <q-icon name="chevron_right" size="16px" class="skh-extra__arrow" />
-          </button>
-          <button type="button" class="skh-extra" @click="go('horoscope')">
-            <q-icon name="brightness_3" size="18px" />
-            <span>{{ tt('skyHome.extrasHoroscope') }}</span>
-            <q-icon name="chevron_right" size="16px" class="skh-extra__arrow" />
-          </button>
-        </section>
-
-        <div class="skh-credit">{{ tt('skyHome.credit') }}</div>
+        </div>
       </div>
-    </template>
+
+      <footer class="skh-foot">
+        <button type="button" class="skh-more" @click="openSky">
+          <span>{{ tt('skyHome.openSky') }}</span>
+          <q-icon name="chevron_right" size="18px" />
+        </button>
+        <div class="skh-credit">{{ tt('skyHome.credit') }}</div>
+      </footer>
+    </section>
 
     <!-- Location picker -->
     <q-dialog v-model="locationOpen" position="bottom">
@@ -172,10 +94,8 @@ import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import {
   computeSkyForDate,
-  computeMonthMoonPhases,
   computeSunTimes,
   computeVisibleTonight,
-  computeUpcomingSkyEvents,
   findUpcomingLunarEvents,
   riseSetForLocalDay,
   makeObserver,
@@ -204,15 +124,15 @@ const sky = ref(null)
 const moonRS = ref({ rise: null, set: null })
 const sun = ref({ sunrise: null, sunset: null, darkStart: null })
 const visible = ref([])
-const events = ref([])
 const nextFullMoon = ref(null)
-const monthCells = ref([])
-const viewYear = ref(new Date().getFullYear())
-const viewMonth = ref(new Date().getMonth())
 const moonCanvas = ref(null)
 const fxCanvas = ref(null)
 const locationOpen = ref(false)
+const cities = SKY_CITIES
+const loc = skyLocation
 const skyStyle = { backgroundImage: `url(${milkywayUrl})` }
+
+const topVisible = computed(() => visible.value[0] || null)
 
 // Floating luminous motes — the same ambient "living sky" as the horoscope
 // screen (HoroscopeComponent). CSS-driven; skipped when reduced-motion is on.
@@ -227,7 +147,7 @@ const buildParticles = () => {
   }
   const colors = ['rgba(255,255,255,0.95)', 'rgba(159,216,246,0.85)', 'rgba(255,220,180,0.70)']
   const out = []
-  for (let i = 0; i < 26; i += 1) {
+  for (let i = 0; i < 24; i += 1) {
     const dur = 8 + Math.random() * 14
     out.push({
       id: i,
@@ -247,8 +167,6 @@ const buildParticles = () => {
   }
   particles.value = out
 }
-const cities = SKY_CITIES
-const loc = skyLocation
 
 let Astronomy = null
 let enginePromise = null
@@ -266,49 +184,14 @@ const recompute = () => {
   moonRS.value = riseSetForLocalDay(Astronomy, 'moon', observer, now)
   sun.value = computeSunTimes(Astronomy, observer, now)
   visible.value = computeVisibleTonight(Astronomy, observer, now)
-  events.value = computeUpcomingSkyEvents(Astronomy, now, { limit: 6 })
   nextFullMoon.value = findUpcomingLunarEvents(Astronomy, now).fullMoon
-  buildMonth()
 }
 
-const buildMonth = () => {
-  if (!Astronomy) return
-  const cells = computeMonthMoonPhases(Astronomy, viewYear.value, viewMonth.value)
-  const now = new Date()
-  const isThisMonth = now.getFullYear() === viewYear.value && now.getMonth() === viewMonth.value
-  monthCells.value = cells.map((c) => ({ ...c, isToday: isThisMonth && c.day === now.getDate() }))
-}
-
-const stepMonth = (delta) => {
-  let m = viewMonth.value + delta
-  let y = viewYear.value
-  if (m < 0) {
-    m = 11
-    y -= 1
-  } else if (m > 11) {
-    m = 0
-    y += 1
-  }
-  viewMonth.value = m
-  viewYear.value = y
-  buildMonth()
-  void nextTick(() => drawCalendarMoons())
-}
-
-const drawCalendarMoons = () => {
-  document.querySelectorAll('.skh-cal__moon').forEach((canvas) => {
-    const illum = Number(canvas.getAttribute('data-illum')) || 0
-    const waxing = canvas.getAttribute('data-waxing') === '1'
-    drawMoon(canvas, illum, waxing, { detail: false })
-  })
-}
-
-const redrawAll = () => {
+const redrawMoon = () => {
   if (!sky.value) return
   drawMoon(moonCanvas.value, sky.value.illumination, sky.value.waxing, { detail: true })
-  drawCalendarMoons()
 }
-onMoonReady(redrawAll)
+onMoonReady(redrawMoon)
 
 let skyFx = null
 let resizeRaf = 0
@@ -316,7 +199,7 @@ const onResize = () => {
   cancelAnimationFrame(resizeRaf)
   resizeRaf = requestAnimationFrame(() => {
     skyFx?.resize()
-    redrawAll()
+    redrawMoon()
   })
 }
 
@@ -325,51 +208,24 @@ const pickCity = (cityKey) => {
   locationOpen.value = false
 }
 const useMyLocation = async () => {
-  const ok = await detectSkyLocation()
+  await detectSkyLocation()
   locationOpen.value = false
-  if (!ok) return // kept current location silently
 }
 
 const locationLabel = computed(() =>
   loc.value.cityKey ? tt(`skyHome.cities.${loc.value.cityKey}`) : tt('skyHome.myLocation'),
 )
-
-const leadingBlanks = computed(() => {
-  const first = new Date(viewYear.value, viewMonth.value, 1).getDay()
-  return (first + 6) % 7
-})
-const weekdayLabels = computed(() =>
-  ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((k) => tt(`skyPage.weekdays.${k}`)),
-)
-const formatToday = computed(() => formatFull(new Date()))
-const monthLabel = computed(() => {
-  try {
-    return new Intl.DateTimeFormat(locale.value, { month: 'long', year: 'numeric' }).format(
-      new Date(viewYear.value, viewMonth.value, 1),
-    )
-  } catch {
-    return `${viewMonth.value + 1}/${viewYear.value}`
-  }
-})
-
-const formatFull = (date) => {
+const formatToday = computed(() => {
   try {
     return new Intl.DateTimeFormat(locale.value, {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
-    }).format(date)
+    }).format(new Date())
   } catch {
-    return date.toDateString()
+    return new Date().toDateString()
   }
-}
-const formatShort = (date) => {
-  try {
-    return new Intl.DateTimeFormat(locale.value, { month: 'short', day: 'numeric' }).format(date)
-  } catch {
-    return date.toDateString()
-  }
-}
+})
 const formatTime = (date) => {
   if (!date) return '—'
   try {
@@ -378,20 +234,19 @@ const formatTime = (date) => {
     return '—'
   }
 }
-const formatMag = (mag) => `${mag > 0 ? '+' : ''}${mag.toFixed(1)}`
 const untilLabel = (days) => {
   if (days <= 0) return tt('skyHome.today')
   if (days === 1) return tt('skyHome.tomorrow')
   return tt('skyHome.inDays', { n: days })
 }
 
-const go = (name) => router.push({ name, query: { source: 'sky_home' } })
+const openSky = () => router.push({ name: 'sky', query: { source: 'sky_home' } })
 
 watch(
   () => loc.value,
   () => {
     recompute()
-    void nextTick(() => redrawAll())
+    void nextTick(() => redrawMoon())
   },
   { deep: true },
 )
@@ -408,7 +263,7 @@ onMounted(async () => {
   }
   buildParticles()
   await nextTick()
-  redrawAll()
+  redrawMoon()
   skyFx = createShootingStars(fxCanvas.value)
   skyFx.start()
   window.addEventListener('resize', onResize)
@@ -424,18 +279,17 @@ onBeforeUnmount(() => {
 <style scoped lang="scss">
 .skh {
   position: relative;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
   color: #e9edf4;
-  // Match the app's shared background (see JournalPage etc.)
   background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
-  overflow-x: hidden;
+  overflow: hidden;
 }
+
+/* Background layers */
 .skh-sky {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
+  inset: 0;
   z-index: 0;
   background-color: #050d15;
   background-size: cover;
@@ -455,46 +309,34 @@ onBeforeUnmount(() => {
 @media (prefers-reduced-motion: reduce) {
   .skh-sky {
     animation: none;
-    transform: scale(1.14);
+    transform: scale(1.16);
   }
 }
 .skh-fade {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
+  inset: 0;
   z-index: 1;
   pointer-events: none;
   background:
     linear-gradient(
       180deg,
-      rgba(7, 19, 29, 0.66) 0%,
-      rgba(7, 19, 29, 0) 20%,
-      rgba(7, 19, 29, 0) 56%,
-      rgba(5, 13, 21, 0.9) 90%,
+      rgba(7, 19, 29, 0.62) 0%,
+      rgba(7, 19, 29, 0) 22%,
+      rgba(7, 19, 29, 0) 52%,
+      rgba(5, 13, 21, 0.86) 88%,
       #050d15 100%
     ),
-    radial-gradient(120% 60% at 50% 42%, rgba(7, 19, 29, 0) 40%, rgba(7, 19, 29, 0.42) 100%),
+    radial-gradient(120% 55% at 50% 40%, rgba(7, 19, 29, 0) 42%, rgba(7, 19, 29, 0.4) 100%),
     linear-gradient(0deg, rgba(12, 38, 56, 0.14), rgba(12, 38, 56, 0.14));
 }
-.skh-fx {
+.skh-fx,
+.skh-particles {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
+  inset: 0;
   z-index: 1;
   pointer-events: none;
 }
 .skh-particles {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  z-index: 1;
-  pointer-events: none;
   overflow: hidden;
 }
 .skh-particle {
@@ -541,23 +383,33 @@ onBeforeUnmount(() => {
     }
   }
 }
+
 .skh-loading {
   position: relative;
   z-index: 2;
   display: flex;
   justify-content: center;
-  padding: 160px 0;
+  padding-top: 40vh;
 }
 
-/* First screen (cinematic) */
-.skh-first {
+/* Single screen — everything fits, no scroll */
+.skh-screen {
   position: relative;
   z-index: 2;
-  min-height: 100vh;
+  height: 100%;
+  max-width: 520px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: calc(16px + env(safe-area-inset-top)) 22px calc(90px + env(safe-area-inset-bottom));
+  padding: calc(14px + env(safe-area-inset-top)) 22px calc(80px + env(safe-area-inset-bottom));
+}
+
+.skh-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
 }
 .skh-loc {
   display: inline-flex;
@@ -594,18 +446,27 @@ onBeforeUnmount(() => {
   text-align: center;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
 }
-.skh-moonwrap {
-  flex: 1;
+
+/* Hero group grows to fill and stays centered */
+.skh-hero {
+  flex: 1 1 auto;
   min-height: 0;
   width: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 14px;
+}
+.skh-moonwrap {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .skh-moonhalo {
   position: absolute;
-  width: min(96vw, 420px);
+  width: 150%;
   aspect-ratio: 1;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(4, 7, 12, 0.5) 30%, rgba(4, 7, 12, 0) 68%);
@@ -613,284 +474,106 @@ onBeforeUnmount(() => {
 }
 .skh-moon {
   position: relative;
-  width: min(74vw, 320px);
+  // Bound by BOTH width and height so the whole screen always fits.
+  width: min(62vw, 34vh, 300px);
   aspect-ratio: 1;
   filter: drop-shadow(0 12px 50px rgba(150, 180, 230, 0.32));
 }
 .skh-caption {
   text-align: center;
-  padding-bottom: 4px;
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.7);
 }
 .skh-phase {
-  font-size: 30px;
+  font-size: 29px;
   font-weight: 300;
   letter-spacing: -0.01em;
   line-height: 1.05;
 }
 .skh-sub {
-  margin-top: 9px;
+  margin-top: 8px;
   font-size: 13.5px;
   font-weight: 300;
-  color: rgba(200, 218, 244, 0.72);
+  color: rgba(200, 218, 244, 0.75);
 }
 .skh-rs {
-  margin-top: 6px;
+  margin-top: 5px;
   font-size: 12.5px;
-  color: rgba(150, 178, 214, 0.58);
+  color: rgba(150, 178, 214, 0.6);
   font-variant-numeric: tabular-nums;
 }
 .skh-accent {
   color: #91bcff;
 }
-.skh-hint {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-}
-.skh-hint__chev {
-  width: 15px;
-  height: 15px;
-  border-right: 1.5px solid rgba(150, 178, 214, 0.5);
-  border-bottom: 1.5px solid rgba(150, 178, 214, 0.5);
-  transform: rotate(45deg);
-}
 
-/* Data area (below the fold) */
-.skh-data {
-  position: relative;
-  z-index: 2;
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 8px 16px calc(96px + env(safe-area-inset-bottom));
-  display: grid;
-  gap: 18px;
-}
-
-// Shared app card surface (mirrors JournalPage's card language).
-%app-card {
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background:
-    radial-gradient(120% 90% at 20% 0%, rgba(112, 156, 255, 0.16) 0%, rgba(12, 18, 30, 0.12) 42%, transparent 100%),
-    linear-gradient(160deg, rgba(14, 20, 32, 0.92), rgba(6, 10, 18, 0.98));
-  box-shadow:
-    0 18px 40px rgba(2, 6, 12, 0.52),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-.skh-sun,
-.skh-events,
-.skh-cal {
-  @extend %app-card;
-  padding: 16px 16px 14px;
-}
-.skh-cal {
-  padding: 14px;
-}
-
-/* Section titles */
-.skh-section-title {
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(214, 225, 242, 0.6);
-  margin-bottom: 12px;
-}
-
-/* Visible tonight */
-.skh-visible__row {
+/* Compact essentials row */
+.skh-essentials {
   display: flex;
   gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-bottom: 2px;
+  width: 100%;
+  max-width: 420px;
 }
-.skh-visible__row::-webkit-scrollbar {
-  display: none;
-}
-.skh-planet {
-  flex: 0 0 auto;
-  min-width: 92px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(9, 14, 23, 0.65);
+.skh-fact {
+  flex: 1 1 0;
+  min-width: 0;
   display: grid;
   gap: 3px;
-}
-.skh-planet__name {
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(233, 240, 250, 0.94);
-}
-.skh-planet__dir {
-  font-size: 12px;
-  color: rgba(184, 205, 236, 0.72);
-}
-.skh-planet__mag {
-  font-size: 11px;
-  color: rgba(184, 205, 236, 0.5);
-  font-variant-numeric: tabular-nums;
-}
-.skh-planet__rx {
-  color: rgba(226, 176, 120, 0.95);
-  margin-left: 2px;
-}
-.skh-empty {
-  font-size: 13px;
-  color: rgba(184, 205, 236, 0.5);
-  padding: 4px 0;
-}
-
-/* Sun */
-.skh-sun__row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.skh-sun__item {
-  display: grid;
-  gap: 2px;
-}
-.skh-sun__label {
-  font-size: 9px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(184, 205, 236, 0.5);
-}
-.skh-sun__val,
-.skh-sun__dark {
-  font-size: 14px;
-  color: rgba(233, 240, 250, 0.92);
-  font-variant-numeric: tabular-nums;
-}
-.skh-sun__dark {
-  color: rgba(141, 190, 240, 0.85);
-}
-.skh-sun__item:nth-child(3) {
-  margin-left: auto;
-  text-align: right;
-}
-
-/* Events */
-.skh-event {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  padding: 11px 2px;
-  border-bottom: 1px solid rgba(148, 178, 214, 0.08);
-}
-.skh-event:last-child {
-  border-bottom: 0;
-}
-.skh-event__name {
-  font-size: 14px;
-  color: rgba(233, 240, 250, 0.9);
-}
-.skh-event__meta {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-}
-.skh-event__when {
-  font-size: 12px;
-  color: rgba(141, 190, 240, 0.9);
-}
-.skh-event__date {
-  font-size: 11px;
-  color: rgba(184, 205, 236, 0.5);
-  font-variant-numeric: tabular-nums;
-}
-
-/* Calendar (surface comes from %app-card above) */
-.skh-cal__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-.skh-cal__title {
-  font-size: 15px;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-.skh-cal__nav {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(10, 16, 26, 0.6);
-  color: rgba(214, 225, 242, 0.8);
-  display: grid;
-  place-items: center;
-}
-.skh-cal__grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-}
-.skh-cal__grid--head {
-  margin-bottom: 6px;
-}
-.skh-cal__wd {
+  justify-items: center;
   text-align: center;
-  font-size: 10px;
-  letter-spacing: 0.08em;
+  padding: 10px 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(120% 120% at 20% 0%, rgba(112, 156, 255, 0.14) 0%, transparent 60%),
+    linear-gradient(160deg, rgba(14, 20, 32, 0.72), rgba(6, 10, 18, 0.82));
+}
+.skh-fact__label {
+  font-size: 8.5px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(184, 205, 236, 0.45);
+  color: rgba(200, 214, 240, 0.5);
 }
-.skh-cal__blank {
-  aspect-ratio: 1;
-}
-.skh-cal__day {
-  position: relative;
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-}
-.skh-cal__day--today {
-  background: rgba(96, 148, 210, 0.18);
-  border: 1px solid rgba(141, 190, 240, 0.4);
-}
-.skh-cal__moon {
-  width: 78%;
-  height: 78%;
-}
-.skh-cal__num {
-  position: absolute;
-  bottom: 1px;
-  font-size: 8px;
-  color: rgba(214, 225, 242, 0.6);
+.skh-fact__val {
+  font-size: 13px;
+  color: rgba(233, 240, 250, 0.94);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
-/* Extras */
-.skh-extra {
-  @extend %app-card;
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* Footer: link to the detailed Sky screen + attribution */
+.skh-foot {
+  flex: 0 0 auto;
   width: 100%;
-  padding: 14px 16px;
-  margin-bottom: 8px;
-  color: rgba(214, 225, 242, 0.85);
-  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.skh-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(150, 180, 220, 0.2);
+  background: rgba(10, 18, 30, 0.42);
+  backdrop-filter: blur(6px);
+  color: rgba(226, 236, 250, 0.92);
+  font-size: 13.5px;
   transition: transform 0.12s ease;
 }
-.skh-extra:active {
-  transform: scale(0.98);
+.skh-more:active {
+  transform: scale(0.97);
 }
-.skh-extra__arrow {
-  position: absolute;
-  right: 12px;
-  color: rgba(214, 225, 242, 0.4);
+.skh-more .q-icon {
+  color: rgba(145, 188, 255, 0.9);
 }
 .skh-credit {
-  text-align: center;
-  font-size: 10px;
+  font-size: 9.5px;
   color: rgba(150, 172, 200, 0.4);
-  padding: 2px 8px;
+  text-align: center;
 }
 
 /* Location sheet */
@@ -929,14 +612,14 @@ onBeforeUnmount(() => {
 .skh-sheet__city {
   padding: 12px 10px;
   border-radius: 12px;
-  border: 1px solid rgba(148, 178, 214, 0.12);
-  background: rgba(13, 22, 36, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(9, 14, 23, 0.65);
   color: rgba(214, 225, 242, 0.85);
   font-size: 14px;
 }
 .skh-sheet__city--active {
   border-color: rgba(141, 190, 240, 0.5);
-  background: rgba(96, 148, 210, 0.18);
+  background: rgba(64, 96, 156, 0.3);
   color: #fff;
 }
 </style>
