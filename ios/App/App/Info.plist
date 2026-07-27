@@ -4,6 +4,8 @@
 <dict>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Arcana can log your finished daily reflection as a Mindful Minutes session in Apple Health. This is optional and write-only.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Arcana uses your location to show the sky for where you are — accurate moonrise, sunset, twilight and which planets are visible tonight. You can also pick a city manually instead.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>

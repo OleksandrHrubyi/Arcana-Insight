@@ -3,6 +3,7 @@
 // wired in a later stage (falls back to a manual city pick, fully offline).
 import { ref } from 'vue'
 import { Preferences } from '@capacitor/preferences'
+import { Geolocation } from '@capacitor/geolocation'
 
 export const SKY_LOCATION_KEY = 'arcana_sky_location_v1'
 
@@ -60,19 +61,24 @@ export const setSkyLocationCoords = (lat, lon, source = 'gps') => {
   void persist(skyLocation.value)
 }
 
-// Best-effort detection. Stage 3 routes this through @capacitor/geolocation for
-// native iOS; the browser API keeps preview + web working meanwhile. Resolves to
-// true on success, false if unavailable/denied (caller keeps the current value).
-export const detectSkyLocation = () =>
-  new Promise((resolve) => {
-    const geo = typeof navigator !== 'undefined' ? navigator.geolocation : null
-    if (!geo) return resolve(false)
-    geo.getCurrentPosition(
-      (pos) => {
-        setSkyLocationCoords(pos.coords.latitude, pos.coords.longitude, 'gps')
-        resolve(true)
-      },
-      () => resolve(false),
-      { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 },
-    )
-  })
+// Native GPS via @capacitor/geolocation (its web implementation uses the browser
+// Geolocation API, so preview + web keep working). Resolves true on success,
+// false if unavailable/denied — the caller keeps the current location.
+export const detectSkyLocation = async () => {
+  try {
+    let perm = await Geolocation.checkPermissions()
+    if (perm.location !== 'granted' && perm.coarseLocation !== 'granted') {
+      perm = await Geolocation.requestPermissions({ permissions: ['location'] })
+    }
+    if (perm.location === 'denied' && perm.coarseLocation === 'denied') return false
+    const pos = await Geolocation.getCurrentPosition({
+      enableHighAccuracy: false,
+      timeout: 8000,
+      maximumAge: 600000,
+    })
+    setSkyLocationCoords(pos.coords.latitude, pos.coords.longitude, 'gps')
+    return true
+  } catch {
+    return false
+  }
+}

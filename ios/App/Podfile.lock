@@ -21,6 +21,8 @@ PODS:
   - CapacitorFirebaseCrashlytics (5.4.1):
     - Capacitor
     - FirebaseCrashlytics (~> 10.8)
+  - CapacitorGeolocation (5.0.8):
+    - Capacitor
   - CapacitorHaptics (5.0.8):
     - Capacitor
   - CapacitorLocalNotifications (5.0.8):
@@ -137,6 +139,7 @@ DEPENDENCIES:
   - "CapacitorFirebaseAnalytics (from `../../node_modules/@capacitor-firebase/analytics`)"
   - "CapacitorFirebaseAnalytics/AnalyticsWithoutAdIdSupport (from `../../node_modules/@capacitor-firebase/analytics`)"
   - "CapacitorFirebaseCrashlytics (from `../../node_modules/@capacitor-firebase/crashlytics`)"
+  - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorLocalNotifications (from `../../node_modules/@capacitor/local-notifications`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
@@ -181,6 +184,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor-firebase/analytics"
   CapacitorFirebaseCrashlytics:
     :path: "../../node_modules/@capacitor-firebase/crashlytics"
+  CapacitorGeolocation:
+    :path: "../../node_modules/@capacitor/geolocation"
   CapacitorHaptics:
     :path: "../../node_modules/@capacitor/haptics"
   CapacitorLocalNotifications:
@@ -205,6 +210,7 @@ SPEC CHECKSUMS:
   CapacitorFilesystem: afe2c055f1e379385c80eafdece32751926b2910
   CapacitorFirebaseAnalytics: 1023995c4b63c90e7dcd12f658375df38da1665d
   CapacitorFirebaseCrashlytics: 9269b6a812fee06bf9ba2c9c72d182f3cc7f6b44
+  CapacitorGeolocation: 6beed87d5d2b80745f03a84db4ab2269bc872c9c
   CapacitorHaptics: acd823c6ed0ec2cd968a09316768144b0495a1e7
   CapacitorLocalNotifications: 73765422be07829b2d0a4c7c22a77ea2252ca210
   CapacitorPreferences: 5331d7a33044d252dcb2f7fee712f0322c04bae7
@@ -229,6 +235,6 @@ SPEC CHECKSUMS:
   RevenueCat: 3d934653b7e8b09af88fd47e9e84cfaf5d0a89ba
   RevenuecatPurchasesCapacitor: 70ecf4905bbbce9b6d6bd243504a7001b6054ac0
 
-PODFILE CHECKSUM: ecbd31fe3f507741d20a691adb67e8be277c2c1d
+PODFILE CHECKSUM: ba51d9a927452e539be2a2f932d79abfef661d91
 
 COCOAPODS: 1.16.2
