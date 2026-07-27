@@ -20,10 +20,15 @@
       </header>
 
       <div class="skh-hero">
-        <div class="skh-moonwrap">
+        <button
+          type="button"
+          class="skh-moonwrap"
+          :aria-label="moonAria"
+          @click="moonSheetOpen = true"
+        >
           <div class="skh-moonhalo" aria-hidden="true"></div>
           <canvas ref="moonCanvas" class="skh-moon"></canvas>
-        </div>
+        </button>
         <div class="skh-caption">
           <div class="skh-phase">{{ tt(`astro.phases.${sky.moonPhaseKey}`) }}</div>
           <div class="skh-sub">
@@ -37,20 +42,23 @@
         </div>
 
         <div class="skh-essentials">
-          <div class="skh-fact">
-            <span class="skh-fact__label">{{ tt('skyHome.sunset') }}</span>
+          <button type="button" class="skh-fact" @click="moonSheetOpen = true">
+            <span class="skh-fact__label">{{ tt('skyHome.moonTitle') }}</span>
+            <span class="skh-fact__val">{{ moonNowLabel }}</span>
+          </button>
+          <button type="button" class="skh-fact" @click="sunSheetOpen = true">
+            <span class="skh-fact__label">{{ tt('skyHome.sunTitle') }}</span>
             <span class="skh-fact__val">{{ formatTime(sun.sunset) }}</span>
-          </div>
-          <div v-if="sun.darkStart" class="skh-fact">
-            <span class="skh-fact__label">{{ tt('skyHome.darkShort') }}</span>
-            <span class="skh-fact__val">{{ formatTime(sun.darkStart) }}</span>
-          </div>
-          <div v-if="topVisible" class="skh-fact">
+          </button>
+          <button type="button" class="skh-fact" @click="openSky">
             <span class="skh-fact__label">{{ tt('skyHome.visibleShort') }}</span>
             <span class="skh-fact__val">
-              {{ tt(`astro.planets.${topVisible.planetKey}`) }} · {{ tt(`skyHome.compass.${topVisible.azimuthKey}`) }}
+              <template v-if="topVisible">
+                {{ tt(`astro.planets.${topVisible.planetKey}`) }} · {{ tt(`skyHome.compass.${topVisible.azimuthKey}`) }}
+              </template>
+              <template v-else>—</template>
             </span>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -85,6 +93,67 @@
         </div>
       </q-card>
     </q-dialog>
+
+    <!-- Moon detail -->
+    <q-dialog v-model="moonSheetOpen" position="bottom">
+      <q-card v-if="moonDetail" class="skh-sheet">
+        <div class="skh-sheet__title">
+          {{ tt(`astro.phases.${moonDetail.phaseKey}`) }} · {{ moonDetail.illuminationPct }}%
+        </div>
+        <div class="skh-rows">
+          <div class="skh-row">
+            <span>{{ tt('skyHome.distance') }}</span>
+            <span>{{ formatKm(moonDetail.distanceKm) }}</span>
+          </div>
+          <div class="skh-row">
+            <span>{{ tt('skyHome.apparentSize') }}</span>
+            <span>{{ moonDetail.angularDiameterDeg.toFixed(2) }}°</span>
+          </div>
+          <div class="skh-row">
+            <span>{{ tt('skyHome.libration') }}</span>
+            <span>{{ librationLabel }}</span>
+          </div>
+          <div v-if="moonDetail.nextApsis" class="skh-row">
+            <span>{{ apsisLabel }}</span>
+            <span>{{ untilLabel(moonDetail.nextApsis.daysUntil) }}</span>
+          </div>
+        </div>
+        <div class="skh-sheet__sub">{{ tt('skyHome.nextPhasesTitle') }}</div>
+        <div class="skh-rows">
+          <div v-for="ph in moonDetail.nextPhases" :key="ph.key" class="skh-row">
+            <span>{{ tt(`skyHome.events.${ph.key}`) }}</span>
+            <span class="skh-row__accent">{{ untilLabel(ph.daysUntil) }} · {{ formatShort(ph.date) }}</span>
+          </div>
+        </div>
+      </q-card>
+    </q-dialog>
+
+    <!-- Sun detail -->
+    <q-dialog v-model="sunSheetOpen" position="bottom">
+      <q-card v-if="sunDetail" class="skh-sheet">
+        <div class="skh-sheet__title">{{ tt('skyHome.sunTitle') }}</div>
+        <div class="skh-rows">
+          <div class="skh-row">
+            <span>{{ tt('skyHome.dawn') }}</span><span>{{ formatTime(sunDetail.dawn) }}</span>
+          </div>
+          <div class="skh-row">
+            <span>{{ tt('skyHome.sunrise') }}</span><span>{{ formatTime(sunDetail.sunrise) }}</span>
+          </div>
+          <div class="skh-row">
+            <span>{{ tt('skyHome.goldenHour') }}</span><span>{{ formatTime(sunDetail.goldenEveningStart) }}</span>
+          </div>
+          <div class="skh-row">
+            <span>{{ tt('skyHome.sunset') }}</span><span>{{ formatTime(sunDetail.sunset) }}</span>
+          </div>
+          <div class="skh-row">
+            <span>{{ tt('skyHome.darkShort') }}</span><span>{{ formatTime(sunDetail.dusk) }}</span>
+          </div>
+          <div v-if="sunDetail.dayLengthMs" class="skh-row">
+            <span>{{ tt('skyHome.dayLength') }}</span><span>{{ dayLengthLabel }}</span>
+          </div>
+        </div>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -96,8 +165,12 @@ import {
   computeSkyForDate,
   computeSunTimes,
   computeVisibleTonight,
+  computeMoonDetail,
+  computeSunDetail,
   findUpcomingLunarEvents,
   riseSetForLocalDay,
+  horizontalPosition,
+  azimuthToCompassKey,
   makeObserver,
 } from 'src/helpers/skyCore.js'
 import { drawMoon, onMoonReady } from 'src/helpers/moonRender.js'
@@ -125,9 +198,14 @@ const moonRS = ref({ rise: null, set: null })
 const sun = ref({ sunrise: null, sunset: null, darkStart: null })
 const visible = ref([])
 const nextFullMoon = ref(null)
+const moonDetail = ref(null)
+const sunDetail = ref(null)
+const moonPos = ref({ altitude: 0, azimuth: 0 })
 const moonCanvas = ref(null)
 const fxCanvas = ref(null)
 const locationOpen = ref(false)
+const moonSheetOpen = ref(false)
+const sunSheetOpen = ref(false)
 const cities = SKY_CITIES
 const loc = skyLocation
 const skyStyle = { backgroundImage: `url(${milkywayUrl})` }
@@ -185,6 +263,9 @@ const recompute = () => {
   sun.value = computeSunTimes(Astronomy, observer, now)
   visible.value = computeVisibleTonight(Astronomy, observer, now)
   nextFullMoon.value = findUpcomingLunarEvents(Astronomy, now).fullMoon
+  moonDetail.value = computeMoonDetail(Astronomy, now)
+  sunDetail.value = computeSunDetail(Astronomy, observer, now)
+  moonPos.value = horizontalPosition(Astronomy, 'moon', observer, now)
 }
 
 const redrawMoon = () => {
@@ -239,6 +320,58 @@ const untilLabel = (days) => {
   if (days === 1) return tt('skyHome.tomorrow')
   return tt('skyHome.inDays', { n: days })
 }
+const formatShort = (date) => {
+  if (!date) return '—'
+  try {
+    return new Intl.DateTimeFormat(locale.value, { month: 'short', day: 'numeric' }).format(date)
+  } catch {
+    return date.toDateString()
+  }
+}
+const formatKm = (km) => {
+  try {
+    return `${new Intl.NumberFormat(locale.value).format(km)} ${tt('skyHome.kmAbbr')}`
+  } catch {
+    return `${km} ${tt('skyHome.kmAbbr')}`
+  }
+}
+
+// "Moon now": its current altitude + direction if it's up, otherwise the rise.
+const moonNowLabel = computed(() => {
+  const alt = Math.round(moonPos.value.altitude)
+  if (alt > 0) return `${alt}° ${tt(`skyHome.compass.${azimuthToCompassKey(moonPos.value.azimuth)}`)}`
+  if (moonRS.value.rise) return `↑ ${formatTime(moonRS.value.rise)}`
+  return tt('skyHome.belowHorizon')
+})
+const moonAria = computed(() =>
+  sky.value
+    ? `${tt(`astro.phases.${sky.value.moonPhaseKey}`)}, ${sky.value.illuminationPct}% ${tt('skyHome.illuminated')}`
+    : tt('skyHome.moonTitle'),
+)
+const librationLabel = computed(() => {
+  if (!moonDetail.value) return ''
+  const { librationLat, librationLon } = moonDetail.value
+  const ns = librationLat >= 0 ? 'N' : 'S'
+  const ew = librationLon >= 0 ? 'E' : 'W'
+  return `${Math.abs(librationLat)}° ${ns} · ${Math.abs(librationLon)}° ${ew}`
+})
+const apsisLabel = computed(() =>
+  moonDetail.value?.nextApsis
+    ? tt(`skyHome.${moonDetail.value.nextApsis.kind === 'perigee' ? 'perigeeShort' : 'apogeeShort'}`)
+    : '',
+)
+const dayLengthLabel = computed(() => {
+  const d = sunDetail.value
+  if (!d?.dayLengthMs) return '—'
+  const h = Math.floor(d.dayLengthMs / 3600000)
+  const m = Math.round((d.dayLengthMs % 3600000) / 60000)
+  let s = `${h}${tt('skyHome.hourAbbr')} ${m}${tt('skyHome.minAbbr')}`
+  if (typeof d.dayLengthDeltaMs === 'number') {
+    const dm = Math.round(d.dayLengthDeltaMs / 60000)
+    if (dm !== 0) s += ` (${dm > 0 ? '+' : '−'}${Math.abs(dm)} ${tt('skyHome.minAbbr')})`
+  }
+  return s
+})
 
 const openSky = () => router.push({ name: 'sky', query: { source: 'sky_home' } })
 
@@ -463,6 +596,15 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease;
+}
+.skh-moonwrap:active {
+  transform: scale(0.985);
 }
 .skh-moonhalo {
   position: absolute;
@@ -525,6 +667,12 @@ onBeforeUnmount(() => {
   background:
     radial-gradient(120% 120% at 20% 0%, rgba(112, 156, 255, 0.14) 0%, transparent 60%),
     linear-gradient(160deg, rgba(14, 20, 32, 0.72), rgba(6, 10, 18, 0.82));
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+.skh-fact:active {
+  transform: scale(0.97);
 }
 .skh-fact__label {
   font-size: 8.5px;
@@ -581,7 +729,7 @@ onBeforeUnmount(() => {
   width: 100%;
   background: #0b1220;
   border-radius: 18px 18px 0 0;
-  padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+  padding: 18px 16px calc(84px + env(safe-area-inset-bottom));
   color: #e9edf4;
 }
 .skh-sheet__title {
@@ -590,6 +738,39 @@ onBeforeUnmount(() => {
   text-transform: uppercase;
   color: rgba(184, 205, 236, 0.55);
   margin-bottom: 12px;
+}
+.skh-sheet__sub {
+  margin: 16px 0 8px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(184, 205, 236, 0.45);
+}
+.skh-rows {
+  display: grid;
+}
+.skh-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 2px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(148, 178, 214, 0.08);
+}
+.skh-row:last-child {
+  border-bottom: 0;
+}
+.skh-row span:first-child {
+  color: rgba(200, 214, 240, 0.66);
+}
+.skh-row span:last-child {
+  color: rgba(233, 240, 250, 0.94);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.skh-row__accent {
+  color: rgba(145, 188, 255, 0.9) !important;
 }
 .skh-sheet__detect {
   display: flex;
