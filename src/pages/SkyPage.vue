@@ -75,8 +75,17 @@
         <section class="sky-events">
           <div class="sky-section-title">{{ tt('skyPage.eventsTitle') }}</div>
           <div class="sky-events__row">
-            <div v-for="ev in eventList" :key="ev.key" class="sky-event">
-              <div class="sky-event__name">{{ tt(`skyPage.events.${ev.key}`) }}</div>
+            <div v-for="ev in eventList" :key="ev.type + ev.key + ev.daysUntil" class="sky-event">
+              <button
+                type="button"
+                class="sky-event__bell"
+                :class="{ 'sky-event__bell--on': isScheduled(ev) }"
+                :aria-label="tt('skyHome.notifyAria')"
+                @click="toggleReminder(ev)"
+              >
+                <q-icon :name="isScheduled(ev) ? 'notifications_active' : 'notifications_none'" size="16px" />
+              </button>
+              <div class="sky-event__name">{{ tt(`skyHome.events.${ev.key}`) }}</div>
               <div class="sky-event__when">{{ untilLabel(ev.daysUntil) }}</div>
               <div class="sky-event__date">{{ formatShort(ev.date) }}</div>
             </div>
@@ -121,9 +130,16 @@ import {
   computeSkyForDate,
   computeMonthMoonPhases,
   findUpcomingLunarEvents,
+  computeUpcomingSkyEvents,
   computePlanetSigns,
 } from 'src/helpers/skyCore.js'
 import { drawMoon, onMoonReady } from 'src/helpers/moonRender.js'
+import {
+  scheduleSkyEvent,
+  cancelSkyEvent,
+  getScheduledIds,
+  notifId,
+} from 'src/services/skyNotifications.js'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key, vars) => {
@@ -136,6 +152,8 @@ const router = useRouter()
 const loading = ref(true)
 const sky = ref(null)
 const events = ref({})
+const eventFeed = ref([])
+const scheduledIds = ref(new Set())
 const planets = ref([])
 const monthCells = ref([])
 const viewYear = ref(new Date().getFullYear())
@@ -204,12 +222,28 @@ const weekdayLabels = computed(() =>
   ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((k) => tt(`skyPage.weekdays.${k}`)),
 )
 
-const eventList = computed(() =>
-  ['newMoon', 'firstQuarter', 'fullMoon', 'lastQuarter']
-    .map((key) => (events.value[key] ? { key, ...events.value[key] } : null))
-    .filter(Boolean)
-    .sort((a, b) => a.daysUntil - b.daysUntil),
-)
+const eventList = computed(() => eventFeed.value)
+
+// ── Event reminders (local notifications) ──
+const eventKey = (ev) => `sky-${ev.type}-${ev.key}-${ev.date.toISOString().slice(0, 10)}`
+const isScheduled = (ev) => scheduledIds.value.has(notifId(eventKey(ev)))
+const refreshScheduled = async () => {
+  scheduledIds.value = await getScheduledIds()
+}
+const toggleReminder = async (ev) => {
+  const key = eventKey(ev)
+  if (isScheduled(ev)) {
+    await cancelSkyEvent(key)
+  } else {
+    await scheduleSkyEvent({
+      key,
+      title: tt(`skyHome.events.${ev.key}`),
+      body: tt('skyHome.notifyBody'),
+      at: ev.date,
+    })
+  }
+  await refreshScheduled()
+}
 
 const formatToday = computed(() => formatFull(new Date()))
 const monthLabel = computed(() => {
@@ -254,7 +288,9 @@ onMounted(async () => {
     const now = new Date()
     sky.value = computeSkyForDate(Astronomy, now)
     events.value = findUpcomingLunarEvents(Astronomy, now)
+    eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { limit: 8 })
     planets.value = computePlanetSigns(Astronomy, now)
+    void refreshScheduled()
     buildMonth()
   } catch (e) {
     console.error('[SkyPage] load failed', e)
@@ -453,12 +489,38 @@ onMounted(async () => {
   gap: 8px;
 }
 .sky-event {
+  position: relative;
   border-radius: 14px;
   border: 1px solid rgba(148, 178, 214, 0.1);
   background: rgba(13, 22, 36, 0.5);
   padding: 12px 14px;
   display: grid;
   gap: 2px;
+}
+.sky-event__bell {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(9, 14, 23, 0.55);
+  color: rgba(200, 214, 240, 0.55);
+  transition: transform 0.12s ease;
+}
+.sky-event__bell:active {
+  transform: scale(0.9);
+}
+.sky-event__bell--on {
+  border-color: rgba(145, 188, 255, 0.5);
+  background: rgba(64, 96, 156, 0.3);
+  color: #cfe0ff;
+}
+.sky-event__name {
+  padding-right: 30px;
 }
 .sky-event__name {
   font-size: 13px;
