@@ -92,6 +92,21 @@
           </div>
         </section>
 
+        <!-- ISS passes -->
+        <section v-if="issReady" class="sky-iss">
+          <div class="sky-section-title">{{ tt('skyHome.issTitle') }}</div>
+          <div v-if="issPasses.length" class="sky-iss__list">
+            <div v-for="(pass, i) in issPasses" :key="i" class="sky-iss__pass">
+              <div class="sky-iss__time">{{ formatPassTime(pass.peakTime) }}</div>
+              <div class="sky-iss__path">
+                {{ tt(`skyHome.compass.${pass.startAzKey}`) }} → {{ tt(`skyHome.compass.${pass.endAzKey}`) }}
+                · {{ tt('skyHome.issMax') }} {{ pass.maxEl }}° · {{ formatDuration(pass.durationSec) }}
+              </div>
+            </div>
+          </div>
+          <div v-else class="sky-iss__empty">{{ tt('skyHome.issEmpty') }}</div>
+        </section>
+
         <!-- Planets now -->
         <section class="sky-planets">
           <div class="sky-section-title">{{ tt('skyPage.planetsTitle') }}</div>
@@ -140,6 +155,8 @@ import {
   getScheduledIds,
   notifId,
 } from 'src/services/skyNotifications.js'
+import { fetchIssTle, computeVisiblePasses } from 'src/services/issPasses.js'
+import { skyLocation, loadSkyLocation } from 'src/stores/skyLocation.js'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key, vars) => {
@@ -154,6 +171,8 @@ const sky = ref(null)
 const events = ref({})
 const eventFeed = ref([])
 const scheduledIds = ref(new Set())
+const issPasses = ref([])
+const issReady = ref(false)
 const planets = ref([])
 const monthCells = ref([])
 const viewYear = ref(new Date().getFullYear())
@@ -282,6 +301,38 @@ const untilLabel = (days) => {
 
 const go = (name) => router.push({ name, query: { source: 'sky' } })
 
+// Visible ISS passes for the user's location (networked TLE + on-device SGP4).
+const loadIssPasses = async () => {
+  try {
+    await loadSkyLocation()
+    const tle = await fetchIssTle()
+    if (tle && Astronomy) {
+      issPasses.value = computeVisiblePasses(
+        Astronomy,
+        tle,
+        { lat: skyLocation.value.lat, lon: skyLocation.value.lon, elevKm: 0.05 },
+        { days: 5, minEl: 10, limit: 4 },
+      )
+    }
+  } catch (e) {
+    console.error('[SkyPage] ISS load failed', e)
+  } finally {
+    issReady.value = true
+  }
+}
+const formatPassTime = (date) => {
+  try {
+    return new Intl.DateTimeFormat(locale.value, {
+      weekday: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date)
+  } catch {
+    return date.toISOString()
+  }
+}
+const formatDuration = (sec) => `${Math.round(sec / 60)} ${tt('skyHome.minAbbr')}`
+
 onMounted(async () => {
   try {
     Astronomy = await loadEngine()
@@ -291,6 +342,7 @@ onMounted(async () => {
     eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { limit: 8 })
     planets.value = computePlanetSigns(Astronomy, now)
     void refreshScheduled()
+    void loadIssPasses()
     buildMonth()
   } catch (e) {
     console.error('[SkyPage] load failed', e)
@@ -534,6 +586,34 @@ onMounted(async () => {
 .sky-event__date {
   font-size: 11px;
   color: rgba(184, 205, 236, 0.55);
+}
+
+.sky-iss__list {
+  display: grid;
+  gap: 8px;
+}
+.sky-iss__pass {
+  border-radius: 14px;
+  border: 1px solid rgba(148, 178, 214, 0.1);
+  background: rgba(13, 22, 36, 0.5);
+  padding: 11px 14px;
+  display: grid;
+  gap: 3px;
+}
+.sky-iss__time {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(233, 240, 250, 0.94);
+  text-transform: capitalize;
+}
+.sky-iss__path {
+  font-size: 12px;
+  color: rgba(184, 205, 236, 0.78);
+  font-variant-numeric: tabular-nums;
+}
+.sky-iss__empty {
+  font-size: 13px;
+  color: rgba(184, 205, 236, 0.5);
 }
 
 .sky-planet {
