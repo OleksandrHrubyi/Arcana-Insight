@@ -122,7 +122,18 @@
         <div class="skh-rows">
           <div v-for="ph in moonDetail.nextPhases" :key="ph.key" class="skh-row">
             <span>{{ tt(`skyHome.events.${ph.key}`) }}</span>
-            <span class="skh-row__accent">{{ untilLabel(ph.daysUntil) }} · {{ formatShort(ph.date) }}</span>
+            <span class="skh-row__right">
+              <span class="skh-row__accent">{{ untilLabel(ph.daysUntil) }} · {{ formatShort(ph.date) }}</span>
+              <button
+                type="button"
+                class="skh-bell"
+                :class="{ 'skh-bell--on': isScheduled(ph) }"
+                :aria-label="tt('skyHome.notifyAria')"
+                @click="toggleReminder(ph)"
+              >
+                <q-icon :name="isScheduled(ph) ? 'notifications_active' : 'notifications_none'" size="18px" />
+              </button>
+            </span>
           </div>
         </div>
       </q-card>
@@ -175,6 +186,12 @@ import {
 } from 'src/helpers/skyCore.js'
 import { drawMoon, onMoonReady } from 'src/helpers/moonRender.js'
 import { createShootingStars } from 'src/helpers/starfield.js'
+import {
+  scheduleSkyEvent,
+  cancelSkyEvent,
+  getScheduledIds,
+  notifId,
+} from 'src/services/skyNotifications.js'
 import milkywayUrl from 'src/assets/images/milkyway.webp'
 import {
   skyLocation,
@@ -206,6 +223,7 @@ const fxCanvas = ref(null)
 const locationOpen = ref(false)
 const moonSheetOpen = ref(false)
 const sunSheetOpen = ref(false)
+const scheduledIds = ref(new Set())
 const cities = SKY_CITIES
 const loc = skyLocation
 const skyStyle = { backgroundImage: `url(${milkywayUrl})` }
@@ -374,6 +392,30 @@ const dayLengthLabel = computed(() => {
 })
 
 const openSky = () => router.push({ name: 'sky', query: { source: 'sky_home' } })
+
+// ── Event reminders (local notifications) ──
+const phaseEventKey = (ph) => `moon-${ph.key}-${ph.date.toISOString().slice(0, 10)}`
+const isScheduled = (ph) => scheduledIds.value.has(notifId(phaseEventKey(ph)))
+const refreshScheduled = async () => {
+  scheduledIds.value = await getScheduledIds()
+}
+const toggleReminder = async (ph) => {
+  const key = phaseEventKey(ph)
+  if (isScheduled(ph)) {
+    await cancelSkyEvent(key)
+  } else {
+    await scheduleSkyEvent({
+      key,
+      title: tt(`skyHome.events.${ph.key}`),
+      body: tt('skyHome.notifyBody'),
+      at: ph.date,
+    })
+  }
+  await refreshScheduled()
+}
+watch(moonSheetOpen, (open) => {
+  if (open) void refreshScheduled()
+})
 
 watch(
   () => loc.value,
@@ -771,6 +813,30 @@ onBeforeUnmount(() => {
 }
 .skh-row__accent {
   color: rgba(145, 188, 255, 0.9) !important;
+}
+.skh-row__right {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.skh-bell {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(9, 14, 23, 0.5);
+  color: rgba(200, 214, 240, 0.6);
+  transition: transform 0.12s ease;
+}
+.skh-bell:active {
+  transform: scale(0.9);
+}
+.skh-bell--on {
+  border-color: rgba(145, 188, 255, 0.5);
+  background: rgba(64, 96, 156, 0.3);
+  color: #cfe0ff;
 }
 .skh-sheet__detect {
   display: flex;
