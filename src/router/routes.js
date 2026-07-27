@@ -5,7 +5,9 @@ const routes = [
     path: '/',
     component: () => import('src/layouts/BlankLayout.vue'),
     children: [
-      { path: '', name: 'arcana', component: () => import('src/pages/GetStartedPage.vue'), meta: { tab: 'arcana' } },
+      { path: '', name: 'arcana', component: () => import('src/pages/SkyHomePage.vue'), meta: { tab: 'arcana' } },
+      // Previous home preserved (reachable, not linked) in case we need it back.
+      { path: 'classic-home', name: 'classicHome', component: () => import('src/pages/GetStartedPage.vue'), meta: { tab: 'arcana' } },
       { path: 'login', name: 'login', component: () => import('src/pages/LoginPage.vue'), meta: { allowWithoutOnboarding: true, hideBottomNav: true } },
       { path: 'sign-up', name: 'signUp', component: () => import('src/pages/SignUpPage.vue'), meta: { allowWithoutOnboarding: true, hideBottomNav: true } },
       { path: 'confirm-code', component: () => import('src/pages/ConfirmEmailCodePage.vue'), meta: { hideBottomNav: true, allowWithoutOnboarding: true } },
