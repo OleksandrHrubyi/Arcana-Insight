@@ -1,7 +1,11 @@
-// Shooting-star overlay for the cinematic home. The night sky itself is a real
-// photograph (see SkyHomePage); this only adds occasional life — a meteor
-// streaking across now and then. Honours prefers-reduced-motion (renders
-// nothing / no loop). Returns { start, stop, resize }.
+// Living-sky overlay for the cinematic home. The night sky itself is a real
+// photograph (see SkyHomePage); this adds gentle life ON TOP — a faint field of
+// twinkling stars (ambient shimmer, nothing travels across) plus a rare meteor.
+// Honours prefers-reduced-motion (renders nothing / no loop).
+// Returns { start, stop, resize }.
+
+// Blackbody-ish twinkle colours.
+const STAR_COLORS = ['255,255,255', '204,220,255', '255,236,210']
 
 export const createShootingStars = (canvas) => {
   const ctx = canvas ? canvas.getContext('2d') : null
@@ -15,6 +19,7 @@ export const createShootingStars = (canvas) => {
   let shoot = null
   let nextShoot = 8
   let seed = 77
+  let stars = []
 
   // Tiny LCG so meteor timing/placement varies without Math.random.
   const rand = () => {
@@ -33,6 +38,25 @@ export const createShootingStars = (canvas) => {
     reduced =
       typeof window.matchMedia === 'function' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    // Build the twinkle field (stable layout via a dedicated seed).
+    let ls = 90210
+    const lr = () => {
+      ls = (ls * 1664525 + 1013904223) % 4294967296
+      return ls / 4294967296
+    }
+    stars = []
+    const count = Math.round((w * h) / 6500)
+    for (let i = 0; i < count; i += 1) {
+      stars.push({
+        x: lr() * w,
+        y: lr() * h,
+        r: 0.4 + lr() * 1.2,
+        a: 0.16 + lr() * 0.42,
+        tw: 0.5 + lr() * 1.7, // twinkle speed (rad/s)
+        ph: lr() * 6.283,
+        c: STAR_COLORS[(lr() * STAR_COLORS.length) | 0],
+      })
+    }
     return true
   }
 
@@ -45,6 +69,17 @@ export const createShootingStars = (canvas) => {
     const t = (ts - start0) / 1000
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     ctx.clearRect(0, 0, w, h)
+
+    // Twinkling star field — gentle ambient shimmer (in place, never travels).
+    for (let i = 0; i < stars.length; i += 1) {
+      const s = stars[i]
+      const tw = 0.5 + 0.5 * Math.sin(t * s.tw + s.ph)
+      const a = s.a * (0.3 + 0.7 * tw)
+      ctx.beginPath()
+      ctx.arc(s.x, s.y, s.r, 0, 7)
+      ctx.fillStyle = `rgba(${s.c},${a})`
+      ctx.fill()
+    }
 
     if (!shoot && t >= nextShoot) {
       const fromLeft = rand() > 0.5
