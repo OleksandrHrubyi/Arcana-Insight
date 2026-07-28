@@ -75,7 +75,18 @@
       </div>
 
       <footer class="skh-foot">
-        <button type="button" class="skh-more" @click="openSky">
+        <button
+          v-if="tonightHighlight"
+          type="button"
+          class="skh-more skh-more--event"
+          @click="openSky"
+        >
+          <span class="skh-event__dot"></span>
+          <span class="skh-event__name">{{ tt(`skyHome.events.${tonightHighlight.key}`) }}</span>
+          <span class="skh-event__when">· {{ untilLabel(tonightHighlight.daysUntil) }}</span>
+          <q-icon name="chevron_right" size="18px" />
+        </button>
+        <button v-else type="button" class="skh-more" @click="openSky">
           <span>{{ tt('skyHome.openSky') }}</span>
           <q-icon name="chevron_right" size="18px" />
         </button>
@@ -206,6 +217,7 @@ import {
   computeVisibleTonight,
   computeMoonDetail,
   computeSunDetail,
+  computeUpcomingSkyEvents,
   findUpcomingLunarEvents,
   riseSetForLocalDay,
   horizontalPosition,
@@ -246,6 +258,7 @@ const moonRS = ref({ rise: null, set: null })
 const sun = ref({ sunrise: null, sunset: null, darkStart: null })
 const visible = ref([])
 const nextFullMoon = ref(null)
+const eventFeed = ref([])
 const moonDetail = ref(null)
 const sunDetail = ref(null)
 const moonPos = ref({ altitude: 0, azimuth: 0 })
@@ -262,6 +275,35 @@ const loc = skyLocation
 const skyStyle = { backgroundImage: `url(${milkywayUrl})` }
 
 const topVisible = computed(() => visible.value[0] || null)
+
+// Tonight's headline event — the single most notable thing coming up in the sky.
+// Ranks by intrinsic notability, discounted by how far off it is, and skips the
+// full moon (already in the caption) and minor phases so the line always adds
+// something new. Falls back to null → footer shows the plain "Tonight's sky".
+const highlightWeight = (ev) => {
+  if (ev.type === 'lunarEclipse') return 100
+  if (ev.type === 'solarEclipse') return 95
+  if (ev.type === 'meteor') return 70
+  if (ev.type === 'apsis' && ev.key === 'perigee') return 55
+  if (ev.type === 'moonPhase' && ev.key === 'newMoon') return 48
+  if (ev.type === 'season') return 40
+  return null // fullMoon (caption), quarters, apogee — skip
+}
+const tonightHighlight = computed(() => {
+  let best = null
+  let bestScore = -Infinity
+  for (const ev of eventFeed.value) {
+    if (ev.daysUntil > 60) continue
+    const w = highlightWeight(ev)
+    if (w == null) continue
+    const score = w - ev.daysUntil * 1.1
+    if (score > bestScore) {
+      bestScore = score
+      best = ev
+    }
+  }
+  return best
+})
 
 // Floating luminous motes — the same ambient "living sky" as the horoscope
 // screen (HoroscopeComponent). CSS-driven; skipped when reduced-motion is on.
@@ -315,6 +357,7 @@ const recompute = () => {
   sun.value = computeSunTimes(Astronomy, observer, now)
   visible.value = computeVisibleTonight(Astronomy, observer, now)
   nextFullMoon.value = findUpcomingLunarEvents(Astronomy, now).fullMoon
+  eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { horizonDays: 120, limit: 12 })
   moonDetail.value = computeMoonDetail(Astronomy, now)
   sunDetail.value = computeSunDetail(Astronomy, observer, now)
   moonPos.value = horizontalPosition(Astronomy, 'moon', observer, now)
@@ -934,6 +977,32 @@ onBeforeUnmount(() => {
 }
 .skh-more .q-icon {
   color: rgba(145, 188, 255, 0.9);
+}
+.skh-more--event {
+  gap: 8px;
+  padding: 9px 14px 9px 16px;
+  max-width: min(88vw, 420px);
+}
+.skh-event__dot {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #91bcff;
+  box-shadow: 0 0 8px rgba(145, 188, 255, 0.9);
+}
+.skh-event__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+  color: rgba(230, 238, 250, 0.95);
+}
+.skh-event__when {
+  flex: 0 0 auto;
+  color: rgba(150, 178, 214, 0.75);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Location sheet */
