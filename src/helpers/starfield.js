@@ -13,7 +13,7 @@ export const createShootingStars = (canvas) => {
   let running = false
   let reduced = false
   let shoot = null
-  let nextShoot = 1.6
+  let nextShoot = 8
   let seed = 77
 
   // Tiny LCG so meteor timing/placement varies without Math.random.
@@ -48,7 +48,7 @@ export const createShootingStars = (canvas) => {
 
     if (!shoot && t >= nextShoot) {
       const fromLeft = rand() > 0.5
-      const speed = 340 + rand() * 240
+      const speed = 230 + rand() * 150
       const dir = (fromLeft ? 1 : -1) * (0.55 + rand() * 0.4)
       shoot = {
         x: fromLeft ? -30 : w + 30,
@@ -81,7 +81,8 @@ export const createShootingStars = (canvas) => {
       ctx.stroke()
       if (shoot.age >= shoot.life) {
         shoot = null
-        nextShoot = t + 2.5 + (t % 4)
+        // Rare — a meteor every ~16–30s, not a constant stream.
+        nextShoot = t + 16 + (t % 14)
       }
     }
     if (running) raf = window.requestAnimationFrame(frame)

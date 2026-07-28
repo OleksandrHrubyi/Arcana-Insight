@@ -17,16 +17,18 @@
           <q-icon name="expand_more" size="15px" class="skh-loc__caret" />
         </button>
         <div class="skh-kick">{{ tt('skyHome.kicker') }} · {{ formatToday }}</div>
-        <button
-          v-if="conditions"
-          type="button"
-          class="skh-cond"
-          :class="`skh-cond--${conditions.band}`"
-          @click="condSheetOpen = true"
-        >
-          <span class="skh-cond__dot"></span>
-          {{ conditionsLabel }} · {{ conditions.cloudCoverPct }}% {{ tt('skyHome.cloudLabel') }}
-        </button>
+        <div class="skh-cond-slot">
+          <button
+            v-if="conditions"
+            type="button"
+            class="skh-cond"
+            :class="`skh-cond--${conditions.band}`"
+            @click="condSheetOpen = true"
+          >
+            <span class="skh-cond__dot"></span>
+            {{ conditionsLabel }} · {{ conditions.cloudCoverPct }}% {{ tt('skyHome.cloudLabel') }}
+          </button>
+        </div>
       </header>
 
       <div class="skh-hero">
@@ -272,22 +274,23 @@ const buildParticles = () => {
     particles.value = []
     return
   }
-  const colors = ['rgba(255,255,255,0.95)', 'rgba(159,216,246,0.85)', 'rgba(255,220,180,0.70)']
+  const colors = ['rgba(255,255,255,0.9)', 'rgba(159,216,246,0.8)', 'rgba(255,220,180,0.65)']
   const out = []
-  for (let i = 0; i < 24; i += 1) {
-    const dur = 8 + Math.random() * 14
+  for (let i = 0; i < 16; i += 1) {
+    // Slow, gentle drift — calm ambience, not a swarm.
+    const dur = 20 + Math.random() * 22
     out.push({
       id: i,
       style: {
         '--x': (Math.random() * 100).toFixed(2),
         '--y': (Math.random() * 100).toFixed(2),
-        '--s': (1.2 + Math.random() * 2.8).toFixed(2),
+        '--s': (1.2 + Math.random() * 2.6).toFixed(2),
         '--blur': (Math.random() * 1.2).toFixed(2),
         '--dur': dur.toFixed(2),
         '--delay': (-Math.random() * dur).toFixed(2),
-        '--dx': (-22 + Math.random() * 44).toFixed(2),
-        '--dy': (-(90 + Math.random() * 150)).toFixed(2),
-        '--o': (0.25 + Math.random() * 0.6).toFixed(2),
+        '--dx': (-16 + Math.random() * 32).toFixed(2),
+        '--dy': (-(55 + Math.random() * 95)).toFixed(2),
+        '--o': (0.18 + Math.random() * 0.45).toFixed(2),
         '--c': colors[Math.floor(Math.random() * colors.length)],
       },
     })
@@ -650,7 +653,8 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: calc(14px + env(safe-area-inset-top)) 22px calc(80px + env(safe-area-inset-bottom));
+  // Top: clear the notch (mirrors the classic home). Bottom: clear the floating nav pill.
+  padding: max(52px, calc(env(safe-area-inset-top) + 12px)) 22px calc(104px + env(safe-area-inset-bottom));
 }
 
 .skh-head {
@@ -694,8 +698,14 @@ onBeforeUnmount(() => {
   text-align: center;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
 }
-.skh-cond {
+.skh-cond-slot {
   margin-top: 8px;
+  min-height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.skh-cond {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -806,8 +816,8 @@ onBeforeUnmount(() => {
 }
 .skh-moon {
   position: relative;
-  // Bound by BOTH width and height so the whole screen always fits.
-  width: min(62vw, 34vh, 300px);
+  // Bound by BOTH width and height so the whole screen fits with breathing room.
+  width: min(58vw, 30vh, 272px);
   aspect-ratio: 1;
   filter: drop-shadow(0 12px 50px rgba(150, 180, 230, 0.32));
 }
