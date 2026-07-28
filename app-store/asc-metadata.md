@@ -1,14 +1,20 @@
 # App Store Connect — metadata (EN primary)
 
 Paste-ready copy for ASC. Char limits noted; all within bounds. Tone: grounded,
-reflection/entertainment framing, no fortune-telling/guarantee claims, no superlatives.
+factual astronomy framing, no fortune-telling/guarantee claims, no superlatives.
 
-> **v1.1 REPOSITIONING (4.3(b), RP-05, owner-approved 2026-07-23):** primary identity is a
-> daily reflection journal guided by the real sky. Tarot/horoscope/zodiac words must NOT
-> appear in the Subtitle, Promotional Text, or the description's first paragraph — they
-> live in keywords and the feature list only. Owner decision 2026-07-24: the Arcana brand
-> word STAYS (renaming rounds rejected; Zorya dropped over the Z-symbol association) —
-> only the descriptor changes: "Tarot & Horoscope" -> "Daily Sky Journal".
+> **v1.0.1 ASTRONOMY REPOSITIONING (4.3(b), owner-approved 2026-07-28):** primary
+> identity is a **real night-sky / Moon instrument** (tonight's Moon, best time to
+> observe, planet visibility, ISS passes, sky events — all computed on-device with
+> real ephemeris) plus a daily reflection **journal**. Tarot/horoscope/zodiac words
+> must NOT appear in the App Name, Subtitle, Promotional Text, or the description's
+> first two paragraphs — they live in keywords and a secondary "when you want more"
+> section only, reached from the Menu. The Arcana brand word STAYS (owner decision
+> 2026-07-24); only the descriptor changes to lead with the sky.
+>
+> **Category:** change primary from Lifestyle to **Reference** (or Education).
+> Astronomy tools live there and it reinforces the non-divination identity.
+> Suggested secondary: **Lifestyle**.
 
 ---
 
@@ -16,26 +22,26 @@ reflection/entertainment framing, no fortune-telling/guarantee claims, no superl
 
 **App Name** (≤30) — 24
 ```
-Arcana: Daily Sky Journal
+Arcana: Night Sky & Moon
 ```
-> uk localization: `Arcana: щоденник неба`
+> Alt if you want the journal in the title: `Arcana: Sky, Moon & Journal` (27).
+> uk localization: `Arcana: Небо і Місяць`
 
-**Subtitle** (≤30) — 30
+**Subtitle** (≤30) — 29
 ```
-Mood, reflection & moon ritual
-```
-
-**Promotional Text** (≤170, updatable without review) — ~157
-```
-One quiet minute a day: check in with your mood, see today's real sky, and answer one grounded question. A reflection ritual that builds into a journal.
+Moon, planets & tonight's sky
 ```
 
-**Keywords** (≤100, comma-separated, no spaces after commas) — 93
+**Promotional Text** (≤170, updatable without review) — ~156
 ```
-tarot,horoscope,zodiac,astrology,moon phase,journal,mood tracker,reflection,ritual,numerology
+See tonight's Moon and sky for your location: phase, best time to observe, planets, ISS passes and upcoming events — real astronomy, computed on your device.
 ```
-> Name + subtitle now cover "daily, sky, journal, mood, reflection, moon, ritual" — the
-> divination terms moved INTO keywords (searchable, not visible on the store page).
+
+**Keywords** (≤100, comma-separated, no spaces after commas) — 94
+```
+moon phase,stargazing,astronomy,night sky,planets,moon calendar,tarot,horoscope,journal,meteor
+```
+> Astronomy terms lead. Divination terms kept only as (invisible) search keywords.
 
 **Support URL**
 ```
@@ -57,32 +63,38 @@ https://oleksandrhrubyi.github.io/Arcana-Insight/privacy-policy.html
 ## Description (≤4000)
 
 ```
-Arcana is a daily reflection journal guided by the real sky. One quiet minute a day: check in with your mood, see what today's sky actually looks like — the Moon's sign and phase, the day's ruling planet, the day number — and answer one grounded question written for this exact day.
+Arcana turns tonight's real sky into something you can use. Open it and see the Moon exactly as it is right now — its phase, how lit it is, when it rises and sets — over a real photograph of the night sky, all computed on your device for your location.
 
-YOUR DAILY RITUAL
-• Mood check-in — one tap to name how you feel.
-• Today's sky — real astronomy, computed for your day: Moon sign and phase, planetary day, retrogrades.
-• Morning intention, evening reflection — before noon the day's question looks forward, after noon it looks back. Drawn from today's sky and number; never predictions, always a question only you can answer.
-• Your journal — entries build into a private history you can revisit. Works offline; syncs when you sign in.
-• Streaks & progress — a gentle rhythm, three small steps a day.
+TONIGHT'S SKY, FOR REAL
+• Best time to observe — Arcana finds tonight's genuinely dark window (astronomical twilight minus moonlight) and shows the cloud forecast, so you know when it's actually worth going out.
+• The Moon — live phase and illumination, distance in kilometres, apparent size, and the next perigee and apogee (super and micro moons).
+• Planets tonight — which are up, where to look (compass point and altitude), how bright they are, and when each one is highest and sets.
+• The ISS — real pass predictions for your exact location: when it appears, which way it crosses, how high, and for how long.
+• Sky events — eclipses, meteor-shower peaks, solstices and equinoxes, each with a reminder you can switch on.
+• On the horizon — sunrise, sunset, moonrise and moonset with their exact compass bearings, plus a Moon calendar you can page through month by month.
 
-GO DEEPER, WHEN YOU WANT TO
-• Card of the Day — one card with a clear, grounded interpretation.
-• Daily horoscope — energy, love, and career themes for your sign.
-• Compatibility — a two-chart reading for any pair, across Sun, Moon, Venus and Mars.
-• Card library — 78 cards with upright and reversed meanings.
+Everything is calculated on-device with a real astronomy engine — accurate ephemeris, no account required, works offline, and follows your location.
 
-GROUNDED, NOT FORTUNE-TELLING
-Arcana speaks in themes, patterns, and questions — never guarantees or predictions about the future. It is a tool for self-reflection and entertainment.
+HOME-SCREEN WIDGET
+Keep tonight's Moon phase on your home screen at a glance.
+
+A DAILY REFLECTION JOURNAL
+One quiet minute a day: note how you feel and answer a single grounded question, written from what the sky is doing today. Entries stay private on your device and build into a journal you can look back on.
+
+WHEN YOU WANT MORE
+Optional extras, tucked away in the Menu: a card of the day, a daily horoscope for your sign, compatibility between two charts, and a full 78-card library.
+
+NO PREDICTIONS
+Arcana shows what the sky is doing and asks reflective questions. It never predicts your future — it's a tool for observing, learning and reflecting.
 
 ARCANA PREMIUM
 Unlock the full practice:
-• Unlimited guided sessions, plus 3-card and 5-card spreads
+• Saved history to revisit your reflections and readings over time
 • Daily Love and Career horoscope themes
 • Full compatibility reports with a complete score breakdown
-• Saved history to revisit your patterns over time
+• Unlimited guided sessions, plus 3-card and 5-card spreads
 
-Start with one honest minute today. Arcana helps you slow down, reflect, and notice what matters.
+Look up tonight. Arcana helps you see the sky for what it really is — and take a quiet minute for yourself.
 
 — Subscription —
 Arcana Premium is an auto-renewable subscription.
@@ -97,17 +109,18 @@ Privacy Policy: https://oleksandrhrubyi.github.io/Arcana-Insight/privacy-policy.
 
 ---
 
-## What's New (v1.1) (≤4000)
+## What's New (v1.0.1) (≤4000)
 
 ```
-Welcome to Arcana — a daily reflection ritual guided by the real sky.
+Arcana is now built around the real night sky.
 
-• Daily reflection journal: mood check-in, today's real sky, one grounded question a day
-• Entries save privately on your device and sync to your account
-• Streaks for your daily practice
-• Plus: card of the day, daily horoscope themes, compatibility, and a full card library
+• A new astronomy home: tonight's Moon — phase, illumination, rise and set — over a real photo of the sky, for your location
+• Sky tab: best time to observe tonight, live Moon data (distance, apparent size, next perigee/apogee), planet visibility with rise/set/highest times, ISS pass predictions, and a sky-events feed (eclipses, meteor peaks, solstices) with reminders
+• Sunrise/sunset and moonrise/moonset compass bearings, plus a month Moon calendar
+• A home-screen Moon-phase widget
+• A daily reflection journal: your mood plus one grounded question from today's sky
 
-Thank you for trying Arcana. We'd love your feedback.
+Everything is computed on your device — accurate, offline, no account needed.
 ```
 
 ---
@@ -125,9 +138,9 @@ Arcana Premium
 ```
 Arcana Premium · Monthly
 ```
-- **Description** (≤45) — 44
+- **Description** (≤45) — 43
 ```
-Unlimited tarot, all themes, saved history
+Saved history, all themes, full readings
 ```
 
 ### arcana.premium.yearly
@@ -141,46 +154,58 @@ Arcana Premium · Yearly
 Everything in Premium, billed once a year
 ```
 
-> Each subscription needs: localized name, price tier, and one **review screenshot**
-> (reuse `app-store/screenshots/`). Optional: attach a 3–7 day intro free trial (LR-21).
+> Each subscription needs: localized name, price tier, and one **review screenshot**.
+> Optional: attach a 3–7 day intro free trial (LR-21).
 
 ---
 
-## Screenshot captions (per screen, 10-shot set — reflection ritual leads)
-1. Journal today — "One honest minute a day"
-2. Journal breathing — "Start with 30 seconds of stillness"
-3. Journal history — "It builds into a private journal"
-4. Home — "Your calm daily ritual"
-5. Card of the day — "Go deeper when you want to"
-6. Sky (daily reading) — "Today's sky, for your sign"
-7. Compatibility — "See how two charts meet"
-8. Tarot — "Ask the oracle, when you want to"
-9. Card library — "All 78 cards, upright & reversed"
-10. Premium — "The full practice, unlocked"
+## Screenshot plan (NEW astronomy-first set — regenerate; old journal-first set is stale)
+
+Lead with the instrument. Suggested 8-shot order + captions:
+1. Home — "Tonight's Moon, for your sky"           (SkyHomePage — moon over Milky Way)
+2. Sky · Best time to observe — "Know when to look up"   (observing-window card)
+3. Sky · Moon tonight + calendar — "The Moon, to the kilometre"
+4. Sky · Upcoming events — "Never miss an eclipse or meteor peak"  (events + bell)
+5. Sky · Planets + ISS — "See what's up, and when"   (visible planets w/ times, ISS)
+6. Journal — "A quiet minute with today's sky"       (daily reflection)
+7. Card of the day / Horoscope — "Go deeper when you want to"  (secondary)
+8. Premium — "The full practice, unlocked"
+
+> Generator note: the existing `tests/visual/appstore-shots.spec.js` captures a
+> journal-first set (`app-store/screenshots/*/1-journal-today.png` …). It must be
+> reworked to shoot the new home + the Sky tool screens above at 6.9″ 1320×2868
+> and 6.5″ 1242×2688 before upload. (Separate task — see "Remaining to submit".)
 
 ---
 
 ## App Review notes (for the reviewer)
 ```
-Arcana (previously submitted as "Arcana: Tarot & Horoscope", rejected under
-4.3(b)) has been repositioned per your guidance: it is now a daily reflection
-journal guided by real astronomy — "Arcana: Daily Sky Journal". The first-run
-flow, home screen primary action, subtitle, and screenshots all lead with the
-reflection ritual (mood check-in + real sky data + one reflective question/day,
-computed on-device with astronomy-engine).
-Tarot/horoscope remain as secondary supporting features. The app makes no
-predictions — all prompts are reflective questions.
+Arcana was previously rejected under Guideline 4.3(b). It has been rebuilt around real astronomy.
 
-To test without an account: complete onboarding -> you land in the daily
-reflection journal (mood + today's sky + question). Home, daily card, horoscope
-also work signed-out. Account is via email code or Apple Sign In. Premium is an
-auto-renewable subscription (monthly/yearly); use a sandbox account to test.
+The app now opens on an astronomy home — tonight's Moon (phase, illumination, rise/set) over a real photo of the night sky, computed for the user's location. The "Sky" tab (bottom navigation) is a genuine observing instrument, all computed ON-DEVICE with the open-source astronomy-engine library (real ephemeris — functionality, not content):
+• Best time to observe: tonight's astronomical-dark window minus moonlight, plus a cloud forecast.
+• Live Moon data: phase, distance (km), apparent size, next perigee/apogee.
+• Planet visibility: which planets are up, compass/altitude, magnitude, and each one's rise/set and meridian-transit (highest) time.
+• ISS pass predictions (SGP4) for the user's location.
+• A sky-events feed — eclipses, meteor-shower peaks, solstices/equinoxes — each with an optional local-notification reminder.
+• Sunrise/sunset and moonrise/moonset compass bearings, and a month Moon calendar.
+There is also a home-screen Moon-phase widget and a daily reflection journal (mood + one reflective question derived from today's sky).
+
+Tarot and horoscope are secondary, optional features reached only from the Menu — never the home screen and never a primary navigation tab. The app makes no predictions; all journal prompts are reflective questions.
+
+HOW TO TEST (no account needed):
+1. Complete onboarding → you land on the astronomy home.
+2. Tap "Sky" in the bottom nav for the full observing tool; tap the event chip on the home to jump to sky events.
+3. Tap "Journal" for the daily reflection.
+Everything above works signed-out. Account is via email code or Apple Sign In. Premium is an auto-renewable subscription (Monthly/Yearly) — please use a Sandbox account to test purchase/restore.
 ```
 
 ---
 
 ## Age rating
-- Recommended: **12+** (tarot/astrology content; reviewers often raise 4+).
+- Recommended: **4+** (no divination in the primary experience; astronomy/journal).
+  Reviewers may raise it given the optional tarot/horoscope in Menu — 9+/12+ is
+  acceptable. Answer the questionnaire honestly.
 - App Privacy mapping: Email + Date of Birth = Linked to you; Firebase = Usage Data
   (analytics); RevenueCat = Purchases. Keep consistent with PrivacyInfo.xcprivacy.
 
@@ -193,24 +218,24 @@ auto-renewable subscription (monthly/yearly); use a sandbox account to test.
 
 ## App information
 
-**App Name** (≤30) — 20
+**App Name** (≤30) — 21
 ```
-Arcana: щоденник неба
+Arcana: Небо і Місяць
 ```
 
-**Subtitle** (≤30) — 28
+**Subtitle** (≤30) — 25
 ```
-Настрій, рефлексія і Місяць
+Місяць, планети й небо вночі
 ```
 
 **Promotional Text** (≤170) — ~150
 ```
-Одна тиха хвилина на день: настрій, справжнє небо сьогодні й одне приземлене питання. Ритуал рефлексії, що виростає у щоденник.
+Дивись небо і Місяць саме над тобою: фаза, коли найкраще спостерігати, планети, прольоти МКС і найближчі події — справжня астрономія на твоєму пристрої.
 ```
 
-**Keywords** (≤100) — 97
+**Keywords** (≤100) — ~93
 ```
-таро,гороскоп,зодіак,астрологія,місяць,щоденник,настрій,рефлексія,ритуал,нумерологія
+фази місяця,астрономія,нічне небо,планети,зорі,таро,гороскоп,щоденник,календар місяця,метеори
 ```
 
 **Support / Marketing / Privacy URL** — ті самі, що в EN.
@@ -220,32 +245,38 @@ Arcana: щоденник неба
 ## Description (≤4000)
 
 ```
-Arcana — щоденник рефлексії, який веде справжнє небо. Одна тиха хвилина на день: відзнач настрій, подивись, яким є небо саме сьогодні — знак і фаза Місяця, планета дня, число дня — і дай відповідь на одне приземлене питання, написане для цього дня.
+Arcana перетворює справжнє небо над тобою на щось корисне. Відкрий — і побач Місяць таким, яким він є просто зараз: його фазу, наскільки він освітлений, коли сходить і заходить — на тлі справжнього фото нічного неба, розрахованого на твоєму пристрої для твоєї локації.
 
-ТВІЙ ЩОДЕННИЙ РИТУАЛ
-• Чек-ін настрою — один дотик, щоб назвати, як ти почуваєшся.
-• Небо сьогодні — реальна астрономія: знак і фаза Місяця, планетарний день, ретрогради.
-• Ранкове налаштування, вечірній підсумок — до полудня питання дня дивиться вперед, після — назад. Із сьогоднішнього неба й числа; без передбачень — лише питання, на яке можеш відповісти тільки ти.
-• Твій щоденник — записи складаються в приватну історію. Працює офлайн; синхронізується після входу.
-• Серії та прогрес — м'який ритм: три маленькі кроки на день.
+НЕБО СЬОГОДНІ — ПО-СПРАВЖНЬОМУ
+• Коли найкраще спостерігати — Arcana знаходить справді темне вікно ночі (астрономічні сутінки мінус світло Місяця) і показує прогноз хмарності, щоб ти знав, коли справді варто вийти.
+• Місяць — фаза й освітленість наживо, відстань у кілометрах, видимий розмір і найближчі перигей та апогей (супер- і мікромісяць).
+• Планети сьогодні — які видно, куди дивитися (сторона світу й висота), наскільки яскраві та коли кожна найвище й заходить.
+• МКС — реальні прогнози прольотів для твоєї локації: коли з'явиться, звідки й куди летить, як високо і скільки триває.
+• Події неба — затемнення, піки метеорних потоків, сонцестояння й рівнодення, з нагадуванням для кожної.
+• Над горизонтом — схід і захід Сонця й Місяця з точними азимутами, а також місячний календар, який можна гортати по місяцях.
 
-ГЛИБШЕ — КОЛИ ЗАХОЧЕШ
-• Карта дня — одна карта з ясним, приземленим тлумаченням.
-• Щоденний гороскоп — теми енергії, кохання та кар'єри для твого знака.
-• Сумісність — читання двох карт для будь-якої пари: Сонце, Місяць, Венера, Марс.
-• Бібліотека карт — 78 карт із прямими та перевернутими значеннями.
+Усе обчислюється на пристрої справжнім астрономічним рушієм — точні ефемериди, без акаунта, працює офлайн і зважає на твою локацію.
 
-ПРИЗЕМЛЕНО, БЕЗ ВОРОЖІННЯ
-Arcana говорить темами, патернами й питаннями — без гарантій чи передбачень майбутнього. Це інструмент для самоаналізу та розваги.
+ВІДЖЕТ НА ЕКРАН
+Тримай фазу Місяця сьогодні прямо на домашньому екрані.
+
+ЩОДЕННИК РЕФЛЕКСІЇ
+Одна тиха хвилина на день: відзнач настрій і дай відповідь на одне приземлене питання, написане з того, яким є небо сьогодні. Записи лишаються приватними на пристрої й складаються у щоденник.
+
+КОЛИ ЗАХОЧЕШ БІЛЬШЕ
+Необов'язкові додатки в меню: карта дня, щоденний гороскоп для твого знака, сумісність двох карт і повна бібліотека з 78 карт.
+
+БЕЗ ПЕРЕДБАЧЕНЬ
+Arcana показує, що робить небо, і ставить питання для роздумів. Вона ніколи не передбачає майбутнє — це інструмент, щоб спостерігати, вчитися й міркувати.
 
 ARCANA PREMIUM
 Відкрий повну практику:
-• Необмежені сесії, розклади на 3 та 5 карт
+• Збережена історія, щоб повертатися до рефлексій і розкладів
 • Щоденні теми гороскопу «Кохання» і «Кар'єра»
 • Повні звіти сумісності з детальним розкладом балів
-• Збережена історія, щоб повертатися до своїх патернів
+• Необмежені сесії, розклади на 3 та 5 карт
 
-Почни з однієї чесної хвилини сьогодні. Arcana допомагає сповільнитися, поміркувати й помітити головне.
+Підніми погляд угору. Arcana допомагає побачити небо таким, яке воно є — і знайти тиху хвилину для себе.
 
 — Підписка —
 Arcana Premium — це автоматично поновлювана підписка.
@@ -260,17 +291,18 @@ Arcana Premium — це автоматично поновлювана підпи
 
 ---
 
-## What's New (v1.1) (≤4000)
+## What's New (v1.0.1) (≤4000)
 
 ```
-Вітаємо в Arcana — щоденний ритуал рефлексії, який веде справжнє небо.
+Тепер Arcana побудована навколо справжнього нічного неба.
 
-• Щоденник рефлексії: настрій, небо сьогодні, одне приземлене питання на день
-• Записи зберігаються приватно на пристрої та синхронізуються з акаунтом
-• Серії для щоденної практики
-• А також: карта дня, теми гороскопу, сумісність і повна бібліотека карт
+• Нова астрономічна головна: Місяць сьогодні — фаза, освітленість, схід і захід — на тлі справжнього фото неба, для твоєї локації
+• Вкладка «Небо»: коли найкраще спостерігати сьогодні, дані Місяця наживо (відстань, видимий розмір, наступний перигей/апогей), видимість планет із часом сходу/заходу/кульмінації, прогнози прольотів МКС і стрічка подій (затемнення, піки метеорів, сонцестояння) з нагадуваннями
+• Азимути сходу/заходу Сонця й Місяця та місячний календар
+• Віджет фази Місяця на домашній екран
+• Щоденник рефлексії: настрій і одне приземлене питання з неба сьогодні
 
-Дякуємо, що пробуєш Arcana. Будемо раді твоєму відгуку.
+Усе обчислюється на пристрої — точно, офлайн, без акаунта.
 ```
 
 ---
@@ -287,9 +319,9 @@ Arcana Premium
 ```
 Arcana Premium · Місячна
 ```
-- **Description** (≤45) — 34
+- **Description** (≤45) — 33
 ```
-Необмежене таро, всі теми, історія
+Історія, всі теми, повні розклади
 ```
 
 ### arcana.premium.yearly
@@ -305,8 +337,11 @@ Arcana Premium · Річна
 ---
 
 ## Screenshot captions (uk)
-1. Головна — «Твій спокійний щоденний ритуал»
-2. Таро — «Запитай оракула, по одній карті»
-3. Гороскоп — «Щоденні енергія, кохання й кар'єра»
-4. Сумісність — «Подивись, як збігаються дві карти»
-5. Premium — «Більше з Premium»
+1. Головна — «Місяць сьогодні, над твоїм небом»
+2. Небо · Коли спостерігати — «Знай, коли підняти погляд»
+3. Небо · Місяць + календар — «Місяць — до кілометра»
+4. Небо · Події — «Не пропусти затемнення чи метеори»
+5. Небо · Планети + МКС — «Що видно і коли»
+6. Щоденник — «Тиха хвилина з небом сьогодні»
+7. Карта дня / Гороскоп — «Глибше, коли захочеш»
+8. Premium — «Повна практика, відкрита»
