@@ -83,6 +83,15 @@
           <span class="sky-accent">{{ tt(`skyHome.events.${moonDetail.nextApsis.kind}`) }}</span>
           · {{ untilLabel(moonDetail.nextApsis.daysUntil) }} · {{ formatKm(moonDetail.nextApsis.distanceKm) }}
         </div>
+        <div v-if="bearings?.moonRise || bearings?.moonSet" class="sky-moon-horizon">
+          <template v-if="bearings.moonRise">
+            {{ tt('skyHome.moonRises') }} {{ tt(`skyHome.compass.${bearings.moonRise.azimuthKey}`) }} {{ bearings.moonRise.deg }}°
+          </template>
+          <template v-if="bearings.moonRise && bearings.moonSet"> · </template>
+          <template v-if="bearings.moonSet">
+            {{ tt('skyHome.moonSets') }} {{ tt(`skyHome.compass.${bearings.moonSet.azimuthKey}`) }} {{ bearings.moonSet.deg }}°
+          </template>
+        </div>
       </section>
 
       <!-- Upcoming events -->
@@ -153,9 +162,15 @@
         <div class="sky-section-title">{{ tt('skyHome.sunTitle') }}</div>
         <div class="sky-rows">
           <div class="sky-row"><span>{{ tt('skyHome.dawn') }}</span><span>{{ formatTime(sunInfo.dawn) }}</span></div>
-          <div class="sky-row"><span>{{ tt('skyHome.sunrise') }}</span><span>{{ formatTime(sunInfo.sunrise) }}</span></div>
+          <div class="sky-row">
+            <span>{{ tt('skyHome.sunrise') }}</span>
+            <span>{{ formatTime(sunInfo.sunrise) }}<template v-if="bearings?.sunrise"> · {{ tt(`skyHome.compass.${bearings.sunrise.azimuthKey}`) }} {{ bearings.sunrise.deg }}°</template></span>
+          </div>
           <div class="sky-row"><span>{{ tt('skyHome.goldenHour') }}</span><span>{{ formatTime(sunInfo.goldenEveningStart) }}</span></div>
-          <div class="sky-row"><span>{{ tt('skyHome.sunset') }}</span><span>{{ formatTime(sunInfo.sunset) }}</span></div>
+          <div class="sky-row">
+            <span>{{ tt('skyHome.sunset') }}</span>
+            <span>{{ formatTime(sunInfo.sunset) }}<template v-if="bearings?.sunset"> · {{ tt(`skyHome.compass.${bearings.sunset.azimuthKey}`) }} {{ bearings.sunset.deg }}°</template></span>
+          </div>
           <div class="sky-row"><span>{{ tt('skyHome.darkShort') }}</span><span>{{ formatTime(sunInfo.dusk) }}</span></div>
           <div v-if="sunInfo.dayLengthMs" class="sky-row">
             <span>{{ tt('skyHome.dayLength') }}</span><span>{{ dayLengthLabel }}</span>
@@ -194,6 +209,7 @@ import {
   computeSunDetail,
   computeObservingWindow,
   bodyViewTimes,
+  bearingAt,
   makeObserver,
 } from 'src/helpers/skyCore.js'
 import { drawMoon, onMoonReady } from 'src/helpers/moonRender.js'
@@ -218,6 +234,7 @@ const sky = ref(null)
 const moonDetail = ref(null)
 const observing = ref(null)
 const conditions = ref(null)
+const bearings = ref(null)
 const eventFeed = ref([])
 const scheduledIds = ref(new Set())
 const issPasses = ref([])
@@ -505,6 +522,13 @@ onMounted(async () => {
       times: bodyViewTimes(Astronomy, p.planetKey, observer, now),
     }))
     sunInfo.value = computeSunDetail(Astronomy, observer, now)
+    const moonRS = bodyViewTimes(Astronomy, 'moon', observer, now)
+    bearings.value = {
+      sunrise: bearingAt(Astronomy, 'sun', observer, sunInfo.value.sunrise),
+      sunset: bearingAt(Astronomy, 'sun', observer, sunInfo.value.sunset),
+      moonRise: bearingAt(Astronomy, 'moon', observer, moonRS.rise),
+      moonSet: bearingAt(Astronomy, 'moon', observer, moonRS.set),
+    }
     void refreshScheduled()
     void loadIssPasses()
     void loadConditions()
@@ -708,6 +732,13 @@ onBeforeUnmount(() => {
   text-align: center;
   font-size: 12.5px;
   color: rgba(200, 218, 244, 0.7);
+  font-variant-numeric: tabular-nums;
+}
+.sky-moon-horizon {
+  margin-top: 6px;
+  text-align: center;
+  font-size: 11.5px;
+  color: rgba(150, 178, 214, 0.6);
   font-variant-numeric: tabular-nums;
 }
 

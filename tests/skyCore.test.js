@@ -206,6 +206,18 @@ test('body view times: rise/set/transit are dates-or-null with a sane peak altit
   }
 })
 
+test('bearing at sunset is westerly, at sunrise easterly, for Kyiv in summer', () => {
+  const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
+  const { sunrise, sunset } = sky.computeSunTimes(Astronomy, obs, new Date('2026-07-28T10:00:00Z'))
+  const bRise = sky.bearingAt(Astronomy, 'sun', obs, sunrise)
+  const bSet = sky.bearingAt(Astronomy, 'sun', obs, sunset)
+  assert.ok(bRise.deg >= 0 && bRise.deg < 360 && bSet.deg >= 0 && bSet.deg < 360)
+  // Summer sun rises in the NE quadrant and sets in the NW quadrant.
+  assert.ok(['ne', 'e'].includes(bRise.azimuthKey), `sunrise key ${bRise.azimuthKey}`)
+  assert.ok(['nw', 'w'].includes(bSet.azimuthKey), `sunset key ${bSet.azimuthKey}`)
+  assert.equal(sky.bearingAt(Astronomy, 'sun', obs, null), null)
+})
+
 test('observing window: polar summer reports no true darkness', () => {
   // Tromsø ~69.6°N at midsummer — the Sun never reaches -18°.
   const obs = sky.makeObserver(Astronomy, 69.65, 18.96)

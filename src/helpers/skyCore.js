@@ -248,6 +248,14 @@ export const bodyViewTimes = (Astronomy, bodyKey, observer, date = new Date()) =
   return { rise, set, transit, transitAltitude }
 }
 
+// Compass bearing (° clockwise from true north + 8-point key) of a body at a
+// given instant — used to say WHERE on the horizon the Sun/Moon rise and set.
+export const bearingAt = (Astronomy, bodyKey, observer, date) => {
+  if (!date) return null
+  const { azimuth } = horizontalPosition(Astronomy, bodyKey, observer, date)
+  return { deg: Math.round(norm360(azimuth)), azimuthKey: azimuthToCompassKey(azimuth) }
+}
+
 // Fixed annual peak dates of the major meteor showers (local-evening reference).
 export const METEOR_SHOWERS = Object.freeze([
   { key: 'quadrantids', month: 1, day: 3 },
