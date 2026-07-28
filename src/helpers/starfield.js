@@ -45,15 +45,20 @@ export const createShootingStars = (canvas) => {
       return ls / 4294967296
     }
     stars = []
-    const count = Math.round((w * h) / 5200)
+    const count = Math.round((w * h) / 6200)
     for (let i = 0; i < count; i += 1) {
+      const y = lr() * h
+      // Fade stars out over the bottom UI (nav) so they never read as a
+      // blinking garland above the menu.
+      const bf = y > h * 0.72 ? Math.max(0, (h - y) / (h * 0.28)) : 1
       stars.push({
         x: lr() * w,
-        y: lr() * h,
-        r: 0.4 + lr() * 1.3,
-        a: 0.2 + lr() * 0.5,
-        tw: 0.55 + lr() * 1.9, // twinkle speed (rad/s)
+        y,
+        r: 0.4 + lr() * 1.2,
+        a: 0.15 + lr() * 0.42,
+        tw: 0.4 + lr() * 1.4, // twinkle speed (rad/s)
         ph: lr() * 6.283,
+        bf,
         c: STAR_COLORS[(lr() * STAR_COLORS.length) | 0],
       })
     }
@@ -74,7 +79,9 @@ export const createShootingStars = (canvas) => {
     for (let i = 0; i < stars.length; i += 1) {
       const s = stars[i]
       const tw = 0.5 + 0.5 * Math.sin(t * s.tw + s.ph)
-      const a = s.a * (0.18 + 0.82 * tw)
+      // Gentle shimmer, not a blinking garland: shallow modulation, faded near UI.
+      const a = s.a * s.bf * (0.55 + 0.45 * tw)
+      if (a < 0.012) continue
       ctx.beginPath()
       ctx.arc(s.x, s.y, s.r, 0, 7)
       ctx.fillStyle = `rgba(${s.c},${a})`
@@ -83,7 +90,7 @@ export const createShootingStars = (canvas) => {
 
     if (!shoot && t >= nextShoot) {
       const fromLeft = rand() > 0.5
-      const speed = 230 + rand() * 150
+      const speed = 78 + rand() * 42
       const dir = (fromLeft ? 1 : -1) * (0.55 + rand() * 0.4)
       shoot = {
         x: fromLeft ? -30 : w + 30,
@@ -91,7 +98,7 @@ export const createShootingStars = (canvas) => {
         vx: dir * speed,
         vy: (0.35 + rand() * 0.3) * speed,
         age: 0,
-        life: 0.55 + rand() * 0.4,
+        life: 1.4 + rand() * 0.8,
         last: t,
       }
     }
@@ -102,13 +109,13 @@ export const createShootingStars = (canvas) => {
       const fade = Math.sin(Math.PI * p)
       const hx = shoot.x + shoot.vx * shoot.age
       const hy = shoot.y + shoot.vy * shoot.age
-      const tx = hx - shoot.vx * 0.16
-      const ty = hy - shoot.vy * 0.16
+      const tx = hx - shoot.vx * 0.5
+      const ty = hy - shoot.vy * 0.5
       const g = ctx.createLinearGradient(tx, ty, hx, hy)
       g.addColorStop(0, 'rgba(214,230,255,0)')
-      g.addColorStop(1, `rgba(238,245,255,${0.9 * fade})`)
+      g.addColorStop(1, `rgba(236,244,255,${0.7 * fade})`)
       ctx.strokeStyle = g
-      ctx.lineWidth = 1.7
+      ctx.lineWidth = 0.9
       ctx.lineCap = 'round'
       ctx.beginPath()
       ctx.moveTo(tx, ty)
