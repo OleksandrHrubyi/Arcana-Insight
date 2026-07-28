@@ -12,6 +12,24 @@
         <div class="sky-date">{{ formatToday }}</div>
       </header>
 
+      <!-- Best time to observe tonight: astronomical darkness minus moonlight, + clouds -->
+      <section v-if="observing" class="sky-card sky-observe">
+        <div class="sky-section-title">{{ tt('skyPage.observeTitle') }}</div>
+        <div v-if="observeRange" class="sky-observe__range">{{ observeRange }}</div>
+        <div v-else class="sky-observe__range sky-observe__range--none">
+          {{ tt('skyPage.observeNoDarkness') }}
+        </div>
+        <div class="sky-observe__verdict">{{ observeVerdict }}</div>
+        <div
+          v-if="conditions"
+          class="sky-observe__cloud"
+          :class="`sky-observe__cloud--${conditions.band}`"
+        >
+          <span class="sky-observe__clouddot"></span>
+          {{ conditionsLabel }} · {{ conditions.cloudCoverPct }}% {{ tt('skyHome.cloudLabel') }}
+        </div>
+      </section>
+
       <!-- Month calendar (centrepiece) -->
       <section class="sky-card sky-cal">
         <div class="sky-cal__head">
@@ -169,6 +187,7 @@ import {
   computePlanetSigns,
   computeVisibleTonight,
   computeSunDetail,
+  computeObservingWindow,
   makeObserver,
 } from 'src/helpers/skyCore.js'
 import { drawMoon, onMoonReady } from 'src/helpers/moonRender.js'
@@ -179,6 +198,7 @@ import {
   notifId,
 } from 'src/services/skyNotifications.js'
 import { fetchIssTle, computeVisiblePasses } from 'src/services/issPasses.js'
+import { fetchTonightConditions } from 'src/services/skyWeather.js'
 import { skyLocation, loadSkyLocation, SKY_CITIES } from 'src/stores/skyLocation.js'
 
 const locale = computed(() => currentLocale.value || 'en')
@@ -190,6 +210,8 @@ const tt = (key, vars) => {
 const loading = ref(true)
 const sky = ref(null)
 const moonDetail = ref(null)
+const observing = ref(null)
+const conditions = ref(null)
 const eventFeed = ref([])
 const scheduledIds = ref(new Set())
 const issPasses = ref([])
@@ -380,6 +402,40 @@ const formatKm = (km) => {
   }
 }
 const formatDeg = (deg) => `${deg.toFixed(2)}°`
+
+// Tonight's observing conditions (cloud cover) — networked, non-blocking.
+const loadConditions = async () => {
+  conditions.value = await fetchTonightConditions(skyLocation.value.lat, skyLocation.value.lon)
+}
+const conditionsLabel = computed(() => {
+  const band = conditions.value?.band
+  if (band === 'clear') return tt('skyHome.condClear')
+  if (band === 'cloudy') return tt('skyHome.condCloudy')
+  return tt('skyHome.condPartly')
+})
+
+// "Best time to observe" — headline range + verdict copy from the window quality.
+const observeRange = computed(() => {
+  const w = observing.value
+  if (!w || !w.hasDarkness || !w.windowStart || !w.windowEnd) return null
+  return `${formatTime(w.windowStart)} – ${formatTime(w.windowEnd)}`
+})
+const observeVerdict = computed(() => {
+  const w = observing.value
+  if (!w) return ''
+  switch (w.quality) {
+    case 'moonless':
+      return tt('skyPage.observeMoonless')
+    case 'afterMoonset':
+      return tt('skyPage.observeAfterMoonset', { t: formatTime(w.moonSet) })
+    case 'beforeMoonrise':
+      return tt('skyPage.observeBeforeMoonrise', { t: formatTime(w.moonRise) })
+    case 'moonWashout':
+      return tt('skyPage.observeMoonWashout', { p: w.moonIlluminationPct })
+    default:
+      return tt('skyPage.observeNoDarknessSub')
+  }
+})
 const untilLabel = (days) => {
   if (days <= 0) return tt('skyPage.today')
   if (days === 1) return tt('skyPage.tomorrow')
@@ -421,12 +477,14 @@ onMounted(async () => {
     const observer = makeObserver(Astronomy, skyLocation.value.lat, skyLocation.value.lon)
     sky.value = computeSkyForDate(Astronomy, now)
     moonDetail.value = computeMoonDetail(Astronomy, now)
+    observing.value = computeObservingWindow(Astronomy, observer, now)
     eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { limit: 12 })
     planets.value = computePlanetSigns(Astronomy, now)
     visible.value = computeVisibleTonight(Astronomy, observer, now)
     sunInfo.value = computeSunDetail(Astronomy, observer, now)
     void refreshScheduled()
     void loadIssPasses()
+    void loadConditions()
     buildMonth()
   } catch (e) {
     console.error('[SkyPage] load failed', e)
@@ -544,6 +602,54 @@ onBeforeUnmount(() => {
 }
 .sky-accent {
   color: #91bcff;
+}
+
+/* Best time to observe — the page's headline answer */
+.sky-observe__range {
+  font-size: 27px;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  color: #eef3fb;
+  font-variant-numeric: tabular-nums;
+}
+.sky-observe__range--none {
+  font-size: 19px;
+  color: rgba(214, 226, 244, 0.9);
+}
+.sky-observe__verdict {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(200, 218, 244, 0.72);
+}
+.sky-observe__cloud {
+  margin-top: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(150, 180, 220, 0.16);
+  background: rgba(9, 14, 23, 0.5);
+  font-size: 12px;
+  color: rgba(220, 231, 246, 0.85);
+}
+.sky-observe__clouddot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #8aa0bd;
+}
+.sky-observe__cloud--clear .sky-observe__clouddot {
+  background: #7fd4a3;
+  box-shadow: 0 0 8px rgba(127, 212, 163, 0.8);
+}
+.sky-observe__cloud--partly .sky-observe__clouddot {
+  background: #e6c07a;
+  box-shadow: 0 0 8px rgba(230, 192, 122, 0.7);
+}
+.sky-observe__cloud--cloudy .sky-observe__clouddot {
+  background: #8aa0bd;
 }
 
 /* Moon-tonight card — stat grid (breaks the stacked-list rhythm) */

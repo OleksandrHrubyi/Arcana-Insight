@@ -177,3 +177,26 @@ test('upcoming sky-events feed is future, sorted, capped, and typed', () => {
   // A full moon is due within days of this date — the feed must surface a phase.
   assert.ok(feed.some((e) => e.type === 'moonPhase'), 'includes a moon phase')
 })
+
+test('observing window: dark + moonless sub-window are ordered and bounded', () => {
+  const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
+  // Mid-October: Kyiv has real astronomical night.
+  const w = sky.computeObservingWindow(Astronomy, obs, new Date('2026-10-15T15:00:00Z'))
+  const qualities = ['noDarkness', 'moonless', 'afterMoonset', 'beforeMoonrise', 'moonWashout']
+  assert.ok(qualities.includes(w.quality), `known quality: ${w.quality}`)
+  assert.ok(w.moonIlluminationPct >= 0 && w.moonIlluminationPct <= 100)
+  assert.ok(w.hasDarkness, 'Kyiv has astronomical darkness in October')
+  assert.ok(w.darkStart instanceof Date && w.darkEnd instanceof Date)
+  assert.ok(w.darkStart.getTime() < w.darkEnd.getTime(), 'dark window ordered')
+  assert.ok(w.windowStart.getTime() >= w.darkStart.getTime(), 'sub-window starts within darkness')
+  assert.ok(w.windowEnd.getTime() <= w.darkEnd.getTime(), 'sub-window ends within darkness')
+  assert.ok(w.windowStart.getTime() <= w.windowEnd.getTime(), 'sub-window ordered')
+})
+
+test('observing window: polar summer reports no true darkness', () => {
+  // Tromsø ~69.6°N at midsummer — the Sun never reaches -18°.
+  const obs = sky.makeObserver(Astronomy, 69.65, 18.96)
+  const w = sky.computeObservingWindow(Astronomy, obs, new Date('2026-06-21T12:00:00Z'))
+  assert.equal(w.hasDarkness, false)
+  assert.equal(w.quality, 'noDarkness')
+})

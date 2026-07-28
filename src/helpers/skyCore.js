@@ -358,3 +358,62 @@ export const computeSunDetail = (Astronomy, observer, date = new Date()) => {
 
   return { sunrise, sunset, dawn, dusk: darkStart, goldenEveningStart, dayLengthMs, dayLengthDeltaMs }
 }
+
+// The single most actionable answer for an observer: WHEN is the sky actually
+// worth going out for tonight? Combines astronomical darkness (Sun < -18°) with
+// the Moon — moonlight is what really washes out a dark sky. Returns the dark
+// window plus the moonless sub-window and a `quality` verdict the UI maps to
+// copy. All times are Date | null; `hasDarkness` is false in polar summer.
+export const computeObservingWindow = (Astronomy, observer, date = new Date()) => {
+  const { sunset, darkStart } = computeSunTimes(Astronomy, observer, date)
+  const moonElong = moonSunElongation(Astronomy, date)
+  const moonIlluminationPct = Math.round(illuminationFromElongation(moonElong) * 100)
+
+  if (!darkStart) {
+    return { hasDarkness: false, sunset, darkStart: null, darkEnd: null, moonIlluminationPct, quality: 'noDarkness' }
+  }
+  const darkStartT = makeTime(Astronomy, darkStart)
+  // Next time the Sun climbs back to -18° after dusk = end of true darkness.
+  const darkEnd = toDate(Astronomy.SearchAltitude(Astronomy.Body.Sun, observer, +1, darkStartT, 1.0, -18))
+  if (!darkEnd) {
+    return { hasDarkness: false, sunset, darkStart, darkEnd: null, moonIlluminationPct, quality: 'noDarkness' }
+  }
+
+  // Is the Moon up when darkness begins, and when does it next cross the horizon?
+  const moonEqu = Astronomy.Equator(Astronomy.Body.Moon, darkStartT, observer, true, true)
+  const moonHor = Astronomy.Horizon(darkStartT, observer, moonEqu.ra, moonEqu.dec, 'normal')
+  const moonUpAtDark = moonHor.altitude > 0
+  const moonSet = toDate(Astronomy.SearchRiseSet(Astronomy.Body.Moon, observer, -1, darkStartT, 1.5))
+  const moonRise = toDate(Astronomy.SearchRiseSet(Astronomy.Body.Moon, observer, +1, darkStartT, 1.5))
+
+  let quality
+  let windowStart = darkStart
+  let windowEnd = darkEnd
+  if (moonUpAtDark) {
+    if (moonSet && moonSet < darkEnd) {
+      quality = 'afterMoonset' // dark sky opens once the Moon sets
+      windowStart = moonSet
+    } else {
+      quality = 'moonWashout' // Moon up the whole dark window
+    }
+  } else if (moonRise && moonRise < darkEnd) {
+    quality = 'beforeMoonrise' // dark now, until the Moon comes up
+    windowEnd = moonRise
+  } else {
+    quality = 'moonless' // no Moon at all during darkness — ideal
+  }
+
+  return {
+    hasDarkness: true,
+    sunset,
+    darkStart,
+    darkEnd,
+    moonUpAtDark,
+    moonSet,
+    moonRise,
+    moonIlluminationPct,
+    quality,
+    windowStart,
+    windowEnd,
+  }
+}
