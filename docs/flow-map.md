@@ -9,7 +9,7 @@ Use it when changing navigation, redirects, onboarding handoff, auth behavior, p
 Product-level anchors from `src/router/routes.js`:
 
 - `/` -> `arcana` (astronomy home — `src/pages/SkyHomePage.vue`)
-- `/sky` (astronomy detail — calendar, events, ISS passes, planets)
+- `/sky` (astronomy detail — moon calendar, moon-tonight stats, events, ISS passes, sun, planets)
 - `/readings-hub` (`readingsHub` — tarot / horoscope / card of the day / compatibility)
 - `/menu`
 - `/premium`

@@ -10,10 +10,6 @@
         <div class="sky-loc"><span class="sky-loc__dot"></span>{{ locationLabel }}</div>
         <div class="sky-kicker">{{ tt('skyPage.kicker') }}</div>
         <div class="sky-date">{{ formatToday }}</div>
-        <div class="sky-moonline">
-          {{ tt(`astro.phases.${sky.moonPhaseKey}`) }} · {{ sky.illuminationPct }}%<template v-if="events.fullMoon">
-            · <span class="sky-accent">{{ tt('skyPage.events.fullMoon') }} {{ untilLabel(events.fullMoon.daysUntil) }}</span></template>
-        </div>
       </header>
 
       <!-- Month calendar (centrepiece) -->
@@ -45,6 +41,29 @@
             ></canvas>
             <span class="sky-cal__num">{{ cell.day }}</span>
           </div>
+        </div>
+      </section>
+
+      <!-- Moon tonight (distance / apparent size / next approach — not on home) -->
+      <section v-if="moonDetail" class="sky-card">
+        <div class="sky-section-title">{{ tt('skyPage.moonTitle') }}</div>
+        <div class="sky-moon-grid">
+          <div class="sky-stat">
+            <span class="sky-stat__label">{{ tt('skyPage.illumination') }}</span>
+            <span class="sky-stat__val">{{ moonDetail.illuminationPct }}%</span>
+          </div>
+          <div class="sky-stat">
+            <span class="sky-stat__label">{{ tt('skyHome.distance') }}</span>
+            <span class="sky-stat__val">{{ formatKm(moonDetail.distanceKm) }}</span>
+          </div>
+          <div class="sky-stat">
+            <span class="sky-stat__label">{{ tt('skyHome.apparentSize') }}</span>
+            <span class="sky-stat__val">{{ formatDeg(moonDetail.angularDiameterDeg) }}</span>
+          </div>
+        </div>
+        <div v-if="moonDetail.nextApsis" class="sky-moon-cap">
+          <span class="sky-accent">{{ tt(`skyHome.events.${moonDetail.nextApsis.kind}`) }}</span>
+          · {{ untilLabel(moonDetail.nextApsis.daysUntil) }} · {{ formatKm(moonDetail.nextApsis.distanceKm) }}
         </div>
       </section>
 
@@ -145,7 +164,7 @@ import { t, currentLocale } from 'src/i18n'
 import {
   computeSkyForDate,
   computeMonthMoonPhases,
-  findUpcomingLunarEvents,
+  computeMoonDetail,
   computeUpcomingSkyEvents,
   computePlanetSigns,
   computeVisibleTonight,
@@ -170,7 +189,7 @@ const tt = (key, vars) => {
 }
 const loading = ref(true)
 const sky = ref(null)
-const events = ref({})
+const moonDetail = ref(null)
 const eventFeed = ref([])
 const scheduledIds = ref(new Set())
 const issPasses = ref([])
@@ -353,6 +372,14 @@ const formatTime = (date) => {
   }
 }
 const formatMag = (mag) => `${mag > 0 ? '+' : ''}${mag.toFixed(1)}`
+const formatKm = (km) => {
+  try {
+    return `${new Intl.NumberFormat(locale.value).format(km)} ${tt('skyHome.kmAbbr')}`
+  } catch {
+    return `${km} ${tt('skyHome.kmAbbr')}`
+  }
+}
+const formatDeg = (deg) => `${deg.toFixed(2)}°`
 const untilLabel = (days) => {
   if (days <= 0) return tt('skyPage.today')
   if (days === 1) return tt('skyPage.tomorrow')
@@ -393,7 +420,7 @@ onMounted(async () => {
     const now = new Date()
     const observer = makeObserver(Astronomy, skyLocation.value.lat, skyLocation.value.lon)
     sky.value = computeSkyForDate(Astronomy, now)
-    events.value = findUpcomingLunarEvents(Astronomy, now)
+    moonDetail.value = computeMoonDetail(Astronomy, now)
     eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { limit: 12 })
     planets.value = computePlanetSigns(Astronomy, now)
     visible.value = computeVisibleTonight(Astronomy, observer, now)
@@ -471,7 +498,7 @@ onBeforeUnmount(() => {
   z-index: 1;
   max-width: 520px;
   margin: 0 auto;
-  padding: calc(24px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom));
+  padding: max(52px, calc(env(safe-area-inset-top) + 12px)) 16px calc(96px + env(safe-area-inset-bottom));
   display: grid;
   gap: 16px;
 }
@@ -515,12 +542,44 @@ onBeforeUnmount(() => {
   letter-spacing: -0.01em;
   text-transform: capitalize;
 }
-.sky-moonline {
-  font-size: 13px;
-  color: rgba(200, 218, 244, 0.72);
-}
 .sky-accent {
   color: #91bcff;
+}
+
+/* Moon-tonight card — stat grid (breaks the stacked-list rhythm) */
+.sky-moon-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.sky-stat {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  text-align: center;
+  padding: 12px 6px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(9, 14, 23, 0.4);
+}
+.sky-stat__label {
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(184, 205, 236, 0.5);
+}
+.sky-stat__val {
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(233, 240, 250, 0.96);
+  font-variant-numeric: tabular-nums;
+}
+.sky-moon-cap {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 12.5px;
+  color: rgba(200, 218, 244, 0.7);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Shared premium card */
