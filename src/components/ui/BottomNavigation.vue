@@ -58,6 +58,26 @@
           </svg>
         </template>
 
+        <!-- Journal (daily reflection) -->
+        <template v-else-if="item.name === 'journal'">
+          <svg class="nav-tab__svg nav-tab__svg--outline" viewBox="0 0 28 28" fill="none">
+            <rect x="6.5" y="4.5" width="15" height="19" rx="3" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M10 4.5v19" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M13 10h5.5M13 14h5.5M13 18h3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <svg class="nav-tab__svg nav-tab__svg--filled" viewBox="0 0 28 28" fill="none">
+            <defs>
+              <linearGradient :id="gradId('jrn')" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#c7d6ff"/>
+                <stop offset="100%" stop-color="#6d86dc"/>
+              </linearGradient>
+            </defs>
+            <rect x="6.5" y="4.5" width="15" height="19" rx="3" :fill="`url(#${gradId('jrn')})`"/>
+            <path d="M10 4.5v19" stroke="#fff" stroke-width="1.4" opacity="0.55"/>
+            <path d="M13 10h5.5M13 14h5.5M13 18h3.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </template>
+
         <!-- Menu -->
         <template v-else-if="item.name === 'menu'">
           <svg class="nav-tab__svg nav-tab__svg--outline" viewBox="0 0 28 28" fill="none">
@@ -102,9 +122,10 @@ const current = ref('arcana')
 const selectedLocale = computed(() => currentLocale.value || 'en')
 
 const items = [
-  { name: 'arcana', labelKey: 'nav.home' },
-  { name: 'sky',    labelKey: 'nav.sky' },
-  { name: 'menu',   labelKey: 'nav.menu' },
+  { name: 'arcana',  labelKey: 'nav.home' },
+  { name: 'sky',     labelKey: 'nav.sky' },
+  { name: 'journal', labelKey: 'nav.journalTab' },
+  { name: 'menu',    labelKey: 'nav.menu' },
 ]
 
 // Unique ID suffix so multiple instances of the component don't collide with gradient IDs

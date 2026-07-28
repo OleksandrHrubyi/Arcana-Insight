@@ -20,19 +20,24 @@ These are the main product navigation surfaces. Do not create competing pseudo-h
 
 ## Bottom Navigation (post astronomy pivot)
 
-Three tabs (`src/components/ui/BottomNavigation.vue`), each a top-level route name:
+Four tabs (`src/components/ui/BottomNavigation.vue`), each a top-level route name:
 
 - **Home** (`arcana`) -> `SkyHomePage` — the single-screen astronomy home.
 - **Sky** (`sky`) -> `SkyPage` — astronomy detail.
+- **Journal** (`journal`) -> `JournalPage` — daily reflection (mood check-in +
+  a sky-tied prompt). A wellness/journaling surface, NOT divination — this is
+  why it's a safe first-level tab under 4.3(b) (it reinforces the astronomy +
+  reflection positioning without surfacing fortune-telling).
 - **Menu** (`menu`).
 
 Divination (tarot, horoscope, card of the day, compatibility) is reached from
 the **Menu**, never from a first-level tab and never on the home. This is
-deliberate for App Store 4.3(b): the bottom nav must read as an astronomy tool,
-not surface fortune-telling as a primary destination. The old `Readings` tab
-(`readingsHub`) was removed for this reason; `ReadingsPage` remains as an
-unlinked route only. In the Menu, the card of the day is the top "TODAY RITUAL"
-launcher; horoscope, tarot and compatibility are rows in the main section.
+deliberate for App Store 4.3(b): the primary nav must read as an astronomy /
+reflection tool, not surface fortune-telling as a primary destination. The old
+`Readings` tab (`readingsHub`) was removed for this reason; `ReadingsPage`
+remains as an unlinked route only. In the Menu, the card of the day is the top
+"TODAY RITUAL" launcher; horoscope, tarot and compatibility are rows in the
+main section.
 
 The previous home (`GetStartedPage` -> `LandingScene`) is preserved at
 `/classic-home` in case it is needed again.
