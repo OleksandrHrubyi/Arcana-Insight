@@ -45,14 +45,14 @@ export const createShootingStars = (canvas) => {
       return ls / 4294967296
     }
     stars = []
-    const count = Math.round((w * h) / 6500)
+    const count = Math.round((w * h) / 5200)
     for (let i = 0; i < count; i += 1) {
       stars.push({
         x: lr() * w,
         y: lr() * h,
-        r: 0.4 + lr() * 1.2,
-        a: 0.16 + lr() * 0.42,
-        tw: 0.5 + lr() * 1.7, // twinkle speed (rad/s)
+        r: 0.4 + lr() * 1.3,
+        a: 0.2 + lr() * 0.5,
+        tw: 0.55 + lr() * 1.9, // twinkle speed (rad/s)
         ph: lr() * 6.283,
         c: STAR_COLORS[(lr() * STAR_COLORS.length) | 0],
       })
@@ -74,7 +74,7 @@ export const createShootingStars = (canvas) => {
     for (let i = 0; i < stars.length; i += 1) {
       const s = stars[i]
       const tw = 0.5 + 0.5 * Math.sin(t * s.tw + s.ph)
-      const a = s.a * (0.3 + 0.7 * tw)
+      const a = s.a * (0.18 + 0.82 * tw)
       ctx.beginPath()
       ctx.arc(s.x, s.y, s.r, 0, 7)
       ctx.fillStyle = `rgba(${s.c},${a})`

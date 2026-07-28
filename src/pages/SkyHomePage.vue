@@ -545,16 +545,16 @@ onBeforeUnmount(() => {
   background-color: #050d15;
   background-size: cover;
   background-position: 50% 46%;
-  transform: scale(1.16);
-  animation: skh-drift 58s ease-in-out infinite alternate;
+  transform: scale(1.18);
+  animation: skh-drift 42s ease-in-out infinite alternate;
   will-change: transform;
 }
 @keyframes skh-drift {
   0% {
-    transform: scale(1.16) translate(-1.6%, -1.3%);
+    transform: scale(1.18) translate(-2.6%, -2.1%);
   }
   100% {
-    transform: scale(1.24) translate(1.8%, 2.8%);
+    transform: scale(1.27) translate(2.9%, 3.7%);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -820,6 +820,23 @@ onBeforeUnmount(() => {
   width: min(58vw, 30vh, 272px);
   aspect-ratio: 1;
   filter: drop-shadow(0 12px 50px rgba(150, 180, 230, 0.32));
+  // Gentle suspended float so the hero itself feels alive, not pinned.
+  animation: skh-moonfloat 7.5s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes skh-moonfloat {
+  0% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(8px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skh-moon {
+    animation: none;
+    transform: none;
+  }
 }
 .skh-caption {
   text-align: center;
