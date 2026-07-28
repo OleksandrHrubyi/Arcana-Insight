@@ -193,6 +193,19 @@ test('observing window: dark + moonless sub-window are ordered and bounded', () 
   assert.ok(w.windowStart.getTime() <= w.windowEnd.getTime(), 'sub-window ordered')
 })
 
+test('body view times: rise/set/transit are dates-or-null with a sane peak altitude', () => {
+  const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
+  const now = new Date('2026-07-28T18:00:00Z')
+  const v = sky.bodyViewTimes(Astronomy, 'jupiter', obs, now)
+  for (const k of ['rise', 'set', 'transit']) {
+    assert.ok(v[k] === null || v[k] instanceof Date, `${k} is a Date or null`)
+  }
+  if (v.transit) {
+    assert.ok(v.transit.getTime() >= now.getTime(), 'next transit is in the future')
+    assert.ok(v.transitAltitude >= -90 && v.transitAltitude <= 90, 'plausible peak altitude')
+  }
+})
+
 test('observing window: polar summer reports no true darkness', () => {
   // Tromsø ~69.6°N at midsummer — the Sun never reaches -18°.
   const obs = sky.makeObserver(Astronomy, 69.65, 18.96)

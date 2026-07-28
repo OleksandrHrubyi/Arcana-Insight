@@ -230,6 +230,24 @@ export const computeVisibleTonight = (Astronomy, observer, date = new Date(), { 
     .sort((a, b) => b.altitude - a.altitude)
 }
 
+// When a body next rises, sets, and reaches its highest point (meridian
+// transit) for the observer — turns "visible now" into "when to actually look".
+// transitAltitude is how high (°) it gets at that peak; low peaks view poorly.
+export const bodyViewTimes = (Astronomy, bodyKey, observer, date = new Date()) => {
+  const body = bodyOf(Astronomy, bodyKey)
+  const start = makeTime(Astronomy, date)
+  const rise = toDate(Astronomy.SearchRiseSet(body, observer, +1, start, 1.0))
+  const set = toDate(Astronomy.SearchRiseSet(body, observer, -1, start, 1.0))
+  let transit = null
+  let transitAltitude = null
+  const ha = Astronomy.SearchHourAngle(body, observer, 0, start)
+  if (ha) {
+    transit = toDate(ha.time)
+    transitAltitude = Math.round(ha.hor.altitude)
+  }
+  return { rise, set, transit, transitAltitude }
+}
+
 // Fixed annual peak dates of the major meteor showers (local-evening reference).
 export const METEOR_SHOWERS = Object.freeze([
   { key: 'quadrantids', month: 1, day: 3 },

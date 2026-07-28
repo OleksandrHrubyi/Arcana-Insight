@@ -118,11 +118,16 @@
         <div class="sky-section-title">{{ tt('skyHome.visibleTitle') }}</div>
         <div v-if="visible.length" class="sky-vis">
           <div v-for="p in visible" :key="p.planetKey" class="sky-vis__row">
-            <span class="sky-vis__name">{{ tt(`astro.planets.${p.planetKey}`) }}</span>
-            <span class="sky-vis__meta">
-              {{ tt(`skyHome.compass.${p.azimuthKey}`) }} · {{ p.altitude }}° · {{ formatMag(p.magnitude) }}
-              <span v-if="p.retrograde" class="sky-rx">℞</span>
-            </span>
+            <div class="sky-vis__top">
+              <span class="sky-vis__name">
+                {{ tt(`astro.planets.${p.planetKey}`) }}
+                <span v-if="p.retrograde" class="sky-rx">℞</span>
+              </span>
+              <span class="sky-vis__meta">
+                {{ tt(`skyHome.compass.${p.azimuthKey}`) }} · {{ p.altitude }}° · {{ formatMag(p.magnitude) }}
+              </span>
+            </div>
+            <div v-if="planetTimeLine(p)" class="sky-vis__times">{{ planetTimeLine(p) }}</div>
           </div>
         </div>
         <div v-else class="sky-empty">{{ tt('skyHome.visibleEmpty') }}</div>
@@ -188,6 +193,7 @@ import {
   computeVisibleTonight,
   computeSunDetail,
   computeObservingWindow,
+  bodyViewTimes,
   makeObserver,
 } from 'src/helpers/skyCore.js'
 import { drawMoon, onMoonReady } from 'src/helpers/moonRender.js'
@@ -394,6 +400,20 @@ const formatTime = (date) => {
   }
 }
 const formatMag = (mag) => `${mag > 0 ? '+' : ''}${mag.toFixed(1)}`
+// "when to look" line for a visible planet: its peak (only while still climbing)
+// and when it leaves the sky.
+const planetTimeLine = (p) => {
+  const tms = p.times
+  if (!tms) return ''
+  const parts = []
+  const stillClimbing = tms.transit && (!tms.set || tms.transit.getTime() < tms.set.getTime())
+  if (stillClimbing) {
+    parts.push(`${tt('skyPage.highest')} ${formatTime(tms.transit)} · ${tms.transitAltitude}°`)
+  }
+  if (tms.set) parts.push(`${tt('skyPage.setsAt')} ${formatTime(tms.set)}`)
+  else if (tms.rise) parts.push(`${tt('skyPage.risesAt')} ${formatTime(tms.rise)}`)
+  return parts.join(' · ')
+}
 const formatKm = (km) => {
   try {
     return `${new Intl.NumberFormat(locale.value).format(km)} ${tt('skyHome.kmAbbr')}`
@@ -480,7 +500,10 @@ onMounted(async () => {
     observing.value = computeObservingWindow(Astronomy, observer, now)
     eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { limit: 12 })
     planets.value = computePlanetSigns(Astronomy, now)
-    visible.value = computeVisibleTonight(Astronomy, observer, now)
+    visible.value = computeVisibleTonight(Astronomy, observer, now).map((p) => ({
+      ...p,
+      times: bodyViewTimes(Astronomy, p.planetKey, observer, now),
+    }))
     sunInfo.value = computeSunDetail(Astronomy, observer, now)
     void refreshScheduled()
     void loadIssPasses()
@@ -862,15 +885,19 @@ onBeforeUnmount(() => {
   display: grid;
 }
 .sky-vis__row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  display: grid;
+  gap: 3px;
   padding: 10px 2px;
   border-bottom: 1px solid rgba(148, 178, 214, 0.08);
 }
 .sky-vis__row:last-child {
   border-bottom: 0;
+}
+.sky-vis__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
 }
 .sky-vis__name {
   font-size: 14px;
@@ -881,6 +908,11 @@ onBeforeUnmount(() => {
   color: rgba(184, 205, 236, 0.78);
   font-variant-numeric: tabular-nums;
   text-align: right;
+}
+.sky-vis__times {
+  font-size: 11.5px;
+  color: rgba(150, 178, 214, 0.62);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ISS */
