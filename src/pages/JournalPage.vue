@@ -4,9 +4,6 @@
 
     <div class="journal-content">
       <header class="journal-hero">
-        <button type="button" class="journal-back hit-44" @click="onBack">
-          <q-icon name="chevron_left" size="18px" />
-        </button>
         <div class="journal-hero__text">
           <div class="journal-title">{{ tt('journalPage.title') }}</div>
           <div class="journal-kicker">{{ tt('journalPage.subtitle') }}</div>
@@ -694,12 +691,6 @@ const goToLogin = async () => {
   router.push({ name: 'login', query: { redirect: '/journal' } })
 }
 
-const onBack = async () => {
-  await hapticTap()
-  if (typeof window !== 'undefined' && window.history.length > 1) router.back()
-  else router.replace({ name: 'arcana' })
-}
-
 const onVisibilityChange = () => {
   if (typeof document === 'undefined' || document.visibilityState !== 'visible') return
   // Date rollover while backgrounded: re-key the day so an old form can't save
@@ -750,7 +741,7 @@ onBeforeUnmount(() => {
 .journal-content {
   position: relative;
   z-index: 1;
-  padding: calc(90px + env(safe-area-inset-top)) 16px 84px;
+  padding: max(52px, calc(env(safe-area-inset-top) + 12px)) 16px calc(96px + env(safe-area-inset-bottom));
   max-width: 520px;
   margin: 0 auto;
   display: grid;

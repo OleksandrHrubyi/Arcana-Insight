@@ -1,7 +1,6 @@
 <template>
   <q-page class="sky-page">
     <canvas ref="starCanvas" class="sky-stars" aria-hidden="true"></canvas>
-    <div class="sky-veil" aria-hidden="true"></div>
 
     <div v-if="loading" class="sky-loading"><q-spinner color="white" size="34px" /></div>
 
@@ -573,7 +572,7 @@ onBeforeUnmount(() => {
   position: relative;
   min-height: 100vh;
   color: #e9edf4;
-  background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 42%, #050d15 100%);
+  background: radial-gradient(120% 60% at 50% 0%, #0a2233 0%, #07131d 40%, #050d15 100%);
   overflow-x: hidden;
 }
 .sky-stars {
@@ -583,13 +582,6 @@ onBeforeUnmount(() => {
   height: 100%;
   z-index: 0;
   pointer-events: none;
-}
-.sky-veil {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(120% 45% at 50% 0%, rgba(28, 60, 92, 0.35), transparent 70%);
 }
 .sky-loading {
   position: relative;
