@@ -79,7 +79,7 @@
           v-if="tonightHighlight"
           type="button"
           class="skh-more skh-more--event"
-          @click="openSky"
+          @click="openHighlight"
         >
           <span class="skh-event__dot"></span>
           <span class="skh-event__name">{{ tt(`skyHome.events.${tonightHighlight.key}`) }}</span>
@@ -507,6 +507,11 @@ const dayLengthLabel = computed(() => {
 })
 
 const openSky = () => router.push({ name: 'sky', query: { source: 'sky_home' } })
+const openHighlight = () => {
+  const ev = tonightHighlight.value
+  if (!ev) return openSky()
+  router.push({ name: 'sky', query: { source: 'sky_home', focus: `${ev.type}:${ev.key}` } })
+}
 
 // ── Event reminders (local notifications) ──
 const phaseEventKey = (ph) => `moon-${ph.key}-${ph.date.toISOString().slice(0, 10)}`

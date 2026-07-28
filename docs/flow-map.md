@@ -40,9 +40,12 @@ The previous home (`GetStartedPage` -> `LandingScene`) is preserved at
   and horoscope features are reached via the Readings tab, never surfaced here.
 - Footer surfaces "tonight's headline event" (next most-notable sky event —
   eclipse / meteor peak / perigee / new moon / solstice, ranked by notability
-  discounted by days-until, full moon excluded as the caption already shows it),
-  tapping through to `/sky`; falls back to a plain "Tonight's sky ›" link when
-  nothing notable is within 60 days.
+  discounted by days-until, full moon excluded as the caption already shows it).
+  Tapping it deep-links to `/sky?source=sky_home&focus=<type>:<key>`, which
+  scrolls straight to that event in the Upcoming-events list and highlights it
+  briefly (falls back to scrolling the events section if the row isn't present).
+  When nothing notable is within 60 days the footer shows a plain
+  "Tonight's sky ›" link to `/sky` instead.
 
 Expected entry sources:
 

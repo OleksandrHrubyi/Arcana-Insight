@@ -49,10 +49,16 @@
       </section>
 
       <!-- Upcoming events -->
-      <section class="sky-card">
+      <section ref="eventsSection" class="sky-card">
         <div class="sky-section-title">{{ tt('skyPage.eventsTitle') }}</div>
         <div class="sky-events">
-          <div v-for="ev in eventList" :key="ev.type + ev.key + ev.daysUntil" class="sky-event">
+          <div
+            v-for="ev in eventList"
+            :key="ev.type + ev.key + ev.daysUntil"
+            class="sky-event"
+            :class="{ 'sky-event--focus': focusEvId === `${ev.type}:${ev.key}` }"
+            :data-ev="`${ev.type}:${ev.key}`"
+          >
             <span class="sky-event__main">
               <span class="sky-event__name">{{ tt(`skyHome.events.${ev.key}`) }}</span>
               <span class="sky-event__when">{{ untilLabel(ev.daysUntil) }} · {{ formatShort(ev.date) }}</span>
@@ -134,6 +140,7 @@
 
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import {
   computeSkyForDate,
@@ -175,6 +182,10 @@ const monthCells = ref([])
 const viewYear = ref(new Date().getFullYear())
 const viewMonth = ref(new Date().getMonth())
 const starCanvas = ref(null)
+const eventsSection = ref(null)
+const focusEvId = ref(null)
+const route = useRoute()
+let focusTimer = 0
 
 let Astronomy = null
 let enginePromise = null
@@ -383,7 +394,7 @@ onMounted(async () => {
     const observer = makeObserver(Astronomy, skyLocation.value.lat, skyLocation.value.lon)
     sky.value = computeSkyForDate(Astronomy, now)
     events.value = findUpcomingLunarEvents(Astronomy, now)
-    eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { limit: 8 })
+    eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { limit: 12 })
     planets.value = computePlanetSigns(Astronomy, now)
     visible.value = computeVisibleTonight(Astronomy, observer, now)
     sunInfo.value = computeSunDetail(Astronomy, observer, now)
@@ -397,12 +408,31 @@ onMounted(async () => {
   }
   await nextTick()
   redrawAll()
+  focusRequestedEvent()
   window.addEventListener('resize', onResize)
 })
+
+// When arriving from the home's "tonight's headline event" chip, scroll to that
+// event in the list and highlight it briefly — so the tap lands on the event
+// the user asked for, not the top-of-page calendar.
+const focusRequestedEvent = () => {
+  const focus = route.query.focus
+  if (!focus || typeof focus !== 'string') return
+  const row = document.querySelector(`.sky-event[data-ev="${CSS.escape(focus)}"]`)
+  const target = row || eventsSection.value?.$el || eventsSection.value
+  if (!target || typeof target.scrollIntoView !== 'function') return
+  target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  if (!row) return
+  focusEvId.value = focus
+  focusTimer = window.setTimeout(() => {
+    focusEvId.value = null
+  }, 2800)
+}
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize)
   cancelAnimationFrame(resizeRaf)
+  if (focusTimer) clearTimeout(focusTimer)
 })
 </script>
 
@@ -615,6 +645,14 @@ onBeforeUnmount(() => {
   gap: 12px;
   padding: 11px 2px;
   border-bottom: 1px solid rgba(148, 178, 214, 0.08);
+  border-radius: 12px;
+  transition:
+    background-color 0.5s ease,
+    box-shadow 0.5s ease;
+}
+.sky-event--focus {
+  background-color: rgba(145, 188, 255, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(145, 188, 255, 0.32);
 }
 .sky-event:last-child {
   border-bottom: 0;
