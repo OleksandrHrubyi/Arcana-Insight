@@ -1787,6 +1787,8 @@ export const messages = {
       personalizedHint: 'Quick picks from what you follow',
       sections: {
         personalized: 'For you',
+        readings: 'Readings',
+        more: 'More',
         main: 'Explore',
         account: 'Account',
         support: 'Support',
@@ -4376,6 +4378,8 @@ export const messages = {
       personalizedHint: 'Швидкі дії за тим, що ти обрав',
       sections: {
         personalized: 'Для тебе',
+        readings: 'Читання',
+        more: 'Більше',
         main: 'Досліджувати',
         account: 'Акаунт',
         support: 'Підтримка',

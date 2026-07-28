@@ -81,12 +81,12 @@
         <div class="menu-card">
           <div class="menu-card__header">
             <div class="menu-card__title">
-              {{ tt('menuPage.sections.main') }}
+              {{ tt('menuPage.sections.readings') }}
             </div>
           </div>
           <q-list class="menu-list">
             <q-item
-              v-for="item in mainItems"
+              v-for="item in readingsItems"
               :key="item.key"
               :clickable="!item.disabled"
               v-ripple="!item.disabled"
@@ -178,12 +178,12 @@
         <div class="menu-card">
           <div class="menu-card__header">
             <div class="menu-card__title">
-              {{ tt('menuPage.sections.support') }}
+              {{ tt('menuPage.sections.more') }}
             </div>
           </div>
           <q-list class="menu-list">
             <q-item
-              v-for="item in supportItems"
+              v-for="item in moreItems"
               :key="item.key"
               clickable
               v-ripple
@@ -251,58 +251,18 @@ export default defineComponent({
     const dailyCards = ref([])
     const personalizedInterests = ref(readOnboardingInterests())
 
-    const mainItems = [
-      {
-        key: 'home',
-        labelKey: 'nav.home',
-        icon: 'home',
-        routeName: 'arcana',
-      },
-      {
-        key: 'journal',
-        labelKey: 'nav.journal',
-        icon: 'edit_note',
-        routeName: 'journal',
-      },
-      {
-        key: 'sky',
-        labelKey: 'skyPage.kicker',
-        icon: 'nightlight',
-        routeName: 'sky',
-      },
-      {
-        key: 'horoscope',
-        labelKey: 'nav.horoscope',
-        icon: 'nightlight',
-        routeName: 'horoscope',
-        query: { source: 'menu' },
-      },
-      {
-        key: 'tarot',
-        labelKey: 'nav.tarot',
-        icon: 'style',
-        routeName: 'tarot',
-        query: { source: 'menu' },
-      },
-      {
-        key: 'compatibility',
-        labelKey: 'nav.compatibility',
-        icon: 'favorite',
-        routeName: 'compatibility',
-        query: { source: 'menu' },
-      },
-      {
-        key: 'cards',
-        labelKey: 'nav.cards',
-        icon: 'auto_stories',
-        routeName: 'cards',
-      },
-      { key: 'readings', labelKey: 'nav.readings', icon: 'history', routeName: 'readings' },
-      { key: 'zodiacGuide', labelKey: 'nav.zodiacGuide', icon: 'stars', routeName: 'zodiacGuide' },
+    // Home / Sky / Journal are omitted here on purpose — they're bottom-nav tabs
+    // (and surfaced in the reflection hero + "For you"), so listing them again
+    // would be redundant. The Menu is the hub for everything NOT a primary tab.
+    const readingsItems = [
+      { key: 'daily', labelKey: 'nav.daily', icon: 'today', routeName: 'daily', query: { source: 'menu' } },
+      { key: 'horoscope', labelKey: 'nav.horoscope', icon: 'nightlight', routeName: 'horoscope', query: { source: 'menu' } },
+      { key: 'tarot', labelKey: 'nav.tarot', icon: 'style', routeName: 'tarot', query: { source: 'menu' } },
+      { key: 'compatibility', labelKey: 'nav.compatibility', icon: 'favorite', routeName: 'compatibility', query: { source: 'menu' } },
       { key: 'personalHoroscope', labelKey: 'nav.personalHoroscope', icon: 'nightlight', routeName: 'personalHoroscope' },
-      // Rewards (ritual points) hidden for launch — gamification isn't core and the
-      // screen reads as confusing. Route + code remain; just not surfaced in Menu.
-      { key: 'premium', labelKey: 'nav.premium', icon: 'workspace_premium', routeName: 'premium' },
+      { key: 'cards', labelKey: 'nav.cards', icon: 'auto_stories', routeName: 'cards' },
+      { key: 'zodiacGuide', labelKey: 'nav.zodiacGuide', icon: 'stars', routeName: 'zodiacGuide' },
+      { key: 'readings', labelKey: 'nav.readings', icon: 'history', routeName: 'readings' },
     ]
 
     const fallbackPersonalizedInterests = ['sky', 'reflection', 'readings']
@@ -348,7 +308,8 @@ export default defineComponent({
       return out
     })
 
-    const supportItems = [
+    const moreItems = [
+      { key: 'premium', labelKey: 'nav.premium', icon: 'workspace_premium', routeName: 'premium' },
       { key: 'support', labelKey: 'nav.support', icon: 'help_outline', routeName: 'support' },
       { key: 'privacy', labelKey: 'nav.privacy', icon: 'policy', routeName: 'privacyTerms' },
     ]
@@ -493,8 +454,8 @@ export default defineComponent({
     return {
       tt,
       personalizedItems,
-      mainItems,
-      supportItems,
+      readingsItems,
+      moreItems,
       onItemClick,
       onReflectClick,
       reflectDone,
