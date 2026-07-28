@@ -741,7 +741,7 @@ onBeforeUnmount(() => {
 .journal-content {
   position: relative;
   z-index: 1;
-  padding: max(52px, calc(env(safe-area-inset-top) + 12px)) 16px calc(96px + env(safe-area-inset-bottom));
+  padding: calc(90px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom));
   max-width: 520px;
   margin: 0 auto;
   display: grid;
