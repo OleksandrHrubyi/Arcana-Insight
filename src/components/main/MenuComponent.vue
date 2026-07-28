@@ -279,10 +279,25 @@ export default defineComponent({
         routeName: 'sky',
       },
       {
+        key: 'horoscope',
+        labelKey: 'nav.horoscope',
+        icon: 'nightlight',
+        routeName: 'horoscope',
+        query: { source: 'menu' },
+      },
+      {
+        key: 'tarot',
+        labelKey: 'nav.tarot',
+        icon: 'style',
+        routeName: 'tarot',
+        query: { source: 'menu' },
+      },
+      {
         key: 'compatibility',
         labelKey: 'nav.compatibility',
         icon: 'favorite',
         routeName: 'compatibility',
+        query: { source: 'menu' },
       },
       {
         key: 'cards',

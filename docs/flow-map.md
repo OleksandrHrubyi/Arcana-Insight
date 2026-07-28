@@ -10,23 +10,29 @@ Product-level anchors from `src/router/routes.js`:
 
 - `/` -> `arcana` (astronomy home — `src/pages/SkyHomePage.vue`)
 - `/sky` (astronomy detail — best-time-to-observe, moon calendar, moon-tonight stats + horizon bearings, events, planet rise/set/transit, ISS passes, sun with rise/set bearings, planets)
-- `/readings-hub` (`readingsHub` — tarot / horoscope / card of the day / compatibility)
-- `/menu`
+- `/menu` (tarot / horoscope / card of the day / compatibility now live here)
 - `/premium`
+
+`/readings-hub` (`ReadingsPage`) still exists as a route but is NO LONGER in the
+bottom nav — its four items were folded into the Menu (see below).
 
 These are the main product navigation surfaces. Do not create competing pseudo-home or pseudo-menu flows.
 
 ## Bottom Navigation (post astronomy pivot)
 
-Four tabs (`src/components/ui/BottomNavigation.vue`), each a top-level route name:
+Three tabs (`src/components/ui/BottomNavigation.vue`), each a top-level route name:
 
 - **Home** (`arcana`) -> `SkyHomePage` — the single-screen astronomy home.
 - **Sky** (`sky`) -> `SkyPage` — astronomy detail.
-- **Readings** (`readingsHub`) -> `ReadingsPage` — the hub for tarot, horoscope,
-  card of the day and compatibility. Divination lives here (secondary), NOT on
-  the home — this is deliberate for App Store 4.3(b) (the app must read as an
-  astronomy tool, not primarily fortune-telling).
 - **Menu** (`menu`).
+
+Divination (tarot, horoscope, card of the day, compatibility) is reached from
+the **Menu**, never from a first-level tab and never on the home. This is
+deliberate for App Store 4.3(b): the bottom nav must read as an astronomy tool,
+not surface fortune-telling as a primary destination. The old `Readings` tab
+(`readingsHub`) was removed for this reason; `ReadingsPage` remains as an
+unlinked route only. In the Menu, the card of the day is the top "TODAY RITUAL"
+launcher; horoscope, tarot and compatibility are rows in the main section.
 
 The previous home (`GetStartedPage` -> `LandingScene`) is preserved at
 `/classic-home` in case it is needed again.

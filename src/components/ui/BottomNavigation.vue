@@ -58,26 +58,6 @@
           </svg>
         </template>
 
-        <!-- Readings (tarot, horoscope, card of the day) -->
-        <template v-else-if="item.name === 'readingsHub'">
-          <svg class="nav-tab__svg nav-tab__svg--outline" viewBox="0 0 28 28" fill="none">
-            <rect x="9" y="5" width="11" height="17" rx="2.2" stroke="currentColor" stroke-width="1.8" transform="rotate(-8 14.5 13.5)"/>
-            <path d="M14.5 12l0.9 2 2 0.3-1.45 1.4.35 2-1.8-1-1.8 1 .35-2L11.6 14.3l2-.3z"
-              stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" transform="rotate(-8 14.5 13.5)"/>
-          </svg>
-          <svg class="nav-tab__svg nav-tab__svg--filled" viewBox="0 0 28 28" fill="none">
-            <defs>
-              <linearGradient :id="gradId('tar')" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#8ca8ff"/>
-                <stop offset="100%" stop-color="#3d52a8"/>
-              </linearGradient>
-            </defs>
-            <rect x="9" y="5" width="11" height="17" rx="2.2" :fill="`url(#${gradId('tar')})`" transform="rotate(-8 14.5 13.5)"/>
-            <path d="M14.5 11l1 2.2 2.3.35-1.65 1.6.4 2.3-2.05-1.1-2.05 1.1.4-2.3-1.65-1.6 2.3-.35z"
-              fill="#fff" transform="rotate(-8 14.5 13.5)"/>
-          </svg>
-        </template>
-
         <!-- Menu -->
         <template v-else-if="item.name === 'menu'">
           <svg class="nav-tab__svg nav-tab__svg--outline" viewBox="0 0 28 28" fill="none">
@@ -122,10 +102,9 @@ const current = ref('arcana')
 const selectedLocale = computed(() => currentLocale.value || 'en')
 
 const items = [
-  { name: 'arcana',   labelKey: 'nav.home' },
-  { name: 'sky',      labelKey: 'nav.sky' },
-  { name: 'readingsHub', labelKey: 'nav.readingsHub' },
-  { name: 'menu',     labelKey: 'nav.menu' },
+  { name: 'arcana', labelKey: 'nav.home' },
+  { name: 'sky',    labelKey: 'nav.sky' },
+  { name: 'menu',   labelKey: 'nav.menu' },
 ]
 
 // Unique ID suffix so multiple instances of the component don't collide with gradient IDs
