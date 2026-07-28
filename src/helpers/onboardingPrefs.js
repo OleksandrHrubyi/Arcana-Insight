@@ -2,7 +2,9 @@ export const ONBOARDING_INTERESTS_KEY = 'arcana-onboarding-interests'
 export const ONBOARDING_COMPLETE_KEY = 'arcana-onboarding-complete'
 export const ONBOARDING_PREFERENCES_UPDATED_EVENT = 'arcana:onboarding-preferences-updated'
 
-const ALLOWED_INTERESTS = new Set(['love', 'career', 'money', 'self', 'energy', 'future'])
+// The three app pillars (astronomy repositioning) — replaces the old
+// divination "interests" (love/career/money/…). Stored under the same key.
+const ALLOWED_INTERESTS = new Set(['sky', 'reflection', 'readings'])
 
 export const normalizeOnboardingInterests = (value) => {
   if (!Array.isArray(value)) return []

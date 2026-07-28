@@ -142,12 +142,9 @@ const locale = computed(() => currentLocale.value || 'en')
 const tt = (key) => t(locale.value, key)
 
 const interestItems = [
-  { key: 'love', icon: 'favorite', labelKey: 'onboardingPage.interests.love' },
-  { key: 'career', icon: 'work_outline', labelKey: 'onboardingPage.interests.career' },
-  { key: 'money', icon: 'payments', labelKey: 'onboardingPage.interests.money' },
-  { key: 'self', icon: 'self_improvement', labelKey: 'onboardingPage.interests.self' },
-  { key: 'energy', icon: 'bolt', labelKey: 'onboardingPage.interests.energy' },
-  { key: 'future', icon: 'travel_explore', labelKey: 'onboardingPage.interests.future' },
+  { key: 'sky', icon: 'nightlight', labelKey: 'onboardingPage.interests.sky' },
+  { key: 'reflection', icon: 'edit_note', labelKey: 'onboardingPage.interests.reflection' },
+  { key: 'readings', icon: 'style', labelKey: 'onboardingPage.interests.readings' },
 ]
 
 const MAX_INTERESTS = 3

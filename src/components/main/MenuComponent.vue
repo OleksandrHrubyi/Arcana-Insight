@@ -11,43 +11,33 @@
       </header>
 
       <section class="menu-stack">
-        <button type="button" class="menu-daily-launcher" @click="onDailyLauncherClick">
+        <button type="button" class="menu-daily-launcher" @click="onReflectClick">
           <span class="menu-daily-launcher__copy">
-            <span class="menu-daily-launcher__eyebrow">{{ tt('menuPage.dailyLauncher.eyebrow') }}</span>
-            <span class="menu-daily-launcher__title">{{ tt(dailyLauncherTitleKey) }}</span>
-            <span class="menu-daily-launcher__hint">{{ tt(dailyLauncherHintKey) }}</span>
+            <span class="menu-daily-launcher__eyebrow">{{ tt('menuPage.reflect.eyebrow') }}</span>
+            <span class="menu-daily-launcher__title">
+              {{ reflectDone ? tt('menuPage.reflect.titleDone') : tt('menuPage.reflect.title') }}
+            </span>
+            <span class="menu-daily-launcher__hint">
+              {{ reflectDone ? tt('menuPage.reflect.hintDone') : tt('menuPage.reflect.hint') }}
+            </span>
             <span class="menu-daily-launcher__cta">
-              <span>{{ tt(dailyLauncherCtaKey) }}</span>
+              <span>{{ tt('menuPage.reflect.cta') }}</span>
               <q-icon name="chevron_right" size="16px" />
             </span>
           </span>
 
-          <span class="menu-daily-launcher__visual">
-            <span
-              class="menu-daily-card"
-              :class="{
-                'menu-daily-card--opened': hasDailyCardToday,
-                'menu-daily-card--reversed': dailyCardOrientation === 'reversed',
-              }"
-            >
-              <img
-                v-if="hasDailyCardToday && dailyCardImage"
-                class="menu-daily-card__img"
-                :src="dailyCardImage"
-                :alt="dailyCardTitle"
-              />
-              <span v-else class="menu-daily-card__back" aria-hidden="true">
-                <span class="menu-daily-card__back-frame"></span>
-                <span class="menu-daily-card__back-frame menu-daily-card__back-frame--inner"></span>
-                <span class="menu-daily-card__back-band"></span>
-                <span class="menu-daily-card__back-core"></span>
-                <span class="menu-daily-card__back-core-ring"></span>
-                <img class="menu-daily-card__back-logo" :src="menuDailyBackLogo" alt="" />
-              </span>
-            </span>
-
-            <span v-if="dailyLauncherCardTitle" class="menu-daily-launcher__card-title">
-              {{ dailyLauncherCardTitle }}
+          <span class="menu-daily-launcher__visual" aria-hidden="true">
+            <span class="menu-reflect-moon" :class="{ 'menu-reflect-moon--done': reflectDone }">
+              <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient :id="reflectGradId" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#d7e3ff" />
+                    <stop offset="100%" stop-color="#8ea6e8" />
+                  </linearGradient>
+                </defs>
+                <circle cx="36" cy="36" r="24" :fill="`url(#${reflectGradId})`" />
+                <circle cx="46" cy="30" r="21" fill="#0b1422" />
+              </svg>
             </span>
           </span>
         </button>
@@ -256,6 +246,8 @@ export default defineComponent({
     const tt = (key) => t(selectedLocale.value, key)
     const menuDailyBackLogo = logo
     const hasDailyCardToday = ref(false)
+    const reflectDone = ref(false)
+    const reflectGradId = 'menu-reflect-grad'
     const dailyCards = ref([])
     const personalizedInterests = ref(readOnboardingInterests())
 
@@ -313,55 +305,31 @@ export default defineComponent({
       { key: 'premium', labelKey: 'nav.premium', icon: 'workspace_premium', routeName: 'premium' },
     ]
 
-    const fallbackPersonalizedInterests = ['energy', 'self', 'love']
+    const fallbackPersonalizedInterests = ['sky', 'reflection', 'readings']
     const personalizedEntryMap = {
-      love: {
-        key: 'focus-love',
-        icon: 'favorite',
-        labelKey: 'onboardingPage.interests.love',
-        hintKey: 'menuPage.personalizedHints.love',
-        routeName: 'tarot',
-        query: { focus: 'love', source: 'menu_interest_love', entry: 'personalized' },
+      sky: {
+        key: 'focus-sky',
+        icon: 'nightlight',
+        labelKey: 'menuPage.personalized.sky',
+        hintKey: 'menuPage.personalizedHints.sky',
+        routeName: 'sky',
+        query: { source: 'menu_focus_sky', entry: 'personalized' },
       },
-      career: {
-        key: 'focus-career',
-        icon: 'work_outline',
-        labelKey: 'onboardingPage.interests.career',
-        hintKey: 'menuPage.personalizedHints.career',
-        routeName: 'horoscope',
-        query: { theme: 'career', source: 'menu_interest_career', entry: 'personalized' },
+      reflection: {
+        key: 'focus-reflection',
+        icon: 'edit_note',
+        labelKey: 'menuPage.personalized.reflection',
+        hintKey: 'menuPage.personalizedHints.reflection',
+        routeName: 'journal',
+        query: { source: 'menu_focus_reflection', entry: 'personalized' },
       },
-      money: {
-        key: 'focus-money',
-        icon: 'payments',
-        labelKey: 'onboardingPage.interests.money',
-        hintKey: 'menuPage.personalizedHints.money',
-        routeName: 'tarot',
-        query: { focus: 'money', source: 'menu_interest_money', entry: 'personalized' },
-      },
-      self: {
-        key: 'focus-self',
-        icon: 'self_improvement',
-        labelKey: 'onboardingPage.interests.self',
-        hintKey: 'menuPage.personalizedHints.self',
+      readings: {
+        key: 'focus-readings',
+        icon: 'style',
+        labelKey: 'menuPage.personalized.readings',
+        hintKey: 'menuPage.personalizedHints.readings',
         routeName: 'daily',
-        query: { source: 'menu_interest_self', entry: 'personalized' },
-      },
-      energy: {
-        key: 'focus-energy',
-        icon: 'bolt',
-        labelKey: 'onboardingPage.interests.energy',
-        hintKey: 'menuPage.personalizedHints.energy',
-        routeName: 'horoscope',
-        query: { theme: 'energy', source: 'menu_interest_energy', entry: 'personalized' },
-      },
-      future: {
-        key: 'focus-future',
-        icon: 'travel_explore',
-        labelKey: 'onboardingPage.interests.future',
-        hintKey: 'menuPage.personalizedHints.future',
-        routeName: 'tarot',
-        query: { focus: 'future', source: 'menu_interest_future', entry: 'personalized' },
+        query: { source: 'menu_focus_readings', entry: 'personalized' },
       },
     }
 
@@ -456,6 +424,7 @@ export default defineComponent({
 
     const refreshDailyLauncherState = () => {
       hasDailyCardToday.value = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.dailyCard)
+      reflectDone.value = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.reflection)
     }
 
     const refreshPersonalizedInterests = () => {
@@ -483,15 +452,15 @@ export default defineComponent({
       refreshPersonalizedInterests()
     }
 
-    async function onDailyLauncherClick() {
+    async function onReflectClick() {
       void hapticLight()
       void analytics.logEvent(ONBOARDING_EVENTS.firstActionClick, {
-        source: 'menu_daily_launcher',
-        had_daily_card_today: hasDailyCardToday.value,
+        source: 'menu_reflect_launcher',
+        reflection_done_today: reflectDone.value,
       })
       await router.push({
-        name: 'daily',
-        query: { source: 'menu_daily_launcher', entry: 'menu_launcher' },
+        name: 'journal',
+        query: { source: 'menu_reflect_launcher', entry: 'menu_launcher' },
       })
     }
 
@@ -527,7 +496,9 @@ export default defineComponent({
       mainItems,
       supportItems,
       onItemClick,
-      onDailyLauncherClick,
+      onReflectClick,
+      reflectDone,
+      reflectGradId,
       menuDailyBackLogo,
       hasDailyCardToday,
       dailyCardImage,
@@ -676,6 +647,23 @@ export default defineComponent({
   display: grid;
   gap: 7px;
   justify-items: center;
+}
+
+/* Reflection hero — a calm crescent Moon (no tarot associations) */
+.menu-reflect-moon {
+  display: block;
+  width: 72px;
+  height: 72px;
+  filter: drop-shadow(0 10px 24px rgba(120, 150, 220, 0.4));
+  transition: filter 220ms ease;
+}
+.menu-reflect-moon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.menu-reflect-moon--done {
+  filter: drop-shadow(0 10px 28px rgba(145, 188, 255, 0.58));
 }
 
 .menu-daily-card {

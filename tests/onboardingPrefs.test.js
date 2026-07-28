@@ -4,8 +4,8 @@ import { importModule, installBrowserEnv } from './utils/testEnv.js'
 
 test('normalizeOnboardingInterests filters invalid values and deduplicates', async () => {
   const { normalizeOnboardingInterests } = await importModule('src/helpers/onboardingPrefs.js')
-  const result = normalizeOnboardingInterests(['love', 'career', 'love', '', null, 'unknown', 'future'])
-  assert.deepEqual(result, ['love', 'career', 'future'])
+  const result = normalizeOnboardingInterests(['sky', 'reflection', 'sky', '', null, 'unknown', 'readings'])
+  assert.deepEqual(result, ['sky', 'reflection', 'readings'])
 })
 
 test('persistOnboardingPreferences stores normalized interests and completion flag', async () => {
@@ -19,11 +19,11 @@ test('persistOnboardingPreferences stores normalized interests and completion fl
       isOnboardingComplete,
     } = await importModule('src/helpers/onboardingPrefs.js')
 
-    persistOnboardingPreferences(['self', 'self', 'energy', 'invalid'])
+    persistOnboardingPreferences(['reflection', 'reflection', 'sky', 'invalid'])
 
     assert.equal(env.localStorage.getItem(ONBOARDING_COMPLETE_KEY), 'true')
-    assert.equal(env.localStorage.getItem(ONBOARDING_INTERESTS_KEY), JSON.stringify(['self', 'energy']))
-    assert.deepEqual(readOnboardingInterests(), ['self', 'energy'])
+    assert.equal(env.localStorage.getItem(ONBOARDING_INTERESTS_KEY), JSON.stringify(['reflection', 'sky']))
+    assert.deepEqual(readOnboardingInterests(), ['reflection', 'sky'])
     assert.equal(isOnboardingComplete(), true)
   } finally {
     env.restore()
@@ -95,7 +95,7 @@ test('onboarding prefs handle localStorage failures safely', async () => {
 
     assert.deepEqual(readOnboardingInterests(), [])
     assert.equal(isOnboardingComplete(), false)
-    assert.doesNotThrow(() => persistOnboardingPreferences(['love', 'career']))
+    assert.doesNotThrow(() => persistOnboardingPreferences(['sky', 'readings']))
   } finally {
     if (typeof originalWindow === 'undefined') delete globalThis.window
     else globalThis.window = originalWindow
