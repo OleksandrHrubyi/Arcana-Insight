@@ -1878,6 +1878,7 @@ export const messages = {
         premiumRibbon: 'Most value',
       },
       free: {
+        sky: 'Tonight’s sky, Moon, planets, ISS & events — all free',
         journal: 'Daily reflection journal — always free',
         dailyCard: 'Daily card',
         horoscope: 'Daily reading: energy theme',
@@ -4469,6 +4470,7 @@ export const messages = {
         premiumRibbon: 'Найбільша цінність',
       },
       free: {
+        sky: 'Небо сьогодні, Місяць, планети, МКС і події — усе безкоштовно',
         journal: 'Щоденник рефлексії — завжди безкоштовно',
         dailyCard: 'Карта дня',
         horoscope: 'Щоденне читання: тема енергії',

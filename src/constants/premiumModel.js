@@ -1,5 +1,7 @@
 export const PREMIUM_FREE_ITEM_KEYS = Object.freeze([
-  // RP-10: the reflection journal leads the free list — the app's core is free.
+  // Astronomy pivot: the real-sky tool + reflection journal lead the free list —
+  // the app's core is free (also the 4.3(b) argument). Divination stays free too.
+  'premiumPage.free.sky',
   'premiumPage.free.journal',
   'premiumPage.free.dailyCard',
   'premiumPage.free.horoscope',

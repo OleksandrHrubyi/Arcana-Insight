@@ -10,11 +10,18 @@ If this document and code diverge, update this document or align the code before
 
 The free product includes:
 
+- the full astronomy tool — tonight's Moon, best time to observe, planet
+  visibility, ISS passes, sky events, moon calendar (the app's core; never gated)
+- daily reflection journal (basic history)
 - daily card
 - horoscope
 - one tarot session per day
 - card library
 - zodiac guide
+
+> Astronomy pivot rule: the core sky tool and basic journaling stay free — this
+> is both the product's front door and the App Store 4.3(b) argument. Premium
+> adds depth/convenience on top (see below); it never locks the core.
 
 Model details:
 
