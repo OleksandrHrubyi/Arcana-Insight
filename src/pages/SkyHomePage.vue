@@ -102,17 +102,27 @@
           <span>{{ tt('skyHome.locationDetect') }}</span>
         </button>
         <div class="skh-sheet__list">
-          <button
-            v-for="c in cities"
-            :key="c.key"
-            type="button"
-            class="skh-sheet__city"
-            :class="{ 'skh-sheet__city--active': loc.cityKey === c.key }"
-            @click="pickCity(c.key)"
-          >
-            {{ tt(`skyHome.cities.${c.key}`) }}
-          </button>
+          <div v-for="c in cities" :key="c.key" class="skh-sheet__cityrow">
+            <button
+              type="button"
+              class="skh-sheet__city"
+              :class="{ 'skh-sheet__city--active': loc.cityKey === c.key }"
+              @click="pickCity(c.key)"
+            >
+              {{ tt(`skyHome.cities.${c.key}`) }}
+            </button>
+            <button
+              type="button"
+              class="skh-sheet__star"
+              :class="{ 'skh-sheet__star--on': isCityFavorite(c) }"
+              :aria-label="tt('skyHome.savePlace')"
+              @click="onToggleFavorite(c)"
+            >
+              <q-icon :name="isCityFavorite(c) ? 'star' : 'star_border'" size="18px" />
+            </button>
+          </div>
         </div>
+        <div class="skh-sheet__hint">{{ tt('skyHome.savedPlacesHint') }}</div>
       </q-card>
     </q-dialog>
 
@@ -242,7 +252,11 @@ import {
   detectSkyLocation,
   setSkyLocationCity,
   SKY_CITIES,
+  loadSkyFavorites,
+  toggleSkyFavorite,
+  isFavorite,
 } from 'src/stores/skyLocation.js'
+import { usePremiumAccess } from 'src/stores/premiumAccess.js'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key, vars) => {
@@ -415,6 +429,18 @@ const pickCity = (cityKey) => {
   setSkyLocationCity(cityKey)
   locationOpen.value = false
 }
+
+const { hasPremiumAccess } = usePremiumAccess()
+const cityToLoc = (c) => ({ lat: c.lat, lon: c.lon, cityKey: c.key })
+const isCityFavorite = (c) => isFavorite(cityToLoc(c))
+const onToggleFavorite = (c) => {
+  const result = toggleSkyFavorite(cityToLoc(c), hasPremiumAccess.value)
+  if (result === 'blocked') {
+    // Free users keep one saved place; more is a premium convenience.
+    locationOpen.value = false
+    router.push({ name: 'premium', query: { source: 'sky_favorites' } })
+  }
+}
 const useMyLocation = async () => {
   await detectSkyLocation()
   locationOpen.value = false
@@ -550,6 +576,7 @@ watch(
 onMounted(async () => {
   try {
     await loadSkyLocation()
+    void loadSkyFavorites()
     Astronomy = await loadEngine()
     recompute()
   } catch (e) {
@@ -1100,13 +1127,43 @@ onBeforeUnmount(() => {
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
 }
+.skh-sheet__cityrow {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+}
 .skh-sheet__city {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: left;
   padding: 12px 10px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(9, 14, 23, 0.65);
   color: rgba(214, 225, 242, 0.85);
   font-size: 14px;
+}
+.skh-sheet__star {
+  flex: 0 0 auto;
+  width: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(9, 14, 23, 0.65);
+  color: rgba(150, 178, 214, 0.5);
+  display: grid;
+  place-items: center;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.skh-sheet__star--on {
+  color: #91bcff;
+  border-color: rgba(145, 188, 255, 0.4);
+}
+.skh-sheet__hint {
+  margin-top: 12px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: rgba(150, 178, 214, 0.55);
+  text-align: center;
 }
 .skh-sheet__city--active {
   border-color: rgba(141, 190, 240, 0.5);

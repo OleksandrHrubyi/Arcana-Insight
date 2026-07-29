@@ -4,8 +4,22 @@
 import { ref } from 'vue'
 import { Preferences } from '@capacitor/preferences'
 import { Geolocation } from '@capacitor/geolocation'
+import {
+  normalizeFavorites,
+  isFavorite as isFavoriteCore,
+  canSaveFavorite as canSaveFavoriteCore,
+  applyFavoriteToggle,
+} from 'src/helpers/skyFavoritesCore.js'
 
 export const SKY_LOCATION_KEY = 'arcana_sky_location_v1'
+export const SKY_FAVORITES_KEY = 'arcana_sky_favorites_v1'
+
+// Saved observing places. Free users can keep 1; Premium unlocks unlimited (the
+// gate lives in skyFavoritesCore — the store just holds/persists). This is a NEW
+// capability: picking any city each time stays free and unchanged.
+export { FREE_FAVORITE_LIMIT, favoriteId } from 'src/helpers/skyFavoritesCore.js'
+
+export const skyFavorites = ref([])
 
 // A small bundled set for manual selection — no geocoding service, works offline.
 export const SKY_CITIES = Object.freeze([
@@ -59,6 +73,38 @@ export const setSkyLocationCity = (cityKey) => {
 export const setSkyLocationCoords = (lat, lon, source = 'gps') => {
   skyLocation.value = { lat, lon, cityKey: null, source }
   void persist(skyLocation.value)
+}
+
+const persistFavorites = async (value) => {
+  try {
+    await Preferences.set({ key: SKY_FAVORITES_KEY, value: JSON.stringify(value) })
+  } catch {
+    /* in-memory only this session */
+  }
+}
+
+export const loadSkyFavorites = async () => {
+  try {
+    const { value } = await Preferences.get({ key: SKY_FAVORITES_KEY })
+    if (value) skyFavorites.value = normalizeFavorites(JSON.parse(value))
+  } catch {
+    /* keep empty */
+  }
+  return skyFavorites.value
+}
+
+export const canSaveFavorite = (hasPremium) => canSaveFavoriteCore(skyFavorites.value, hasPremium)
+
+export const isFavorite = (loc) => isFavoriteCore(skyFavorites.value, loc)
+
+// Returns 'added' | 'removed' | 'blocked' (free limit reached). Never throws.
+export const toggleSkyFavorite = (loc, hasPremium) => {
+  const { list, result } = applyFavoriteToggle(skyFavorites.value, loc, hasPremium)
+  if (result !== 'blocked') {
+    skyFavorites.value = list
+    void persistFavorites(skyFavorites.value)
+  }
+  return result
 }
 
 // Native GPS via @capacitor/geolocation (its web implementation uses the browser
