@@ -141,6 +141,56 @@
           </div>
         </section>
 
+        <section v-if="journalInsights" class="journal-insights">
+          <div class="journal-insights__head">
+            <div class="journal-insights__title">{{ tt('journalPage.insights.title') }}</div>
+            <span v-if="!hasPremiumAccess" class="journal-insights__badge">
+              {{ tt('journalPage.insights.badge') }}
+            </span>
+          </div>
+
+          <template v-if="hasPremiumAccess">
+            <div class="journal-insights__stats">
+              <div class="journal-insights__stat">
+                <span class="journal-insights__num">{{ journalInsights.totalEntries }}</span>
+                <span class="journal-insights__lbl">{{ tt('journalPage.insights.entries') }}</span>
+              </div>
+              <div class="journal-insights__stat">
+                <span class="journal-insights__num">{{ journalInsights.streakDays }}</span>
+                <span class="journal-insights__lbl">{{ tt('journalPage.insights.streak') }}</span>
+              </div>
+            </div>
+            <div v-if="journalInsights.moods.length" class="journal-insights__moods">
+              <div class="journal-insights__sub">{{ tt('journalPage.insights.moodMix') }}</div>
+              <div v-for="m in journalInsights.moods" :key="m.key" class="journal-insights__moodrow">
+                <span class="journal-insights__moodname">
+                  <q-icon :name="moodIcon(m.key)" size="14px" />
+                  {{ tt(`journalPage.moods.${m.key}`) }}
+                </span>
+                <span class="journal-insights__bar">
+                  <span class="journal-insights__barfill" :style="{ width: m.pct + '%' }"></span>
+                </span>
+                <span class="journal-insights__pct">{{ m.pct }}%</span>
+              </div>
+            </div>
+            <div v-if="journalInsights.phases.length" class="journal-insights__phase">
+              {{ tt('journalPage.insights.mostUnder') }}
+              <span class="journal-insights__accent">
+                {{ tt(`astro.phases.${journalInsights.phases[0].key}`) }}
+              </span>
+            </div>
+          </template>
+
+          <button v-else type="button" class="journal-insights__lock" @click="openPremium">
+            <q-icon name="lock" size="16px" class="journal-insights__lockicon" />
+            <span class="journal-insights__lockcopy">
+              <span class="journal-insights__locktitle">{{ tt('journalPage.insights.lockTitle') }}</span>
+              <span class="journal-insights__lockhint">{{ tt('journalPage.insights.lockHint') }}</span>
+            </span>
+            <q-icon name="chevron_right" size="18px" />
+          </button>
+        </section>
+
         <section v-if="pastEntries.length" class="journal-history">
           <div class="journal-history__title">{{ tt('journalPage.historyTitle') }}</div>
           <article
@@ -246,6 +296,8 @@ import {
   saveJournalEntrySnapshot,
   removeLocalJournalEntry,
 } from 'src/helpers/journalCore.js'
+import { computeJournalInsights } from 'src/helpers/journalInsightsCore.js'
+import { usePremiumAccess } from 'src/stores/premiumAccess.js'
 import { Preferences } from '@capacitor/preferences'
 import {
   DAILY_ACTIVITY_KEYS,
@@ -368,6 +420,14 @@ const pastEntries = computed(() => entries.value.filter((entry) => entry.dateKey
 const journalPatterns = computed(() =>
   computeJournalPatterns(entries.value, { todayKey: todayKey.value }),
 )
+
+// Premium reflection insights (30-day): additive layer over the free week
+// summary — richer aggregation, gated behind premium. Free users see a teaser.
+const { hasPremiumAccess } = usePremiumAccess()
+const journalInsights = computed(() =>
+  computeJournalInsights(entries.value, { todayKey: todayKey.value }),
+)
+const openPremium = () => router.push({ name: 'premium', query: { source: 'journal_insights' } })
 const patternsEntryWord = computed(() =>
   pluralForm(locale.value, journalPatterns.value?.entryCount || 0, {
     one: tt('journalPage.patternsEntryForms.one'),
@@ -1063,6 +1123,152 @@ onBeforeUnmount(() => {
   background: rgba(64, 96, 156, 0.16);
   font-size: 12px;
   color: rgba(226, 236, 255, 0.9);
+}
+
+/* Premium reflection insights */
+.journal-insights {
+  display: grid;
+  gap: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 178, 214, 0.12);
+  background: linear-gradient(180deg, rgba(17, 28, 46, 0.42), rgba(10, 17, 29, 0.58));
+  padding: 14px;
+}
+.journal-insights__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.journal-insights__title {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(214, 225, 242, 0.6);
+}
+.journal-insights__badge {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  color: #0b1422;
+  background: linear-gradient(180deg, #cddaf6, #8ea6e8);
+  font-weight: 600;
+}
+.journal-insights__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.journal-insights__stat {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(9, 14, 23, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.journal-insights__num {
+  font-size: 22px;
+  font-weight: 300;
+  color: #eef3fb;
+  font-variant-numeric: tabular-nums;
+}
+.journal-insights__lbl {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(184, 205, 236, 0.55);
+}
+.journal-insights__sub {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(184, 205, 236, 0.5);
+  margin-bottom: 2px;
+}
+.journal-insights__moods {
+  display: grid;
+  gap: 6px;
+}
+.journal-insights__moodrow {
+  display: grid;
+  grid-template-columns: 96px 1fr 34px;
+  align-items: center;
+  gap: 8px;
+}
+.journal-insights__moodname {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: rgba(226, 236, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.journal-insights__bar {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.journal-insights__barfill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #6d86dc, #91bcff);
+}
+.journal-insights__pct {
+  font-size: 11px;
+  text-align: right;
+  color: rgba(184, 205, 236, 0.7);
+  font-variant-numeric: tabular-nums;
+}
+.journal-insights__phase {
+  font-size: 12.5px;
+  color: rgba(200, 218, 244, 0.72);
+}
+.journal-insights__accent {
+  color: #91bcff;
+}
+.journal-insights__lock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(145, 188, 255, 0.22);
+  background: rgba(64, 96, 156, 0.12);
+  color: inherit;
+  transition: transform 0.12s ease;
+}
+.journal-insights__lock:active {
+  transform: scale(0.98);
+}
+.journal-insights__lockicon {
+  color: #91bcff;
+  flex: 0 0 auto;
+}
+.journal-insights__lockcopy {
+  display: grid;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.journal-insights__locktitle {
+  font-size: 13.5px;
+  color: rgba(233, 240, 250, 0.95);
+  font-weight: 500;
+}
+.journal-insights__lockhint {
+  font-size: 11.5px;
+  color: rgba(184, 205, 236, 0.7);
+  line-height: 1.35;
 }
 
 .journal-history {
