@@ -28,7 +28,6 @@ const routes = [
       { path: 'journal', name: 'journal', component: () => import('src/pages/JournalPage.vue'), meta: { tab: 'journal' } },
       { path: 'sky', name: 'sky', component: () => import('src/pages/SkyPage.vue'), meta: { tab: 'sky' } },
       { path: 'sky-home', name: 'skyHome', component: () => import('src/pages/SkyHomePage.vue'), meta: { tab: 'arcana' } },
-      { path: 'readings-hub', name: 'readingsHub', component: () => import('src/pages/ReadingsPage.vue'), meta: { tab: 'readingsHub' } },
       { path: 'premium', name: 'premium', component: () => import('src/pages/PremiumPage.vue'), meta: { tab: 'menu', hideBottomNav: true } },
       { path: 'rewards', name: 'ritualRewards', component: () => import('src/pages/RitualRewardsPage.vue'), meta: { hideBottomNav: true }, beforeEnter: (to, from, next) => next(REWARDS_ENABLED ? true : { name: 'menu' }) },
       { path: 'settings', name: 'settings', component: () => import('src/pages/SettingsPage.vue'), meta: { tab: 'menu' } },

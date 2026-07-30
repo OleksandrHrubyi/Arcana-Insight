@@ -13,8 +13,9 @@ Product-level anchors from `src/router/routes.js`:
 - `/menu` (tarot / horoscope / card of the day / compatibility now live here)
 - `/premium`
 
-`/readings-hub` (`ReadingsPage`) still exists as a route but is NO LONGER in the
-bottom nav — its four items were folded into the Menu (see below).
+The old `/readings-hub` (`ReadingsPage`) route was removed entirely — its four
+items were folded into the Menu (see below). `ReadingsPage.vue` remains on disk
+but is unused (not routed, not imported).
 
 These are the main product navigation surfaces. Do not create competing pseudo-home or pseudo-menu flows.
 

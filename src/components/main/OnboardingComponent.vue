@@ -685,8 +685,8 @@ onMounted(() => {
 
 @media (max-height: 760px) {
   .onboarding-content {
-    padding-top: calc(24px + env(safe-area-inset-top));
-    gap: 12px;
+    padding-top: calc(20px + env(safe-area-inset-top));
+    gap: 10px;
   }
 
   .onboarding-title {
@@ -694,8 +694,12 @@ onMounted(() => {
   }
 
   .onboarding-interest {
-    min-height: 98px;
-    gap: 14px;
+    min-height: 82px;
+    gap: 12px;
+  }
+
+  .onboarding-actions-shell {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 14px);
   }
 }
 
