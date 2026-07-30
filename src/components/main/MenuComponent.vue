@@ -218,21 +218,13 @@ import { defineComponent, computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
-import logo from 'src/assets/images/logo.svg'
 import SettingsComponent from 'components/main/SettingsComponent.vue'
 import {
   ONBOARDING_INTERESTS_KEY,
   ONBOARDING_PREFERENCES_UPDATED_EVENT,
   readOnboardingInterests,
 } from 'src/helpers/onboardingPrefs'
-import { useAuthStore } from 'stores/authStore'
-import {
-  getDeterministicDailyCardSelection,
-  loadDailyCardsSnapshot,
-  getOrCreateAnonDailySeed,
-} from 'src/helpers/dailyCardCore'
-import { loadTarotData } from 'src/helpers/tarotData'
-import { DAILY_ACTIVITY_KEYS, hasDailyActivityToday, getLocalDateKey } from 'src/helpers/dailyRitual'
+import { DAILY_ACTIVITY_KEYS, hasDailyActivityToday } from 'src/helpers/dailyRitual'
 import { analytics } from 'src/services/analytics'
 import { ONBOARDING_EVENTS, PAYWALL_ENTRY_POINTS } from 'src/constants/analyticsEvents'
 
@@ -241,14 +233,10 @@ export default defineComponent({
   components: { SettingsComponent },
   setup() {
     const router = useRouter()
-    const authStore = useAuthStore()
     const selectedLocale = computed(() => currentLocale.value || 'en')
     const tt = (key) => t(selectedLocale.value, key)
-    const menuDailyBackLogo = logo
-    const hasDailyCardToday = ref(false)
     const reflectDone = ref(false)
     const reflectGradId = 'menu-reflect-grad'
-    const dailyCards = ref([])
     const personalizedInterests = ref(readOnboardingInterests())
 
     // Home / Sky / Journal are omitted here on purpose — they're bottom-nav tabs
@@ -341,60 +329,12 @@ export default defineComponent({
       await router.push({ name: item.routeName })
     }
 
-    const dailySelection = computed(() => {
-      const userId = authStore.state.user?.id
-      const identity = userId || getOrCreateAnonDailySeed()
-      return getDeterministicDailyCardSelection({
-        dateKey: getLocalDateKey(),
-        identity,
-        cardsLength: dailyCards.value.length,
-      })
-    })
-
-    const dailyIndex = computed(() => dailySelection.value.index)
-
-    const dailyCardOrientation = computed(() => dailySelection.value.orientation)
-
-    const dailyCard = computed(() => dailyCards.value[dailyIndex.value] || null)
-    const dailyCardImage = computed(() => {
-      const file = dailyCard.value?.file
-      return file ? `/images/cards/${file}` : ''
-    })
-    const dailyCardTitle = computed(
-      () =>
-        dailyCard.value?.name?.[selectedLocale.value] ||
-        dailyCard.value?.name?.en ||
-        tt('menuPage.dailyLauncher.fallbackCardTitle'),
-    )
-    const dailyLauncherCardTitle = computed(() => (hasDailyCardToday.value ? dailyCardTitle.value : ''))
-    const dailyLauncherTitleKey = computed(() =>
-      hasDailyCardToday.value
-        ? 'menuPage.dailyLauncher.openTitle'
-        : 'menuPage.dailyLauncher.closedTitle',
-    )
-    const dailyLauncherHintKey = computed(() =>
-      hasDailyCardToday.value
-        ? 'menuPage.dailyLauncher.openHint'
-        : 'menuPage.dailyLauncher.closedHint',
-    )
-    const dailyLauncherCtaKey = computed(() =>
-      hasDailyCardToday.value
-        ? 'menuPage.dailyLauncher.ctaOpen'
-        : 'menuPage.dailyLauncher.ctaClosed',
-    )
-
     const refreshDailyLauncherState = () => {
-      hasDailyCardToday.value = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.dailyCard)
       reflectDone.value = hasDailyActivityToday(DAILY_ACTIVITY_KEYS.reflection)
     }
 
     const refreshPersonalizedInterests = () => {
       personalizedInterests.value = readOnboardingInterests()
-    }
-
-    const initializeDailyPreview = async () => {
-      const { cards } = await loadDailyCardsSnapshot({ loadTarotData })
-      dailyCards.value = cards
     }
 
     const onVisibilityChange = () => {
@@ -434,7 +374,6 @@ export default defineComponent({
       setBottomNavDark(true)
       refreshDailyLauncherState()
       refreshPersonalizedInterests()
-      void initializeDailyPreview()
       window.addEventListener('focus', refreshDailyLauncherState, { passive: true })
       window.addEventListener('focus', refreshPersonalizedInterests, { passive: true })
       window.addEventListener('storage', onStorageChange)
@@ -460,15 +399,6 @@ export default defineComponent({
       onReflectClick,
       reflectDone,
       reflectGradId,
-      menuDailyBackLogo,
-      hasDailyCardToday,
-      dailyCardImage,
-      dailyCardTitle,
-      dailyLauncherCardTitle,
-      dailyCardOrientation,
-      dailyLauncherTitleKey,
-      dailyLauncherHintKey,
-      dailyLauncherCtaKey,
     }
   },
 })

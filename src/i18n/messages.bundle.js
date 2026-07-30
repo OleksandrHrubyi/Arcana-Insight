@@ -1903,6 +1903,10 @@ export const messages = {
           title: 'Reflection insights',
           text: 'A 30-day mood mix, streaks and the Moon phases you journal under.',
         },
+        satellites: {
+          title: 'Satellite pack',
+          text: 'Naked-eye passes of Tiangong and Hubble, on top of the free ISS.',
+        },
         unlimitedTarot: {
           title: 'Unlimited tarot sessions',
           text: 'No daily cap: run 1, 3, or 5-card readings whenever you need clarity.',
@@ -2066,6 +2070,7 @@ export const messages = {
         includes: {
           savedPlaces: 'Unlimited saved observing places',
           journalInsights: 'Reflection insights: 30-day mood mix & streaks',
+          satellites: 'Satellite pack: Tiangong & Hubble passes',
           unlimitedReadings: 'Unlimited tarot readings (1, 3, and 5 cards)',
           horoscopeThemes: 'All daily themes: energy, love, and career',
           deepInterpretation: 'Deeper AI interpretations with practical action points',
@@ -4528,6 +4533,10 @@ export const messages = {
           title: 'Інсайти рефлексії',
           text: 'Мікс настроїв за 30 днів, серії та фази Місяця, під якими ти пишеш.',
         },
+        satellites: {
+          title: 'Пакет супутників',
+          text: 'Видимі оком прольоти Тяньгун і Габбла поверх безкоштовної МКС.',
+        },
         unlimitedTarot: {
           title: 'Необмежені сесії таро',
           text: 'Без денного ліміту: запускай розклади на 1, 3 або 5 карт у будь-який момент.',
@@ -4691,6 +4700,7 @@ export const messages = {
         includes: {
           savedPlaces: 'Безліч збережених місць спостереження',
           journalInsights: 'Інсайти рефлексії: мікс настроїв і серії за 30 днів',
+          satellites: 'Пакет супутників: прольоти Тяньгун і Габбла',
           unlimitedReadings: 'Необмежені розклади таро (1, 3 і 5 карт)',
           horoscopeThemes: 'Усі щоденні теми: дух, кохання і карʼєра',
           deepInterpretation: 'Глибші AI-інтерпретації з практичними акцентами',

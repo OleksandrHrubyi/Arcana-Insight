@@ -16,6 +16,7 @@ export const PREMIUM_FREE_ITEM_KEYS = Object.freeze([
 const PREMIUM_BILLING_INCLUDE_ASTRO = Object.freeze([
   'premiumPage.billing.includes.savedPlaces',
   'premiumPage.billing.includes.journalInsights',
+  'premiumPage.billing.includes.satellites',
 ])
 
 const PREMIUM_BILLING_INCLUDE_BASE = Object.freeze([
@@ -45,6 +46,11 @@ const PREMIUM_DETAIL_ASTRO = Object.freeze([
     icon: 'insights',
     titleKey: 'premiumPage.premiumDetails.journalInsights.title',
     textKey: 'premiumPage.premiumDetails.journalInsights.text',
+  },
+  {
+    icon: 'satellite_alt',
+    titleKey: 'premiumPage.premiumDetails.satellites.title',
+    textKey: 'premiumPage.premiumDetails.satellites.text',
   },
 ])
 

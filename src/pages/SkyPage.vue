@@ -344,7 +344,7 @@ const redrawAll = () => {
   drawStars()
   drawCalendarMoons()
 }
-onMoonReady(redrawAll)
+const offMoonReady = onMoonReady(redrawAll)
 let resizeRaf = 0
 const onResize = () => {
   cancelAnimationFrame(resizeRaf)
@@ -638,6 +638,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize)
   cancelAnimationFrame(resizeRaf)
   if (focusTimer) clearTimeout(focusTimer)
+  offMoonReady?.()
 })
 </script>
 

@@ -406,7 +406,7 @@ const redrawMoon = () => {
   if (!sky.value) return
   drawMoon(moonCanvas.value, sky.value.illumination, sky.value.waxing, { detail: true })
 }
-onMoonReady(redrawMoon)
+const offMoonReady = onMoonReady(redrawMoon)
 
 let skyFx = null
 let resizeRaf = 0
@@ -625,6 +625,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('visibilitychange', onVisible)
   cancelAnimationFrame(resizeRaf)
   skyFx?.stop()
+  offMoonReady?.()
 })
 </script>
 
