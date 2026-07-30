@@ -5,16 +5,30 @@
 import { Preferences } from '@capacitor/preferences'
 import * as sat from 'satellite.js'
 
-const TLE_KEY = 'arcana_iss_tle_v1'
 const TLE_TTL_MS = 12 * 60 * 60 * 1000
 const EARTH_RADIUS_KM = 6371
 const COMPASS = Object.freeze(['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'])
 const azKey = (rad) => COMPASS[Math.round(((rad * 180) / Math.PI / 45) % 8 + 8) % 8]
 const deg = (rad) => (rad * 180) / Math.PI
 
-export const fetchIssTle = async () => {
+export const ISS_CATNR = 25544
+
+// Premium "satellite pack": bright objects visible to the naked eye, on top of
+// the free ISS. Same on-device SGP4 pipeline — only the TLE (and premium gate)
+// differ. Gated in SkyPage via usePremiumAccess.
+export const PREMIUM_SATELLITES = Object.freeze([
+  { key: 'css', catnr: 48274 }, // Tiangong — Chinese Space Station
+  { key: 'hst', catnr: 20580 }, // Hubble Space Telescope
+])
+
+const tleCacheKey = (catnr) => `arcana_tle_${catnr}_v1`
+
+// TLE for any NORAD catalog number from Celestrak (cached 12h). Returns
+// { line1, line2 } or null. Fails soft on network/parse errors.
+export const fetchSatelliteTle = async (catnr = ISS_CATNR) => {
+  const key = tleCacheKey(catnr)
   try {
-    const { value } = await Preferences.get({ key: TLE_KEY })
+    const { value } = await Preferences.get({ key })
     if (value) {
       const c = JSON.parse(value)
       if (c.line1 && c.line2 && Date.now() - c.ts < TLE_TTL_MS) return { line1: c.line1, line2: c.line2 }
@@ -23,7 +37,7 @@ export const fetchIssTle = async () => {
     /* ignore */
   }
   try {
-    const res = await fetch('https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=TLE')
+    const res = await fetch(`https://celestrak.org/NORAD/elements/gp.php?CATNR=${catnr}&FORMAT=TLE`)
     if (!res.ok) return null
     const lines = (await res.text()).trim().split('\n')
     if (lines.length < 3) return null
@@ -31,7 +45,7 @@ export const fetchIssTle = async () => {
     const line2 = lines[2].trim()
     if (!line1.startsWith('1 ') || !line2.startsWith('2 ')) return null
     try {
-      await Preferences.set({ key: TLE_KEY, value: JSON.stringify({ line1, line2, ts: Date.now() }) })
+      await Preferences.set({ key, value: JSON.stringify({ line1, line2, ts: Date.now() }) })
     } catch {
       /* ignore */
     }
@@ -40,6 +54,9 @@ export const fetchIssTle = async () => {
     return null
   }
 }
+
+// Backward-compatible ISS helper (the free flow uses this).
+export const fetchIssTle = () => fetchSatelliteTle(ISS_CATNR)
 
 const sunAltitudeDeg = (Astronomy, observer, time) => {
   const equ = Astronomy.Equator(Astronomy.Body.Sun, time, observer, true, true)

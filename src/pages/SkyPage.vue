@@ -156,6 +156,37 @@
         <div v-else class="sky-empty">{{ tt('skyHome.issEmpty') }}</div>
       </section>
 
+      <!-- Premium satellite pack (Tiangong, Hubble) -->
+      <section v-if="premiumSatsReady" class="sky-card">
+        <div class="sky-section-title">
+          {{ tt('skyPage.satMoreTitle') }}
+          <span v-if="!hasPremiumAccess" class="sky-sat-badge">{{ tt('skyPage.satBadge') }}</span>
+        </div>
+        <template v-if="hasPremiumAccess">
+          <div v-for="s in premiumSats" :key="s.key" class="sky-sat-group">
+            <div class="sky-sat-group__name">{{ tt(`skyPage.sats.${s.key}`) }}</div>
+            <div v-if="s.passes.length" class="sky-iss">
+              <div v-for="(pass, i) in s.passes" :key="i" class="sky-iss__pass">
+                <span class="sky-iss__time">{{ formatPassTime(pass.peakTime) }}</span>
+                <span class="sky-iss__path">
+                  {{ tt(`skyHome.compass.${pass.startAzKey}`) }} → {{ tt(`skyHome.compass.${pass.endAzKey}`) }}
+                  · {{ tt('skyHome.issMax') }} {{ pass.maxEl }}° · {{ formatDuration(pass.durationSec) }}
+                </span>
+              </div>
+            </div>
+            <div v-else class="sky-empty">{{ tt('skyHome.issEmpty') }}</div>
+          </div>
+        </template>
+        <button v-else type="button" class="sky-sat-lock" @click="openSatPremium">
+          <q-icon name="lock" size="16px" class="sky-sat-lock__icon" />
+          <span class="sky-sat-lock__copy">
+            <span class="sky-sat-lock__title">{{ tt('skyPage.satLockTitle') }}</span>
+            <span class="sky-sat-lock__hint">{{ tt('skyPage.satLockHint') }}</span>
+          </span>
+          <q-icon name="chevron_right" size="18px" />
+        </button>
+      </section>
+
       <!-- Sun & twilight -->
       <section v-if="sunInfo" class="sky-card">
         <div class="sky-section-title">{{ tt('skyHome.sunTitle') }}</div>
@@ -196,7 +227,7 @@
 
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import {
   computeSkyForDate,
@@ -218,7 +249,13 @@ import {
   getScheduledIds,
   notifId,
 } from 'src/services/skyNotifications.js'
-import { fetchIssTle, computeVisiblePasses } from 'src/services/issPasses.js'
+import {
+  fetchIssTle,
+  fetchSatelliteTle,
+  computeVisiblePasses,
+  PREMIUM_SATELLITES,
+} from 'src/services/issPasses.js'
+import { usePremiumAccess } from 'src/stores/premiumAccess.js'
 import { fetchTonightConditions } from 'src/services/skyWeather.js'
 import { skyLocation, loadSkyLocation, SKY_CITIES } from 'src/stores/skyLocation.js'
 
@@ -238,6 +275,8 @@ const eventFeed = ref([])
 const scheduledIds = ref(new Set())
 const issPasses = ref([])
 const issReady = ref(false)
+const premiumSats = ref([])
+const premiumSatsReady = ref(false)
 const planets = ref([])
 const visible = ref([])
 const sunInfo = ref(null)
@@ -248,6 +287,8 @@ const starCanvas = ref(null)
 const eventsSection = ref(null)
 const focusEvId = ref(null)
 const route = useRoute()
+const router = useRouter()
+const { hasPremiumAccess } = usePremiumAccess()
 let focusTimer = 0
 
 let Astronomy = null
@@ -505,6 +546,32 @@ const loadIssPasses = async () => {
   }
 }
 
+// Premium satellite pack (Tiangong, Hubble) — same on-device SGP4 pipeline as the
+// free ISS, gated behind premium. Free users see a locked teaser instead.
+const loadPremiumSatPasses = async () => {
+  if (!hasPremiumAccess.value) {
+    premiumSatsReady.value = true
+    return
+  }
+  try {
+    const loc = { lat: skyLocation.value.lat, lon: skyLocation.value.lon, elevKm: 0.05 }
+    const out = []
+    for (const s of PREMIUM_SATELLITES) {
+      const tle = await fetchSatelliteTle(s.catnr)
+      const passes = tle && Astronomy
+        ? computeVisiblePasses(Astronomy, tle, loc, { days: 5, minEl: 10, limit: 3 })
+        : []
+      out.push({ key: s.key, passes })
+    }
+    premiumSats.value = out
+  } catch (e) {
+    console.error('[SkyPage] premium sats load failed', e)
+  } finally {
+    premiumSatsReady.value = true
+  }
+}
+const openSatPremium = () => router.push({ name: 'premium', query: { source: 'sky_satellites' } })
+
 onMounted(async () => {
   try {
     await loadSkyLocation()
@@ -530,6 +597,7 @@ onMounted(async () => {
     }
     void refreshScheduled()
     void loadIssPasses()
+    void loadPremiumSatPasses()
     void loadConditions()
     buildMonth()
   } catch (e) {
@@ -961,6 +1029,67 @@ onBeforeUnmount(() => {
   font-size: 12px;
   color: rgba(184, 205, 236, 0.78);
   font-variant-numeric: tabular-nums;
+}
+/* Premium satellite pack */
+.sky-sat-badge {
+  margin-left: 8px;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  color: #0b1422;
+  background: linear-gradient(180deg, #cddaf6, #8ea6e8);
+  font-weight: 600;
+  vertical-align: middle;
+}
+.sky-sat-group {
+  margin-top: 12px;
+}
+.sky-sat-group:first-of-type {
+  margin-top: 2px;
+}
+.sky-sat-group__name {
+  font-size: 12.5px;
+  color: rgba(214, 225, 242, 0.8);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.sky-sat-lock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(145, 188, 255, 0.22);
+  background: rgba(64, 96, 156, 0.12);
+  color: inherit;
+  transition: transform 0.12s ease;
+}
+.sky-sat-lock:active {
+  transform: scale(0.98);
+}
+.sky-sat-lock__icon {
+  color: #91bcff;
+  flex: 0 0 auto;
+}
+.sky-sat-lock__copy {
+  display: grid;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.sky-sat-lock__title {
+  font-size: 13.5px;
+  color: rgba(233, 240, 250, 0.95);
+  font-weight: 500;
+}
+.sky-sat-lock__hint {
+  font-size: 11.5px;
+  color: rgba(184, 205, 236, 0.7);
+  line-height: 1.35;
 }
 .sky-empty {
   font-size: 13px;
