@@ -11,7 +11,7 @@
 
     <section v-else-if="sky" class="skh-screen">
       <header class="skh-head">
-        <button type="button" class="skh-loc hit-44" @click="locationOpen = true">
+        <button type="button" class="skh-loc hit-44" @click="openLocationSheet">
           <span class="skh-loc__dot"></span>
           <span class="skh-loc__name">{{ locationLabel }}</span>
           <q-icon name="expand_more" size="15px" class="skh-loc__caret" />
@@ -23,7 +23,7 @@
             type="button"
             class="skh-cond"
             :class="`skh-cond--${conditions.band}`"
-            @click="condSheetOpen = true"
+            @click="openCondSheet"
           >
             <span class="skh-cond__dot"></span>
             {{ conditionsLabel }} · {{ conditions.cloudCoverPct }}% {{ tt('skyHome.cloudLabel') }}
@@ -36,7 +36,7 @@
           type="button"
           class="skh-moonwrap"
           :aria-label="moonAria"
-          @click="moonSheetOpen = true"
+          @click="openMoonSheet"
         >
           <div class="skh-moonhalo" aria-hidden="true"></div>
           <canvas ref="moonCanvas" class="skh-moon"></canvas>
@@ -54,11 +54,11 @@
         </div>
 
         <div class="skh-essentials">
-          <button type="button" class="skh-fact" @click="moonSheetOpen = true">
+          <button type="button" class="skh-fact" @click="openMoonSheet">
             <span class="skh-fact__label">{{ tt('skyHome.moonTitle') }}</span>
             <span class="skh-fact__val">{{ moonNowLabel }}</span>
           </button>
-          <button type="button" class="skh-fact" @click="sunSheetOpen = true">
+          <button type="button" class="skh-fact" @click="openSunSheet">
             <span class="skh-fact__label">{{ tt('skyHome.sunTitle') }}</span>
             <span class="skh-fact__val">{{ formatTime(sun.sunset) }}</span>
           </button>
@@ -219,6 +219,7 @@
 
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import {
@@ -425,7 +426,33 @@ const onVisible = () => {
   void nextTick(() => redrawMoon())
 }
 
+// Light haptic on every tap (native only; web/preview no-ops via the catch).
+const tapHaptic = async (style = ImpactStyle.Light) => {
+  try {
+    await Haptics.impact({ style })
+  } catch {
+    /* not available on web / preview */
+  }
+}
+const openMoonSheet = () => {
+  void tapHaptic()
+  moonSheetOpen.value = true
+}
+const openSunSheet = () => {
+  void tapHaptic()
+  sunSheetOpen.value = true
+}
+const openCondSheet = () => {
+  void tapHaptic()
+  condSheetOpen.value = true
+}
+const openLocationSheet = () => {
+  void tapHaptic()
+  locationOpen.value = true
+}
+
 const pickCity = (cityKey) => {
+  void tapHaptic()
   setSkyLocationCity(cityKey)
   locationOpen.value = false
 }
@@ -434,6 +461,7 @@ const { hasPremiumAccess } = usePremiumAccess()
 const cityToLoc = (c) => ({ lat: c.lat, lon: c.lon, cityKey: c.key })
 const isCityFavorite = (c) => isFavorite(cityToLoc(c))
 const onToggleFavorite = (c) => {
+  void tapHaptic()
   const result = toggleSkyFavorite(cityToLoc(c), hasPremiumAccess.value)
   if (result === 'blocked') {
     // Free users keep one saved place; more is a premium convenience.
@@ -442,6 +470,7 @@ const onToggleFavorite = (c) => {
   }
 }
 const useMyLocation = async () => {
+  void tapHaptic()
   await detectSkyLocation()
   locationOpen.value = false
 }
@@ -532,10 +561,14 @@ const dayLengthLabel = computed(() => {
   return s
 })
 
-const openSky = () => router.push({ name: 'sky', query: { source: 'sky_home' } })
+const openSky = () => {
+  void tapHaptic()
+  router.push({ name: 'sky', query: { source: 'sky_home' } })
+}
 const openHighlight = () => {
+  void tapHaptic()
   const ev = tonightHighlight.value
-  if (!ev) return openSky()
+  if (!ev) return router.push({ name: 'sky', query: { source: 'sky_home' } })
   router.push({ name: 'sky', query: { source: 'sky_home', focus: `${ev.type}:${ev.key}` } })
 }
 
@@ -546,6 +579,7 @@ const refreshScheduled = async () => {
   scheduledIds.value = await getScheduledIds()
 }
 const toggleReminder = async (ph) => {
+  void tapHaptic()
   const key = phaseEventKey(ph)
   if (isScheduled(ph)) {
     await cancelSkyEvent(key)
@@ -876,10 +910,12 @@ onBeforeUnmount(() => {
   padding: 0;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.15s ease;
+  // Smooth, weighted press + release (no snap) — matches the iOS feel.
+  transition: transform 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 .skh-moonwrap:active {
-  transform: scale(0.985);
+  transform: scale(0.965);
+  transition-duration: 0.14s;
 }
 .skh-moonhalo {
   position: absolute;
@@ -895,16 +931,17 @@ onBeforeUnmount(() => {
   width: min(58vw, 30vh, 272px);
   aspect-ratio: 1;
   filter: drop-shadow(0 12px 50px rgba(150, 180, 230, 0.32));
-  // Gentle suspended float so the hero itself feels alive, not pinned.
-  animation: skh-moonfloat 7.5s ease-in-out infinite alternate;
+  // Very gentle suspended float so the hero feels alive, not pinned — subtle
+  // and slow (Apple-calm), never a bob.
+  animation: skh-moonfloat 10s ease-in-out infinite alternate;
   will-change: transform;
 }
 @keyframes skh-moonfloat {
   0% {
-    transform: translateY(-6px);
+    transform: translateY(-3px);
   }
   100% {
-    transform: translateY(8px);
+    transform: translateY(3px);
   }
 }
 @media (prefers-reduced-motion: reduce) {
