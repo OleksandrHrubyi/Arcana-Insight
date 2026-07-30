@@ -29,6 +29,20 @@
         </div>
       </section>
 
+      <!-- Tonight's tour — ordered "what to look at" plan -->
+      <section v-if="tonightTour.length" class="sky-card">
+        <div class="sky-section-title">{{ tt('skyPage.tourTitle') }}</div>
+        <ol class="sky-tour">
+          <li v-for="(stop, i) in tonightTour" :key="stop.key" class="sky-tour__stop">
+            <span class="sky-tour__num">{{ i + 1 }}</span>
+            <span class="sky-tour__body">
+              <span class="sky-tour__name">{{ tourName(stop) }}</span>
+              <span class="sky-tour__meta">{{ tourMeta(stop) }}</span>
+            </span>
+          </li>
+        </ol>
+      </section>
+
       <!-- Month calendar (centrepiece) -->
       <section class="sky-card sky-cal">
         <div class="sky-cal__head">
@@ -268,6 +282,7 @@ import {
 } from 'src/services/issPasses.js'
 import { usePremiumAccess } from 'src/stores/premiumAccess.js'
 import { tapHaptic } from 'src/helpers/haptics.js'
+import { buildTonightTour } from 'src/helpers/skyTourCore.js'
 import { fetchTonightConditions } from 'src/services/skyWeather.js'
 import { skyLocation, loadSkyLocation, SKY_CITIES } from 'src/stores/skyLocation.js'
 
@@ -283,6 +298,7 @@ const moonDetail = ref(null)
 const observing = ref(null)
 const conditions = ref(null)
 const bearings = ref(null)
+const moonTimes = ref({ rise: null, set: null })
 const eventFeed = ref([])
 const scheduledIds = ref(new Set())
 const issPasses = ref([])
@@ -395,6 +411,36 @@ const weekdayLabels = computed(() =>
   ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((k) => tt(`skyPage.weekdays.${k}`)),
 )
 const eventList = computed(() => eventFeed.value)
+
+// Tonight's tour — an ordered "what to look at" plan from the data already loaded.
+const tonightTour = computed(() =>
+  buildTonightTour({
+    moonPhaseKey: sky.value?.moonPhaseKey || '',
+    moonRise: moonTimes.value.rise,
+    moonSet: moonTimes.value.set,
+    visible: visible.value,
+    issPasses: issPasses.value,
+  }),
+)
+const tourName = (stop) => {
+  if (stop.kind === 'moon') return `${tt('skyPage.tour.moon')} · ${tt(`astro.phases.${stop.phaseKey}`)}`
+  if (stop.kind === 'planet') return tt(`astro.planets.${stop.planetKey}`)
+  return tt('skyPage.tour.iss')
+}
+const tourMeta = (stop) => {
+  if (stop.kind === 'moon') {
+    const parts = []
+    if (stop.rise) parts.push(`${tt('skyHome.moonRises')} ${formatTime(stop.rise)}`)
+    if (stop.set) parts.push(`${tt('skyHome.moonSets')} ${formatTime(stop.set)}`)
+    return parts.join(' · ')
+  }
+  if (stop.kind === 'planet') {
+    const parts = [tt(`skyHome.compass.${stop.azimuthKey}`), `${stop.altitude}°`]
+    if (stop.transit) parts.push(`${tt('skyPage.highest')} ${formatTime(stop.transit)}`)
+    return parts.join(' · ')
+  }
+  return `${formatPassTime(stop.peakTime)} · ${tt(`skyHome.compass.${stop.startAzKey}`)} → ${tt(`skyHome.compass.${stop.endAzKey}`)} · ${tt('skyHome.issMax')} ${stop.maxEl}°`
+}
 
 const locationLabel = computed(() => {
   const key = skyLocation.value.cityKey
@@ -630,6 +676,7 @@ onMounted(async () => {
     }))
     sunInfo.value = computeSunDetail(Astronomy, observer, now)
     const moonRS = bodyViewTimes(Astronomy, 'moon', observer, now)
+    moonTimes.value = { rise: moonRS.rise, set: moonRS.set }
     bearings.value = {
       sunrise: bearingAt(Astronomy, 'sun', observer, sunInfo.value.sunrise),
       sunset: bearingAt(Astronomy, 'sun', observer, sunInfo.value.sunset),
@@ -1067,6 +1114,49 @@ onBeforeUnmount(() => {
   display: grid;
   gap: 3px;
   min-width: 0;
+}
+
+/* Tonight's tour — numbered observing plan */
+.sky-tour {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sky-tour__stop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sky-tour__num {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #cddaf6;
+  background: rgba(96, 148, 210, 0.16);
+  border: 1px solid rgba(145, 190, 245, 0.3);
+  font-variant-numeric: tabular-nums;
+}
+.sky-tour__body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.sky-tour__name {
+  font-size: 14px;
+  color: rgba(233, 240, 250, 0.95);
+  font-weight: 500;
+}
+.sky-tour__meta {
+  font-size: 12px;
+  color: rgba(184, 205, 236, 0.7);
+  font-variant-numeric: tabular-nums;
 }
 .sky-iss__time {
   font-size: 14px;
