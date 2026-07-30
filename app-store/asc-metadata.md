@@ -171,10 +171,13 @@ Lead with the instrument. Suggested 8-shot order + captions:
 7. Card of the day / Horoscope — "Go deeper when you want to"  (secondary)
 8. Premium — "The full practice, unlocked"
 
-> Generator note: the existing `tests/visual/appstore-shots.spec.js` captures a
-> journal-first set (`app-store/screenshots/*/1-journal-today.png` …). It must be
-> reworked to shoot the new home + the Sky tool screens above at 6.9″ 1320×2868
-> and 6.5″ 1242×2688 before upload. (Separate task — see "Remaining to submit".)
+> Generator: `tests/visual/appstore-shots.spec.js` now shoots this astronomy-first
+> set → `app-store/screenshots/{6.9in_1320x2868,6.5in_1242x2688}/{1-home,
+> 2-sky-observe,3-sky-moon,4-sky-events,5-sky-visible,6-journal,7-menu,8-premium}.png`
+> (regenerated 2026-07-30). Rerun: serve dist/spa on :9010, then
+> `PLAYWRIGHT_BASE_URL=http://127.0.0.1:9010 npx playwright test tests/visual/appstore-shots.spec.js`.
+> The 8-premium shot's "Purchases unavailable" sticky bar is a web-build artifact
+> (no RevenueCat) — retake that one on a real device if you want live pricing.
 
 ---
 
