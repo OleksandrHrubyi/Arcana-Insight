@@ -299,11 +299,15 @@
 - [ ] Privacy + Terms URLs resolve (LR-11)
 
 ## ASO assets (for ASC)
-- **Title (≤30):** `Arcana: Tarot & Horoscope`
-- **Subtitle (≤30):** `Daily card & zodiac ritual`
-- **Keywords (≤100):** `tarot,horoscope,astrology,zodiac,daily card,moon phase,compatibility,birth chart,oracle,reading`
-- **Description hook:** grounded daily ritual (card + horoscope + compatibility + history/streaks); premium = unlimited + Love/Career themes + full compatibility + history. Keep the "for reflection and entertainment — does not predict the future" disclaimer line.
-- Avoid: superlatives, "free", future-prediction claims.
+> ⚠️ SUPERSEDED (2026-07-30). The tarot-first ASO below was for the pre-rejection
+> v1.0 and MUST NOT be used — it contradicts the 4.3(b) astronomy repositioning.
+> **Canonical ASO now lives in `app-store/asc-metadata.md`** (astronomy-first,
+> name "Arcana: Night Sky & Moon", Reference/Education category). Reviewer notes:
+> `app-store/reviewer-notes.md` (v4). Kept here only for historical reference.
+- ~~**Title (≤30):** `Arcana: Tarot & Horoscope`~~ → see asc-metadata.md
+- ~~**Subtitle (≤30):** `Daily card & zodiac ritual`~~
+- ~~**Keywords (≤100):** `tarot,horoscope,astrology,zodiac,daily card,moon phase,compatibility,birth chart,oracle,reading`~~
+- ~~Description hook: grounded daily ritual…~~
 
 ---
 
