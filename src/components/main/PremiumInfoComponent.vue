@@ -264,6 +264,13 @@ const featureItems = computed(() => [
     sub: tt('premiumPage.feat.insightsSub'),
   },
   {
+    key: 'satellites',
+    icon: 'satellite_alt',
+    tint: '#8ea6e8',
+    title: tt('premiumPage.feat.satellites'),
+    sub: tt('premiumPage.feat.satellitesSub'),
+  },
+  {
     key: 'tarot',
     icon: 'style',
     tint: '#7aa7ff',
