@@ -146,11 +146,22 @@
         <div class="sky-section-title">{{ tt('skyHome.issTitle') }}</div>
         <div v-if="issPasses.length" class="sky-iss">
           <div v-for="(pass, i) in issPasses" :key="i" class="sky-iss__pass">
-            <span class="sky-iss__time">{{ formatPassTime(pass.peakTime) }}</span>
-            <span class="sky-iss__path">
-              {{ tt(`skyHome.compass.${pass.startAzKey}`) }} → {{ tt(`skyHome.compass.${pass.endAzKey}`) }}
-              · {{ tt('skyHome.issMax') }} {{ pass.maxEl }}° · {{ formatDuration(pass.durationSec) }}
-            </span>
+            <div class="sky-iss__info">
+              <span class="sky-iss__time">{{ formatPassTime(pass.peakTime) }}</span>
+              <span class="sky-iss__path">
+                {{ tt(`skyHome.compass.${pass.startAzKey}`) }} → {{ tt(`skyHome.compass.${pass.endAzKey}`) }}
+                · {{ tt('skyHome.issMax') }} {{ pass.maxEl }}° · {{ formatDuration(pass.durationSec) }}
+              </span>
+            </div>
+            <button
+              type="button"
+              class="sky-bell"
+              :class="{ 'sky-bell--on': isIssScheduled(pass) }"
+              :aria-label="tt('skyHome.notifyAria')"
+              @click="toggleIssReminder(pass)"
+            >
+              <q-icon :name="isIssScheduled(pass) ? 'notifications_active' : 'notifications_none'" size="17px" />
+            </button>
           </div>
         </div>
         <div v-else class="sky-empty">{{ tt('skyHome.issEmpty') }}</div>
@@ -409,6 +420,30 @@ const toggleReminder = async (ev) => {
       title: tt(`skyHome.events.${ev.key}`),
       body: tt('skyHome.notifyBody'),
       at: ev.date,
+    })
+  }
+  await refreshScheduled()
+}
+
+// ISS pass reminders — fire ~10 min before the pass so the user can get outside.
+const issPassKey = (pass) => `iss-${new Date(pass.peakTime).toISOString()}`
+const isIssScheduled = (pass) => scheduledIds.value.has(notifId(issPassKey(pass)))
+const toggleIssReminder = async (pass) => {
+  void tapHaptic()
+  const key = issPassKey(pass)
+  if (isIssScheduled(pass)) {
+    await cancelSkyEvent(key)
+  } else {
+    await scheduleSkyEvent({
+      key,
+      title: tt('skyPage.issNotifyTitle'),
+      body: tt('skyPage.issNotifyBody', {
+        from: tt(`skyHome.compass.${pass.startAzKey}`),
+        to: tt(`skyHome.compass.${pass.endAzKey}`),
+        max: pass.maxEl,
+      }),
+      at: new Date(pass.start),
+      leadMinutes: 10,
     })
   }
   await refreshScheduled()
@@ -1019,12 +1054,19 @@ onBeforeUnmount(() => {
   gap: 10px;
 }
 .sky-iss__pass {
-  display: grid;
-  gap: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   padding: 11px 12px;
   border-radius: 13px;
   border: 1px solid rgba(255, 255, 255, 0.07);
   background: rgba(9, 14, 23, 0.5);
+}
+.sky-iss__info {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
 }
 .sky-iss__time {
   font-size: 14px;

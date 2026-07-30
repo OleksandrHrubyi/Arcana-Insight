@@ -31,11 +31,11 @@ export const getScheduledIds = async () => {
   }
 }
 
-export const scheduleSkyEvent = async ({ key, title, body, at }) => {
+export const scheduleSkyEvent = async ({ key, title, body, at, leadMinutes = 60 }) => {
   if (!(at instanceof Date)) return false
   if (!(await ensureNotifPermission())) return false
-  // Fire an hour ahead, but never in the past.
-  const fireAt = new Date(Math.max(Date.now() + 5000, at.getTime() - 60 * 60000))
+  // Fire `leadMinutes` ahead (default 1h; ISS passes want ~10m), never in the past.
+  const fireAt = new Date(Math.max(Date.now() + 5000, at.getTime() - leadMinutes * 60000))
   try {
     await LocalNotifications.schedule({
       notifications: [{ id: notifId(key), title, body, schedule: { at: fireAt } }],
