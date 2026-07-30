@@ -10,6 +10,14 @@ export const PREMIUM_FREE_ITEM_KEYS = Object.freeze([
   'premiumPage.free.zodiacGuide',
 ])
 
+// Astronomy/reflection premium value leads the list now (matches the app's
+// vector). These map to real shipped features: saved observing places
+// (skyFavoritesCore) and journal reflection insights (journalInsightsCore).
+const PREMIUM_BILLING_INCLUDE_ASTRO = Object.freeze([
+  'premiumPage.billing.includes.savedPlaces',
+  'premiumPage.billing.includes.journalInsights',
+])
+
 const PREMIUM_BILLING_INCLUDE_BASE = Object.freeze([
   'premiumPage.billing.includes.unlimitedReadings',
   'premiumPage.billing.includes.horoscopeThemes',
@@ -21,10 +29,24 @@ const PREMIUM_BILLING_INTERPRETATION_AI = 'premiumPage.billing.includes.deepInte
 const PREMIUM_BILLING_INTERPRETATION_BASIC = 'premiumPage.billing.includes.structuredInterpretation'
 
 export const getPremiumBillingIncludeKeys = ({ tarotAiEnabled = false } = {}) => [
+  ...PREMIUM_BILLING_INCLUDE_ASTRO,
   ...PREMIUM_BILLING_INCLUDE_BASE.slice(0, 2),
   tarotAiEnabled ? PREMIUM_BILLING_INTERPRETATION_AI : PREMIUM_BILLING_INTERPRETATION_BASIC,
   ...PREMIUM_BILLING_INCLUDE_BASE.slice(2),
 ]
+
+const PREMIUM_DETAIL_ASTRO = Object.freeze([
+  {
+    icon: 'star',
+    titleKey: 'premiumPage.premiumDetails.savedPlaces.title',
+    textKey: 'premiumPage.premiumDetails.savedPlaces.text',
+  },
+  {
+    icon: 'insights',
+    titleKey: 'premiumPage.premiumDetails.journalInsights.title',
+    textKey: 'premiumPage.premiumDetails.journalInsights.text',
+  },
+])
 
 const PREMIUM_DETAIL_BASE = Object.freeze([
   {
@@ -67,6 +89,7 @@ const PREMIUM_DETAIL_INTERPRETATION_BASIC = Object.freeze({
 })
 
 export const getPremiumDetailItems = ({ tarotAiEnabled = false } = {}) => [
+  ...PREMIUM_DETAIL_ASTRO,
   ...PREMIUM_DETAIL_BASE.slice(0, 3),
   tarotAiEnabled ? PREMIUM_DETAIL_INTERPRETATION_AI : PREMIUM_DETAIL_INTERPRETATION_BASIC,
   ...PREMIUM_DETAIL_BASE.slice(3),

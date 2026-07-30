@@ -250,6 +250,20 @@ const outcomePoints = computed(() => [
 
 const featureItems = computed(() => [
   {
+    key: 'savedPlaces',
+    icon: 'star',
+    tint: '#91bcff',
+    title: tt('premiumPage.feat.savedPlaces'),
+    sub: tt('premiumPage.feat.savedPlacesSub'),
+  },
+  {
+    key: 'insights',
+    icon: 'insights',
+    tint: '#7fd4a3',
+    title: tt('premiumPage.feat.insights'),
+    sub: tt('premiumPage.feat.insightsSub'),
+  },
+  {
     key: 'tarot',
     icon: 'style',
     tint: '#7aa7ff',

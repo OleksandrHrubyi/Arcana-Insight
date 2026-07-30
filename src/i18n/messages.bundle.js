@@ -1807,7 +1807,7 @@ export const messages = {
 
     premiumPage: {
       title: 'Premium',
-      subtitle: 'Your daily reflection stays free. Premium adds depth: unlimited sessions, all themes, full history.',
+      subtitle: 'The sky tool and your journal stay free. Premium adds depth: saved places, reflection insights, unlimited readings, all themes and full history.',
       compareTable: {
         lead: 'Free covers the full daily reflection ritual. Premium unlocks the deeper formats: full spreads, all daily themes, complete compatibility.',
         summary: 'Premium = full access to every format with no daily limits.',
@@ -1895,6 +1895,14 @@ export const messages = {
         history: 'Full saved reading history',
       },
       premiumDetails: {
+        savedPlaces: {
+          title: 'Saved observing places',
+          text: 'Star and switch between all your skies — home, travel, the dark-sky spot.',
+        },
+        journalInsights: {
+          title: 'Reflection insights',
+          text: 'A 30-day mood mix, streaks and the Moon phases you journal under.',
+        },
         unlimitedTarot: {
           title: 'Unlimited tarot sessions',
           text: 'No daily cap: run 1, 3, or 5-card readings whenever you need clarity.',
@@ -1933,6 +1941,10 @@ export const messages = {
         depthText: 'More detail gives better prompts for calm and meaningful reflection.',
       },
       feat: {
+        savedPlaces: 'Saved places',
+        savedPlacesSub: 'All your skies, one tap',
+        insights: 'Reflection insights',
+        insightsSub: '30-day mood mix & streaks',
         tarot: 'Unlimited Tarot',
         tarotSub: 'As many readings as you want',
         love: 'Love & Career',
@@ -2050,6 +2062,8 @@ export const messages = {
           'Payment is charged to your Apple ID at confirmation of purchase. The subscription renews automatically unless canceled at least 24 hours before the end of the current period; your account is charged for renewal within 24 hours before the period ends. You can manage or cancel anytime in your App Store account settings.',
         includesTitle: 'Every plan includes:',
         includes: {
+          savedPlaces: 'Unlimited saved observing places',
+          journalInsights: 'Reflection insights: 30-day mood mix & streaks',
           unlimitedReadings: 'Unlimited tarot readings (1, 3, and 5 cards)',
           horoscopeThemes: 'All daily themes: energy, love, and career',
           deepInterpretation: 'Deeper AI interpretations with practical action points',
@@ -4411,7 +4425,7 @@ export const messages = {
 
     premiumPage: {
       title: 'Преміум',
-      subtitle: 'Щоденна рефлексія — завжди безкоштовна. Premium додає глибину: безліміт сесій, усі теми, повна історія.',
+      subtitle: 'Астро-інструмент і твій журнал — безкоштовні. Premium додає глибину: збережені місця, інсайти рефлексії, безліміт розкладів, усі теми й повна історія.',
       compareTable: {
         lead: 'Free покриває повний щоденний ритуал рефлексії. Premium відкриває глибші формати: повні розклади, всі щоденні теми, повна сумісність.',
         summary: 'Premium = повний доступ до всіх форматів без денних лімітів.',
@@ -4499,6 +4513,14 @@ export const messages = {
         history: 'Повна збережена історія розкладів',
       },
       premiumDetails: {
+        savedPlaces: {
+          title: 'Збережені місця спостереження',
+          text: 'Познач зіркою і перемикайся між усіма своїми небами — дім, подорож, темне місце.',
+        },
+        journalInsights: {
+          title: 'Інсайти рефлексії',
+          text: 'Мікс настроїв за 30 днів, серії та фази Місяця, під якими ти пишеш.',
+        },
         unlimitedTarot: {
           title: 'Необмежені сесії таро',
           text: 'Без денного ліміту: запускай розклади на 1, 3 або 5 карт у будь-який момент.',
@@ -4538,6 +4560,10 @@ export const messages = {
         depthText: 'Більше деталей дає якісніші підказки для спокійної та усвідомленої рефлексії.',
       },
       feat: {
+        savedPlaces: 'Збережені місця',
+        savedPlacesSub: 'Усі твої неба в один тап',
+        insights: 'Інсайти рефлексії',
+        insightsSub: 'Мікс настроїв і серії за 30 днів',
         tarot: 'Таро без лімітів',
         tarotSub: 'Скільки завгодно читань',
         love: 'Кохання і Кар\u2019єра',
@@ -4654,6 +4680,8 @@ export const messages = {
           'Оплата списується з твого Apple ID при підтвердженні покупки. Підписка поновлюється автоматично, якщо не скасувати щонайменше за 24 години до кінця поточного періоду; кошти за поновлення списуються протягом 24 годин до завершення періоду. Керувати чи скасувати можна будь-коли в налаштуваннях App Store.',
         includesTitle: 'У кожному плані ти отримуєш:',
         includes: {
+          savedPlaces: 'Безліч збережених місць спостереження',
+          journalInsights: 'Інсайти рефлексії: мікс настроїв і серії за 30 днів',
           unlimitedReadings: 'Необмежені розклади таро (1, 3 і 5 карт)',
           horoscopeThemes: 'Усі щоденні теми: дух, кохання і карʼєра',
           deepInterpretation: 'Глибші AI-інтерпретації з практичними акцентами',

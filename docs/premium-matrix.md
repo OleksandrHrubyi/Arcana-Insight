@@ -33,6 +33,10 @@ Model details:
 
 Premium includes:
 
+- saved observing places (unlimited; free keeps 1) — `skyFavoritesCore`, gated in
+  the home location sheet
+- reflection insights (30-day mood mix, streaks, Moon phases) —
+  `journalInsightsCore`, gated in the journal (basic week summary stays free)
 - unlimited tarot sessions
 - larger spreads up to 5 cards
 - more horoscope themes
