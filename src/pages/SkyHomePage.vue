@@ -219,7 +219,7 @@
 
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { Haptics, ImpactStyle } from '@capacitor/haptics'
+import { tapHaptic } from 'src/helpers/haptics.js'
 import { useRouter } from 'vue-router'
 import { t, currentLocale } from 'src/i18n'
 import {
@@ -426,14 +426,6 @@ const onVisible = () => {
   void nextTick(() => redrawMoon())
 }
 
-// Light haptic on every tap (native only; web/preview no-ops via the catch).
-const tapHaptic = async (style = ImpactStyle.Light) => {
-  try {
-    await Haptics.impact({ style })
-  } catch {
-    /* not available on web / preview */
-  }
-}
 const openMoonSheet = () => {
   void tapHaptic()
   moonSheetOpen.value = true

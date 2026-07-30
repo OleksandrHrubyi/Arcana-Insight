@@ -256,6 +256,7 @@ import {
   PREMIUM_SATELLITES,
 } from 'src/services/issPasses.js'
 import { usePremiumAccess } from 'src/stores/premiumAccess.js'
+import { tapHaptic } from 'src/helpers/haptics.js'
 import { fetchTonightConditions } from 'src/services/skyWeather.js'
 import { skyLocation, loadSkyLocation, SKY_CITIES } from 'src/stores/skyLocation.js'
 
@@ -359,6 +360,7 @@ const buildMonth = () => {
 }
 
 const stepMonth = (delta) => {
+  void tapHaptic()
   let m = viewMonth.value + delta
   let y = viewYear.value
   if (m < 0) {
@@ -397,6 +399,7 @@ const refreshScheduled = async () => {
   scheduledIds.value = await getScheduledIds()
 }
 const toggleReminder = async (ev) => {
+  void tapHaptic()
   const key = eventKey(ev)
   if (isScheduled(ev)) {
     await cancelSkyEvent(key)
@@ -570,7 +573,10 @@ const loadPremiumSatPasses = async () => {
     premiumSatsReady.value = true
   }
 }
-const openSatPremium = () => router.push({ name: 'premium', query: { source: 'sky_satellites' } })
+const openSatPremium = () => {
+  void tapHaptic()
+  router.push({ name: 'premium', query: { source: 'sky_satellites' } })
+}
 
 onMounted(async () => {
   try {

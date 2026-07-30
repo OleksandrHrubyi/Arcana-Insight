@@ -427,7 +427,10 @@ const { hasPremiumAccess } = usePremiumAccess()
 const journalInsights = computed(() =>
   computeJournalInsights(entries.value, { todayKey: todayKey.value }),
 )
-const openPremium = () => router.push({ name: 'premium', query: { source: 'journal_insights' } })
+const openPremium = () => {
+  void hapticTap()
+  router.push({ name: 'premium', query: { source: 'journal_insights' } })
+}
 const patternsEntryWord = computed(() =>
   pluralForm(locale.value, journalPatterns.value?.entryCount || 0, {
     one: tt('journalPage.patternsEntryForms.one'),
