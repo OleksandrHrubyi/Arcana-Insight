@@ -27,6 +27,13 @@
           <span class="sky-observe__clouddot"></span>
           {{ conditionsLabel }} · {{ conditions.cloudCoverPct }}% {{ tt('skyHome.cloudLabel') }}
         </div>
+        <div v-if="milkyWay && milkyWay.hasDarkness" class="sky-observe__mw">
+          <q-icon name="blur_on" size="14px" class="sky-observe__mwicon" />
+          <span v-if="milkyWay.visible">
+            {{ tt('skyPage.milkyWayVisible', { t: formatTime(milkyWay.bestTime), alt: milkyWay.maxAltitude }) }}<template v-if="milkyWay.washedOut"> · {{ tt('skyPage.milkyWayWashed') }}</template>
+          </span>
+          <span v-else>{{ tt('skyPage.milkyWayLow', { alt: milkyWay.maxAltitude }) }}</span>
+        </div>
       </section>
 
       <!-- Tonight's tour — ordered "what to look at" plan -->
@@ -271,6 +278,7 @@ import {
   computeVisibleTonight,
   computeSunDetail,
   computeObservingWindow,
+  computeMilkyWayWindow,
   bodyViewTimes,
   bearingAt,
   meteorPeakInfo,
@@ -305,6 +313,7 @@ const loading = ref(true)
 const sky = ref(null)
 const moonDetail = ref(null)
 const observing = ref(null)
+const milkyWay = ref(null)
 const conditions = ref(null)
 const bearings = ref(null)
 const moonTimes = ref({ rise: null, set: null })
@@ -687,6 +696,7 @@ onMounted(async () => {
     sky.value = computeSkyForDate(Astronomy, now)
     moonDetail.value = computeMoonDetail(Astronomy, now)
     observing.value = computeObservingWindow(Astronomy, observer, now)
+    milkyWay.value = computeMilkyWayWindow(Astronomy, observer, now)
     eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { limit: 12 })
     planets.value = computePlanetSigns(Astronomy, now)
     visible.value = computeVisibleTonight(Astronomy, observer, now).map((p) => ({
@@ -848,6 +858,18 @@ onBeforeUnmount(() => {
   background: rgba(9, 14, 23, 0.5);
   font-size: 12px;
   color: rgba(220, 231, 246, 0.85);
+}
+.sky-observe__mw {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: rgba(184, 205, 236, 0.72);
+}
+.sky-observe__mwicon {
+  color: rgba(145, 188, 255, 0.75);
+  flex: 0 0 auto;
 }
 .sky-observe__clouddot {
   width: 7px;

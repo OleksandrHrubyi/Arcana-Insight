@@ -231,6 +231,18 @@ test('bearing at sunset is westerly, at sunrise easterly, for Kyiv in summer', (
   assert.equal(sky.bearingAt(Astronomy, 'sun', obs, null), null)
 })
 
+test('milky way window: real core altitude in darkness; no darkness in polar summer', () => {
+  const kyiv = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
+  const kw = sky.computeMilkyWayWindow(Astronomy, kyiv, new Date('2026-10-15T15:00:00Z'))
+  assert.equal(kw.hasDarkness, true, 'Kyiv has astronomical darkness in October')
+  assert.ok(kw.maxAltitude >= -90 && kw.maxAltitude <= 90, `alt ${kw.maxAltitude}`)
+  assert.equal(typeof kw.visible, 'boolean')
+  assert.equal(typeof kw.washedOut, 'boolean')
+  // Tromsø midsummer — no darkness, so no core window.
+  const tromso = sky.makeObserver(Astronomy, 69.65, 18.96)
+  assert.equal(sky.computeMilkyWayWindow(Astronomy, tromso, new Date('2026-06-21T12:00:00Z')).hasDarkness, false)
+})
+
 test('observing window: polar summer reports no true darkness', () => {
   // Tromsø ~69.6°N at midsummer — the Sun never reaches -18°.
   const obs = sky.makeObserver(Astronomy, 69.65, 18.96)

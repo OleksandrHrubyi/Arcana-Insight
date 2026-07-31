@@ -456,3 +456,37 @@ export const computeObservingWindow = (Astronomy, observer, date = new Date()) =
     windowEnd,
   }
 }
+
+// Galactic center (J2000) — the bright Milky Way core astrophotographers chase.
+const GALACTIC_CENTER_RA_HOURS = 266.405 / 15
+const GALACTIC_CENTER_DEC = -28.936
+const MILKY_WAY_MIN_ALT = 10
+
+// When is the Milky Way core highest during tonight's darkness, and how high does
+// it get? Samples the core's altitude across the astronomical-dark window. At high
+// latitudes it barely clears the horizon (honest `visible:false`); lower down it
+// climbs. `washedOut` flags a bright Moon that drowns the faint core.
+export const computeMilkyWayWindow = (Astronomy, observer, date = new Date()) => {
+  const win = computeObservingWindow(Astronomy, observer, date)
+  if (!win.hasDarkness) return { hasDarkness: false, visible: false }
+  let maxAltitude = -90
+  let bestTime = null
+  const startMs = win.darkStart.getTime()
+  const endMs = win.darkEnd.getTime()
+  for (let ms = startMs; ms <= endMs; ms += 20 * 60000) {
+    const time = makeTime(Astronomy, new Date(ms))
+    const hor = Astronomy.Horizon(time, observer, GALACTIC_CENTER_RA_HOURS, GALACTIC_CENTER_DEC, 'normal')
+    if (hor.altitude > maxAltitude) {
+      maxAltitude = hor.altitude
+      bestTime = new Date(ms)
+    }
+  }
+  return {
+    hasDarkness: true,
+    visible: maxAltitude >= MILKY_WAY_MIN_ALT,
+    maxAltitude: Math.round(maxAltitude),
+    bestTime,
+    washedOut: win.moonIlluminationPct >= 60 && !['afterMoonset', 'beforeMoonrise'].includes(win.quality),
+    moonIlluminationPct: win.moonIlluminationPct,
+  }
+}
