@@ -206,6 +206,10 @@
                 {{ tt(`journalPage.moods.${entry.mood}`) }}
               </span>
             </div>
+            <div v-if="entrySkyLine(entry)" class="journal-entry-card__sky">
+              <q-icon name="dark_mode" size="12px" />
+              {{ entrySkyLine(entry) }}
+            </div>
             <p v-if="entry.body" class="journal-entry-card__excerpt">{{ entry.body }}</p>
             <q-icon name="chevron_right" size="16px" class="journal-entry-card__arrow" />
           </article>
@@ -238,6 +242,10 @@
           <div v-if="selectedEntry.mood" class="journal-done__mood">
             <q-icon :name="moodIcon(selectedEntry.mood)" size="16px" />
             <span>{{ tt(`journalPage.moods.${selectedEntry.mood}`) }}</span>
+          </div>
+          <div v-if="entrySkyLine(selectedEntry)" class="journal-detail__sky">
+            <q-icon name="dark_mode" size="14px" />
+            {{ entrySkyLine(selectedEntry) }}
           </div>
           <p v-if="entryPromptText(selectedEntry)" class="journal-done__prompt">
             {{ entryPromptText(selectedEntry) }}
@@ -485,6 +493,18 @@ const promptLabelText = computed(() =>
 const entryPromptText = (entry) => (entry?.promptKey ? resolvePromptText(entry.promptKey) : '')
 
 const moodIcon = (moodKey) => moods.find((mood) => mood.key === moodKey)?.icon || 'circle'
+
+// The sky this entry was written under — turns each reflection into a small
+// observing log ("Full Moon · Capricorn"). Empty for older entries with no
+// captured sky (renders nothing).
+const entrySkyLine = (entry) => {
+  const sky = entry?.sky
+  if (!sky) return ''
+  const parts = []
+  if (sky.moonPhaseKey) parts.push(tt(`astro.phases.${sky.moonPhaseKey}`))
+  if (sky.moonSignKey) parts.push(tt(`zodiac.${sky.moonSignKey}`))
+  return parts.join(' · ')
+}
 
 const formatDateKey = (dateKey) => {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dateKey || ''))
@@ -1319,6 +1339,28 @@ onBeforeUnmount(() => {
   color: rgba(196, 214, 240, 0.8);
 }
 
+.journal-entry-card__sky {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 4px 0 2px;
+  font-size: 11.5px;
+  color: rgba(150, 178, 214, 0.72);
+}
+.journal-entry-card__sky .q-icon {
+  color: rgba(145, 188, 255, 0.7);
+}
+.journal-detail__sky {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: rgba(184, 205, 236, 0.8);
+}
+.journal-detail__sky .q-icon {
+  color: rgba(145, 188, 255, 0.8);
+}
 .journal-entry-card__excerpt {
   margin: 0;
   font-size: 13px;
