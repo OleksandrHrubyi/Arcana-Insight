@@ -121,6 +121,14 @@
             <span class="sky-event__main">
               <span class="sky-event__name">{{ tt(`skyHome.events.${ev.key}`) }}</span>
               <span class="sky-event__when">{{ untilLabel(ev.daysUntil) }} · {{ formatShort(ev.date) }}</span>
+              <span
+                v-if="ev.type === 'meteor' && meteorInfoMap[ev.key]"
+                class="sky-event__meteor"
+                :class="`sky-event__meteor--${meteorInfoMap[ev.key].interference}`"
+              >
+                {{ tt('skyPage.meteorRate', { zhr: meteorInfoMap[ev.key].zhr }) }} ·
+                {{ tt(`skyPage.meteorMoon.${meteorInfoMap[ev.key].interference}`) }}
+              </span>
             </span>
             <button
               type="button"
@@ -265,6 +273,7 @@ import {
   computeObservingWindow,
   bodyViewTimes,
   bearingAt,
+  meteorPeakInfo,
   makeObserver,
 } from 'src/helpers/skyCore.js'
 import { drawMoon, onMoonReady } from 'src/helpers/moonRender.js'
@@ -411,6 +420,16 @@ const weekdayLabels = computed(() =>
   ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((k) => tt(`skyPage.weekdays.${k}`)),
 )
 const eventList = computed(() => eventFeed.value)
+
+// Per-meteor-shower detail (rate + moonlight interference) for the events feed.
+const meteorInfoMap = computed(() => {
+  const map = {}
+  if (!Astronomy) return map
+  for (const ev of eventFeed.value) {
+    if (ev.type === 'meteor') map[ev.key] = meteorPeakInfo(Astronomy, ev.key, ev.date)
+  }
+  return map
+})
 
 // Tonight's tour — an ordered "what to look at" plan from the data already loaded.
 const tonightTour = computed(() =>
@@ -1038,6 +1057,20 @@ onBeforeUnmount(() => {
   font-size: 12px;
   color: rgba(141, 190, 240, 0.9);
   font-variant-numeric: tabular-nums;
+}
+.sky-event__meteor {
+  margin-top: 2px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.sky-event__meteor--low {
+  color: #7fd4a3;
+}
+.sky-event__meteor--moderate {
+  color: #e6c07a;
+}
+.sky-event__meteor--high {
+  color: rgba(184, 205, 236, 0.55);
 }
 .sky-bell {
   flex: 0 0 auto;

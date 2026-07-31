@@ -257,15 +257,28 @@ export const bearingAt = (Astronomy, bodyKey, observer, date) => {
 }
 
 // Fixed annual peak dates of the major meteor showers (local-evening reference).
+// `zhr` = zenithal hourly rate at peak under a dark sky (typical published value).
 export const METEOR_SHOWERS = Object.freeze([
-  { key: 'quadrantids', month: 1, day: 3 },
-  { key: 'lyrids', month: 4, day: 22 },
-  { key: 'etaAquariids', month: 5, day: 6 },
-  { key: 'perseids', month: 8, day: 12 },
-  { key: 'orionids', month: 10, day: 21 },
-  { key: 'leonids', month: 11, day: 17 },
-  { key: 'geminids', month: 12, day: 14 },
+  { key: 'quadrantids', month: 1, day: 3, zhr: 110 },
+  { key: 'lyrids', month: 4, day: 22, zhr: 18 },
+  { key: 'etaAquariids', month: 5, day: 6, zhr: 50 },
+  { key: 'perseids', month: 8, day: 12, zhr: 100 },
+  { key: 'orionids', month: 10, day: 21, zhr: 20 },
+  { key: 'leonids', month: 11, day: 17, zhr: 15 },
+  { key: 'geminids', month: 12, day: 14, zhr: 150 },
 ])
+
+// Per-shower observing detail: peak rate + how much the Moon washes it out (moon
+// illumination at the peak is a good proxy — a bright Moon ruins a shower).
+// interference: 'low' (< 35% lit) | 'moderate' | 'high' (>= 70% lit).
+export const meteorPeakInfo = (Astronomy, showerKey, peakDate) => {
+  const shower = METEOR_SHOWERS.find((s) => s.key === showerKey)
+  const zhr = shower?.zhr ?? null
+  if (!peakDate) return { zhr, moonIlluminationPct: null, interference: null }
+  const moonIlluminationPct = Math.round(illuminationFromElongation(moonSunElongation(Astronomy, peakDate)) * 100)
+  const interference = moonIlluminationPct >= 70 ? 'high' : moonIlluminationPct >= 35 ? 'moderate' : 'low'
+  return { zhr, moonIlluminationPct, interference }
+}
 
 // A unified, date-sorted feed of upcoming sky events — moon phases, lunar apsis
 // (super/micro moon), eclipses, seasons, meteor peaks. All computed on-device.

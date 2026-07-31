@@ -206,6 +206,19 @@ test('body view times: rise/set/transit are dates-or-null with a sane peak altit
   }
 })
 
+test('meteorPeakInfo returns the shower ZHR and a moon-interference band', () => {
+  const geminids = sky.meteorPeakInfo(Astronomy, 'geminids', new Date('2026-12-14T22:00:00Z'))
+  assert.equal(geminids.zhr, 150)
+  assert.ok(geminids.moonIlluminationPct >= 0 && geminids.moonIlluminationPct <= 100)
+  assert.ok(['low', 'moderate', 'high'].includes(geminids.interference), `band ${geminids.interference}`)
+  // No date → rate known, moon info null.
+  const noDate = sky.meteorPeakInfo(Astronomy, 'perseids', null)
+  assert.equal(noDate.zhr, 100)
+  assert.equal(noDate.interference, null)
+  // Unknown shower → null rate.
+  assert.equal(sky.meteorPeakInfo(Astronomy, 'nope', new Date()).zhr, null)
+})
+
 test('bearing at sunset is westerly, at sunrise easterly, for Kyiv in summer', () => {
   const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
   const { sunrise, sunset } = sky.computeSunTimes(Astronomy, obs, new Date('2026-07-28T10:00:00Z'))
