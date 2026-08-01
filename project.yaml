@@ -1,0 +1,46 @@
+id: arcana-insight
+name: Arcana Insight
+type: ios-app             # профіль: ~/agents/templates/types/ios-app/profile.yaml
+stage: blocked            # реджект App Store → перепозиціонування в астрономію; v1.0.1 submit-ready.
+                          # Після повторної подачі поміняти на review.
+one_liner: iOS-застосунок ритуалів і спостережень за небом — астрономічні події, журнал, тактильні ритуали.
+
+locations:
+  context: ~/Desktop/2027/Arcana-Insight
+  repo:    ~/Desktop/2027/Arcana-Insight
+
+audience:
+  primary: люди, яким потрібен реальний інструмент нічного неба — сьогоднішній Місяць, найкращий час спостереження, видимість планет, проходи МКС, події неба (усе на ефемериді on-device) — плюс тихий щоденний журнал рефлексії   # формулювання за app-store/asc-metadata.md (2026-08-01)
+  icp_doc: app-store/asc-metadata.md
+
+voice:
+  tone: спокійний, споглядальний; наука і небо, без езотеричних обіцянок
+  language: uk
+  never: [медичні/життєві поради, обіцянки передбачень, "гарантовано"]
+
+metrics:
+  north_star: відкладено свідомо — визначається ПІСЛЯ апруву App Store (рішення Олександра 2026-08-01, див. STATUS.md); кандидати з гейта — D7 retention ритуалу >20% або >5 Premium-підписок не від знайомих
+  sources: [App Store Connect]
+  spend_ceiling: $25/міс сумарно на змінні витрати (OpenAI + Supabase) до вердикту гейта; Apple Developer $99/рік — фіксовано (рішення Олександра 2026-08-01)
+
+roles:
+  release:
+    cadence: "на реліз"
+  product_owner:
+    cadence: "перед фічею"
+  content:
+    channels: [appstore]
+    cadence: "на реліз"
+    approval: manual
+  analyst:
+    cadence: "1×/міс"
+  strategist:
+    cadence: "1×/міс"     # реджект 4.x = питання позиціонування — його територія
+
+links:
+  status:      STATUS.md   # робочий документ (з 2026-08-01); CLAUDE.md — людський опис проєкту
+  positioning: app-store/asc-metadata.md   # канон астрономічного позиціонування (знахідка стратега 01.08)
+  release:     app-store/asc-submit-checklist.md   # чинний; старий EXECUTION_PLAN датований 03.2026 (знахідка release 01.08)
+
+secrets:
+  vault: Supabase → Edge Functions Secrets (runtime-ключі, `supabase secrets set`) + Supabase Vault (`admin_push_secret` для pg_cron); CI — GitHub Actions secrets; локально `.env` (у .gitignore, шаблон `.env.example`)   # посилання, ніколи не значення
