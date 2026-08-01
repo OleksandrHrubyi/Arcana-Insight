@@ -375,8 +375,13 @@ export const computeMoonDetail = (Astronomy, date = new Date()) => {
 // evening golden hour, and day length with the day-over-day delta.
 export const computeSunDetail = (Astronomy, observer, date = new Date()) => {
   const { sunrise, sunset, darkStart } = computeSunTimes(Astronomy, observer, date)
-  const start = makeTime(Astronomy, localMidnight(date))
-  const dawn = toDate(Astronomy.SearchAltitude(Astronomy.Body.Sun, observer, +1, start, 1.0, -18))
+  // Dawn is the -18° upward crossing BEFORE today's sunrise. Anchoring the search to
+  // sunrise-12h (not the machine's local midnight) keeps the result identical in any
+  // host timezone — local midnight in UTC can sit past the crossing and skip a day.
+  const start = sunrise
+    ? makeTime(Astronomy, new Date(sunrise.getTime() - 12 * 3600000))
+    : makeTime(Astronomy, localMidnight(date))
+  const dawn = toDate(Astronomy.SearchAltitude(Astronomy.Body.Sun, observer, +1, start, sunrise ? 0.5 : 1.0, -18))
 
   let goldenEveningStart = null
   if (sunset) {
