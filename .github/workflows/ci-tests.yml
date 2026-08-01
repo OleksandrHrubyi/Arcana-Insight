@@ -33,6 +33,20 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      # The runner sits in UTC, where a device-vs-location timezone bug is
+      # invisible: the sky screens compute the observer's day, and anchoring it to
+      # the machine's midnight only breaks off-zero offsets. Two extra runs — one
+      # west of UTC, one east — catch that regression here instead of on a device.
+      - name: Unit tests (device west of UTC)
+        run: npm test
+        env:
+          TZ: America/Los_Angeles
+
+      - name: Unit tests (device east of UTC)
+        run: npm test
+        env:
+          TZ: Australia/Sydney
+
   edge_function_tests:
     name: Edge Function Tests (Deno)
     runs-on: ubuntu-latest

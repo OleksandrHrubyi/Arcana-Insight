@@ -17,7 +17,16 @@ export const normalizeFavorites = (value) => {
     const id = favoriteId(item)
     if (seen.has(id)) continue
     seen.add(id)
-    out.push({ id, lat: item.lat, lon: item.lon, cityKey: item.cityKey ?? null, label: item.label ?? null })
+    // timeZone travels with the place — a saved city must keep computing its own
+    // day when switched to from another zone.
+    out.push({
+      id,
+      lat: item.lat,
+      lon: item.lon,
+      cityKey: item.cityKey ?? null,
+      timeZone: item.timeZone ?? null,
+      label: item.label ?? null,
+    })
   }
   return out
 }
@@ -45,7 +54,13 @@ export const applyFavoriteToggle = (list, loc, hasPremium, limit = FREE_FAVORITE
   return {
     list: normalizeFavorites([
       ...normalized,
-      { lat: loc.lat, lon: loc.lon, cityKey: loc.cityKey ?? null, label: loc.label ?? null },
+      {
+        lat: loc.lat,
+        lon: loc.lon,
+        cityKey: loc.cityKey ?? null,
+        timeZone: loc.timeZone ?? null,
+        label: loc.label ?? null,
+      },
     ]),
     result: 'added',
   }

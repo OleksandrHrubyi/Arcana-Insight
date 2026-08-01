@@ -5,3 +5,7 @@
 - 2026-08-01: monthly-покупка окремо НЕ проганялась — верифіковано лише yearly $29.99 (той самий RC-ланцюг); у report статус pass з явною приміткою в Notes.
 - 2026-08-01: «not implemented» у relationshipReminder.js був лапками в коментарі про Capacitor proxy-пастку, не TODO — перефразовано, code-scan warning зник.
 - 2026-08-01: стрей-файли `ios/App/App/config 3/4/5.xml` і `Pods/**/Frameworks 2/` вже відсутні (перевірено ls) — launch-checklist P2 позначено done.
+- 2026-08-01: observer-timezone реалізовано. Довгота як джерело поясу не годиться: `lon/15` дає сонячний час, розбіжність з громадянським 58 хв для Києва на 2026-08-01 — виміряно, тому кожне з 10 міст носить IANA-id.
+- 2026-08-01: node приймає перепризначення `process.env.TZ` у рантаймі (перевірено) — тест `tests/skyTimezone.test.js` прогоняє 10 міст × 4 пояси пристрою в одному процесі, без 4 окремих прогонів.
+- 2026-08-02: `ios/App/App/config 2.xml` був байт-у-байт ідентичний `config.xml` (diff порожній), untracked і не згаданий у `project.pbxproj` — видалення безпечне. `ai:scan:all` 3→2 issues (база: зріз 2026-07-31 = 2). Правило чекера — `detectSuspectIosConfigCopies` в `launch-readiness.js`, ловить будь-який `config N.xml`; Capacitor sync плодить їх знову, тож перевіряти після кожного `npx cap sync`.
+- 2026-08-01: у поясі, відмінному від UTC, падали ще й фікстури поза скайкором: `tests/dailyRitual.test.js:7` (Sydney, `2026-03-05T13:20Z` → наступна доба). Клас помилки — літерал `new Date('YYYY-MM-DD')` = північ UTC; шукати саме його.

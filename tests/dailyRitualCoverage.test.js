@@ -19,19 +19,25 @@ test('daily ritual stable-import flow covers journey, streak and activity branch
   try {
     const mod = await importModule('src/helpers/dailyRitual.js')
 
+    // The streak deliberately counts days on the DEVICE clock, so these dates must
+    // be built as local dates. `new Date('2026-03-10')` is UTC midnight — one day
+    // earlier west of Greenwich, which broke this fixture (not the product) there.
+    const mar9 = new Date(2026, 2, 9, 12, 0, 0)
+    const mar10 = new Date(2026, 2, 10, 12, 0, 0)
+
     assert.equal(mod.readDailyActivityDate(mod.DAILY_ACTIVITY_KEYS.dailyCard), '2026-03-09')
-    assert.equal(mod.hasDailyActivityToday(mod.DAILY_ACTIVITY_KEYS.dailyCard, new Date('2026-03-10')), false)
+    assert.equal(mod.hasDailyActivityToday(mod.DAILY_ACTIVITY_KEYS.dailyCard, mar10), false)
 
     mod.markDailyActivity(mod.DAILY_ACTIVITY_KEYS.dailyCard)
-    const streakSameDay = mod.touchDailyStreak(mod.DAILY_ACTIVITY_KEYS.dailyCard, new Date('2026-03-09'))
+    const streakSameDay = mod.touchDailyStreak(mod.DAILY_ACTIVITY_KEYS.dailyCard, mar9)
     assert.equal(streakSameDay.current, 1)
     assert.equal(streakSameDay.best, 2)
 
-    const streakNextDay = mod.touchDailyStreak(mod.DAILY_ACTIVITY_KEYS.dailyCard, new Date('2026-03-10'))
+    const streakNextDay = mod.touchDailyStreak(mod.DAILY_ACTIVITY_KEYS.dailyCard, mar10)
     assert.equal(streakNextDay.current, 2)
     assert.equal(streakNextDay.best, 2)
 
-    const fallbackForEmptyKey = mod.touchDailyStreak('', new Date('2026-03-10'))
+    const fallbackForEmptyKey = mod.touchDailyStreak('', mar10)
     assert.deepEqual(fallbackForEmptyKey, { current: 0, best: 0, lastDate: '' })
 
     const dayRows = mod.getRecentDailyJourney(1, new Date('2026-03-10T13:00:00.000Z'))

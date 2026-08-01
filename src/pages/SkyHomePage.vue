@@ -14,6 +14,7 @@
         <button type="button" class="skh-loc hit-44" @click="openLocationSheet">
           <span class="skh-loc__dot"></span>
           <span class="skh-loc__name">{{ locationLabel }}</span>
+          <span v-if="showZoneNote" class="skh-loc__tz">{{ zoneOffsetText }}</span>
           <q-icon name="expand_more" size="15px" class="skh-loc__caret" />
         </button>
         <div class="skh-kick">{{ tt('skyHome.kicker') }} · {{ formatToday }}</div>
@@ -212,6 +213,7 @@
             <span>{{ tt('skyHome.dayLength') }}</span><span>{{ dayLengthLabel }}</span>
           </div>
         </div>
+        <div v-if="showZoneNote" class="skh-sheet__note">{{ zoneNote }}</div>
       </q-card>
     </q-dialog>
   </q-page>
@@ -235,6 +237,13 @@ import {
   azimuthToCompassKey,
   makeObserver,
 } from 'src/helpers/skyCore.js'
+import {
+  resolveObserverZone,
+  formatZoneTime,
+  formatDayLength,
+  zoneOffsetLabel,
+  zoneMatchesDevice,
+} from 'src/helpers/skyTime.js'
 import { drawMoon, onMoonReady } from 'src/helpers/moonRender.js'
 import { createShootingStars } from 'src/helpers/starfield.js'
 import {
@@ -287,6 +296,9 @@ const condSheetOpen = ref(false)
 const scheduledIds = ref(new Set())
 const cities = SKY_CITIES
 const loc = skyLocation
+// The observing place's clock. Every reading on this screen — the day it belongs
+// to and the hours it prints — follows this, not the device.
+const observerZone = computed(() => resolveObserverZone(loc.value))
 const skyStyle = { backgroundImage: `url(${milkywayUrl})` }
 
 const topVisible = computed(() => visible.value[0] || null)
@@ -367,14 +379,15 @@ const recompute = () => {
   if (!Astronomy) return
   const now = new Date()
   const observer = makeObserver(Astronomy, loc.value.lat, loc.value.lon)
+  const zone = observerZone.value
   sky.value = computeSkyForDate(Astronomy, now)
-  moonRS.value = riseSetForLocalDay(Astronomy, 'moon', observer, now)
-  sun.value = computeSunTimes(Astronomy, observer, now)
-  visible.value = computeVisibleTonight(Astronomy, observer, now)
+  moonRS.value = riseSetForLocalDay(Astronomy, 'moon', observer, now, { zone })
+  sun.value = computeSunTimes(Astronomy, observer, now, { zone })
+  visible.value = computeVisibleTonight(Astronomy, observer, now, { zone })
   nextFullMoon.value = findUpcomingLunarEvents(Astronomy, now).fullMoon
   eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { horizonDays: 120, limit: 12 })
   moonDetail.value = computeMoonDetail(Astronomy, now)
-  sunDetail.value = computeSunDetail(Astronomy, observer, now)
+  sunDetail.value = computeSunDetail(Astronomy, observer, now, { zone })
   moonPos.value = horizontalPosition(Astronomy, 'moon', observer, now)
   syncWidget()
 }
@@ -450,7 +463,7 @@ const pickCity = (cityKey) => {
 }
 
 const { hasPremiumAccess } = usePremiumAccess()
-const cityToLoc = (c) => ({ lat: c.lat, lon: c.lon, cityKey: c.key })
+const cityToLoc = (c) => ({ lat: c.lat, lon: c.lon, cityKey: c.key, timeZone: c.timeZone })
 const isCityFavorite = (c) => isFavorite(cityToLoc(c))
 const onToggleFavorite = (c) => {
   void tapHaptic()
@@ -470,44 +483,38 @@ const useMyLocation = async () => {
 const locationLabel = computed(() =>
   loc.value.cityKey ? tt(`skyHome.cities.${loc.value.cityKey}`) : tt('skyHome.myLocation'),
 )
+// A place in another zone is shown on ITS clock, so say so — otherwise "sunset
+// 20:42" on a phone reading 10:42 looks like a bug rather than the answer.
+const zoneOffsetText = computed(() => zoneOffsetLabel(observerZone.value))
+const showZoneNote = computed(() => !zoneMatchesDevice(observerZone.value))
+const zoneNote = computed(() =>
+  tt('skyHome.timeZoneNote', { city: locationLabel.value, z: zoneOffsetText.value }),
+)
 const conditionsLabel = computed(() => {
   const band = conditions.value?.band
   if (band === 'clear') return tt('skyHome.condClear')
   if (band === 'cloudy') return tt('skyHome.condCloudy')
   return tt('skyHome.condPartly')
 })
-const formatToday = computed(() => {
-  try {
-    return new Intl.DateTimeFormat(locale.value, {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-    }).format(new Date())
-  } catch {
-    return new Date().toDateString()
-  }
-})
-const formatTime = (date) => {
-  if (!date) return '—'
-  try {
-    return new Intl.DateTimeFormat(locale.value, { hour: '2-digit', minute: '2-digit' }).format(date)
-  } catch {
-    return '—'
-  }
-}
+// The date is the observing place's date — the same day the readings below
+// belong to, which is not always the device's day.
+const formatToday = computed(() =>
+  formatZoneTime(
+    new Date(),
+    observerZone.value,
+    locale.value,
+    { weekday: 'long', month: 'long', day: 'numeric' },
+    new Date().toDateString(),
+  ),
+)
+const formatTime = (date) => formatZoneTime(date, observerZone.value, locale.value, { hour: '2-digit', minute: '2-digit' })
 const untilLabel = (days) => {
   if (days <= 0) return tt('skyHome.today')
   if (days === 1) return tt('skyHome.tomorrow')
   return tt('skyHome.inDays', { n: days })
 }
-const formatShort = (date) => {
-  if (!date) return '—'
-  try {
-    return new Intl.DateTimeFormat(locale.value, { month: 'short', day: 'numeric' }).format(date)
-  } catch {
-    return date.toDateString()
-  }
-}
+const formatShort = (date) =>
+  formatZoneTime(date, observerZone.value, locale.value, { month: 'short', day: 'numeric' })
 const formatKm = (km) => {
   try {
     return `${new Intl.NumberFormat(locale.value).format(km)} ${tt('skyHome.kmAbbr')}`
@@ -540,18 +547,12 @@ const apsisLabel = computed(() =>
     ? tt(`skyHome.${moonDetail.value.nextApsis.kind === 'perigee' ? 'perigeeShort' : 'apogeeShort'}`)
     : '',
 )
-const dayLengthLabel = computed(() => {
-  const d = sunDetail.value
-  if (!d?.dayLengthMs) return '—'
-  const h = Math.floor(d.dayLengthMs / 3600000)
-  const m = Math.round((d.dayLengthMs % 3600000) / 60000)
-  let s = `${h}${tt('skyHome.hourAbbr')} ${m}${tt('skyHome.minAbbr')}`
-  if (typeof d.dayLengthDeltaMs === 'number') {
-    const dm = Math.round(d.dayLengthDeltaMs / 60000)
-    if (dm !== 0) s += ` (${dm > 0 ? '+' : '−'}${Math.abs(dm)} ${tt('skyHome.minAbbr')})`
-  }
-  return s
-})
+const dayLengthLabel = computed(() =>
+  formatDayLength(sunDetail.value?.dayLengthMs, sunDetail.value?.dayLengthDeltaMs, {
+    hourAbbr: tt('skyHome.hourAbbr'),
+    minAbbr: tt('skyHome.minAbbr'),
+  }),
+)
 
 const openSky = () => {
   void tapHaptic()
@@ -790,6 +791,15 @@ onBeforeUnmount(() => {
 }
 .skh-loc__caret {
   opacity: 0.6;
+}
+/* Shown only when the place's clock differs from the device's. */
+.skh-loc__tz {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(145, 188, 255, 0.14);
+  color: rgba(196, 219, 255, 0.92);
+  font-size: 11px;
+  letter-spacing: 0.02em;
 }
 .skh-kick {
   margin-top: 10px;

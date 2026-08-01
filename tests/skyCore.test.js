@@ -78,7 +78,11 @@ test('planet signs return all five visible planets with retrograde flags', () =>
 })
 
 // ── Location-aware sky ───────────────────────────────────────────────────────
+// The observer's day belongs to the PLACE, so every day-anchored call names the
+// location's zone — that is what makes these assertions host-timezone-proof.
 const KYIV = { lat: 50.4501, lon: 30.5234 }
+const KYIV_ZONE = { timeZone: 'Europe/Kyiv' }
+const TROMSO_ZONE = { timeZone: 'Europe/Oslo' }
 
 test('azimuthToCompassKey maps cardinal + intercardinal directions', () => {
   assert.equal(sky.azimuthToCompassKey(0), 'n')
@@ -92,7 +96,7 @@ test('azimuthToCompassKey maps cardinal + intercardinal directions', () => {
 test('sun rise/set/dusk are real and correctly ordered for Kyiv in summer', () => {
   const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
   const date = new Date('2026-07-26T10:00:00Z')
-  const { sunrise, sunset, darkStart } = sky.computeSunTimes(Astronomy, obs, date)
+  const { sunrise, sunset, darkStart } = sky.computeSunTimes(Astronomy, obs, date, { zone: KYIV_ZONE })
   assert.ok(sunrise instanceof Date && sunset instanceof Date, 'sunrise + sunset defined')
   assert.ok(sunrise.getTime() < sunset.getTime(), 'sunrise before sunset')
   assert.ok(darkStart instanceof Date, 'astronomical dusk defined')
@@ -108,13 +112,13 @@ test('the Sun is above the horizon over Kyiv at local midday', () => {
 
 test('moon rise/set for the local day return Date-or-null without throwing', () => {
   const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
-  const { rise, set } = sky.riseSetForLocalDay(Astronomy, 'moon', obs, new Date('2026-07-26T10:00:00Z'))
+  const { rise, set } = sky.riseSetForLocalDay(Astronomy, 'moon', obs, new Date('2026-07-26T10:00:00Z'), { zone: KYIV_ZONE })
   for (const v of [rise, set]) assert.ok(v === null || v instanceof Date)
 })
 
 test('visible-tonight yields only above-horizon planets with valid fields', () => {
   const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
-  const vis = sky.computeVisibleTonight(Astronomy, obs, new Date('2026-07-26T10:00:00Z'))
+  const vis = sky.computeVisibleTonight(Astronomy, obs, new Date('2026-07-26T10:00:00Z'), { zone: KYIV_ZONE })
   assert.ok(Array.isArray(vis))
   for (const p of vis) {
     assert.ok(sky.VISIBLE_BODY_KEYS.includes(p.planetKey))
@@ -149,7 +153,7 @@ test('moon detail returns real distance, apparent size, phases and apsis', () =>
 
 test('sun detail: dawn before sunrise, real day length + small daily delta', () => {
   const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
-  const d = sky.computeSunDetail(Astronomy, obs, new Date('2026-07-27T10:00:00Z'))
+  const d = sky.computeSunDetail(Astronomy, obs, new Date('2026-07-27T10:00:00Z'), { zone: KYIV_ZONE })
   assert.ok(d.dawn instanceof Date && d.sunrise instanceof Date)
   assert.ok(d.dawn.getTime() < d.sunrise.getTime(), 'astronomical dawn precedes sunrise')
   assert.ok(d.goldenEveningStart instanceof Date && d.goldenEveningStart.getTime() < d.sunset.getTime())
@@ -181,7 +185,7 @@ test('upcoming sky-events feed is future, sorted, capped, and typed', () => {
 test('observing window: dark + moonless sub-window are ordered and bounded', () => {
   const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
   // Mid-October: Kyiv has real astronomical night.
-  const w = sky.computeObservingWindow(Astronomy, obs, new Date('2026-10-15T15:00:00Z'))
+  const w = sky.computeObservingWindow(Astronomy, obs, new Date('2026-10-15T15:00:00Z'), { zone: KYIV_ZONE })
   const qualities = ['noDarkness', 'moonless', 'afterMoonset', 'beforeMoonrise', 'moonWashout']
   assert.ok(qualities.includes(w.quality), `known quality: ${w.quality}`)
   assert.ok(w.moonIlluminationPct >= 0 && w.moonIlluminationPct <= 100)
@@ -221,7 +225,7 @@ test('meteorPeakInfo returns the shower ZHR and a moon-interference band', () =>
 
 test('bearing at sunset is westerly, at sunrise easterly, for Kyiv in summer', () => {
   const obs = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
-  const { sunrise, sunset } = sky.computeSunTimes(Astronomy, obs, new Date('2026-07-28T10:00:00Z'))
+  const { sunrise, sunset } = sky.computeSunTimes(Astronomy, obs, new Date('2026-07-28T10:00:00Z'), { zone: KYIV_ZONE })
   const bRise = sky.bearingAt(Astronomy, 'sun', obs, sunrise)
   const bSet = sky.bearingAt(Astronomy, 'sun', obs, sunset)
   assert.ok(bRise.deg >= 0 && bRise.deg < 360 && bSet.deg >= 0 && bSet.deg < 360)
@@ -233,20 +237,20 @@ test('bearing at sunset is westerly, at sunrise easterly, for Kyiv in summer', (
 
 test('milky way window: real core altitude in darkness; no darkness in polar summer', () => {
   const kyiv = sky.makeObserver(Astronomy, KYIV.lat, KYIV.lon)
-  const kw = sky.computeMilkyWayWindow(Astronomy, kyiv, new Date('2026-10-15T15:00:00Z'))
+  const kw = sky.computeMilkyWayWindow(Astronomy, kyiv, new Date('2026-10-15T15:00:00Z'), { zone: KYIV_ZONE })
   assert.equal(kw.hasDarkness, true, 'Kyiv has astronomical darkness in October')
   assert.ok(kw.maxAltitude >= -90 && kw.maxAltitude <= 90, `alt ${kw.maxAltitude}`)
   assert.equal(typeof kw.visible, 'boolean')
   assert.equal(typeof kw.washedOut, 'boolean')
   // Tromsø midsummer — no darkness, so no core window.
   const tromso = sky.makeObserver(Astronomy, 69.65, 18.96)
-  assert.equal(sky.computeMilkyWayWindow(Astronomy, tromso, new Date('2026-06-21T12:00:00Z')).hasDarkness, false)
+  assert.equal(sky.computeMilkyWayWindow(Astronomy, tromso, new Date('2026-06-21T12:00:00Z'), { zone: TROMSO_ZONE }).hasDarkness, false)
 })
 
 test('observing window: polar summer reports no true darkness', () => {
   // Tromsø ~69.6°N at midsummer — the Sun never reaches -18°.
   const obs = sky.makeObserver(Astronomy, 69.65, 18.96)
-  const w = sky.computeObservingWindow(Astronomy, obs, new Date('2026-06-21T12:00:00Z'))
+  const w = sky.computeObservingWindow(Astronomy, obs, new Date('2026-06-21T12:00:00Z'), { zone: TROMSO_ZONE })
   assert.equal(w.hasDarkness, false)
   assert.equal(w.quality, 'noDarkness')
 })

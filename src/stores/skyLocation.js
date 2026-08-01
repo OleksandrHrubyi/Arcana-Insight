@@ -22,20 +22,30 @@ export { FREE_FAVORITE_LIMIT, favoriteId } from 'src/helpers/skyFavoritesCore.js
 export const skyFavorites = ref([])
 
 // A small bundled set for manual selection — no geocoding service, works offline.
+// `timeZone` is the city's IANA id: the sky screens compute and print the day on
+// the PLACE's clock, and longitude alone would give solar, not civil, time.
 export const SKY_CITIES = Object.freeze([
-  { key: 'kyiv', lat: 50.4501, lon: 30.5234 },
-  { key: 'warsaw', lat: 52.2297, lon: 21.0122 },
-  { key: 'london', lat: 51.5074, lon: -0.1278 },
-  { key: 'berlin', lat: 52.52, lon: 13.405 },
-  { key: 'paris', lat: 48.8566, lon: 2.3522 },
-  { key: 'newYork', lat: 40.7128, lon: -74.006 },
-  { key: 'losAngeles', lat: 34.0522, lon: -118.2437 },
-  { key: 'tokyo', lat: 35.6762, lon: 139.6503 },
-  { key: 'dubai', lat: 25.2048, lon: 55.2708 },
-  { key: 'sydney', lat: -33.8688, lon: 151.2093 },
+  { key: 'kyiv', lat: 50.4501, lon: 30.5234, timeZone: 'Europe/Kyiv' },
+  { key: 'warsaw', lat: 52.2297, lon: 21.0122, timeZone: 'Europe/Warsaw' },
+  { key: 'london', lat: 51.5074, lon: -0.1278, timeZone: 'Europe/London' },
+  { key: 'berlin', lat: 52.52, lon: 13.405, timeZone: 'Europe/Berlin' },
+  { key: 'paris', lat: 48.8566, lon: 2.3522, timeZone: 'Europe/Paris' },
+  { key: 'newYork', lat: 40.7128, lon: -74.006, timeZone: 'America/New_York' },
+  { key: 'losAngeles', lat: 34.0522, lon: -118.2437, timeZone: 'America/Los_Angeles' },
+  { key: 'tokyo', lat: 35.6762, lon: 139.6503, timeZone: 'Asia/Tokyo' },
+  { key: 'dubai', lat: 25.2048, lon: 55.2708, timeZone: 'Asia/Dubai' },
+  { key: 'sydney', lat: -33.8688, lon: 151.2093, timeZone: 'Australia/Sydney' },
 ])
 
-const DEFAULT = Object.freeze({ lat: 50.4501, lon: 30.5234, cityKey: 'kyiv', source: 'default' })
+export const cityTimeZone = (cityKey) => SKY_CITIES.find((c) => c.key === cityKey)?.timeZone ?? null
+
+const DEFAULT = Object.freeze({
+  lat: 50.4501,
+  lon: 30.5234,
+  cityKey: 'kyiv',
+  timeZone: 'Europe/Kyiv',
+  source: 'default',
+})
 
 // Module-level singleton (project convention — ref(), not Pinia).
 export const skyLocation = ref({ ...DEFAULT })
@@ -54,7 +64,11 @@ export const loadSkyLocation = async () => {
     if (value) {
       const parsed = JSON.parse(value)
       if (typeof parsed?.lat === 'number' && typeof parsed?.lon === 'number') {
-        skyLocation.value = parsed
+        // Values persisted before observer-timezone carry no zone — backfill it
+        // from the city so an existing install gets the right day, not the device's.
+        skyLocation.value = parsed.timeZone
+          ? parsed
+          : { ...parsed, timeZone: cityTimeZone(parsed.cityKey) }
       }
     }
   } catch {
@@ -66,12 +80,20 @@ export const loadSkyLocation = async () => {
 export const setSkyLocationCity = (cityKey) => {
   const city = SKY_CITIES.find((c) => c.key === cityKey)
   if (!city) return
-  skyLocation.value = { lat: city.lat, lon: city.lon, cityKey: city.key, source: 'city' }
+  skyLocation.value = {
+    lat: city.lat,
+    lon: city.lon,
+    cityKey: city.key,
+    timeZone: city.timeZone,
+    source: 'city',
+  }
   void persist(skyLocation.value)
 }
 
+// GPS coordinates carry no zone id: the device is AT the place, so its own zone
+// is the right one (resolveObserverZone applies that rule).
 export const setSkyLocationCoords = (lat, lon, source = 'gps') => {
-  skyLocation.value = { lat, lon, cityKey: null, source }
+  skyLocation.value = { lat, lon, cityKey: null, timeZone: null, source }
   void persist(skyLocation.value)
 }
 

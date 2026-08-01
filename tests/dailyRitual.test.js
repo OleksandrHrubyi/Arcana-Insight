@@ -4,7 +4,9 @@ import { importModule, installBrowserEnv } from './utils/testEnv.js'
 
 test('getLocalDateKey formats date as YYYY-MM-DD', async () => {
   const { getLocalDateKey } = await importModule('src/helpers/dailyRitual.js')
-  const date = new Date('2026-03-05T13:20:00.000Z')
+  // The key is the DEVICE's calendar day by design, so the fixture must be a
+  // local date — a UTC instant lands on the next day east of Greenwich.
+  const date = new Date(2026, 2, 5, 13, 20, 0)
   assert.equal(getLocalDateKey(date), '2026-03-05')
 })
 

@@ -2,6 +2,12 @@
 // Every function takes the astronomy-engine module as its first argument so the
 // Vue page can lazy-load it while node tests pass the real module (no mocks —
 // these assert against genuine ephemeris output).
+//
+// Location-aware functions take a `{ zone }` option: the observing location's
+// time zone (see skyTime.js). It decides which midnight the day starts at, so
+// the result depends on the PLACE, not on the machine's clock. Omitting it keeps
+// the device zone — correct only when device and location agree.
+import { zoneLocalMidnight } from './skyTime.js'
 
 export const MOON_PHASE_KEYS = Object.freeze([
   'new',
@@ -156,8 +162,8 @@ const toDate = (astroTime) => {
   return astroTime.date instanceof Date ? astroTime.date : new Date(astroTime.date)
 }
 
-const localMidnight = (date) =>
-  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0)
+// Midnight that starts the observer's day. `zone` omitted ⇒ the device zone.
+const localMidnight = (date, zone) => zoneLocalMidnight(zone, date)
 
 const daysBetween = (eventDate, from) =>
   Math.max(0, Math.ceil((eventDate.getTime() - from.getTime()) / 86400000))
@@ -171,9 +177,9 @@ export const azimuthToCompassKey = (az) => COMPASS_KEYS[Math.round(norm360(az) /
 
 // Rise & set of a body for the observer's local calendar day containing `date`.
 // Either can be null (the Moon skips a rise on some days; polar day/night).
-export const riseSetForLocalDay = (Astronomy, bodyKey, observer, date = new Date()) => {
+export const riseSetForLocalDay = (Astronomy, bodyKey, observer, date = new Date(), { zone } = {}) => {
   const body = bodyOf(Astronomy, bodyKey)
-  const start = makeTime(Astronomy, localMidnight(date))
+  const start = makeTime(Astronomy, localMidnight(date, zone))
   return {
     rise: toDate(Astronomy.SearchRiseSet(body, observer, +1, start, 1.0)),
     set: toDate(Astronomy.SearchRiseSet(body, observer, -1, start, 1.0)),
@@ -191,8 +197,8 @@ export const horizontalPosition = (Astronomy, bodyKey, observer, date = new Date
 
 // Sunrise, sunset, and astronomical dusk (Sun 18° below the horizon → truly
 // dark sky) for the local day.
-export const computeSunTimes = (Astronomy, observer, date = new Date()) => {
-  const start = makeTime(Astronomy, localMidnight(date))
+export const computeSunTimes = (Astronomy, observer, date = new Date(), { zone } = {}) => {
+  const start = makeTime(Astronomy, localMidnight(date, zone))
   const sunrise = toDate(Astronomy.SearchRiseSet(Astronomy.Body.Sun, observer, +1, start, 1.0))
   const sunset = toDate(Astronomy.SearchRiseSet(Astronomy.Body.Sun, observer, -1, start, 1.0))
   let darkStart = null
@@ -209,11 +215,11 @@ export const VISIBLE_BODY_KEYS = Object.freeze(['mercury', 'venus', 'mars', 'jup
 // Planets above the horizon in the early evening (sunset + 1h, or local 21:00 as
 // a fallback), brightest-placed first. This is the observational-planning core
 // that makes the screen a tool rather than a horoscope.
-export const computeVisibleTonight = (Astronomy, observer, date = new Date(), { minAltitude = 3 } = {}) => {
-  const { sunset } = computeSunTimes(Astronomy, observer, date)
+export const computeVisibleTonight = (Astronomy, observer, date = new Date(), { minAltitude = 3, zone } = {}) => {
+  const { sunset } = computeSunTimes(Astronomy, observer, date, { zone })
   const evening = sunset
     ? new Date(sunset.getTime() + 60 * 60000)
-    : new Date(date.getFullYear(), date.getMonth(), date.getDate(), 21, 0, 0)
+    : new Date(localMidnight(date, zone).getTime() + 21 * 3600000)
   return VISIBLE_BODY_KEYS.map((planetKey) => {
     const { altitude, azimuth } = horizontalPosition(Astronomy, planetKey, observer, evening)
     const illum = Astronomy.Illumination(bodyOf(Astronomy, planetKey), makeTime(Astronomy, evening))
@@ -373,14 +379,14 @@ export const computeMoonDetail = (Astronomy, date = new Date()) => {
 
 // Everything the sun-detail sheet shows: rise/set, astronomical dawn/dusk,
 // evening golden hour, and day length with the day-over-day delta.
-export const computeSunDetail = (Astronomy, observer, date = new Date()) => {
-  const { sunrise, sunset, darkStart } = computeSunTimes(Astronomy, observer, date)
+export const computeSunDetail = (Astronomy, observer, date = new Date(), { zone } = {}) => {
+  const { sunrise, sunset, darkStart } = computeSunTimes(Astronomy, observer, date, { zone })
   // Dawn is the -18° upward crossing BEFORE today's sunrise. Anchoring the search to
   // sunrise-12h (not the machine's local midnight) keeps the result identical in any
   // host timezone — local midnight in UTC can sit past the crossing and skip a day.
   const start = sunrise
     ? makeTime(Astronomy, new Date(sunrise.getTime() - 12 * 3600000))
-    : makeTime(Astronomy, localMidnight(date))
+    : makeTime(Astronomy, localMidnight(date, zone))
   const dawn = toDate(Astronomy.SearchAltitude(Astronomy.Body.Sun, observer, +1, start, sunrise ? 0.5 : 1.0, -18))
 
   let goldenEveningStart = null
@@ -389,13 +395,16 @@ export const computeSunDetail = (Astronomy, observer, date = new Date()) => {
     goldenEveningStart = toDate(Astronomy.SearchAltitude(Astronomy.Body.Sun, observer, -1, from, 0.25, 6))
   }
 
+  // A day length is only real when sunrise and sunset belong to the same day.
+  // Anything else (a zone mismatch, a polar edge) reports null rather than a
+  // negative duration the UI would have to render.
   let dayLengthMs = null
   let dayLengthDeltaMs = null
-  if (sunrise && sunset) {
+  if (sunrise && sunset && sunset.getTime() > sunrise.getTime()) {
     dayLengthMs = sunset.getTime() - sunrise.getTime()
     const yesterday = new Date(date.getTime() - 86400000)
-    const y = computeSunTimes(Astronomy, observer, yesterday)
-    if (y.sunrise && y.sunset) {
+    const y = computeSunTimes(Astronomy, observer, yesterday, { zone })
+    if (y.sunrise && y.sunset && y.sunset.getTime() > y.sunrise.getTime()) {
       dayLengthDeltaMs = dayLengthMs - (y.sunset.getTime() - y.sunrise.getTime())
     }
   }
@@ -408,8 +417,8 @@ export const computeSunDetail = (Astronomy, observer, date = new Date()) => {
 // the Moon — moonlight is what really washes out a dark sky. Returns the dark
 // window plus the moonless sub-window and a `quality` verdict the UI maps to
 // copy. All times are Date | null; `hasDarkness` is false in polar summer.
-export const computeObservingWindow = (Astronomy, observer, date = new Date()) => {
-  const { sunset, darkStart } = computeSunTimes(Astronomy, observer, date)
+export const computeObservingWindow = (Astronomy, observer, date = new Date(), { zone } = {}) => {
+  const { sunset, darkStart } = computeSunTimes(Astronomy, observer, date, { zone })
   const moonElong = moonSunElongation(Astronomy, date)
   const moonIlluminationPct = Math.round(illuminationFromElongation(moonElong) * 100)
 
@@ -471,8 +480,8 @@ const MILKY_WAY_MIN_ALT = 10
 // it get? Samples the core's altitude across the astronomical-dark window. At high
 // latitudes it barely clears the horizon (honest `visible:false`); lower down it
 // climbs. `washedOut` flags a bright Moon that drowns the faint core.
-export const computeMilkyWayWindow = (Astronomy, observer, date = new Date()) => {
-  const win = computeObservingWindow(Astronomy, observer, date)
+export const computeMilkyWayWindow = (Astronomy, observer, date = new Date(), { zone } = {}) => {
+  const win = computeObservingWindow(Astronomy, observer, date, { zone })
   if (!win.hasDarkness) return { hasDarkness: false, visible: false }
   let maxAltitude = -90
   let bestTime = null

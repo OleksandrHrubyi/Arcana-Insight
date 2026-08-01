@@ -246,6 +246,7 @@
             <span>{{ tt('skyHome.dayLength') }}</span><span>{{ dayLengthLabel }}</span>
           </div>
         </div>
+        <div v-if="showZoneNote" class="sky-note">{{ zoneNote }}</div>
       </section>
 
       <!-- Planets -->
@@ -302,6 +303,13 @@ import { tapHaptic } from 'src/helpers/haptics.js'
 import { buildTonightTour } from 'src/helpers/skyTourCore.js'
 import { fetchTonightConditions } from 'src/services/skyWeather.js'
 import { skyLocation, loadSkyLocation, SKY_CITIES } from 'src/stores/skyLocation.js'
+import {
+  resolveObserverZone,
+  formatZoneTime,
+  formatDayLength,
+  zoneOffsetLabel,
+  zoneMatchesDevice,
+} from 'src/helpers/skyTime.js'
 
 const locale = computed(() => currentLocale.value || 'en')
 const tt = (key, vars) => {
@@ -309,6 +317,9 @@ const tt = (key, vars) => {
   if (vars) for (const [k, v] of Object.entries(vars)) s = s.replace(`{${k}}`, v)
   return s
 }
+// The observing place's clock — decides which day the readings belong to and
+// which clock their hours are printed on (see skyTime.js).
+const observerZone = computed(() => resolveObserverZone(skyLocation.value))
 const loading = ref(true)
 const sky = ref(null)
 const moonDetail = ref(null)
@@ -476,6 +487,11 @@ const locationLabel = computed(() => {
     ? tt(`skyHome.cities.${key}`)
     : tt('skyHome.myLocation')
 })
+// Times here follow the place, so name the clock whenever it isn't the device's.
+const showZoneNote = computed(() => !zoneMatchesDevice(observerZone.value))
+const zoneNote = computed(() =>
+  tt('skyHome.timeZoneNote', { city: locationLabel.value, z: zoneOffsetLabel(observerZone.value) }),
+)
 
 // ── Event reminders (local notifications) ──
 const eventKey = (ev) => `sky-${ev.type}-${ev.key}-${ev.date.toISOString().slice(0, 10)}`
@@ -533,41 +549,32 @@ const monthLabel = computed(() => {
     return `${viewMonth.value + 1}/${viewYear.value}`
   }
 })
-const dayLengthLabel = computed(() => {
-  const d = sunInfo.value
-  if (!d?.dayLengthMs) return '—'
-  const h = Math.floor(d.dayLengthMs / 3600000)
-  const m = Math.round((d.dayLengthMs % 3600000) / 60000)
-  let s = `${h}${tt('skyHome.hourAbbr')} ${m}${tt('skyHome.minAbbr')}`
-  if (typeof d.dayLengthDeltaMs === 'number') {
-    const dm = Math.round(d.dayLengthDeltaMs / 60000)
-    if (dm !== 0) s += ` (${dm > 0 ? '+' : '−'}${Math.abs(dm)} ${tt('skyHome.minAbbr')})`
-  }
-  return s
-})
+const dayLengthLabel = computed(() =>
+  formatDayLength(sunInfo.value?.dayLengthMs, sunInfo.value?.dayLengthDeltaMs, {
+    hourAbbr: tt('skyHome.hourAbbr'),
+    minAbbr: tt('skyHome.minAbbr'),
+  }),
+)
 
-const formatFull = (date) => {
-  try {
-    return new Intl.DateTimeFormat(locale.value, { weekday: 'long', month: 'long', day: 'numeric' }).format(date)
-  } catch {
-    return date.toDateString()
-  }
-}
-const formatShort = (date) => {
-  try {
-    return new Intl.DateTimeFormat(locale.value, { month: 'short', day: 'numeric' }).format(date)
-  } catch {
-    return date.toDateString()
-  }
-}
-const formatTime = (date) => {
-  if (!date) return '—'
-  try {
-    return new Intl.DateTimeFormat(locale.value, { hour: '2-digit', minute: '2-digit' }).format(date)
-  } catch {
-    return '—'
-  }
-}
+// All three print on the observing place's clock, not the device's.
+const formatFull = (date) =>
+  formatZoneTime(
+    date,
+    observerZone.value,
+    locale.value,
+    { weekday: 'long', month: 'long', day: 'numeric' },
+    date instanceof Date ? date.toDateString() : '—',
+  )
+const formatShort = (date) =>
+  formatZoneTime(
+    date,
+    observerZone.value,
+    locale.value,
+    { month: 'short', day: 'numeric' },
+    date instanceof Date ? date.toDateString() : '—',
+  )
+const formatTime = (date) =>
+  formatZoneTime(date, observerZone.value, locale.value, { hour: '2-digit', minute: '2-digit' })
 const formatMag = (mag) => `${mag > 0 ? '+' : ''}${mag.toFixed(1)}`
 // "when to look" line for a visible planet: its peak (only while still climbing)
 // and when it leaves the sky.
@@ -631,13 +638,14 @@ const untilLabel = (days) => {
   return tt('skyPage.inDays', { n: days })
 }
 
-const formatPassTime = (date) => {
-  try {
-    return new Intl.DateTimeFormat(locale.value, { weekday: 'short', hour: '2-digit', minute: '2-digit' }).format(date)
-  } catch {
-    return date.toISOString()
-  }
-}
+const formatPassTime = (date) =>
+  formatZoneTime(
+    date,
+    observerZone.value,
+    locale.value,
+    { weekday: 'short', hour: '2-digit', minute: '2-digit' },
+    date instanceof Date ? date.toISOString() : '—',
+  )
 const formatDuration = (sec) => `${Math.round(sec / 60)} ${tt('skyHome.minAbbr')}`
 
 const loadIssPasses = async () => {
@@ -693,17 +701,18 @@ onMounted(async () => {
     Astronomy = await loadEngine()
     const now = new Date()
     const observer = makeObserver(Astronomy, skyLocation.value.lat, skyLocation.value.lon)
+    const zone = observerZone.value
     sky.value = computeSkyForDate(Astronomy, now)
     moonDetail.value = computeMoonDetail(Astronomy, now)
-    observing.value = computeObservingWindow(Astronomy, observer, now)
-    milkyWay.value = computeMilkyWayWindow(Astronomy, observer, now)
+    observing.value = computeObservingWindow(Astronomy, observer, now, { zone })
+    milkyWay.value = computeMilkyWayWindow(Astronomy, observer, now, { zone })
     eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { limit: 12 })
     planets.value = computePlanetSigns(Astronomy, now)
-    visible.value = computeVisibleTonight(Astronomy, observer, now).map((p) => ({
+    visible.value = computeVisibleTonight(Astronomy, observer, now, { zone }).map((p) => ({
       ...p,
       times: bodyViewTimes(Astronomy, p.planetKey, observer, now),
     }))
-    sunInfo.value = computeSunDetail(Astronomy, observer, now)
+    sunInfo.value = computeSunDetail(Astronomy, observer, now, { zone })
     const moonRS = bodyViewTimes(Astronomy, 'moon', observer, now)
     moonTimes.value = { rise: moonRS.rise, set: moonRS.set }
     bearings.value = {
@@ -1029,6 +1038,13 @@ onBeforeUnmount(() => {
 }
 .sky-row:last-child {
   border-bottom: 0;
+}
+/* Shown only when the place's clock differs from the device's. */
+.sky-note {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(198, 216, 240, 0.62);
 }
 .sky-row span:first-child {
   color: rgba(200, 214, 240, 0.7);
