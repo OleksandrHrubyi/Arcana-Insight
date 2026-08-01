@@ -44,13 +44,12 @@ Owner mode: Codex reviewer with minimal blocking questions
   - Baseline test failures `104`, `111`, `112` were fixed
   - Full test suite now passes: `164/164`
 - `in progress` Run real iOS sandbox flow for purchase, restore, cancel, and entitlement refresh.
-  Evidence:
-  - Manual runbook prepared in [docs/release-reviewer/references/ios-sandbox-billing-runbook.md](/Users/oleksandr/Desktop/App/Arcana-Insight/docs/release-reviewer/references/ios-sandbox-billing-runbook.md:1)
-  - Manual report template prepared in [docs/release-reviewer/references/ios-sandbox-billing-report.md](/Users/oleksandr/Desktop/App/Arcana-Insight/docs/release-reviewer/references/ios-sandbox-billing-report.md:1)
-  - Repo billing constants match expected App Store products in [src/constants/premiumBilling.js](/Users/oleksandr/Desktop/App/Arcana-Insight/src/constants/premiumBilling.js:1)
-  Remaining:
-  - Real-device execution on iPhone with sandbox Apple ID
-  - Pass/fail report captured in `ios-sandbox-billing-report.md`
+  Evidence (statuses backfilled 2026-08-01 from live LR-12 runs):
+  - 2026-06-23 — real-device sandbox purchase (`arcana.premium.yearly` $29.99) verified end-to-end: device → RevenueCat → webhook → `user_entitlements` → enforcement (`docs/launch-readiness-plan.md` LR-12)
+  - 2026-07-07/08 — Restore verified (TestFlight reinstall → active sub returned); entitlement survived reinstall + restarts across days (RENEWAL #9)
+  - Pass/fail report filled in `ios-sandbox-billing-report.md` (2026-08-01)
+  Remaining (owner real-device pass, `app-store/asc-submit-checklist.md` §0):
+  - Cancelled-purchase sheet check, negative restore (second sandbox account), expiration sanity check — per the 2026-07-08 decision these don't block submission
 
 ## P1 Revenue-Critical
 
@@ -65,13 +64,12 @@ Owner mode: Codex reviewer with minimal blocking questions
   - Premium hero now frames one clear outcome in [src/components/main/PremiumInfoComponent.vue](/Users/oleksandr/Desktop/App/Arcana-Insight/src/components/main/PremiumInfoComponent.vue:1)
   - Supporting copy now ties Premium to a deeper daily reflection practice in [src/i18n/messages.bundle.js](/Users/oleksandr/Desktop/App/Arcana-Insight/src/i18n/messages.bundle.js:1256)
   - Contract coverage exists in [tests/premiumCopyConsistency.test.js](/Users/oleksandr/Desktop/App/Arcana-Insight/tests/premiumCopyConsistency.test.js:1)
-- `in progress` Confirm that free tier clearly demonstrates recurring daily value before first paywall exposure.
+- `done` Confirm that free tier clearly demonstrates recurring daily value before first paywall exposure.
   Evidence:
   - Home hero no longer marks `daily_card` complete on first reveal in [src/components/main/LandingScene.vue](/Users/oleksandr/Desktop/App/Arcana-Insight/src/components/main/LandingScene.vue:715)
   - Home progress now stays tied to real `daily_card` completion in [src/components/main/LandingScene.vue](/Users/oleksandr/Desktop/App/Arcana-Insight/src/components/main/LandingScene.vue:396)
   - Contract coverage exists in [tests/landingHomeDailyHeroContracts.test.js](/Users/oleksandr/Desktop/App/Arcana-Insight/tests/landingHomeDailyHeroContracts.test.js:1)
-  Remaining:
-  - Mobile visual QA for the updated home free-tier loop
+  - Mobile visual QA done 2026-07-23 (RP-03): 6 Playwright baselines (iphone-14/se × 3 states) regenerated + reviewed, `?qa=home` screenshots — Home marked 🟢 in [docs/screen-status.md](/Users/oleksandr/Desktop/App/Arcana-Insight/docs/screen-status.md:20)
 
 ### Paywall and messaging
 
@@ -106,7 +104,10 @@ Owner mode: Codex reviewer with minimal blocking questions
   - Horoscope copy now matches free vs premium theme gating in [app-store/metadata.md](/Users/oleksandr/Desktop/App/Arcana-Insight/app-store/metadata.md:1) and [src/constants/premiumModel.js](/Users/oleksandr/Desktop/App/Arcana-Insight/src/constants/premiumModel.js:89)
   - Promotional text now makes the Premium personal horoscope explicit in [app-store/metadata.md](/Users/oleksandr/Desktop/App/Arcana-Insight/app-store/metadata.md:1)
   - Store metadata now points to live public support/privacy URLs in [app-store/metadata.md](/Users/oleksandr/Desktop/App/Arcana-Insight/app-store/metadata.md:181)
-- `open` Produce real screenshots with filled content, not placeholders.
+- `done` Produce real screenshots with filled content, not placeholders.
+  Evidence:
+  - 2026-07-07/08 — 8-screen live-state set uploaded to ASC in 6.9" + 6.5" (LR-14 in `docs/launch-readiness-plan.md`)
+  - 2026-07-31 — regenerated astronomy-first set (8 shots × 2 sizes: 1320×2868, 1242×2688) in `app-store/screenshots/` for the v1.0.1 resubmit (`app-store/asc-submit-checklist.md` §3)
 - `done` Prepare reviewer notes with test account / paywall instructions.
   Evidence:
   - App Review note template prepared in [app-store/reviewer-notes.md](/Users/oleksandr/Desktop/App/Arcana-Insight/app-store/reviewer-notes.md:1)
@@ -120,10 +121,12 @@ Owner mode: Codex reviewer with minimal blocking questions
 - `done` Lint passes.
   Evidence:
   - `npm run lint` passed on baseline review
-- `open` Keep tests green after each launch fix.
-- `open` Remove or explain stray generated files before release if they are accidental.
+- `done` Keep tests green after each launch fix.
   Evidence:
-  - untracked `ios/App/App/config 3.xml`, `config 4.xml`, `config 5.xml`
+  - 2026-08-01 — full suite green: 345/345 pass (`npm test`, confirmed by `ai:scan:all` tests.json)
+- `done` Remove or explain stray generated files before release if they are accidental.
+  Evidence:
+  - 2026-08-01 — `ios/App/App/config 3.xml` / `config 4.xml` / `config 5.xml` no longer exist (only canonical `config.xml` remains); `ios/App/Pods/**/Frameworks 2/` junk dirs also gone
 - `open` Review JS/CSS payload size only after launch blockers are stable.
 
 ## Question gate

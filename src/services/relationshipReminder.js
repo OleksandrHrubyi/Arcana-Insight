@@ -15,8 +15,9 @@ export function reminderSupported() {
 }
 
 // Wrap the plugin in a plain object — never resolve a promise WITH a Capacitor
-// proxy: it looks thenable, so `await` calls `proxy.then()` → "not implemented" and
-// the promise hangs forever. (Same trap as onboardingPrefs.loadNativePreferences.)
+// proxy: it looks thenable, so `await` calls `proxy.then()`, the bridge rejects it
+// as an unknown method and the promise hangs forever. (Same trap as
+// onboardingPrefs.loadNativePreferences.)
 async function getPlugin() {
   const mod = await import('@capacitor/local-notifications')
   return { LN: mod.LocalNotifications }

@@ -22,7 +22,7 @@ Tick each box in App Store Connect. Order = the ASC version page top-to-bottom.
 
 ## 2. Version metadata (1.0.1 — the version page)
 - [ ] **Promotional Text (≤170):** the astronomy-first line from asc-metadata.md.
-- [ ] **Keywords (≤100):** `moon phase,stargazing,astronomy,night sky,planets,moon calendar,tarot,horoscope,journal,meteor` — no word duplicated from name/subtitle.
+- [ ] **Keywords (≤100):** `moon phase,stargazing,astronomy,night sky,planets,moon calendar,iss,milky way,journal,meteor` (uk: `фази місяця,астрономія,нічне небо,планети,зорі,мкс,чумацький шлях,щоденник,календар місяця,метеори`). Без `tarot,horoscope` — прибрано до апруву (рішення 2026-08-01), повернути metadata-update'ом після апруву.
 - [ ] **Description:** paste the astronomy-first description (leads with the sky tool; subscription block + EULA + privacy links at the end). uk locale too.
 - [ ] **What's New (1.0.1):** the "now built around the real night sky" copy.
 - [ ] **Support URL / Marketing URL** set.

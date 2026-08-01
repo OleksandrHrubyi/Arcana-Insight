@@ -7,9 +7,10 @@ factual astronomy framing, no fortune-telling/guarantee claims, no superlatives.
 > identity is a **real night-sky / Moon instrument** (tonight's Moon, best time to
 > observe, planet visibility, ISS passes, sky events — all computed on-device with
 > real ephemeris) plus a daily reflection **journal**. Tarot/horoscope/zodiac words
-> must NOT appear in the App Name, Subtitle, Promotional Text, or the description's
-> first two paragraphs — they live in keywords and a secondary "when you want more"
-> section only, reached from the Menu. The Arcana brand word STAYS (owner decision
+> must NOT appear in the App Name, Subtitle, Promotional Text, Keywords (прибрано
+> до апруву рішенням 2026-08-01; повернути metadata-update'ом після апруву), or the
+> description's first two paragraphs — they live only in a secondary "when you want
+> more" section, reached from the Menu. The Arcana brand word STAYS (owner decision
 > 2026-07-24); only the descriptor changes to lead with the sky.
 >
 > **Category:** change primary from Lifestyle to **Reference** (or Education).
@@ -37,11 +38,13 @@ Moon, planets & tonight's sky
 See tonight's Moon and sky for your location: phase, best time to observe, planets, ISS passes and upcoming events — real astronomy, computed on your device.
 ```
 
-**Keywords** (≤100, comma-separated, no spaces after commas) — 94
+**Keywords** (≤100, comma-separated, no spaces after commas) — 92
 ```
-moon phase,stargazing,astronomy,night sky,planets,moon calendar,tarot,horoscope,journal,meteor
+moon phase,stargazing,astronomy,night sky,planets,moon calendar,iss,milky way,journal,meteor
 ```
-> Astronomy terms lead. Divination terms kept only as (invisible) search keywords.
+> Astronomy-only (рішення 2026-08-01): `tarot,horoscope` прибрано ДО апруву; повернути
+> metadata-update'ом після апруву — оновлення метаданих не проходить повторне рев'ю.
+> `iss` і `milky way` — реальні фічі (нагадування про прольоти МКС, dark-sky планер).
 
 **Support URL**
 ```
@@ -236,10 +239,11 @@ Arcana: Небо і Місяць
 Дивись небо і Місяць саме над тобою: фаза, коли найкраще спостерігати, планети, прольоти МКС і найближчі події — справжня астрономія на твоєму пристрої.
 ```
 
-**Keywords** (≤100) — ~93
+**Keywords** (≤100) — 98
 ```
-фази місяця,астрономія,нічне небо,планети,зорі,таро,гороскоп,щоденник,календар місяця,метеори
+фази місяця,астрономія,нічне небо,планети,зорі,мкс,чумацький шлях,щоденник,календар місяця,метеори
 ```
+> `таро,гороскоп` прибрано до апруву (рішення 2026-08-01), як і в EN.
 
 **Support / Marketing / Privacy URL** — ті самі, що в EN.
 
