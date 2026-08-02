@@ -271,12 +271,14 @@ const featureItems = computed(() => [
     sub: tt('premiumPage.feat.satellitesSub'),
   },
   {
-    key: 'tarot',
-    icon: 'style',
-    tint: '#7aa7ff',
-    title: tt('premiumPage.feat.tarot'),
-    sub: tt('premiumPage.feat.tarotSub'),
+    key: 'history',
+    icon: 'bookmark',
+    tint: '#6fd6c0',
+    title: tt('premiumPage.feat.history'),
+    sub: tt('premiumPage.feat.historySub'),
   },
+  // Т-B/B3 (рішення Олександра 2026-08-02): усе дивінаційне — таро, розклади,
+  // сумісність — нижче астрономічних плиток і історії, поза згином пейволла.
   {
     key: 'spreads',
     icon: 'grid_view',
@@ -305,28 +307,37 @@ const featureItems = computed(() => [
     title: tt('premiumPage.feat.compat'),
     sub: tt('premiumPage.feat.compatSub'),
   },
+  // Т-B/B3 (рішення Олександра 2026-08-02): «Unlimited Tarot» — остання плитка
+  // рендереного ґріду, щоб над згином пейволла було небо, а не таро.
   {
-    key: 'history',
-    icon: 'bookmark',
-    tint: '#6fd6c0',
-    title: tt('premiumPage.feat.history'),
-    sub: tt('premiumPage.feat.historySub'),
+    key: 'tarot',
+    icon: 'style',
+    tint: '#7aa7ff',
+    title: tt('premiumPage.feat.tarot'),
+    sub: tt('premiumPage.feat.tarotSub'),
   },
 ])
 
 const quickCompareRows = computed(() => {
   const c = (k) => tt(`premiumPage.compareTable.${k}`)
+  // Т-B (2026-08-02): the table mirrors getPremiumDetailItems() — the astronomy
+  // rows the listing actually sells lead, the divination rows follow, and the
+  // tarot row (spreads + no daily cap) closes the table, like the tarot tile
+  // closes the grid.
   return [
-    { id: 'tarot-format', feature: c('tarotFormat.feature'), free: c('tarotFormat.free'), premium: c('tarotFormat.premium') },
+    { id: 'saved-places', feature: c('savedPlaces.feature'), free: c('savedPlaces.free'), premium: c('savedPlaces.premium') },
+    { id: 'journal-insights', feature: c('journalInsights.feature'), free: c('journalInsights.free'), premium: c('journalInsights.premium') },
+    { id: 'satellites', feature: c('satellites.feature'), free: c('satellites.free'), premium: c('satellites.premium') },
+    { id: 'horoscope', feature: c('horoscope.feature'), free: c('horoscope.free'), premium: c('horoscope.premium') },
     {
       id: 'interpretation',
       feature: c('interpretation.feature'),
       free: c('interpretation.free'),
       premium: tarotAiEnabled ? c('interpretation.premiumAi') : c('interpretation.premiumBasic'),
     },
-    { id: 'horoscope', feature: c('horoscope.feature'), free: c('horoscope.free'), premium: c('horoscope.premium') },
     { id: 'compatibility', feature: c('compatibility.feature'), free: c('compatibility.free'), premium: c('compatibility.premium') },
     { id: 'history', feature: c('history.feature'), free: c('history.free'), premium: c('history.premium') },
+    { id: 'tarot-format', feature: c('tarotFormat.feature'), free: c('tarotFormat.free'), premium: c('tarotFormat.premium') },
   ]
 })
 
