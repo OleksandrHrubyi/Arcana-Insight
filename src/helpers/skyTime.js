@@ -106,6 +106,43 @@ export const resolveObserverZone = (location) => {
   return deviceZone()
 }
 
+// What calendar date the zone's clock is on at `date` — "яке сьогодні число
+// там, куди дивимось". month is 0-based, like Date.getMonth(). Shifting by the
+// offset and reading UTC parts works for the longitude fallback too, which has
+// no IANA id to hand to Intl.
+export const zoneCalendarDate = (zone, date = new Date()) => {
+  const shifted = new Date(date.getTime() + zoneOffsetMinutes(zone, date) * 60000)
+  return {
+    year: shifted.getUTCFullYear(),
+    month: shifted.getUTCMonth(),
+    day: shifted.getUTCDate(),
+  }
+}
+
+const DAY_MS = 86400000
+
+// Whole days since the epoch for the zone's calendar date — the unit that makes
+// "today / tomorrow" a difference of dates rather than a count of 24-hour spans.
+const zoneDayNumber = (zone, date) => {
+  const { year, month, day } = zoneCalendarDate(zone, date)
+  return Math.round(Date.UTC(year, month, day) / DAY_MS)
+}
+
+// Difference in CALENDAR days between two instants, as the zone counts them.
+// 23:59 → 00:01 is 1 (tomorrow), not 0; +30h inside one long day is not 2.
+export const zoneCalendarDaysBetween = (zone, from, to) =>
+  zoneDayNumber(zone, to) - zoneDayNumber(zone, from)
+
+// The instant at which the zone's clock reads Y-M-D hh:mm. Two passes so a DST
+// change between the first guess and the answer lands on the right side of it.
+export const zoneDateAtWallTime = (zone, year, month, day, hour = 0, minute = 0) => {
+  const wall = Date.UTC(year, month, day, hour, minute)
+  const first = zoneOffsetMinutes(zone, new Date(wall))
+  const guess = wall - first * 60000
+  const second = zoneOffsetMinutes(zone, new Date(guess))
+  return new Date(second === first ? guess : wall - second * 60000)
+}
+
 // True when the location's clock reads the same as the device clock — then the
 // UI has nothing to explain.
 export const zoneMatchesDevice = (zone, date = new Date()) =>

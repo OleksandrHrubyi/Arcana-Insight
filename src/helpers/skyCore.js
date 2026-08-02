@@ -7,7 +7,7 @@
 // time zone (see skyTime.js). It decides which midnight the day starts at, so
 // the result depends on the PLACE, not on the machine's clock. Omitting it keeps
 // the device zone — correct only when device and location agree.
-import { zoneLocalMidnight } from './skyTime.js'
+import { zoneLocalMidnight, zoneCalendarDate, zoneCalendarDaysBetween, zoneDateAtWallTime } from './skyTime.js'
 
 export const MOON_PHASE_KEYS = Object.freeze([
   'new',
@@ -120,15 +120,21 @@ export const computeMonthMoonPhases = (Astronomy, year, monthIndex) => {
   return out
 }
 
+// "Через скільки днів" as the observer's calendar counts it: the difference of
+// DATES, not a count of 24-hour spans. An event at 00:30 tomorrow is tomorrow
+// even though it is half an hour away, and one late tomorrow evening is never
+// "через 2 дні". `zone` omitted ⇒ the device calendar.
+const daysBetween = (eventDate, from, zone) =>
+  Math.max(0, zoneCalendarDaysBetween(zone, from, eventDate))
+
 // Next occurrence of each principal Moon phase after `date`.
-export const findUpcomingLunarEvents = (Astronomy, date = new Date()) => {
+export const findUpcomingLunarEvents = (Astronomy, date = new Date(), { zone } = {}) => {
   const start = makeTime(Astronomy, date)
   const search = (targetLon) => {
     const t = Astronomy.SearchMoonPhase(targetLon, start, 40)
     if (!t) return null
     const eventDate = t.date instanceof Date ? t.date : new Date(t.date)
-    const daysUntil = Math.max(0, Math.ceil((eventDate.getTime() - date.getTime()) / 86400000))
-    return { date: eventDate, daysUntil }
+    return { date: eventDate, daysUntil: daysBetween(eventDate, date, zone) }
   }
   return {
     newMoon: search(0),
@@ -164,10 +170,6 @@ const toDate = (astroTime) => {
 
 // Midnight that starts the observer's day. `zone` omitted ⇒ the device zone.
 const localMidnight = (date, zone) => zoneLocalMidnight(zone, date)
-
-const daysBetween = (eventDate, from) =>
-  Math.max(0, Math.ceil((eventDate.getTime() - from.getTime()) / 86400000))
-
 export const makeObserver = (Astronomy, lat, lon, height = 0) =>
   new Astronomy.Observer(lat, lon, height)
 
@@ -291,19 +293,19 @@ export const meteorPeakInfo = (Astronomy, showerKey, peakDate) => {
 export const computeUpcomingSkyEvents = (
   Astronomy,
   date = new Date(),
-  { horizonDays = 120, limit = 8 } = {},
+  { horizonDays = 120, limit = 8, zone } = {},
 ) => {
   const start = makeTime(Astronomy, date)
   const events = []
   const push = (type, key, eventDate) => {
     const d = eventDate instanceof Date ? eventDate : toDate(eventDate)
     if (!d) return
-    const du = daysBetween(d, date)
+    const du = daysBetween(d, date, zone)
     if (d.getTime() < date.getTime() || du > horizonDays) return
     events.push({ type, key, date: d, daysUntil: du })
   }
 
-  const phases = findUpcomingLunarEvents(Astronomy, date)
+  const phases = findUpcomingLunarEvents(Astronomy, date, { zone })
   push('moonPhase', 'newMoon', phases.newMoon?.date)
   push('moonPhase', 'firstQuarter', phases.firstQuarter?.date)
   push('moonPhase', 'fullMoon', phases.fullMoon?.date)
@@ -321,7 +323,7 @@ export const computeUpcomingSkyEvents = (
   const solarEcl = Astronomy.SearchGlobalSolarEclipse(start)
   push('solarEclipse', 'solarEclipse', toDate(solarEcl?.peak))
 
-  const year = date.getFullYear()
+  const year = zoneCalendarDate(zone, date).year
   for (const yr of [year, year + 1]) {
     const s = Astronomy.Seasons(yr)
     push('season', 'marchEquinox', toDate(s.mar_equinox))
@@ -329,7 +331,9 @@ export const computeUpcomingSkyEvents = (
     push('season', 'septemberEquinox', toDate(s.sep_equinox))
     push('season', 'decemberSolstice', toDate(s.dec_solstice))
     for (const shower of METEOR_SHOWERS) {
-      push('meteor', shower.key, new Date(yr, shower.month - 1, shower.day, 22, 0, 0))
+      // The nominal peak is 22:00 on the OBSERVER's clock that evening — a
+      // shower peak printed at 08:00 is not a small error, it is nonsense.
+      push('meteor', shower.key, zoneDateAtWallTime(zone, yr, shower.month - 1, shower.day, 22, 0))
     }
   }
 
@@ -342,14 +346,14 @@ export const MOON_RADIUS_KM = 1737.4
 
 // Everything the moon-detail sheet shows: real distance, apparent size,
 // libration, the next four principal phases, and the next apsis.
-export const computeMoonDetail = (Astronomy, date = new Date()) => {
+export const computeMoonDetail = (Astronomy, date = new Date(), { zone } = {}) => {
   const time = makeTime(Astronomy, date)
   const lib = Astronomy.Libration(time)
   const distanceKm = Math.round(lib.dist_km)
   const angularDiameterDeg = 2 * Math.asin(MOON_RADIUS_KM / lib.dist_km) * (180 / Math.PI)
   const elong = moonSunElongation(Astronomy, date)
 
-  const phases = findUpcomingLunarEvents(Astronomy, date)
+  const phases = findUpcomingLunarEvents(Astronomy, date, { zone })
   const nextPhases = ['newMoon', 'firstQuarter', 'fullMoon', 'lastQuarter']
     .map((key) => (phases[key] ? { key, ...phases[key] } : null))
     .filter(Boolean)
@@ -360,7 +364,7 @@ export const computeMoonDetail = (Astronomy, date = new Date()) => {
     ? {
         kind: apsis.kind === 0 ? 'perigee' : 'apogee',
         date: toDate(apsis.time),
-        daysUntil: daysBetween(toDate(apsis.time), date),
+        daysUntil: daysBetween(toDate(apsis.time), date, zone),
         distanceKm: Math.round(apsis.dist_km),
       }
     : null

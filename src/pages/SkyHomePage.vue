@@ -384,9 +384,9 @@ const recompute = () => {
   moonRS.value = riseSetForLocalDay(Astronomy, 'moon', observer, now, { zone })
   sun.value = computeSunTimes(Astronomy, observer, now, { zone })
   visible.value = computeVisibleTonight(Astronomy, observer, now, { zone })
-  nextFullMoon.value = findUpcomingLunarEvents(Astronomy, now).fullMoon
-  eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { horizonDays: 120, limit: 12 })
-  moonDetail.value = computeMoonDetail(Astronomy, now)
+  nextFullMoon.value = findUpcomingLunarEvents(Astronomy, now, { zone }).fullMoon
+  eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { horizonDays: 120, limit: 12, zone })
+  moonDetail.value = computeMoonDetail(Astronomy, now, { zone })
   sunDetail.value = computeSunDetail(Astronomy, observer, now, { zone })
   moonPos.value = horizontalPosition(Astronomy, 'moon', observer, now)
   syncWidget()

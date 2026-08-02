@@ -309,6 +309,7 @@ import {
   formatDayLength,
   zoneOffsetLabel,
   zoneMatchesDevice,
+  zoneCalendarDate,
 } from 'src/helpers/skyTime.js'
 
 const locale = computed(() => currentLocale.value || 'en')
@@ -338,8 +339,12 @@ const planets = ref([])
 const visible = ref([])
 const sunInfo = ref(null)
 const monthCells = ref([])
-const viewYear = ref(new Date().getFullYear())
-const viewMonth = ref(new Date().getMonth())
+// "Сьогодні" on this screen is the calendar date at the OBSERVING PLACE — the
+// same day the header above the calendar already prints. The device's date is
+// a different day for as many hours a night as the two zones differ.
+const todayInZone = () => zoneCalendarDate(observerZone.value)
+const viewYear = ref(todayInZone().year)
+const viewMonth = ref(todayInZone().month)
 const starCanvas = ref(null)
 const eventsSection = ref(null)
 const focusEvId = ref(null)
@@ -410,9 +415,9 @@ const onResize = () => {
 const buildMonth = () => {
   if (!Astronomy) return
   const cells = computeMonthMoonPhases(Astronomy, viewYear.value, viewMonth.value)
-  const now = new Date()
-  const isThisMonth = now.getFullYear() === viewYear.value && now.getMonth() === viewMonth.value
-  monthCells.value = cells.map((c) => ({ ...c, isToday: isThisMonth && c.day === now.getDate() }))
+  const today = todayInZone()
+  const isThisMonth = today.year === viewYear.value && today.month === viewMonth.value
+  monthCells.value = cells.map((c) => ({ ...c, isToday: isThisMonth && c.day === today.day }))
 }
 
 const stepMonth = (delta) => {
@@ -702,11 +707,15 @@ onMounted(async () => {
     const now = new Date()
     const observer = makeObserver(Astronomy, skyLocation.value.lat, skyLocation.value.lon)
     const zone = observerZone.value
+    // The stored location may differ from the default the refs were built with.
+    const today = todayInZone()
+    viewYear.value = today.year
+    viewMonth.value = today.month
     sky.value = computeSkyForDate(Astronomy, now)
-    moonDetail.value = computeMoonDetail(Astronomy, now)
+    moonDetail.value = computeMoonDetail(Astronomy, now, { zone })
     observing.value = computeObservingWindow(Astronomy, observer, now, { zone })
     milkyWay.value = computeMilkyWayWindow(Astronomy, observer, now, { zone })
-    eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { limit: 12 })
+    eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { limit: 12, zone })
     planets.value = computePlanetSigns(Astronomy, now)
     visible.value = computeVisibleTonight(Astronomy, observer, now, { zone }).map((p) => ({
       ...p,
