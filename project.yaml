@@ -1,7 +1,7 @@
 id: arcana-insight
 name: Arcana Insight
 type: ios-app             # профіль: ~/agents/templates/types/ios-app/profile.yaml
-stage: blocked            # реджект App Store → перепозиціонування в астрономію; v1.0.1 submit-ready.
+stage: review            # реджект App Store → перепозиціонування в астрономію; v1.0.1 submit-ready.
                           # Після повторної подачі поміняти на review.
 one_liner: iOS-застосунок ритуалів і спостережень за небом — астрономічні події, журнал, тактильні ритуали.
 
