@@ -5,98 +5,35 @@ Use this text in App Store Connect reviewer notes.
 > Canonical source: this note is kept in sync with `app-store/asc-metadata.md`
 > (astronomy-first, v1.0.1). App Store name: **Arcana: Night Sky & Moon**.
 
-## Suggested review note (v4, 2026-07-30 — astronomy repositioning; keeps the
-## 5.1.1 purchase justification and the AI-generated-content disclosure)
-
+## Suggested review note (v5, 2026-08-02 — стиснуто під ліміт ASC 4000 зн.; заливається полем Notes через скіл asc-api)
 ```text
-CONTEXT — RESPONSE TO YOUR 4.3(b) FEEDBACK:
-This app was previously submitted as "Arcana: Tarot & Horoscope" (v1.0 build 62)
-and rejected under Guideline 4.3(b). We took the feedback seriously and rebuilt
-the concept rather than resubmitting. Arcana is now a real astronomy tool — a
-night-sky / Moon instrument (App Store name: "Arcana: Night Sky & Moon"). The
-name, subtitle, screenshots, onboarding and the whole primary navigation lead
-with astronomy. The three primary tabs — Home, Sky and Journal — are computed
-sky data and a private written reflection; none of them shows a horoscope, a
-tarot card or a reading. Tarot and horoscope are secondary, optional features
-reached only from the Menu — never the home screen and never a primary tab.
+CONTEXT - RESPONSE TO YOUR 4.3(b) FEEDBACK:
+This app was previously submitted as "Arcana: Tarot & Horoscope" (v1.0 build 62) and rejected under Guideline 4.3(b). We took the feedback seriously and rebuilt the concept rather than resubmitting. Arcana is now a real astronomy tool - "Arcana: Night Sky & Moon". The name, subtitle, screenshots, onboarding and the whole primary navigation lead with astronomy. The three primary tabs - Home, Sky and Journal - show computed sky data and a private written reflection; none of them shows a horoscope, a tarot card or a reading. Tarot and horoscope are secondary, optional features reached only from the Menu - never the home screen and never a primary tab.
 
-THE CORE EXPERIENCE (all computed ON-DEVICE with the open-source astronomy-engine
-library — real ephemeris, functionality not content; works offline, no account):
-- Home: tonight's Moon for the user's location — phase, illumination, rise/set —
-  over a real photo of the night sky.
-- "Sky" tab — a genuine observing instrument:
-  • Best time to observe: tonight's astronomical-dark window minus moonlight,
-    plus a cloud forecast.
-  • Live Moon data: phase, distance (km), apparent size, next perigee/apogee.
-  • Planet visibility: which planets are up, compass/altitude, magnitude, and each
-    one's rise/set and highest (meridian transit) time.
-  • ISS pass predictions (real SGP4 propagation of live Celestrak TLEs), plus a
-    premium "satellite pack" (Tiangong, Hubble).
-  • A sky-events feed — eclipses, meteor-shower peaks, solstices/equinoxes — each
-    with an optional local-notification reminder.
-  • Sunrise/sunset and moonrise/moonset compass bearings, and a month Moon calendar.
-- A home-screen WidgetKit widget shows tonight's Moon phase.
-- "Journal" tab: a daily reflection — a one-tap mood check-in and one grounded,
-  reflective question derived from today's sky. Entries stay private on-device
-  (synced to the account after sign-in).
+THE CORE EXPERIENCE (computed ON-DEVICE with the open-source astronomy-engine library - real ephemeris; works offline, no account):
+- Home: tonight's Moon for the user's location - phase, illumination, rise/set - over a real night-sky photo.
+- Sky tab: best time to observe (astronomical-dark window minus moonlight, plus cloud forecast); live Moon data (distance, apparent size, perigee/apogee); planet visibility with rise/set and transit times; ISS pass predictions (real SGP4 on live Celestrak TLEs) plus a premium satellite pack (Tiangong, Hubble); a sky-events feed (eclipses, meteor peaks, solstices) with local-notification reminders; sunrise/sunset compass bearings and a month Moon calendar.
+- A WidgetKit home-screen widget with tonight's Moon phase.
+- Journal tab: a one-tap mood check-in and one reflective question derived from today's sky; entries stay private on-device (sync after sign-in).
+No predictions and no medical or financial claims; an explicit disclaimer is shown in-app and in the description.
 
-The app makes no predictions or guarantees and no medical or financial claims;
-all journal prompts are reflective questions, and an explicit disclaimer is shown
-in-app and in the description.
+FREE TIER (no account needed): the reviewer can complete onboarding and use the entire astronomy tool, the widget and the journal without signing in. The Menu extras (daily card, daily horoscope, 78-card library, compatibility overview, one 1-card reading per day) also work signed-out.
 
-FREE TIER (no account needed):
-The reviewer can complete onboarding and use the entire astronomy tool (Home,
-the full Sky tab, the widget) and the reflection journal without signing in.
-The secondary features in the Menu — daily card, daily horoscope (Energy theme),
-78-card library, zodiac guide, compatibility overview, one 1-card reading per day
-— also work signed-out.
+AI-GENERATED CONTENT: journal prompts are NOT AI - a curated, pre-written bank selected by real sky data. Horoscope, tarot-interpretation and compatibility texts (the optional Menu features) are generated server-side (OpenAI gpt-4o-mini with a fallback provider), constrained to a fixed JSON schema and passed through a content-safety filter that blocks predictive/deterministic, medical and financial wording. This is not an open chatbot - users cannot converse freely with the model. AI processors are disclosed in the privacy policy.
 
-AI-GENERATED CONTENT:
-The journal prompts are NOT AI — they are a curated, pre-written bank selected by
-real sky data. Horoscope, tarot-interpretation and compatibility texts (the
-optional Menu features) are generated server-side (OpenAI gpt-4o-mini with a
-fallback provider), constrained to a fixed JSON schema and passed through a
-content-safety filter that blocks predictive/deterministic, medical and financial
-wording before anything reaches the user. This is not an open chatbot: users
-cannot converse freely with the model; the only free-text inputs are the user's
-own private journal entries and an optional tarot question. AI processors are
-disclosed in the privacy policy.
+SUBSCRIPTION (auto-renewable): arcana.premium.monthly / arcana.premium.yearly (RevenueCat entitlement: premium; product IDs are legacy internal identifiers). Premium adds saved observing places, journal reflection insights, the satellite pack and deeper reading formats.
 
-SUBSCRIPTION (auto-renewable):
-Products: arcana.premium.monthly, arcana.premium.yearly
-(RevenueCat entitlement: premium; product IDs are legacy internal identifiers).
-Premium adds depth/convenience — saved observing places, journal reflection
-insights, the satellite pack, plus the deeper divination formats. The paywall is
-reachable from the Premium screen and from the premium locks (saved places,
-journal insights, satellite pack, Personal Horoscope, Saved Readings,
-Compatibility).
+WHY SIGN-IN IS REQUIRED BEFORE PURCHASE: Premium is account-based - it unlocks saved history and syncs the entitlement across devices, and the subscription is verified server-side against the user's account; an anonymous purchase would risk being lost on reinstall. Sign-in takes seconds (Sign in with Apple, or a first-party email one-time code). A manual "Restore Purchases" button is on the Premium screen; premium also restores automatically on sign-in.
 
-WHY SIGN-IN IS REQUIRED BEFORE PURCHASE:
-Premium is account-based — it unlocks saved history and syncs the entitlement
-across devices, and the subscription is verified server-side against the user's
-account. Purchasing anonymously would risk losing the purchase on reinstall.
-Sign-in takes seconds (Sign in with Apple or an email one-time code — no
-password). A manual "Restore Purchases" button is on the Premium screen; premium
-also restores automatically on sign-in.
+TO TEST PREMIUM: create an account in-app (Sign in with Apple works in sandbox), then purchase / restore with a Sandbox account.
 
-TO TEST PREMIUM: create an account in-app (Sign in with Apple works in sandbox),
-then purchase / restore with a Sandbox account.
+ACCOUNT: no account is required for the free features above. Deletion is available in-app: Settings -> Account -> Danger Zone -> Delete account.
 
-ACCOUNT:
-- Sign in with Apple is supported (the only third-party login; the alternative is
-  a first-party email one-time code).
-- No account is required for the free features listed above.
-- Account deletion is available in-app:
-  Settings -> Account -> Danger Zone -> Delete account.
+Privacy Policy: https://oleksandrhrubyi.github.io/Arcana-Insight/privacy-policy.html
+Support: https://oleksandrhrubyi.github.io/Arcana-Insight/support.html
+Marketing: https://oleksandrhrubyi.github.io/Arcana-Insight/
 
-Privacy Policy URL:
-https://oleksandrhrubyi.github.io/Arcana-Insight/privacy-policy.html
-
-Support URL:
-https://oleksandrhrubyi.github.io/Arcana-Insight/support.html
-
-The app uses standard HTTPS encryption only (ITSAppUsesNonExemptEncryption =
-false).
+The app uses standard HTTPS encryption only (ITSAppUsesNonExemptEncryption = false).
 ```
 
 ## Final pre-submit replacements
