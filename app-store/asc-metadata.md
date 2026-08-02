@@ -92,10 +92,11 @@ Arcana shows what the sky is doing and asks reflective questions. It never predi
 
 ARCANA PREMIUM
 Unlock the full practice:
-• Saved history to revisit your reflections and readings over time
-• Daily Love and Career horoscope themes
-• Full compatibility reports with a complete score breakdown
-• Unlimited guided sessions, plus 3-card and 5-card spreads
+• Unlimited saved observing places
+• Reflection insights: 30-day mood mix and streaks
+• Satellite pack: Tiangong and Hubble passes
+• Full history of your entries and readings
+• Unlimited readings, plus 3-card and 5-card spreads
 
 Look up tonight. Arcana helps you see the sky for what it really is — and take a quiet minute for yourself.
 
@@ -171,7 +172,6 @@ Lead with the instrument. Suggested 8-shot order + captions:
 4. Sky · Upcoming events — "Never miss an eclipse or meteor peak"  (events + bell)
 5. Sky · Planets + ISS — "See what's up, and when"   (visible planets w/ times, ISS)
 6. Journal — "A quiet minute with today's sky"       (daily reflection)
-7. Card of the day / Horoscope — "Go deeper when you want to"  (secondary)
 8. Premium — "The full practice, unlocked"
 
 > Generator: `tests/visual/appstore-shots.spec.js` now shoots this astronomy-first
@@ -278,10 +278,11 @@ Arcana показує, що робить небо, і ставить питан�
 
 ARCANA PREMIUM
 Відкрий повну практику:
-• Збережена історія, щоб повертатися до рефлексій і розкладів
-• Щоденні теми гороскопу «Кохання» і «Кар'єра»
-• Повні звіти сумісності з детальним розкладом балів
-• Необмежені сесії, розклади на 3 та 5 карт
+• Безліч збережених місць спостереження
+• Інсайти рефлексії: мікс настроїв і серії за 30 днів
+• Пакет супутників: прольоти Тяньгун і Габбла
+• Повна історія записів і розкладів
+• Необмежені розклади, на 3 та 5 карт
 
 Підніми погляд угору. Arcana допомагає побачити небо таким, яке воно є — і знайти тиху хвилину для себе.
 
@@ -350,5 +351,4 @@ Arcana Premium · Річна
 4. Небо · Події — «Не пропусти затемнення чи метеори»
 5. Небо · Планети + МКС — «Що видно і коли»
 6. Щоденник — «Тиха хвилина з небом сьогодні»
-7. Карта дня / Гороскоп — «Глибше, коли захочеш»
 8. Premium — «Повна практика, відкрита»

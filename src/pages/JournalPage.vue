@@ -456,23 +456,14 @@ const journalDayNumber = computed(() => {
   return universal ? { value: universal, personal: false } : null
 })
 
+// Astronomy only: the Moon phase. The zodiac sign, retrograde Mercury and the
+// day number used to print here too — removed 2026-08-02 (Т-B/B1) so a primary
+// tab carries no astrology. The day number still selects the prompt below; it
+// is simply not shown.
 const skyLine = computed(() => {
   const astro = astroToday.value
-  const parts = []
-  if (astro?.moonSignKey && astro?.moonPhaseKey) {
-    parts.push(
-      `${tt('astro.moonIn')} ${tt(`zodiacLocative.${astro.moonSignKey}`)}`,
-      tt(`astro.phases.${astro.moonPhaseKey}`),
-    )
-    if (astro.mercuryRetrograde) parts.push(tt('astro.mercuryRetrograde'))
-  }
-  const day = journalDayNumber.value
-  if (day) {
-    parts.push(
-      `${tt(day.personal ? 'journalPage.personalDayWord' : 'journalPage.dayWord')} ${day.value}`,
-    )
-  }
-  return parts.join(' · ')
+  if (!astro?.moonPhaseKey) return ''
+  return tt(`astro.phases.${astro.moonPhaseKey}`)
 })
 
 const resolvePromptText = (key) => {
@@ -495,15 +486,14 @@ const entryPromptText = (entry) => (entry?.promptKey ? resolvePromptText(entry.p
 const moodIcon = (moodKey) => moods.find((mood) => mood.key === moodKey)?.icon || 'circle'
 
 // The sky this entry was written under — turns each reflection into a small
-// observing log ("Full Moon · Capricorn"). Empty for older entries with no
-// captured sky (renders nothing).
+// observing log ("Full Moon"). Empty for older entries with no captured sky
+// (renders nothing). The Moon's zodiac sign used to follow the phase here —
+// removed 2026-08-02 (Т-B/B1, decision of Олександр): no primary tab prints a
+// zodiac. `sky.moonSignKey` stays in the stored entry, only the display drops it.
 const entrySkyLine = (entry) => {
   const sky = entry?.sky
-  if (!sky) return ''
-  const parts = []
-  if (sky.moonPhaseKey) parts.push(tt(`astro.phases.${sky.moonPhaseKey}`))
-  if (sky.moonSignKey) parts.push(tt(`zodiac.${sky.moonSignKey}`))
-  return parts.join(' · ')
+  if (!sky?.moonPhaseKey) return ''
+  return tt(`astro.phases.${sky.moonPhaseKey}`)
 }
 
 const formatDateKey = (dateKey) => {

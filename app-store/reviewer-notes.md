@@ -15,8 +15,10 @@ and rejected under Guideline 4.3(b). We took the feedback seriously and rebuilt
 the concept rather than resubmitting. Arcana is now a real astronomy tool — a
 night-sky / Moon instrument (App Store name: "Arcana: Night Sky & Moon"). The
 name, subtitle, screenshots, onboarding and the whole primary navigation lead
-with astronomy. Tarot and horoscope are secondary, optional features reached
-only from the Menu — never the home screen and never a primary tab.
+with astronomy. The three primary tabs — Home, Sky and Journal — are computed
+sky data and a private written reflection; none of them shows a horoscope, a
+tarot card or a reading. Tarot and horoscope are secondary, optional features
+reached only from the Menu — never the home screen and never a primary tab.
 
 THE CORE EXPERIENCE (all computed ON-DEVICE with the open-source astronomy-engine
 library — real ephemeris, functionality not content; works offline, no account):

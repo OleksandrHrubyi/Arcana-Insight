@@ -249,19 +249,10 @@
         <div v-if="showZoneNote" class="sky-note">{{ zoneNote }}</div>
       </section>
 
-      <!-- Planets -->
-      <section class="sky-card">
-        <div class="sky-section-title">{{ tt('skyPage.planetsTitle') }}</div>
-        <div class="sky-rows">
-          <div v-for="p in planets" :key="p.planetKey" class="sky-row">
-            <span>{{ tt(`astro.planets.${p.planetKey}`) }}</span>
-            <span>
-              {{ tt(`zodiac.${p.signKey}`) }} {{ p.degInSign }}°
-              <span v-if="p.retrograde" class="sky-rx">℞</span>
-            </span>
-          </div>
-        </div>
-      </section>
+      <!-- "Planets now" (planet-in-sign, degree, ℞) removed 2026-08-02 (Т-B/B2):
+           it read as a natal chart and added nothing an observer can use.
+           The observing data lives in "Visible this evening" above — altitude,
+           azimuth, magnitude, rise/transit/set. -->
     </div>
   </q-page>
 </template>
@@ -275,7 +266,6 @@ import {
   computeMonthMoonPhases,
   computeMoonDetail,
   computeUpcomingSkyEvents,
-  computePlanetSigns,
   computeVisibleTonight,
   computeSunDetail,
   computeObservingWindow,
@@ -335,7 +325,6 @@ const issPasses = ref([])
 const issReady = ref(false)
 const premiumSats = ref([])
 const premiumSatsReady = ref(false)
-const planets = ref([])
 const visible = ref([])
 const sunInfo = ref(null)
 const monthCells = ref([])
@@ -716,7 +705,6 @@ onMounted(async () => {
     observing.value = computeObservingWindow(Astronomy, observer, now, { zone })
     milkyWay.value = computeMilkyWayWindow(Astronomy, observer, now, { zone })
     eventFeed.value = computeUpcomingSkyEvents(Astronomy, now, { limit: 12, zone })
-    planets.value = computePlanetSigns(Astronomy, now)
     visible.value = computeVisibleTonight(Astronomy, observer, now, { zone }).map((p) => ({
       ...p,
       times: bodyViewTimes(Astronomy, p.planetKey, observer, now),

@@ -54,12 +54,16 @@ const PREMIUM_DETAIL_ASTRO = Object.freeze([
   },
 ])
 
+// Т-B/B3 (2026-08-02): the tarot tile is pulled out of the base list and
+// appended last, so the "What Premium gives" grid opens with what the listing
+// actually sells (sky, journal, satellites) instead of "Unlimited Tarot".
+const PREMIUM_DETAIL_UNLIMITED_TAROT = Object.freeze({
+  icon: 'all_inclusive',
+  titleKey: 'premiumPage.premiumDetails.unlimitedTarot.title',
+  textKey: 'premiumPage.premiumDetails.unlimitedTarot.text',
+})
+
 const PREMIUM_DETAIL_BASE = Object.freeze([
-  {
-    icon: 'all_inclusive',
-    titleKey: 'premiumPage.premiumDetails.unlimitedTarot.title',
-    textKey: 'premiumPage.premiumDetails.unlimitedTarot.text',
-  },
   {
     icon: 'nightlight_round',
     titleKey: 'premiumPage.premiumDetails.horoscopeThemes.title',
@@ -96,9 +100,10 @@ const PREMIUM_DETAIL_INTERPRETATION_BASIC = Object.freeze({
 
 export const getPremiumDetailItems = ({ tarotAiEnabled = false } = {}) => [
   ...PREMIUM_DETAIL_ASTRO,
-  ...PREMIUM_DETAIL_BASE.slice(0, 3),
+  ...PREMIUM_DETAIL_BASE.slice(0, 2),
   tarotAiEnabled ? PREMIUM_DETAIL_INTERPRETATION_AI : PREMIUM_DETAIL_INTERPRETATION_BASIC,
-  ...PREMIUM_DETAIL_BASE.slice(3),
+  ...PREMIUM_DETAIL_BASE.slice(2),
+  PREMIUM_DETAIL_UNLIMITED_TAROT,
 ]
 
 export const PREMIUM_COMPARE_ROWS = Object.freeze([

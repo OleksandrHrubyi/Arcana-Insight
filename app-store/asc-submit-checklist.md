@@ -68,7 +68,8 @@ Tick each box in App Store Connect. Order = the ASC version page top-to-bottom.
 
 ## Rejection-risk assessment (highest → lowest) + fix before submit
 
-1. **4.3(b) again (the whole reason for v1.0.1).** MITIGATED: divination is verified secondary (only in Menu, never Home/Sky/Journal/a tab); real on-device astronomy instrument; astronomy-first name/subtitle/keywords/description/screenshots.
+1. **4.3(b) again (the whole reason for v1.0.1).** MITIGATED: the tarot/horoscope screens are reachable only from the Menu — no tab, no link from Home/Sky/Journal; real on-device astronomy instrument; astronomy-first name/subtitle/keywords/description/screenshots.
+   The stronger claim "never Home/Sky/Journal" was **false until 2026-08-02** — Journal printed "Moon in <sign> · <phase> · Day N" and the Sky tab carried a "Planets now" planet-in-sign/degree/℞ table. Both removed in build ≥58 (Т-B, `2026-08-appstore-4-3-b-strategy.md` §5). Re-verify on the actual binary you upload, not on this line.
    → **Residual risk = the ASSETS.** If any old tarot-first screenshot, the old "Daily Sky Journal"/"Tarot & Horoscope" reviewer note, or a tarot-led demo video reaches ASC, it re-triggers 4.3(b). **Double-check §3 and §7.**
 2. **2.1 / 4.2 (Capacitor wrapper feels like a website).** MITIGATED: haptics on every tap, offline soft-fail, native widget, real computed data. → Do the real-device pass (§0) so nothing shows a blank/loading dead-end.
 3. **3.1.2 (auto-renew disclosure).** MITIGATED: full subscription block in the description + in-app Terms. → Just confirm it's in the pasted description.
