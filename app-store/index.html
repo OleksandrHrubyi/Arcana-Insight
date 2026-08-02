@@ -1,143 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arcana Insight — App Store Links</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Arcana: Night Sky &amp; Moon — see tonight's sky for what it really is</title>
+<meta name="description" content="Tonight's Moon, planets, ISS passes and sky events for your location — computed on your device, accurate offline. Plus a one-minute daily reflection." />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #070B14; --bg2: #0B1120; --card: rgba(255,255,255,.045);
+    --line: rgba(255,255,255,.09); --tx: #EAF0FB; --t2: #A8B4CC; --t3: #6C7893;
+    --moon: #9FC0FF; --accent: #5A97F7;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+    background: var(--bg); color: var(--tx); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.7) 50%, transparent 51%),
+      radial-gradient(1px 1px at 78% 8%, rgba(255,255,255,.5) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 55% 30%, rgba(255,255,255,.6) 50%, transparent 51%),
+      radial-gradient(1px 1px at 30% 55%, rgba(255,255,255,.4) 50%, transparent 51%),
+      radial-gradient(1px 1px at 90% 45%, rgba(255,255,255,.5) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 8% 80%, rgba(255,255,255,.45) 50%, transparent 51%),
+      radial-gradient(1px 1px at 65% 72%, rgba(255,255,255,.5) 50%, transparent 51%),
+      radial-gradient(1px 1px at 42% 92%, rgba(255,255,255,.35) 50%, transparent 51%); }
+  .wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
 
-    :root {
-      color-scheme: dark;
-      --bg: #07121a;
-      --panel: rgba(11, 19, 28, 0.88);
-      --panel-border: rgba(166, 194, 255, 0.14);
-      --hero: linear-gradient(180deg, #102331 0%, #08131d 100%);
-      --accent: #9fd3ff;
-      --accent-soft: rgba(159, 211, 255, 0.14);
-      --text: #ebf4ff;
-      --muted: #9eb2c8;
-    }
+  header { text-align: center; padding: 84px 0 56px; }
+  .moonmark { width: 84px; height: 84px; margin: 0 auto 28px; border-radius: 50%;
+    background: radial-gradient(circle at 34% 32%, #E8EEFA 0%, #C7D4EC 38%, #8FA5C9 62%, #45536F 100%);
+    box-shadow: 0 0 60px rgba(159,192,255,.35), inset -14px -10px 32px rgba(7,11,20,.55); }
+  h1 { font-size: clamp(2rem, 5.5vw, 3.1rem); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
+  h1 .thin { color: var(--moon); }
+  .lede { color: var(--t2); font-size: 1.15rem; max-width: 34em; margin: 18px auto 0; }
+  .badge { display: inline-block; margin-top: 30px; padding: .6rem 1.3rem; border: 1px solid var(--line);
+    border-radius: 999px; color: var(--moon); font-size: .95rem; background: var(--card); }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      background:
-        radial-gradient(circle at top, rgba(85, 145, 204, 0.18), transparent 35%),
-        linear-gradient(180deg, #09131b 0%, #050a0f 100%);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 32px 20px 56px;
-    }
+  section { margin-top: 64px; }
+  h2 { font-size: 1.35rem; font-weight: 650; letter-spacing: -.01em; margin-bottom: 6px; }
+  .sub { color: var(--t3); font-size: .95rem; margin-bottom: 22px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .f { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; }
+  .f .ic { font-size: 1.4rem; margin-bottom: 10px; display: block; }
+  .f b { display: block; font-size: 1.02rem; margin-bottom: 6px; font-weight: 640; }
+  .f p { color: var(--t2); font-size: .93rem; }
 
-    .shell {
-      max-width: 760px;
-      margin: 0 auto;
-    }
+  .honest { border-left: 3px solid var(--accent); background: var(--card); border-radius: 0 14px 14px 0;
+    padding: 18px 22px; color: var(--t2); }
+  .honest b { color: var(--tx); }
 
-    .hero {
-      background: var(--hero);
-      border: 1px solid var(--panel-border);
-      border-radius: 28px;
-      padding: 32px 24px;
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
-      margin-bottom: 18px;
-    }
+  .prem { background: linear-gradient(180deg, rgba(90,151,247,.10), rgba(90,151,247,.03));
+    border: 1px solid rgba(90,151,247,.25); border-radius: 18px; padding: 26px 28px; }
+  .prem ul { list-style: none; margin-top: 14px; }
+  .prem li { padding: 7px 0 7px 28px; position: relative; color: var(--t2); }
+  .prem li::before { content: "✦"; position: absolute; left: 4px; color: var(--moon); }
 
-    .eyebrow {
-      font-size: 12px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 12px;
-    }
-
-    h1 {
-      font-size: clamp(30px, 6vw, 44px);
-      line-height: 1.05;
-      margin-bottom: 12px;
-    }
-
-    .hero p {
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.65;
-      max-width: 560px;
-    }
-
-    .grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--panel-border);
-      border-radius: 22px;
-      padding: 22px 20px;
-      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.18);
-    }
-
-    .card h2 {
-      font-size: 18px;
-      margin-bottom: 8px;
-    }
-
-    .card p {
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.6;
-      margin-bottom: 16px;
-    }
-
-    .cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 11px 16px;
-      border-radius: 999px;
-      background: var(--accent);
-      color: #061019;
-      text-decoration: none;
-      font-weight: 700;
-    }
-
-    .cta-secondary {
-      background: var(--accent-soft);
-      color: var(--accent);
-      border: 1px solid rgba(159, 211, 255, 0.2);
-    }
-
-    .meta {
-      margin-top: 22px;
-      color: #6f87a1;
-      font-size: 13px;
-      text-align: center;
-    }
-  </style>
+  footer { margin-top: 80px; border-top: 1px solid var(--line); padding-top: 28px;
+    display: flex; flex-wrap: wrap; gap: 18px; justify-content: space-between; color: var(--t3); font-size: .92rem; }
+  footer a { color: var(--t2); text-decoration: none; margin-right: 18px; }
+  footer a:hover { color: var(--moon); }
+</style>
 </head>
 <body>
-  <div class="shell">
-    <section class="hero">
-      <div class="eyebrow">Arcana Insight</div>
-      <h1>App Store Support Links</h1>
-      <p>Public support and privacy pages for Arcana Insight App Store submission and customer support.</p>
-    </section>
+<div class="stars"></div>
+<div class="wrap">
 
-    <section class="grid">
-      <article class="card">
-        <h2>Privacy Policy</h2>
-        <p>Data collection, subscriptions, notifications, analytics, retention, and account deletion details.</p>
-        <a class="cta" href="./privacy-policy.html">Open Privacy Policy</a>
-      </article>
+<header>
+  <div class="moonmark" role="img" aria-label="The Moon"></div>
+  <h1>Arcana: <span class="thin">Night Sky &amp; Moon</span></h1>
+  <p class="lede">Tonight's Moon, planets, satellite passes and sky events for your exact location —
+  computed on your device, accurate even offline. And one quiet minute a day to write it down.</p>
+  <span class="badge">🌒 Coming soon to the App Store · Free, with optional Premium</span>
+</header>
 
-      <article class="card">
-        <h2>Support</h2>
-        <p>Billing questions, restore guidance, account help, deletion instructions, and direct contact email.</p>
-        <a class="cta cta-secondary" href="./support.html">Open Support Page</a>
-      </article>
-    </section>
-
-    <div class="meta">Arcana Insight App Store public pages</div>
+<section>
+  <h2>Your sky, tonight</h2>
+  <p class="sub">Real astronomy for the place you actually stand — no account, no waiting for a server.</p>
+  <div class="grid">
+    <div class="f"><span class="ic">🕗</span><b>Best time to observe</b>
+      <p>A nightly window computed from darkness, moonlight and what's above the horizon — with a short tour of what to look at first.</p></div>
+    <div class="f"><span class="ic">🌗</span><b>The Moon, in detail</b>
+      <p>Phase, illumination, rise and set with compass bearings, distance and apparent size, perigee and apogee — plus a full month calendar of Moon phases.</p></div>
+    <div class="f"><span class="ic">🪐</span><b>Planets you can actually see</b>
+      <p>Visibility windows with rise, highest point and set times, altitude, azimuth and magnitude — observational data, not horoscopes.</p></div>
+    <div class="f"><span class="ic">🛰️</span><b>ISS over your head</b>
+      <p>Naked-eye pass predictions for your location, with direction and brightness, so you know exactly when to look up.</p></div>
+    <div class="f"><span class="ic">☄️</span><b>Sky events, with reminders</b>
+      <p>Eclipses, meteor-shower peaks, solstices and equinoxes in your local time — tap the bell and the app reminds you the evening it matters.</p></div>
+    <div class="f"><span class="ic">📓</span><b>A minute of reflection</b>
+      <p>One grounded question from today's real sky, your mood, a few lines. Saved on your device; sign-in is optional.</p></div>
   </div>
+</section>
+
+<section>
+  <div class="honest">
+    <b>No predictions — that's the point.</b> Arcana shows what the sky is doing and asks reflective
+    questions. It never predicts your future. Classic card readings and horoscopes exist as optional
+    extras, tucked away in the Menu — the app leads with the real night sky.
+  </div>
+</section>
+
+<section>
+  <div class="prem">
+    <h2>Arcana Premium</h2>
+    <p class="sub" style="margin-bottom:0">Optional subscription. Everything above stays free.</p>
+    <ul>
+      <li>Unlimited saved observing places</li>
+      <li>Reflection insights: a 30-day mood mix and streaks</li>
+      <li>Satellite pack: Tiangong and Hubble passes</li>
+      <li>Full history of your entries and readings</li>
+      <li>Unlimited readings, plus 3-card and 5-card spreads</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>Private by design</h2>
+  <p class="sub" style="margin-bottom:0">All astronomy is computed locally with a scientific ephemeris library.
+  Works fully offline. No ads, no tracking of your location — the observing place you pick never leaves your device
+  unless you sign in to sync your journal.</p>
+</section>
+
+<footer>
+  <div>
+    <a href="support.html">Support</a>
+    <a href="privacy-policy.html">Privacy Policy</a>
+    <a href="mailto:ghrubyi@ukr.net">ghrubyi@ukr.net</a>
+  </div>
+  <div>© 2026 Arcana · Night Sky &amp; Moon</div>
+</footer>
+
+</div>
 </body>
 </html>

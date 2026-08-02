@@ -1,299 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Support — Arcana Insight</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: #0d0d14;
-      color: #d8d0f0;
-      line-height: 1.7;
-      padding: 0 0 80px;
-    }
-
-    header {
-      background: linear-gradient(160deg, #1a1228 0%, #0d0d14 100%);
-      border-bottom: 1px solid #2a2040;
-      padding: 48px 24px 32px;
-      text-align: center;
-    }
-
-    header .logo {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      color: #c8aaff;
-      margin-bottom: 8px;
-    }
-
-    header h1 {
-      font-size: 28px;
-      font-weight: 600;
-      color: #f0eaff;
-      margin-bottom: 8px;
-    }
-
-    header p {
-      font-size: 14px;
-      color: #8878a8;
-    }
-
-    main {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 40px 24px 0;
-    }
-
-    .contact-card {
-      background: linear-gradient(135deg, #1e1535 0%, #16102a 100%);
-      border: 1px solid #3a2860;
-      border-radius: 16px;
-      padding: 28px 28px;
-      margin: 0 0 40px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .contact-icon {
-      font-size: 36px;
-      flex-shrink: 0;
-    }
-
-    .contact-card h2 {
-      font-size: 17px;
-      font-weight: 600;
-      color: #f0eaff;
-      margin-bottom: 6px;
-      border: none;
-      padding: 0;
-    }
-
-    .contact-card p {
-      font-size: 14px;
-      color: #a090c8;
-      margin-bottom: 10px;
-    }
-
-    .contact-card a.email-btn {
-      display: inline-block;
-      background: #c8aaff;
-      color: #0d0d14;
-      font-weight: 600;
-      font-size: 14px;
-      padding: 8px 18px;
-      border-radius: 20px;
-      text-decoration: none;
-      transition: opacity 0.15s;
-    }
-
-    .contact-card a.email-btn:hover { opacity: 0.85; }
-
-    h2 {
-      font-size: 18px;
-      font-weight: 600;
-      color: #c8aaff;
-      margin: 40px 0 16px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid #2a2040;
-    }
-
-    .faq-item {
-      margin-bottom: 24px;
-    }
-
-    .faq-item h3 {
-      font-size: 15px;
-      font-weight: 600;
-      color: #f0eaff;
-      margin-bottom: 6px;
-    }
-
-    .faq-item p, .faq-item li {
-      font-size: 15px;
-      color: #c0b8d8;
-      margin-bottom: 6px;
-    }
-
-    .faq-item ul {
-      padding-left: 20px;
-    }
-
-    .faq-item li { margin-bottom: 4px; }
-
-    a { color: #c8aaff; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .tag {
-      display: inline-block;
-      background: #1e1535;
-      border: 1px solid #3a2860;
-      color: #c8aaff;
-      font-size: 12px;
-      padding: 2px 10px;
-      border-radius: 20px;
-      margin-bottom: 10px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 40px 24px 0;
-      font-size: 13px;
-      color: #5a5070;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Support — Arcana: Night Sky &amp; Moon</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #070B14; --card: rgba(255,255,255,.045); --line: rgba(255,255,255,.09);
+    --tx: #EAF0FB; --t2: #A8B4CC; --t3: #6C7893; --moon: #9FC0FF; --accent: #5A97F7;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+    background: var(--bg); color: var(--tx); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px 80px; }
+  header { text-align: center; padding: 64px 0 40px; }
+  .moonmark { width: 56px; height: 56px; margin: 0 auto 20px; border-radius: 50%;
+    background: radial-gradient(circle at 34% 32%, #E8EEFA 0%, #C7D4EC 38%, #8FA5C9 62%, #45536F 100%);
+    box-shadow: 0 0 40px rgba(159,192,255,.3), inset -10px -7px 22px rgba(7,11,20,.55); }
+  header .app { color: var(--moon); font-size: .95rem; letter-spacing: .06em; text-transform: uppercase; }
+  h1 { font-size: 2rem; font-weight: 700; letter-spacing: -.02em; margin-top: 6px; }
+  header p { color: var(--t3); margin-top: 8px; }
+  .contact { background: linear-gradient(180deg, rgba(90,151,247,.10), rgba(90,151,247,.03));
+    border: 1px solid rgba(90,151,247,.25); border-radius: 16px; padding: 22px 26px; text-align: center; }
+  .contact a { color: var(--moon); font-size: 1.15rem; font-weight: 600; text-decoration: none; }
+  .contact p { color: var(--t2); font-size: .92rem; margin-top: 6px; }
+  h2 { font-size: 1.15rem; font-weight: 650; margin: 44px 0 14px; letter-spacing: -.01em; }
+  details { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    margin-bottom: 10px; overflow: hidden; }
+  summary { cursor: pointer; padding: 15px 20px; font-weight: 600; font-size: .98rem; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: "▸ "; color: var(--moon); }
+  details[open] summary::before { content: "▾ "; }
+  .a { padding: 0 20px 16px; color: var(--t2); font-size: .94rem; }
+  .a ol, .a ul { padding-left: 1.3em; margin: 8px 0; }
+  .a li { margin: 4px 0; }
+  .a b, .a code { color: var(--tx); font-style: normal; font-family: inherit; }
+  .a a { color: var(--moon); }
+  footer { margin-top: 64px; border-top: 1px solid var(--line); padding-top: 24px;
+    color: var(--t3); font-size: .9rem; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; }
+  footer a { color: var(--t2); text-decoration: none; margin-right: 16px; }
+  footer a:hover { color: var(--moon); }
+</style>
 </head>
 <body>
+<div class="wrap">
 
 <header>
-  <div class="logo">✦ Arcana Insight</div>
+  <div class="moonmark" role="img" aria-label="The Moon"></div>
+  <div class="app">Arcana: Night Sky &amp; Moon</div>
   <h1>Support</h1>
   <p>We typically respond within 24–48 hours.</p>
 </header>
 
-<main>
+<div class="contact">
+  <a href="mailto:ghrubyi@ukr.net">ghrubyi@ukr.net</a>
+  <p>For any questions, issues or feedback — write to us directly.</p>
+</div>
 
-  <!-- ─── Contact card ─────────────────────────────────────────── -->
-  <div class="contact-card">
-    <div class="contact-icon">✉️</div>
-    <div>
-      <h2>Contact us</h2>
-      <p>For any questions, issues, or feedback — write to us directly.</p>
-      <a class="email-btn" href="mailto:ghrubyi@ukr.net">ghrubyi@ukr.net</a>
-    </div>
-  </div>
+<h2>Subscriptions &amp; Billing</h2>
 
-  <!-- ─── Subscriptions ────────────────────────────────────────── -->
-  <h2>Subscriptions &amp; Billing</h2>
-
-  <div class="faq-item">
-    <div class="tag">Subscription</div>
-    <h3>What does Arcana Insight Premium include?</h3>
-    <p>Premium unlocks the following features:</p>
+<details>
+  <summary>What does Arcana Premium include?</summary>
+  <div class="a">
+    <p>Premium is an optional auto-renewable subscription (monthly or yearly). It unlocks:</p>
     <ul>
-      <li>Personal horoscope based on your birth date</li>
-      <li>Full tarot sessions with deeper readings and more spread formats</li>
-      <li>Extra horoscope themes, including love and career</li>
-      <li>Compatibility readings</li>
-      <li>Saving readings to revisit later</li>
+      <li>Unlimited saved observing places</li>
+      <li>Reflection insights: a 30-day mood mix and streaks</li>
+      <li>Satellite pack: naked-eye passes of Tiangong and Hubble</li>
+      <li>Full history of your journal entries and readings</li>
+      <li>Unlimited readings, plus 3-card and 5-card spreads</li>
     </ul>
-    <p>The daily card and general daily horoscope are always free.</p>
+    <p>Everything else — tonight's sky, the Moon calendar, planets, ISS passes, sky events with
+    reminders and the daily reflection — is free and stays free.</p>
   </div>
+</details>
 
-  <div class="faq-item">
-    <div class="tag">Billing</div>
-    <h3>How do I manage or cancel my subscription?</h3>
-    <p>Subscriptions are managed through your Apple ID. To cancel:</p>
-    <ul>
-      <li>Open <strong>Settings</strong> on your iPhone</li>
-      <li>Tap your name at the top → <strong>Subscriptions</strong></li>
-      <li>Find <strong>Arcana Insight</strong> and tap <strong>Cancel Subscription</strong></li>
-    </ul>
-    <p>You will retain Premium access until the end of your current billing period. No refund is issued for the remaining period.</p>
+<details>
+  <summary>How do I manage or cancel my subscription?</summary>
+  <div class="a">
+    <p>Subscriptions are managed through your Apple ID:</p>
+    <ol>
+      <li>Open <b>Settings</b> on your iPhone</li>
+      <li>Tap your name at the top → <b>Subscriptions</b></li>
+      <li>Find <b>Arcana</b> and tap <b>Cancel Subscription</b></li>
+    </ol>
+    <p>You keep Premium access until the end of the current billing period.</p>
   </div>
+</details>
 
-  <div class="faq-item">
-    <div class="tag">Billing</div>
-    <h3>I was charged but Premium isn't active in the app. What do I do?</h3>
-    <p>This is usually a sync issue. Try the following:</p>
-    <ul>
-      <li>Open the app → <strong>Premium</strong> → <strong>Restore Purchases</strong></li>
-      <li>Make sure you are signed in with the same Apple ID used for the purchase</li>
+<details>
+  <summary>I was charged but Premium isn't active. What do I do?</summary>
+  <div class="a">
+    <p>This is usually a sync issue:</p>
+    <ol>
+      <li>Open the app → <b>Premium</b> → <b>Restore Purchases</b></li>
+      <li>Make sure you're signed in with the same Apple ID used for the purchase</li>
       <li>Force-close and reopen the app</li>
-    </ul>
-    <p>If the issue persists, email us at <a href="mailto:ghrubyi@ukr.net">ghrubyi@ukr.net</a> and include your Apple ID email and approximate purchase date.</p>
+    </ol>
+    <p>If it persists, email <a href="mailto:ghrubyi@ukr.net">ghrubyi@ukr.net</a> with your Apple ID
+    email and the approximate purchase date.</p>
   </div>
+</details>
 
-  <div class="faq-item">
-    <div class="tag">Billing</div>
-    <h3>Can I get a refund?</h3>
-    <p>Refunds for App Store purchases are handled by Apple, not by us. To request a refund:</p>
-    <ul>
-      <li>Visit <a href="https://reportaproblem.apple.com" target="_blank" rel="noopener">reportaproblem.apple.com</a></li>
+<details>
+  <summary>Can I get a refund?</summary>
+  <div class="a">
+    <p>Refunds for App Store purchases are handled by Apple:</p>
+    <ol>
+      <li>Visit <a href="https://reportaproblem.apple.com">reportaproblem.apple.com</a></li>
       <li>Sign in with your Apple ID and find the charge</li>
-      <li>Select "I'd like to request a refund"</li>
-    </ul>
+      <li>Select <b>"I'd like to request a refund"</b></li>
+    </ol>
     <p>Apple's standard policy allows refunds within 14 days of purchase.</p>
   </div>
+</details>
 
-  <!-- ─── Account ──────────────────────────────────────────────── -->
-  <h2>Account</h2>
+<h2>App &amp; Features</h2>
 
-  <div class="faq-item">
-    <div class="tag">Account</div>
-    <h3>Do I need an account to use the app?</h3>
-    <p>No. You can use the daily card and general horoscope without creating an account. An account is only needed if you want to sync data across devices or use features tied to your profile (like the personal horoscope).</p>
+<details>
+  <summary>Do the sky calculations need the internet?</summary>
+  <div class="a">
+    <p>No. The Moon, planets, rise/set times, the calendar and sky events are computed on your device
+    with a scientific ephemeris library — they work fully offline and stay accurate. Only optional
+    extras (weather overlay for observing conditions, journal sync, readings) use the network.</p>
   </div>
+</details>
 
-  <div class="faq-item">
-    <div class="tag">Account</div>
-    <h3>How do I delete my account?</h3>
-    <p>You can delete your account directly from the app:</p>
-    <ul>
-      <li>Go to <strong>Settings</strong> → <strong>Account</strong> → <strong>Delete Account</strong></li>
-      <li>Confirm in the dialog that appears</li>
-    </ul>
-    <p>This permanently removes your email address, birth date, saved readings, ritual history, and all personal data from our servers. The action cannot be undone.</p>
-    <p>If you cannot access the app, email <a href="mailto:ghrubyi@ukr.net">ghrubyi@ukr.net</a> from the address linked to your account and we will delete it manually.</p>
+<details>
+  <summary>Times look shifted after I changed my observing place — why?</summary>
+  <div class="a">
+    <p>All times on the sky screens follow the <b>time zone of your observing place</b>, not your
+    device. If you're in one country and your saved place is in another, the app shows the sky for
+    that place — and adds a UTC offset label so the difference is explicit. That's intended: the sky
+    you're planning for is the one above your chosen location.</p>
   </div>
+</details>
 
-  <div class="faq-item">
-    <div class="tag">Account</div>
-    <h3>I forgot my password. How do I reset it?</h3>
-    <p>On the login screen, tap <strong>Forgot password?</strong> and enter your email address. You will receive a reset link within a few minutes. Check your spam folder if it doesn't arrive.</p>
+<details>
+  <summary>How do sky-event reminders work?</summary>
+  <div class="a">
+    <p>Tap the bell next to any event (meteor peak, eclipse, solstice). The app schedules a local
+    notification for the evening of the event in your local time. You can turn each reminder off the
+    same way — no account needed.</p>
   </div>
+</details>
 
-  <!-- ─── Content ──────────────────────────────────────────────── -->
-  <h2>Content &amp; Features</h2>
+<h2>Account &amp; Data</h2>
 
-  <div class="faq-item">
-    <div class="tag">Content</div>
-    <h3>Why is my daily card the same as yesterday?</h3>
-    <p>Each day you receive a unique card generated by a deterministic daily seed — the same card stays with you throughout the entire day. At midnight (your local time) the card resets and a new one is drawn. If the day has already changed and you're still seeing the same card, try closing and reopening the app.</p>
+<details>
+  <summary>Do I need an account?</summary>
+  <div class="a">
+    <p>No. The whole sky toolset and the daily reflection work without an account. Signing in is only
+    needed to sync your journal and saved data across devices.</p>
   </div>
+</details>
 
-  <div class="faq-item">
-    <div class="tag">Content</div>
-    <h3>Is the horoscope the same for everyone with my sign?</h3>
-    <p>The general daily horoscope is the same for all users sharing the same sun sign. The <strong>personal horoscope</strong> (Premium feature) takes your birth date into account and generates a more specific reading shaped by your sign's current energy.</p>
+<details>
+  <summary>How do I delete my account?</summary>
+  <div class="a">
+    <ol>
+      <li>Go to <b>Settings</b> → <b>Account</b> → <b>Delete Account</b></li>
+      <li>Confirm in the dialog</li>
+    </ol>
+    <p>This permanently removes your email, saved entries, history and all personal data from our
+    servers. The action cannot be undone. If you can't access the app, email
+    <a href="mailto:ghrubyi@ukr.net">ghrubyi@ukr.net</a> from the address linked to your account and
+    we'll delete it manually.</p>
   </div>
+</details>
 
-  <div class="faq-item">
-    <div class="tag">Content</div>
-    <h3>The horoscope isn't loading. What should I do?</h3>
-    <p>Horoscopes require an internet connection — they are generated fresh each day. Please check your connection and try again. If the problem persists for more than a day, contact us so we can check whether generation failed on our end.</p>
+<details>
+  <summary>I forgot my password.</summary>
+  <div class="a">
+    <p>On the login screen tap <b>Forgot password?</b> and enter your email. A reset link arrives
+    within a few minutes — check spam if it doesn't.</p>
   </div>
-
-  <!-- ─── Technical ────────────────────────────────────────────── -->
-  <h2>Technical Issues</h2>
-
-  <div class="faq-item">
-    <div class="tag">Technical</div>
-    <h3>The app crashes or freezes. How do I fix it?</h3>
-    <ul>
-      <li>Force-close the app and reopen it</li>
-      <li>Make sure you have the latest version installed (App Store → Updates)</li>
-      <li>Restart your iPhone</li>
-      <li>If the issue continues, uninstall and reinstall the app (your account data will be restored after login)</li>
-    </ul>
-    <p>If none of the above helps, email us with your device model and iOS version.</p>
-  </div>
-
-  <div class="faq-item">
-    <div class="tag">Technical</div>
-    <h3>My streak reset even though I used the app. What happened?</h3>
-    <p>Streaks are calculated based on whether you opened the daily card, read the horoscope, or completed a tarot session on each calendar day. If you used the app after midnight but before checking these features on the new day, the previous day may have been counted as missed. Please email us if you believe this was an error.</p>
-  </div>
-
-</main>
+</details>
 
 <footer>
-  <p>© 2026 Arcana Insight &nbsp;·&nbsp; <a href="privacy-policy.html">Privacy Policy</a></p>
+  <div>
+    <a href="index.html">About the app</a>
+    <a href="privacy-policy.html">Privacy Policy</a>
+  </div>
+  <div>© 2026 Arcana · Night Sky &amp; Moon</div>
 </footer>
 
+</div>
 </body>
 </html>
